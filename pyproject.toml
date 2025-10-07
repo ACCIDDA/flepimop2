@@ -1,0 +1,16 @@
+[project]
+name = "flepimop2"
+version = "0.1.0"
+description = "The flexible epidemic modeling pipeline"
+readme = "README.md"
+authors = [
+    { name = "Carl Pearson", email = "cap1024@unc.edu" },
+    { name = "Joshua Macdonald", email = "jmacdo16@jh.edu" },
+    { name = "Timothy Willard", email = "twillard@unc.edu" }
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
