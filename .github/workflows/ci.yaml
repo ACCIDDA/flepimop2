@@ -1,0 +1,42 @@
+---
+name: 'CI'
+
+'on':
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+permissions:
+  contents: 'read'
+
+jobs:
+  ci:
+    name: 'CI (Python ${{ matrix.python-version }})'
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        python-version:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+    steps:
+      - name: 'Install just'
+        run: 'sudo apt install just'
+      - name: 'Checkout repository'
+        # v5.0.0
+        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
+        with:
+          persist-credentials: false
+      - name: 'Setup uv with python ${{ matrix.python-version }}'
+        # v6.8.0
+        uses: 'astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e'
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'pyproject.toml'
+          python-version: '${{ matrix.python-version }}'
+      - name: 'Run Checks'
+        run: 'just ci'
+        env:
+          UV_PYTHON_VERSION: '${{ matrix.python-version }}'
