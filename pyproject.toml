@@ -9,7 +9,12 @@ authors = [
     { name = "Timothy Willard", email = "twillard@unc.edu" }
 ]
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "click>=8.3.0",
+]
+
+[project.scripts]
+flepimop2 = "flepimop2._cli._cli:cli"
 
 [build-system]
 requires = ["hatchling"]
@@ -44,9 +49,13 @@ ignore = [
     "PLR2004", # Consider replacing magic number with a constant variable
 ]
 
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*" = [
     "INP001",  # Implicit namespace package
+    "PLC2701", # Private name import from external module
     "S101",    # Use of `assert` detected
 ]
 
