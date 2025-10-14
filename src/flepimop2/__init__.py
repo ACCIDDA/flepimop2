@@ -1,7 +1,7 @@
 """flepimop2 modeling pipeline package."""
 
-__all__ = ["__version__", "logging"]
+__all__ = ["__version__", "configuration", "logging"]
 
 __version__ = "0.1.0"
 
-from flepimop2 import logging
+from flepimop2 import configuration, logging
