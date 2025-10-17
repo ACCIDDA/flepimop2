@@ -26,7 +26,7 @@ _VERBOSITY_TO_LOGGING_LEVEL: Final = {
     1: logging.WARNING,
     2: logging.INFO,
 }
-DEFAULT_LOG_FORMAT: Final = "%(asctime)s:%(levelname)s:%(name)s> %(message)s"
+DEFAULT_LOG_FORMAT: Final = "%(asctime)s:%(levelname)s> %(message)s"
 
 
 class ClickHandler(logging.Handler):
@@ -110,7 +110,7 @@ def get_script_logger(
         >>> from flepimop2.logging import get_script_logger
         >>> logger = get_script_logger(__name__, 3)
         >>> logger.info("This is a log info message")  # doctest: +SKIP
-        2024-10-29 16:07:20,272:INFO:__main__> This is a log info message.
+        2024-10-29 16:07:20,272:INFO> This is a log info message.
     """
     logger = logging.getLogger(name)
     logger.setLevel(LoggingLevel.from_verbosity(verbosity))

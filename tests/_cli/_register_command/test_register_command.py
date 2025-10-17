@@ -164,7 +164,7 @@ def test_register_command_wrapper_instantiates_and_runs() -> None:
 
     # Verify the command was instantiated and run was called
     mock_command_cls.assert_called_once()
-    mock_instance.run.assert_called_once()
+    mock_instance.assert_called_once()
 
 
 def test_register_command_passes_kwargs_to_run() -> None:

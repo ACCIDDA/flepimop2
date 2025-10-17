@@ -2,10 +2,8 @@
 
 __all__ = []
 
-from typing import Final
 
 from flepimop2._cli._cli_command import CliCommand
-from flepimop2.logging import get_script_logger
 
 
 class SimulateCommand(CliCommand):
@@ -30,7 +28,5 @@ class SimulateCommand(CliCommand):
             verbosity: Verbosity level (0-3).
             dry_run: Whether dry run mode is enabled.
         """
-        logger: Final = get_script_logger(__name__, verbosity)
-        logger.info("Simulating with configuration file: %s", config)
-        logger.info("Verbosity level set to: %d", verbosity)
-        logger.debug("Dry run mode is %s", "ENABLED" if dry_run else "DISABLED")
+        msg = "`SimulateCommand.run` is not yet implemented."
+        raise NotImplementedError(msg)

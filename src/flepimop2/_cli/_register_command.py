@@ -23,7 +23,7 @@ def register_command(command_cls: type[CliCommand], group: Group) -> None:
     # Create a wrapper function that instantiates and runs the command
     def command_wrapper(**kwargs: Any) -> None:
         command_instance = command_cls()
-        command_instance.run(**kwargs)
+        command_instance(**kwargs)
 
     # Set the function name and docstring for Click
     command_name = command_cls.command_name()
