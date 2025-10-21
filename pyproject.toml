@@ -24,15 +24,18 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "mkdocs>=1.6.1",
     "mypy>=1.18.2",
     "pytest>=8.4.2",
     "ruff>=0.13.3",
+    "sybil[pytest]>=9.2.0",
     "types-pyyaml>=6.0.12.20250915",
     "typing-extensions>=4.15.0",
 ]
 
 [tool.pytest.ini_options]
 testpaths = [
+    "docs/",
     "src/flepimop2/",
     "tests/",
 ]
