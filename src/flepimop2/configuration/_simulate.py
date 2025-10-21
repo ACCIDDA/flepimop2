@@ -8,3 +8,4 @@ class SimulateSpecificationModel(BaseModel):
 
     engine: str = Field(min_length=1)
     system: str = Field(min_length=1)
+    backend: str = Field(min_length=1)
