@@ -29,3 +29,11 @@ clean:
     rm -f uv.lock
     rm -rf .*_cache
     rm -rf .venv
+
+# Build the documentation using `mkdocs`
+docs:
+    uv run mkdocs build --verbose --strict
+
+# Serve the documentation locally using `mkdocs`
+serve:
+    uv run mkdocs serve
