@@ -3,10 +3,9 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
-from flepimop2.configuration._engine import EngineModel
+from flepimop2.configuration._module import ModuleModel
 from flepimop2.configuration._parameters import ParameterSpecificationModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
-from flepimop2.configuration._system import SystemModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
 
 if sys.version_info >= (3, 11):
@@ -23,8 +22,8 @@ class ConfigurationModel(YamlSerializableBaseModel):
     """
 
     name: str | None = None
-    engines: dict[str, EngineModel] = Field(default_factory=dict)
-    systems: dict[str, SystemModel] = Field(default_factory=dict)
+    engines: dict[str, ModuleModel] = Field(default_factory=dict)
+    systems: dict[str, ModuleModel] = Field(default_factory=dict)
     parameters: dict[str, ParameterSpecificationModel] = Field(default_factory=dict)
     simulate: dict[str, SimulateSpecificationModel] = Field(default_factory=dict)
 
