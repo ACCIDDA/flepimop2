@@ -52,6 +52,7 @@ This runs the default development checks:
 - `ruff check --fix` - Lint and auto-fix issues.
 - `pytest --doctest-modules` - Run tests including doctests.
 - `mypy --strict` - Type check with strict settings.
+- `yamllint --strict` - Lint YAML files.
 
 It is recommended that you run this command frequently as you do development work to catch issues early.
 
@@ -145,6 +146,8 @@ In addition to unit tests and doctests, code contained in the documentation is a
 - `ruff check --no-fix` - Lint without modifications.
 - `pytest --doctest-modules` - Run test suite.
 - `mypy --strict` - Type checking.
+
+If you edit YAML files or the documentation please also run `just yamllint` or `just docs`, respectively. These tasks are separated from the `just ci` command but will also run as a CI check.
 
 2. Update documentation if your changes affect user-facing functionality or add features that require usage guides.
 

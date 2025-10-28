@@ -1,6 +1,6 @@
 ---
 extends: 'default'
-
+ignore-from-file: .gitignore
 rules:
   line-length:
     allow-non-breakable-words: true

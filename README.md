@@ -26,20 +26,24 @@ just
 ```
 
 This will run:
-- `ruff format` - Format code
-- `ruff check --fix` - Lint and auto-fix issues
-- `pytest --doctest-modules` - Run tests including doctests
-- `mypy --strict` - Type check with strict settings
+
+- `ruff format` - Format code.
+- `ruff check --fix` - Lint and auto-fix issues.
+- `pytest --doctest-modules` - Run tests including doctests.
+- `mypy --strict` - Type check with strict settings.
+- `yamllint --strict` - Lint YAML files.
 
 4. CI runs on pull requests to `main` and tests against Python 3.11, 3.12, 3.13, and 3.14. The CI checks are defined in `just ci` and include:
 
-- `ruff format --check` - Verify code formatting (no auto-fix)
-- `ruff check --no-fix` - Lint without modifications
-- `pytest --doctest-modules` - Run test suite
-- `mypy --strict` - Type checking
+- `ruff format --check` - Verify code formatting (no auto-fix).
+- `ruff check --no-fix` - Lint without modifications.
+- `pytest --doctest-modules` - Run test suite.
+- `mypy --strict` - Type checking.
 
 To run the same checks locally that run in CI (say for diagnosing CI failures):
 
 ```bash
 just ci
 ```
+
+There is a separate CI check which will run `just yamllint` and `just docs` to check YAML file formatting and that the documentation builds successfully.
