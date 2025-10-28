@@ -1,23 +1,15 @@
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Self
 
 from pydantic import BaseModel
 from yaml import safe_dump, safe_load
-
-if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
 
 
 class YamlSerializableBaseModel(BaseModel):
     """Base model with YAML serialization support."""
 
     @classmethod
-    def from_yaml(cls, file: Path, encoding: str = "utf-8") -> "Self":
+    def from_yaml(cls, file: Path, encoding: str = "utf-8") -> Self:
         """
         Deserialize a YAML string to an instance of the model.
 
