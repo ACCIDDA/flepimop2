@@ -1,5 +1,4 @@
-import sys
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import Field, model_validator
 
@@ -7,11 +6,6 @@ from flepimop2.configuration._module import ModuleModel
 from flepimop2.configuration._parameters import ParameterSpecificationModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
 
 
 class ConfigurationModel(YamlSerializableBaseModel):

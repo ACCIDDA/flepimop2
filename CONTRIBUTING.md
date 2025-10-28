@@ -15,7 +15,7 @@ This document provides guidelines and instructions for contributing to `flepimop
 
 ### Prerequisites
 
-- Python 3.10, 3.11, 3.12, or 3.13.
+- Python 3.11, 3.12, 3.13, or 3.14.
 - [`uv`](https://docs.astral.sh/uv/) - Python package manager.
 - [`just`](https://just.systems/) - Command runner (optional but strongly recommended).
 
@@ -162,7 +162,7 @@ In addition to unit tests and doctests, code contained in the documentation is a
 
 ### Pull Request Requirements
 
-- PRs are tested against Python 3.10, 3.11, 3.12, and 3.13 using `just ci`.
+- PRs are tested against Python 3.11, 3.12, 3.13, and 3.14 using `just ci`.
 - Documentation must build successfully with `just docs`.
 - At least one maintainer approval is required before merging.
 - Branches must be up to date against `main` before merging and have a linear history. Only rebases are allowed for merging.

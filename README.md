@@ -31,7 +31,7 @@ This will run:
 - `pytest --doctest-modules` - Run tests including doctests
 - `mypy --strict` - Type check with strict settings
 
-4. CI runs on pull requests to `main` and tests against Python 3.10, 3.11, 3.12, and 3.13. The CI checks are defined in `just ci` and include:
+4. CI runs on pull requests to `main` and tests against Python 3.11, 3.12, 3.13, and 3.14. The CI checks are defined in `just ci` and include:
 
 - `ruff format --check` - Verify code formatting (no auto-fix)
 - `ruff check --no-fix` - Lint without modifications

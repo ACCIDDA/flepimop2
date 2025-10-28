@@ -1,6 +1,6 @@
 """Unit tests for the `CsvBackend` class."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -19,7 +19,7 @@ from flepimop2.meta import RunMeta
             np.array([[1.0, 2.0], [3.0, 4.0]]),
             RunMeta(
                 action="simulate",
-                timestamp=datetime(2023, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+                timestamp=datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC),
                 name="array_test",
             ),
         ),
@@ -27,7 +27,7 @@ from flepimop2.meta import RunMeta
             np.array([[0.0]]),
             RunMeta(
                 action="simulate",
-                timestamp=datetime(2024, 6, 15, 8, 45, 0, tzinfo=timezone.utc),
+                timestamp=datetime(2024, 6, 15, 8, 45, 0, tzinfo=UTC),
                 name=None,
             ),
         ),

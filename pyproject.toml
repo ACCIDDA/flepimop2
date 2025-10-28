@@ -8,7 +8,7 @@ authors = [
     { name = "Joshua Macdonald", email = "jmacdo16@jh.edu" },
     { name = "Timothy Willard", email = "twillard@unc.edu" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11,<=3.14"
 dependencies = [
     "click>=8.3.0",
     "numpy>=2.2.6",
@@ -31,7 +31,6 @@ dev = [
     "ruff>=0.13.3",
     "sybil[pytest]>=9.2.0",
     "types-pyyaml>=6.0.12.20250915",
-    "typing-extensions>=4.15.0",
 ]
 
 [tool.pytest.ini_options]
