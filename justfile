@@ -1,5 +1,5 @@
 # Run all default tasks for local development
-default: format check pytest mypy
+default: format check pytest mypy yamllint
 
 # Format code using `ruff`
 format:
@@ -16,6 +16,10 @@ pytest:
 # Type check using `mypy`
 mypy:
     uv run mypy --strict .
+
+# Lint YAML files using `yamllint`
+yamllint:
+    uv run yamllint --strict --config-file .yamllint.yaml .
 
 # Run all CI checks
 ci:

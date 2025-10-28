@@ -31,6 +31,7 @@ dev = [
     "ruff>=0.13.3",
     "sybil[pytest]>=9.2.0",
     "types-pyyaml>=6.0.12.20250915",
+    "yamllint>=1.37.1",
 ]
 
 [tool.pytest.ini_options]
