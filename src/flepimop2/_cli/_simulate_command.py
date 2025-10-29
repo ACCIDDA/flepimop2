@@ -16,10 +16,7 @@ class SimulateCommand(CliCommand):
 
     options = ("config", "verbosity", "dry_run")
 
-    @staticmethod
-    def run(  # type: ignore[override]
-        *, config: str, verbosity: int, dry_run: bool
-    ) -> None:
+    def run(self, *, config: str, verbosity: int, dry_run: bool) -> None:  # type: ignore[override]
         """
         Execute the simulation.
 
