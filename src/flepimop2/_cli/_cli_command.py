@@ -41,9 +41,8 @@ class CliCommand(ABC):
             self.debug("%s = %s", key.ljust(longest_key, " "), self.format(value))
         self.run(**kwargs)
 
-    @staticmethod
     @abstractmethod
-    def run(**kwargs: Any) -> None:
+    def run(self, **kwargs: Any) -> None:
         """
         Execute the command.
 
