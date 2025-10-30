@@ -2,6 +2,7 @@
 
 __all__ = []
 
+import pathlib
 from collections.abc import Callable
 from typing import Any, Final, TypeVar
 
@@ -15,7 +16,9 @@ FC = TypeVar("FC", bound="AnyCallable | click.Command")
 COMMON_OPTIONS: Final = {
     "config": click.argument(
         "config",
-        type=click.Path(exists=True, dir_okay=False, readable=True),
+        type=click.Path(
+            exists=True, dir_okay=False, readable=True, path_type=pathlib.Path
+        ),
     ),
     "dry_run": click.option(
         "--dry-run",

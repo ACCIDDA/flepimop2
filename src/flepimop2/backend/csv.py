@@ -1,32 +1,37 @@
+"""CSV backend for flepimop2."""
+
+import os
+from os import PathLike
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.backends._backend import BackendABC
+from flepimop2.backend.abc import BackendABC
 from flepimop2.meta import RunMeta
 
 
 class CsvBackend(BackendABC):
     """CSV backend for saving numpy arrays to CSV files."""
 
-    def __init__(self, backend_model: dict[str, Any]) -> None:
+    def __init__(self, root: PathLike[str] | None) -> None:
         """
         Initialize the CSV backend with configuration.
 
         Args:
-            backend_model: Configuration dictionary from BackendModel.model_dump().
-                Expected to contain a 'path' key with the base output directory.
+            root: Base output directory for CSV files.
 
         Raises:
-            TypeError: If the 'path' in `backend_model` is not a string or Path.
+            TypeError: If the 'root' is not a string or Path.
         """
-        base_path = backend_model.get("path", Path.cwd() / "model_output")
-        if not isinstance(base_path, str | Path):
-            msg = "The 'path' in backend configuration must be a string or Path."
+        base_path = Path(root) if root is not None else Path.cwd() / "model_output"
+        if base_path.is_file():
+            msg = "The 'path' in backend configuration must be a directory."
             raise TypeError(msg)
-        self.base_path = Path(base_path)
+        if not (base_path.exists() and os.access(base_path, os.W_OK)):
+            msg = f"The specified 'path' does not exist or is not writable: {base_path}"
+            raise TypeError(msg)
+        self.base_path = base_path
 
     def _get_file_path(self, run_meta: RunMeta) -> Path:
         """
@@ -67,3 +72,18 @@ class CsvBackend(BackendABC):
         """
         file_path = self._get_file_path(run_meta)
         return np.loadtxt(file_path, delimiter=",")
+
+
+def build(root: PathLike[str] | None = None) -> BackendABC:
+    """
+    Build a `CsvBackend` from a configuration dictionary.
+
+    Args:
+        root: Base output directory for CSV files. 'module' key, which will be used to
+            lookup the Backend module path. The module will have "flepimop2.backends."
+            prepended.
+
+    Returns:
+        The constructed csv backend.
+    """
+    return CsvBackend(root)
