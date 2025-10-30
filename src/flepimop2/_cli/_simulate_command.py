@@ -53,7 +53,7 @@ class SimulateCommand(CliCommand):
         pars = {k: v.value for k, v in params.items()}
 
         if dry_run:
-            self.info(msg=f"Dry run, verbosity {verbosity}")
+            self.info(f"Dry run, verbosity {verbosity}")
             self.info(f"Configuration {config} parsed successfully:")
             self.info(f"  System: {simconfig.system} => {stepper}")
             self.info(f"  Engine: {simconfig.engine} => {engine}")

@@ -23,6 +23,7 @@ class ConfigurationModel(
     engines: dict[str, ModuleModel] = Field(default_factory=dict)
     systems: dict[str, ModuleModel] = Field(default_factory=dict)
     backends: dict[str, ModuleModel] = Field(default_factory=dict)
+    process: dict[str, ModuleModel] = Field(default_factory=dict)
     parameters: dict[str, ParameterSpecificationModel] = Field(default_factory=dict)
     simulate: dict[str, SimulateSpecificationModel] = Field(default_factory=dict)
 
