@@ -2,7 +2,7 @@
 
 __all__ = ["RunMeta"]
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Literal, NamedTuple
 
 
@@ -16,6 +16,6 @@ class RunMeta(NamedTuple):
         name: An optional name for the run, typically pulled from the config.
     """
 
-    action: Literal["simulate"]
-    timestamp: datetime
-    name: str | None
+    action: Literal["simulate"] = "simulate"
+    timestamp: datetime = datetime.now(UTC)
+    name: str | None = None

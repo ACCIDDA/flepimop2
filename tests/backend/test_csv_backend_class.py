@@ -8,7 +8,7 @@ import pytest
 from numpy.testing import assert_array_equal
 from numpy.typing import NDArray
 
-from flepimop2.backends import CsvBackend
+from flepimop2.backend import build
 from flepimop2.meta import RunMeta
 
 
@@ -39,7 +39,7 @@ def test_csv_backend_save_and_read_round_trip(
     run_meta: RunMeta,
 ) -> None:
     """Test that saving and reading an array returns the same data."""
-    backend = CsvBackend({"module": "csv", "path": str(tmp_path)})
+    backend = build({"module": "csv", "root": str(tmp_path)})
 
     backend.save(sample_array, run_meta)
     loaded_array = backend.read(run_meta)
