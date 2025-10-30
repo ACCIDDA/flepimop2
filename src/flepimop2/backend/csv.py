@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.backend.abc import BackendABC
+from flepimop2.backend import BackendABC
 from flepimop2.meta import RunMeta
 
 
