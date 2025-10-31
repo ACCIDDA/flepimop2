@@ -18,7 +18,13 @@ class ProcessCommand(CliCommand):
 
     options = ("config", "verbosity", "dry_run")
 
-    def run(self, *, config: Path, verbosity: int, dry_run: bool) -> None:  # type: ignore[override]
+    def run(  # type: ignore[override]
+        self,
+        *,
+        config: Path,
+        verbosity: int,  # noqa: ARG002
+        dry_run: bool,
+    ) -> None:
         """
         Execute the processing step.
 
