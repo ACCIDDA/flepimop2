@@ -1,5 +1,24 @@
 ---
+# Site information
 site_name: "flepimop2 Documentation"
+site_url: "https://accidda.github.io/flepimop2/"
+
+# Repository information
+repo_name: "ACCIDDA/flepimop2"
+repo_url: "https://github.com/ACCIDDA/flepimop2"
+edit_uri: ""
+
+# Theme information
+theme:
+  name: "material"
+  custom_dir: "overrides"
+
+# Plugins
+extra:
+  version:
+    provider: "mike"
+
+# Navigation structure
 nav:
   - Home: "index.md"
   - Guides:
