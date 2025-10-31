@@ -2,7 +2,9 @@
 
 __all__ = []
 
+from pathlib import Path
 
+import flepimop2.process as process_module
 from flepimop2._cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 
@@ -16,7 +18,7 @@ class ProcessCommand(CliCommand):
 
     options = ("config", "verbosity", "dry_run")
 
-    def run(self, *, config: str, verbosity: int, dry_run: bool) -> None:  # type: ignore[override]
+    def run(self, *, config: Path, verbosity: int, dry_run: bool) -> None:  # type: ignore[override]
         """
         Execute the processing step.
 
@@ -27,8 +29,12 @@ class ProcessCommand(CliCommand):
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
+        processtarget = next(iter(processconfig.keys()))
 
-        if (dry_run):
-            self.info(msg=f"Processing configuration file: {config}")
+        if verbosity > 1:
+            self.info(f"Processing configuration file: {config}")
             self.info(f"Process section: {processconfig}")
-        
+            self.info(f"Process target: {processtarget}")
+
+        process_instance = process_module.build(processconfig[processtarget])
+        process_instance.execute(dry_run=dry_run)
