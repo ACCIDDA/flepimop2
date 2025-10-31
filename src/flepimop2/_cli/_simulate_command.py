@@ -52,15 +52,14 @@ class SimulateCommand(CliCommand):
         )
         pars = {k: v.value for k, v in params.items()}
 
+        self.info(f"  System: {simconfig.system} => {stepper}")
+        self.info(f"  Engine: {simconfig.engine} => {engine}")
+        self.info(f"  Backend: {simconfig.backend} => {backend}")
+        self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
+        self.info(f"  Params: {pars} [{type(pars)}]")
+        self.info(f"  T: {times} [{type(times)}]")
+
         if dry_run:
-            self.info(f"Dry run, verbosity {verbosity}")
-            self.info(f"Configuration {config} parsed successfully:")
-            self.info(f"  System: {simconfig.system} => {stepper}")
-            self.info(f"  Engine: {simconfig.engine} => {engine}")
-            self.info(f"  Backend: {simconfig.backend} => {backend}")
-            self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
-            self.info(f"  Params: {pars} [{type(pars)}]")
-            self.info(f"  T: {times} [{type(times)}]")
             return
 
         stepobj = system_module.build(stepper)

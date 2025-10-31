@@ -31,10 +31,9 @@ class ProcessCommand(CliCommand):
         processconfig = configmodel.process
         processtarget = next(iter(processconfig.keys()))
 
-        if verbosity > 1:
-            self.info(f"Processing configuration file: {config}")
-            self.info(f"Process section: {processconfig}")
-            self.info(f"Process target: {processtarget}")
+        self.info(f"Processing configuration file: {config}")
+        self.info(f"Process section: {processconfig}")
+        self.info(f"Process target: {processtarget}")
 
         process_instance = process_module.build(processconfig[processtarget])
         process_instance.execute(dry_run=dry_run)
