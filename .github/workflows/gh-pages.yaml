@@ -74,7 +74,6 @@ jobs:
           uv run mike deploy \
             --push --update-aliases \
             ${VERSION} ${ALIAS}
-          git push origin gh-pages
         env:
           EVENT_NAME: "${{ github.event_name }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
