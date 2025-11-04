@@ -32,7 +32,7 @@ def register_command(command_cls: type[CliCommand], group: Group) -> None:
 
     # Apply the options/arguments in reverse order
     # (Click decorators are applied bottom-up)
-    for option_name in reversed(command_cls.options):  # type: ignore[call-overload]
+    for option_name in reversed(command_cls.options()):
         option_decorator = get_option(option_name)
         command_wrapper = option_decorator(command_wrapper)
 

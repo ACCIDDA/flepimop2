@@ -22,13 +22,10 @@ class SimulateCommand(CliCommand):
     The `CONFIG` argument should point to a valid configuration file.
     """
 
-    options = ("config", "verbosity", "dry_run")
-
     def run(  # type: ignore[override]
         self,
         *,
         config: Path,
-        verbosity: int,  # noqa: ARG002
         dry_run: bool,
     ) -> None:
         """
@@ -36,7 +33,6 @@ class SimulateCommand(CliCommand):
 
         Args:
             config: Path to the configuration file.
-            verbosity: Verbosity level (0-3).
             dry_run: Whether dry run mode is enabled.
         """
         configmodel = ConfigurationModel.from_yaml(config)
