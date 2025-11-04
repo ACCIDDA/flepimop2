@@ -27,7 +27,10 @@ build-backend = "hatchling.build"
 dev = [
     "mike>=2.1.3",
     "mkdocs>=1.6.1",
+    "mkdocs-autorefs>=1.4.3",
+    "mkdocs-click>=0.9.0",
     "mkdocs-material>=9.6.22",
+    "mkdocstrings[python]>=0.30.1",
     "mypy>=1.18.2",
     "pytest>=8.4.2",
     "ruff>=0.13.3",
@@ -68,6 +71,9 @@ allow-star-arg-any = true
     "PLC2701",  # Private name import from external module
     "S101",     # Use of `assert` detected
     "SLF001",   # Private member accessed
+]
+"scripts/**/*" = [
+    "T201",     # Use of `print` detected
 ]
 
 [tool.ruff.lint.pydocstyle]

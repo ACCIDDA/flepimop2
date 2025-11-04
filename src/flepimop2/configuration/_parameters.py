@@ -8,6 +8,18 @@ class FixedParameterSpecificationModel(BaseModel):
     Fixed parameter specification model.
 
     This model represents a parameter with a fixed value.
+
+    Attributes:
+        type: The type of the parameter specification, fixed to "fixed".
+        value: The fixed numeric value of the parameter.
+
+    Examples:
+        >>> from flepimop2.configuration import FixedParameterSpecificationModel
+        >>> param = FixedParameterSpecificationModel(value=12.34)
+        >>> param
+        FixedParameterSpecificationModel(type='fixed', value=12.34)
+        >>> param.model_dump()
+        12.34
     """
 
     type: Literal["fixed"] = "fixed"

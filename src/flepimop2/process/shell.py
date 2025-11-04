@@ -10,7 +10,14 @@ from flepimop2.process import ProcessABC
 
 
 class ShellProcess(ModuleModel, ProcessABC):
-    """Shell process for executing commands."""
+    """
+    Shell process for executing commands.
+
+    Attributes:
+        module: The module type, fixed to "shell".
+        command: The shell command to execute.
+        args: Arguments to pass to the shell command.
+    """
 
     module: Literal["shell"] = "shell"
     command: str = Field(min_length=1)
@@ -34,15 +41,16 @@ class ShellProcess(ModuleModel, ProcessABC):
 
 
 def build(config: dict[str, Any]) -> ShellProcess:
-    """Build a `ShellProcess` from a configuration dictionary.
+    """
+    Build a [`ShellProcess`][flepimop2.process.shell.ShellProcess] from a configuration.
 
     Args:
-        config (dict[str, any]):
-            Configuration dictionary to create a shell process. If module key is
+        config: Configuration dictionary to create a shell process. If module key is
             defined, it must be "shell". Must contain a 'command' key with the shell
             command to execute.
 
     Returns:
-        ProcessABC: the ready-to-use ShellProcess instance.
+        The ready-to-use [`ShellProcess`][flepimop2.process.shell.ShellProcess]
+            instance.
     """
-    return ShellProcess(**config)
+    return ShellProcess.model_validate(config)

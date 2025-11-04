@@ -1,25 +1,58 @@
 ---
 # Site information
-site_name: "flepimop2 Documentation"
-site_url: "https://accidda.github.io/flepimop2/"
+site_name: flepimop2 Documentation
+site_url: https://accidda.github.io/flepimop2/
 
 # Repository information
-repo_name: "ACCIDDA/flepimop2"
-repo_url: "https://github.com/ACCIDDA/flepimop2"
-edit_uri: ""
+repo_name: ACCIDDA/flepimop2
+repo_url: https://github.com/ACCIDDA/flepimop2
+edit_uri: ''
 
 # Theme information
 theme:
-  name: "material"
-  custom_dir: "overrides"
+  name: material
+  custom_dir: overrides
 
 # Plugins
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            merge_init_into_class: true
+            heading_level: 2
+
+# Extras
 extra:
   version:
-    provider: "mike"
+    provider: mike
+
+# Markdown extensions
+markdown_extensions:
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - attr_list
+  - mkdocs-click
 
 # Navigation structure
 nav:
-  - Home: "index.md"
+  - Home: index.md
   - Guides:
-      - Getting Started: "guides/getting-started.md"
+      - Getting Started: guides/getting-started.md
+  - Reference:
+      - API:
+          - Backend: reference/api/backend.md
+          - Configuration: reference/api/configuration.md
+          - Engine: reference/api/engine.md
+          - Logging: reference/api/logging.md
+          - Meta: reference/api/meta.md
+          - Process: reference/api/process.md
+          - System: reference/api/system.md
+      - CLI: reference/cli.md
