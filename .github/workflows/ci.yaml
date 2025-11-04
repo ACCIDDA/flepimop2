@@ -45,7 +45,7 @@ jobs:
         env:
           UV_PYTHON_VERSION: '${{ matrix.python-version }}'
   docs:
-    name: 'Build (${{ matrix.python-version }})'
+    name: 'Docs (${{ matrix.python-version }})'
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:

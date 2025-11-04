@@ -2,7 +2,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class ModuleModel(BaseModel):
-    """Module configuration model for flepimop2."""
+    """
+    Module configuration model for flepimop2.
+
+    Attributes:
+        module: The type of the module.
+    """
 
     model_config = ConfigDict(extra="allow")
 

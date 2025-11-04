@@ -17,6 +17,15 @@ class ConfigurationModel(
     Configuration model for flepimop2.
 
     This model serves as the parent container for a parsed configuration file.
+
+    Attributes:
+        name: An optional name for the configuration.
+        engines: A dictionary of engine configurations.
+        systems: A dictionary of system configurations.
+        backends: A dictionary of backend configurations.
+        process: A dictionary of process configurations.
+        parameters: A dictionary of parameter configurations.
+        simulate: A dictionary of simulation configurations.
     """
 
     name: str | None = None

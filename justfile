@@ -33,11 +33,16 @@ clean:
     rm -f uv.lock
     rm -rf .*_cache
     rm -rf .venv
+    rm -rf site
+
+# Generate API reference documentation
+api-reference:
+    uv run scripts/api-reference.py
 
 # Build the documentation using `mkdocs`
-docs:
+docs: api-reference
     uv run mkdocs build --verbose --strict
 
 # Serve the documentation locally using `mkdocs`
-serve:
+serve: api-reference
     uv run mkdocs serve

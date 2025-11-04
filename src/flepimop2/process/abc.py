@@ -19,7 +19,7 @@ class ProcessABC(ABC):
 
         Args:
             dry_run: If True, the process will not actually execute but will simulate
-              execution.
+                execution.
         """
         return self._process(dry_run=dry_run)
 
@@ -33,8 +33,7 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
     """Build a `ProcessABC` from a configuration dictionary.
 
     Args:
-        config (dict[str, any]):
-            Configuration dictionary. The dict should contain a
+        config: Configuration dictionary. The dict should contain a
             'module' key, which will be used to lookup the Process module path.
             The module will have "flepimop2.process." prepended.
 

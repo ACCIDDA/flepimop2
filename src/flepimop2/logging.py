@@ -2,11 +2,7 @@
 Logging utilities for consistent script output.
 
 This module provides functionality for creating consistent outputs from CLI tools
-provided by this package. Currently exported are:
-- `ClickHandler`: Custom logging handler specifically designed for CLI output using
-  click.
-- `get_script_logger`: Factory for creating a logger instance with a consistent style
-  across CLI tools.
+provided by this package.
 """
 
 __all__ = ["DEFAULT_LOG_FORMAT", "ClickHandler", "LoggingLevel", "get_script_logger"]
@@ -128,6 +124,18 @@ def get_script_logger(
 class LoggingLevel(IntEnum):
     """
     An enumeration of the logging levels used in this package.
+
+    Attributes:
+        DEBUG: Detailed information, typically of interest only when diagnosing
+            problems.
+        INFO: Confirmation that things are working as expected.
+        WARNING: An indication that something unexpected happened, or indicative of some
+            problem in the near future (e.g., 'ode unstable'). The software is still
+            working as expected.
+        ERROR: Due to a more serious problem, the software has not been able to perform
+            some function.
+        CRITICAL: A serious error, indicating that the program itself may be unable to
+            continue running.
 
     Examples:
         >>> from flepimop2.logging import LoggingLevel
