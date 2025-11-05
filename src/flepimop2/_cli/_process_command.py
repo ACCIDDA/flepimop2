@@ -30,6 +30,7 @@ class ProcessCommand(CliCommand):
         Args:
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
+            target: Optional target process config to use.
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
