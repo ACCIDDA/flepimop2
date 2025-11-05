@@ -1,4 +1,8 @@
+from typing import Annotated
+
 from pydantic import BaseModel, ConfigDict, Field
+
+from flepimop2.configuration._module import ModuleTarget
 
 
 class SimulateSpecificationModel(BaseModel):
@@ -15,8 +19,8 @@ class SimulateSpecificationModel(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    engine: str = Field(min_length=1)
-    system: str = Field(min_length=1)
-    backend: str = Field(min_length=1)
+    engine: ModuleTarget = "default"
+    system: ModuleTarget = "default"
+    backend: ModuleTarget = "default"
     times: list[float] = Field(min_length=1)
     params: dict[str, float] | None = Field(default_factory=dict)

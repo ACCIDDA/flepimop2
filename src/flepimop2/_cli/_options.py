@@ -33,6 +33,12 @@ COMMON_OPTIONS: Final = {
         default=0,
         help="The verbosity level to use for this command.",
     ),
+    "target": click.option(
+        "-t",
+        "--target",
+        default=None,
+        help="The target to use for this command.",
+    ),
 }
 
 

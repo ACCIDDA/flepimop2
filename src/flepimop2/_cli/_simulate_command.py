@@ -27,6 +27,7 @@ class SimulateCommand(CliCommand):
         *,
         config: Path,
         dry_run: bool,
+        target: str | None = None,  # noqa: ARG002
     ) -> None:
         """
         Execute the simulation.
