@@ -1,8 +1,8 @@
-
 from typing import TypeVar, overload
 
 T = TypeVar("T")
 U = TypeVar("U")
+
 
 @overload
 def _override_or_val(override: T, value: U) -> T: ...

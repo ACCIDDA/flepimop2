@@ -10,9 +10,10 @@ import flepimop2.backend as backend_module
 import flepimop2.engine as engine_module
 import flepimop2.system as system_module
 from flepimop2._cli._cli_command import CliCommand
+from flepimop2._utils._click import _override_or_val
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.meta import RunMeta
-from flepimop2._utils._click import _override_or_val
+
 
 class SimulateCommand(CliCommand):
     """
@@ -27,7 +28,7 @@ class SimulateCommand(CliCommand):
         *,
         config: Path,
         dry_run: bool,
-        target: str | None = None,  # noqa: ARG002
+        target: str | None = None,
     ) -> None:
         """
         Execute the simulation.
@@ -37,7 +38,9 @@ class SimulateCommand(CliCommand):
             dry_run: Whether dry run mode is enabled.
         """
         configmodel = ConfigurationModel.from_yaml(config)
-        simconfig  = configmodel.simulate[_override_or_val(target, next(iter(configmodel.simulate.keys())))]
+        simconfig = configmodel.simulate[
+            _override_or_val(target, next(iter(configmodel.simulate.keys())))
+        ]
 
         backend = configmodel.backends[simconfig.backend].model_dump()
         stepper = configmodel.systems[simconfig.system].model_dump()

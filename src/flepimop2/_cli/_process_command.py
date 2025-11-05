@@ -6,8 +6,8 @@ from pathlib import Path
 
 import flepimop2.process as process_module
 from flepimop2._cli._cli_command import CliCommand
-from flepimop2.configuration import ConfigurationModel
 from flepimop2._utils._click import _override_or_val
+from flepimop2.configuration import ConfigurationModel
 
 
 class ProcessCommand(CliCommand):
@@ -22,7 +22,7 @@ class ProcessCommand(CliCommand):
         *,
         config: Path,
         dry_run: bool,
-        target: str | None = None,  # noqa: ARG002
+        target: str | None = None,
     ) -> None:
         """
         Execute the processing step.

@@ -3,15 +3,15 @@
 __all__ = [
     "ConfigurationModel",
     "FixedParameterSpecificationModel",
-    "ModuleModel",
     "ModuleGroupModel",
+    "ModuleModel",
     "ModuleTarget",
     "ParameterSpecificationModel",
     "SimulateSpecificationModel",
 ]
 
 from flepimop2.configuration._configuration import ConfigurationModel
-from flepimop2.configuration._module import ModuleModel, ModuleGroupModel, ModuleTarget
+from flepimop2.configuration._module import ModuleGroupModel, ModuleModel, ModuleTarget
 from flepimop2.configuration._parameters import (
     FixedParameterSpecificationModel,
     ParameterSpecificationModel,

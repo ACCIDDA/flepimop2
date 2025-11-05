@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, BeforeValidator
-from numpy.typing import NDArray
 import numpy as np
+from numpy.typing import NDArray
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
-from flepimop2.configuration._module import ModuleTarget
 from flepimop2._utils._pydantic import _to_np_array
+from flepimop2.configuration._module import ModuleTarget
 
 
 class SimulateSpecificationModel(BaseModel):

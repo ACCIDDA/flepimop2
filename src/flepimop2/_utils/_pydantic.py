@@ -8,7 +8,7 @@ models.
 __all__ = ()
 
 
-from typing import TypeVar, Any
+from typing import TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
@@ -35,9 +35,9 @@ def _ensure_list(value: list[T] | tuple[T] | T | None) -> list[T] | None:
     return [value]
 
 
-def _to_default_dict(value : dict[str, T] | list[T]) -> dict[str, T]:
+def _to_default_dict(value: dict[str, T] | list[T]) -> dict[str, T]:
     """
-    Ensure that an argument is a dictionary by converting a list to a default dictionary.
+    Ensure that an argument is a dict by converting a list to { default = list[0]}.
 
     Args:
         value: A dictionary or single element list of a dictionary to convert.
@@ -51,8 +51,9 @@ def _to_default_dict(value : dict[str, T] | list[T]) -> dict[str, T]:
         return value
     if isinstance(value, list):
         element = value[0]
-        return { "default" : element }
+        return {"default": element}
     return value
+
 
 def _to_np_array(value: str | list[str]) -> NDArray[np.float64]:
     """
@@ -60,20 +61,25 @@ def _to_np_array(value: str | list[str]) -> NDArray[np.float64]:
 
     Args:
         value: A value to ensure is a list.
+
+    Returns:
+        NDArray[np.float64]: Array of floats parsed from the input.
+
+    Raises:
+        ValueError: If the string format is invalid.
     """
     if isinstance(value, str):
         parts = value.split(":")
         if len(parts) == 3:
             start, step, end = map(np.float64, parts)
-            return np.arange(start, end + step/2.0, step, dtype=np.float64)
-        elif len(parts) == 2:
+            return np.arange(start, end + step / 2.0, step, dtype=np.float64)
+        if len(parts) == 2:
             start, end = map(np.float64, parts)
-            return np.arange(start, end + 1.0/2.0, 1.0, dtype=np.float64)
-        elif len(parts) == 1:
+            return np.arange(start, end + 1.0 / 2.0, 1.0, dtype=np.float64)
+        if len(parts) == 1:
             return np.array([parts[0]], dtype=np.float64)
-        else:
-            msg = f"Invalid range string: {value}"
-            raise ValueError(msg)
+        msg = f"Invalid range string: {value}"
+        raise ValueError(msg)
     if isinstance(value, list):
         return np.array(value, dtype=np.float64)
     return value
