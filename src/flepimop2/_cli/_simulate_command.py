@@ -10,7 +10,7 @@ import flepimop2.backend as backend_module
 import flepimop2.engine as engine_module
 import flepimop2.system as system_module
 from flepimop2._cli._cli_command import CliCommand
-from flepimop2._utils._click import _override_or_val
+from flepimop2._utils._click import _get_config_target
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.meta import RunMeta
 
@@ -39,9 +39,7 @@ class SimulateCommand(CliCommand):
             target: Optional target simulate config to use.
         """
         configmodel = ConfigurationModel.from_yaml(config)
-        simconfig = configmodel.simulate[
-            _override_or_val(target, next(iter(configmodel.simulate.keys())))
-        ]
+        simconfig = _get_config_target(configmodel.simulate, target)
 
         backend = configmodel.backends[simconfig.backend].model_dump()
         stepper = configmodel.systems[simconfig.system].model_dump()
