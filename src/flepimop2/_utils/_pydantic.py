@@ -10,6 +10,8 @@ __all__ = ()
 
 from typing import TypeVar, Any
 
+import numpy as np
+from numpy.typing import NDArray
 
 T = TypeVar("T")
 
@@ -50,4 +52,28 @@ def _to_default_dict(value : dict[str, T] | list[T]) -> dict[str, T]:
     if isinstance(value, list):
         element = value[0]
         return { "default" : element }
+    return value
+
+def _to_np_array(value: str | list[str]) -> NDArray[np.float64]:
+    """
+    Ensure that an argument is a list of integers by parsing a colon-separated string.
+
+    Args:
+        value: A value to ensure is a list.
+    """
+    if isinstance(value, str):
+        parts = value.split(":")
+        if len(parts) == 3:
+            start, step, end = map(np.float64, parts)
+            return np.arange(start, end + step/2.0, step, dtype=np.float64)
+        elif len(parts) == 2:
+            start, end = map(np.float64, parts)
+            return np.arange(start, end + 1.0/2.0, 1.0, dtype=np.float64)
+        elif len(parts) == 1:
+            return np.array([parts[0]], dtype=np.float64)
+        else:
+            msg = f"Invalid range string: {value}"
+            raise ValueError(msg)
+    if isinstance(value, list):
+        return np.array(value, dtype=np.float64)
     return value

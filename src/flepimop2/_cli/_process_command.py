@@ -7,6 +7,7 @@ from pathlib import Path
 import flepimop2.process as process_module
 from flepimop2._cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
+from flepimop2._utils._click import _override_or_val
 
 
 class ProcessCommand(CliCommand):
@@ -32,7 +33,7 @@ class ProcessCommand(CliCommand):
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
-        processtarget = next(iter(processconfig.keys()))
+        processtarget = _override_or_val(target, next(iter(processconfig.keys())))
 
         self.info(f"Processing configuration file: {config}")
         self.info(f"Process section: {processconfig}")
