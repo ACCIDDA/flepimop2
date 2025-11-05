@@ -46,6 +46,9 @@ nav:
   - Home: index.md
   - Guides:
       - Getting Started: guides/getting-started.md
+  - Development:
+      - Contributing: development/contributing.md
+      - Adding A New CLI Command: development/adding-a-new-cli-command.md
   - Reference:
       - API:
           - Backend: reference/api/backend.md
@@ -56,3 +59,4 @@ nav:
           - Process: reference/api/process.md
           - System: reference/api/system.md
       - CLI: reference/cli.md
+  - Changelog: changelog.md

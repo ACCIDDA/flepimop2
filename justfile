@@ -36,13 +36,15 @@ clean:
     rm -rf site
 
 # Generate API reference documentation
-api-reference:
+reference:
     uv run scripts/api-reference.py
+    cp CHANGELOG.md docs/changelog.md
+    cp CONTRIBUTING.md docs/development/contributing.md
 
 # Build the documentation using `mkdocs`
-docs: api-reference
+docs: reference
     uv run mkdocs build --verbose --strict
 
 # Serve the documentation locally using `mkdocs`
-serve: api-reference
+serve: reference
     uv run mkdocs serve
