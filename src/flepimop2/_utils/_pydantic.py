@@ -70,14 +70,17 @@ def _to_np_array(value: str | list[str]) -> NDArray[np.float64]:
     """
     if isinstance(value, str):
         parts = value.split(":")
-        if len(parts) == 3:
-            start, step, end = map(np.float64, parts)
-            return np.arange(start, end + step / 2.0, step, dtype=np.float64)
-        if len(parts) == 2:
-            start, end = map(np.float64, parts)
-            return np.arange(start, end + 1.0 / 2.0, 1.0, dtype=np.float64)
-        if len(parts) == 1:
-            return np.array([parts[0]], dtype=np.float64)
+        try:
+            if len(parts) == 3:
+                start, step, end = map(np.float64, parts)
+                return np.arange(start, end + step / 2.0, step, dtype=np.float64)
+            if len(parts) == 2:
+                start, end = map(np.float64, parts)
+                return np.arange(start, end + 1.0 / 2.0, 1.0, dtype=np.float64)
+            if len(parts) == 1:
+                return np.array([parts[0]], dtype=np.float64)
+        except ValueError:
+            pass
         msg = f"Invalid range string: {value}"
         raise ValueError(msg)
     if isinstance(value, list):
