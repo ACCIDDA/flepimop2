@@ -1,10 +1,8 @@
-from typing import Annotated
-
 import numpy as np
 from numpy.typing import NDArray
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from flepimop2._utils._pydantic import _to_np_array
+from flepimop2._utils._pydantic import RangeSpec, _to_np_array
 from flepimop2.configuration._module import ModuleTarget
 
 
@@ -20,10 +18,20 @@ class SimulateSpecificationModel(BaseModel):
         params: Optional dictionary of parameters for the simulation.
     """
 
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+    model_config = ConfigDict(extra="allow")
 
     engine: ModuleTarget = "default"
     system: ModuleTarget = "default"
     backend: ModuleTarget = "default"
-    times: Annotated[NDArray[np.float64], BeforeValidator(_to_np_array)]
+    times: RangeSpec
     params: dict[str, float] | None = Field(default_factory=dict)
+
+    @property
+    def t_eval(self) -> NDArray[np.float64]:
+        """
+        Get the evaluation times as a NumPy array.
+
+        Returns:
+            A NumPy array of evaluation times.
+        """
+        return _to_np_array(self.times)

@@ -8,12 +8,27 @@ models.
 __all__ = ()
 
 
-from typing import TypeVar
+from typing import Annotated, TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
+from pydantic import Field, StringConstraints
 
 T = TypeVar("T")
+
+# allow 2 or 3 numbers separated by ':'
+_range_spec_pattern = r"^[+-]?\d+(\.\d+)?(:[+-]?\d+(\.\d+)?){1,2}$"
+
+"""A string specifying a range in the format 'start:end' or 'start:step:end'."""
+RangeSpec = (
+    Annotated[
+        str,
+        StringConstraints(
+            pattern=r"^[+-]?\d+(\.\d+)?(:[+-]?\d+(\.\d+)?){1,2}$", strip_whitespace=True
+        ),
+    ]
+    | Annotated[list[float], Field(min_length=2)]
+)
 
 
 def _ensure_list(value: list[T] | tuple[T] | T | None) -> list[T] | None:
@@ -55,34 +70,19 @@ def _to_default_dict(value: dict[str, T] | list[T]) -> dict[str, T]:
     return value
 
 
-def _to_np_array(value: str | list[str]) -> NDArray[np.float64]:
+def _to_np_array(value: RangeSpec) -> NDArray[np.float64]:
     """
-    Ensure that an argument is a list of integers by parsing a colon-separated string.
+    Convert a list of floats or a range specification string to a NumPy array.
 
     Args:
-        value: A value to ensure is a list.
+        value: A list of floats or a range specification string.
 
     Returns:
-        NDArray[np.float64]: Array of floats parsed from the input.
-
-    Raises:
-        ValueError: If the string format is invalid.
+        A NumPy array of floats.
     """
     if isinstance(value, str):
-        parts = value.split(":")
-        try:
-            if len(parts) == 3:
-                start, step, end = map(np.float64, parts)
-                return np.arange(start, end + step / 2.0, step, dtype=np.float64)
-            if len(parts) == 2:
-                start, end = map(np.float64, parts)
-                return np.arange(start, end + 1.0 / 2.0, 1.0, dtype=np.float64)
-            if len(parts) == 1:
-                return np.array([parts[0]], dtype=np.float64)
-        except ValueError:
-            pass
-        msg = f"Invalid range string: {value}"
-        raise ValueError(msg)
-    if isinstance(value, list):
-        return np.array(value, dtype=np.float64)
-    return value
+        parts = [np.float64(part.strip()) for part in value.split(":")]
+        start, end = parts[0], parts[-1]
+        step = parts[1] if len(parts) == 3 else 1.0
+        return np.arange(start, end + step / 2.0, step, dtype=np.float64)
+    return np.asarray(value, dtype=np.float64)
