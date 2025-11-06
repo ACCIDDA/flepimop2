@@ -46,7 +46,6 @@ class SimulateCommand(CliCommand):
         engine = configmodel.engines[simconfig.engine].model_dump()
         params = configmodel.parameters
 
-        times = np.asarray(simconfig.times, dtype=np.float64)
         initial_state = np.array(
             [
                 params.pop("S0").value,
@@ -62,7 +61,7 @@ class SimulateCommand(CliCommand):
         self.info(f"  Backend: {simconfig.backend} => {backend}")
         self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
         self.info(f"  Params: {pars} [{type(pars)}]")
-        self.info(f"  T: {times} [{type(times)}]")
+        self.info(f"  T: {simconfig.times}")
 
         if dry_run:
             return
@@ -71,6 +70,6 @@ class SimulateCommand(CliCommand):
         engineobj = engine_module.build(engine)
         backendobj = backend_module.build(backend)
 
-        res = engineobj.run(stepobj, times, initial_state, pars)
+        res = engineobj.run(stepobj, simconfig.t_eval, initial_state, pars)
 
         backendobj.save(res, RunMeta())
