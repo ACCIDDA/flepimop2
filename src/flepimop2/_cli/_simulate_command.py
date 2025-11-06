@@ -39,7 +39,7 @@ class SimulateCommand(CliCommand):
             target: Optional target simulate config to use.
         """
         configmodel = ConfigurationModel.from_yaml(config)
-        simconfig = _get_config_target(configmodel.simulate, target)
+        simconfig = _get_config_target(configmodel.simulate, target, "simulate")
 
         backend = configmodel.backends[simconfig.backend].model_dump()
         stepper = configmodel.systems[simconfig.system].model_dump()

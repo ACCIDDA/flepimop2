@@ -34,7 +34,7 @@ class ProcessCommand(CliCommand):
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
-        processtarget = _get_config_target(processconfig, target)
+        processtarget = _get_config_target(processconfig, target, "process")
 
         self.info(f"Processing configuration file: {config}")
         self.info(f"Process section: {processconfig}")

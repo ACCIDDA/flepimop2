@@ -5,7 +5,7 @@ Helper for the 'target' click option and handling bad values only knowable at ru
 """
 
 import pytest
-from click import BadOptionUsage
+from click import BadOptionUsage, UsageError
 
 from flepimop2._utils._click import _get_config_target
 
@@ -34,7 +34,7 @@ def test_get_config_target_valid(
     sample_group: dict[str, int], name: str | None, expected: int
 ) -> None:
     """Test `_get_config_target` with valid names."""
-    result = _get_config_target(sample_group, name)
+    result = _get_config_target(sample_group, name, "test")
     assert result == expected
 
 
@@ -42,7 +42,14 @@ def test_get_config_target_invalid(sample_group: dict[str, int]) -> None:
     """Test `_get_config_target` with an invalid name."""
     invalid_name = "fourth"
     with pytest.raises(BadOptionUsage) as exc_info:
-        _get_config_target(sample_group, invalid_name)
+        _get_config_target(sample_group, invalid_name, "test")
     assert f"'{invalid_name}'" in str(exc_info.value)
     for key in sample_group:
         assert f"{key}" in str(exc_info.value)
+
+
+def test__get_config_target_empty_group() -> None:
+    """Test `_get_config_target` with an empty group."""
+    empty_group: dict[str, int] = {}
+    with pytest.raises(UsageError):
+        _get_config_target(empty_group, None, "test")
