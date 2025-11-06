@@ -16,9 +16,6 @@ from pydantic import Field, StringConstraints
 
 T = TypeVar("T")
 
-# allow 2 or 3 numbers separated by ':'
-_range_spec_pattern = r"^[+-]?\d+(\.\d+)?(:[+-]?\d+(\.\d+)?){1,2}$"
-
 """A string specifying a range in the format 'start:end' or 'start:step:end'."""
 RangeSpec = (
     Annotated[
