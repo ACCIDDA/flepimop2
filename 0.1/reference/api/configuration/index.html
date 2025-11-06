@@ -582,6 +582,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModuleGroupModel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleTarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModuleTarget
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ConfigurationModel" class="md-nav__link">
     <span class="md-ellipsis">
       ConfigurationModel
@@ -614,6 +632,21 @@
       SimulateSpecificationModel
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="SimulateSpecificationModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.SimulateSpecificationModel.t_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      t_eval
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -843,6 +876,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModuleGroupModel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleTarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModuleTarget
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ConfigurationModel" class="md-nav__link">
     <span class="md-ellipsis">
       ConfigurationModel
@@ -875,6 +926,21 @@
       SimulateSpecificationModel
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="SimulateSpecificationModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.SimulateSpecificationModel.t_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      t_eval
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -933,6 +999,50 @@
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flepimop2.configuration.ModuleGroupModel" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ModuleGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ModuleGroupModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Module group configuration model for flepimop2.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flepimop2.configuration.ModuleTarget" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ModuleTarget</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ModuleTarget" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Module key type for flepimop2.</p>
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-class">
@@ -979,7 +1089,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.engines">engines</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration._module.ModuleModel)" href="#flepimop2.configuration.ModuleModel">ModuleModel</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleGroupModel)" href="#flepimop2.configuration.ModuleGroupModel">ModuleGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -990,7 +1104,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.systems">systems</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration._module.ModuleModel)" href="#flepimop2.configuration.ModuleModel">ModuleModel</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleGroupModel)" href="#flepimop2.configuration.ModuleGroupModel">ModuleGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1001,7 +1119,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.backends">backends</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration._module.ModuleModel)" href="#flepimop2.configuration.ModuleModel">ModuleModel</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleGroupModel)" href="#flepimop2.configuration.ModuleGroupModel">ModuleGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1012,7 +1134,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.process">process</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration._module.ModuleModel)" href="#flepimop2.configuration.ModuleModel">ModuleModel</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleGroupModel)" href="#flepimop2.configuration.ModuleGroupModel">ModuleGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1272,7 +1398,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.engine">engine</span></code></td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1283,7 +1413,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.system">system</span></code></td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1294,7 +1428,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.backend">backend</span></code></td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1305,7 +1443,7 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.times">times</span></code></td>
             <td>
-                  <code><span title="list">list</span>[<span title="float">float</span>]</code>
+                  <code><span title="flepimop2._utils._pydantic.RangeSpec">RangeSpec</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1344,6 +1482,51 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="flepimop2.configuration.SimulateSpecificationModel.t_eval" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">t_eval</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.SimulateSpecificationModel.t_eval" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get the evaluation times as a NumPy array.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A NumPy array of evaluation times.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
 
 
 
