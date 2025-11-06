@@ -39,6 +39,9 @@ def _get_config_target(group: dict[str, T], name: str | None) -> T:
         name = next(iter(group.keys()))
     res = group.get(name)
     if res is None:
-        msg = f"Module target '{name}' not found in configuration."
+        msg = f"""
+        Module target '{name}' not found in configuration.
+        Available targets: {group.keys()}
+        """
         raise BadOptionUsage(option_name="target", message=msg)
     return res
