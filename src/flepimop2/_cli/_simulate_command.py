@@ -10,6 +10,7 @@ import flepimop2.backend as backend_module
 import flepimop2.engine as engine_module
 import flepimop2.system as system_module
 from flepimop2._cli._cli_command import CliCommand
+from flepimop2._utils._click import _get_config_target
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.meta import RunMeta
 
@@ -27,6 +28,7 @@ class SimulateCommand(CliCommand):
         *,
         config: Path,
         dry_run: bool,
+        target: str | None = None,
     ) -> None:
         """
         Execute the simulation.
@@ -34,16 +36,16 @@ class SimulateCommand(CliCommand):
         Args:
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
+            target: Optional target simulate config to use.
         """
         configmodel = ConfigurationModel.from_yaml(config)
-        simconfig = next(iter(configmodel.simulate.values()))
+        simconfig = _get_config_target(configmodel.simulate, target, "simulate")
 
         backend = configmodel.backends[simconfig.backend].model_dump()
         stepper = configmodel.systems[simconfig.system].model_dump()
         engine = configmodel.engines[simconfig.engine].model_dump()
         params = configmodel.parameters
 
-        times = np.asarray(simconfig.times, dtype=np.float64)
         initial_state = np.array(
             [
                 params.pop("S0").value,
@@ -59,7 +61,7 @@ class SimulateCommand(CliCommand):
         self.info(f"  Backend: {simconfig.backend} => {backend}")
         self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
         self.info(f"  Params: {pars} [{type(pars)}]")
-        self.info(f"  T: {times} [{type(times)}]")
+        self.info(f"  T: {simconfig.times}")
 
         if dry_run:
             return
@@ -68,6 +70,6 @@ class SimulateCommand(CliCommand):
         engineobj = engine_module.build(engine)
         backendobj = backend_module.build(backend)
 
-        res = engineobj.run(stepobj, times, initial_state, pars)
+        res = engineobj.run(stepobj, simconfig.t_eval, initial_state, pars)
 
         backendobj.save(res, RunMeta())

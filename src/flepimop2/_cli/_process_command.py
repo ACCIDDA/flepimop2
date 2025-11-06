@@ -6,6 +6,7 @@ from pathlib import Path
 
 import flepimop2.process as process_module
 from flepimop2._cli._cli_command import CliCommand
+from flepimop2._utils._click import _get_config_target
 from flepimop2.configuration import ConfigurationModel
 
 
@@ -21,6 +22,7 @@ class ProcessCommand(CliCommand):
         *,
         config: Path,
         dry_run: bool,
+        target: str | None = None,
     ) -> None:
         """
         Execute the processing step.
@@ -28,14 +30,15 @@ class ProcessCommand(CliCommand):
         Args:
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
+            target: Optional target process config to use.
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
-        processtarget = next(iter(processconfig.keys()))
+        processtarget = _get_config_target(processconfig, target, "process")
 
         self.info(f"Processing configuration file: {config}")
         self.info(f"Process section: {processconfig}")
         self.info(f"Process target: {processtarget}")
 
-        process_instance = process_module.build(processconfig[processtarget])
+        process_instance = process_module.build(processtarget)
         process_instance.execute(dry_run=dry_run)

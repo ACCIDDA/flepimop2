@@ -2,7 +2,7 @@ from typing import Literal, Self
 
 from pydantic import Field, model_validator
 
-from flepimop2.configuration._module import ModuleModel
+from flepimop2.configuration._module import ModuleGroupModel
 from flepimop2.configuration._parameters import ParameterSpecificationModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
@@ -29,10 +29,10 @@ class ConfigurationModel(
     """
 
     name: str | None = None
-    engines: dict[str, ModuleModel] = Field(default_factory=dict)
-    systems: dict[str, ModuleModel] = Field(default_factory=dict)
-    backends: dict[str, ModuleModel] = Field(default_factory=dict)
-    process: dict[str, ModuleModel] = Field(default_factory=dict)
+    engines: ModuleGroupModel = Field(default_factory=dict)
+    systems: ModuleGroupModel = Field(default_factory=dict)
+    backends: ModuleGroupModel = Field(default_factory=dict)
+    process: ModuleGroupModel = Field(default_factory=dict)
     parameters: dict[str, ParameterSpecificationModel] = Field(default_factory=dict)
     simulate: dict[str, SimulateSpecificationModel] = Field(default_factory=dict)
 
