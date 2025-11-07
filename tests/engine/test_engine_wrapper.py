@@ -1,32 +1,31 @@
 """Tests for `EngineABC` and default `WrapperEngine`."""
 
 from pathlib import Path
+from typing import Final
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
-import flepimop2.engine as engine_module
-import flepimop2.system as system_module
+from flepimop2.engine import build as engine_build
 from flepimop2.system import SystemABC
+from flepimop2.system import build as system_build
 
-TEST_SCRIPT = Path(__file__).with_suffix("") / "dummy_engine.py"
-
-
-def _test_step(
-    time: np.float64, state: NDArray[np.float64], offset: float
-) -> NDArray[np.float64]:
-    return (state + offset) * time
+TEST_ENGINE_SCRIPT: Final = Path(__file__).with_suffix("") / "dummy_engine.py"
+TEST_SYSTEM_SCRIPT: Final = (
+    Path(__file__).parent.parent / "system" / "test_system_wrapper" / "dummy_system.py"
+).absolute()
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_SCRIPT}])
-@pytest.mark.parametrize("system", [system_module.build(_test_step)])
+@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+@pytest.mark.parametrize(
+    "system", [system_build({"module": "wrapper", "script": TEST_SYSTEM_SCRIPT})]
+)
 @pytest.mark.parametrize("params", [{"offset": 1.0}])
 def test_wrapper_system(
     config: dict, system: SystemABC, params: dict[str, float]
 ) -> None:
     """Test `WrapperEngine` loads a script and uses its `runner` function."""
-    engine = engine_module.build(config)
+    engine = engine_build(config)
     result = engine.run(
         system,
         [1.0, 2.0],

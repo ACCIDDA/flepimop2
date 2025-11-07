@@ -1,12 +1,12 @@
 """Abstract class for Engines to evolve Dynamic Systems."""
 
-from abc import ABC
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2._utils import _load_builder
+from flepimop2.configuration import ModuleModel
 from flepimop2.engine.protocol import EngineProtocol
 from flepimop2.system import SystemABC, SystemProtocol
 
@@ -22,20 +22,23 @@ def _no_run_func(
     raise NotImplementedError(msg)
 
 
-class EngineABC(ABC):
+class EngineABC:
     """Abstract class for Engines to evolve Dynamic Systems."""
 
-    def __init__(self, runner: EngineProtocol = _no_run_func) -> None:
+    _runner: EngineProtocol
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ARG002
         """
-        Initialize an `EngineABC` from a runner function.
+        Initialize the EngineABC.
+
+        The default initialization sets the runner to a no-op function. Concrete
+        implementations should override this with a valid runner function.
 
         Args:
-            runner: The runner function for the engine. Defaults to a function that
-                raises `NotImplementedError`.
+            *args: Positional arguments.
+            **kwargs: Keyword arguments.
         """
-        self._runner = runner
-
-    _runner: EngineProtocol
+        self._runner = _no_run_func
 
     def run(
         self,
@@ -59,7 +62,7 @@ class EngineABC(ABC):
             The evolved time x state array.
         """
         return self._runner(
-            system.stepper,
+            system._stepper,  # noqa: SLF001
             eval_times,
             initial_state,
             params,
@@ -67,13 +70,12 @@ class EngineABC(ABC):
         )
 
 
-def build(config: dict[str, Any] | EngineProtocol) -> EngineABC:
+def build(config: dict[str, Any] | ModuleModel) -> EngineABC:
     """Build a `EngineABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a EngineProtocol. In dict mode, it contains
-            a 'module' key, it will be used to lookup the Engine module path. The module
-            will have "flepimop2.engine." prepended.
+        config: Configuration dictionary or a `ModuleModel` instance to construct the
+            engine from.
 
     Returns:
         The constructed engine instance.
@@ -81,10 +83,11 @@ def build(config: dict[str, Any] | EngineProtocol) -> EngineABC:
     Raises:
         TypeError: If the built engine is not an instance of EngineABC.
     """
-    if isinstance(config, EngineProtocol):
-        return EngineABC(config)
-    builder = _load_builder(f"flepimop2.engine.{config.pop('module', 'wrapper')}")
-    engine = builder.build(**config)
+    config = {"module": "wrapper"} | (
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )
+    builder = _load_builder(f"flepimop2.engine.{config['module']}")
+    engine = builder.build(config)
     if not isinstance(engine, EngineABC):
         msg = "The built engine is not an instance of EngineABC."
         raise TypeError(msg)

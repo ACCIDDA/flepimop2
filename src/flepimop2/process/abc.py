@@ -10,9 +10,6 @@ from flepimop2.configuration import ModuleModel
 class ProcessABC(ABC):
     """Abstract base class for flepimop2 processing steps."""
 
-    def __init__(self) -> None:  # noqa: B027
-        """Initialize the process with the given configuration."""
-
     def execute(self, *, dry_run: bool = False) -> None:
         """
         Execute a processing step.
@@ -43,11 +40,10 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
     Raises:
         TypeError: If the built process is not an instance of ProcessABC.
     """
-    if isinstance(config, ModuleModel):
-        config = config.model_dump()
-    module = config.pop("module", "shell")
-    module_abs = f"flepimop2.process.{module}"
-    builder = _load_builder(module_abs)
+    config = {"module": "shell"} | (
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )
+    builder = _load_builder(f"flepimop2.process.{config['module']}")
     process = builder.build(config)
     if not isinstance(process, ProcessABC):
         msg = "The built process is not an instance of ProcessABC."

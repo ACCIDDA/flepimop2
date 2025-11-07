@@ -1,39 +1,41 @@
 """A `EngineABC` which wraps a user-defined script file."""
 
-from os import PathLike
+from pathlib import Path
+from typing import Any, Self
+
+from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
+from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import EngineABC
 
 
-class WrapperEngine(EngineABC):
+class WrapperEngine(ModuleModel, EngineABC):
     """A `EngineABC` which wraps a user-defined script file."""
 
-    def __init__(self, script: PathLike[str]) -> None:
-        """
-        Initialize a `WrapperEngine` from a script file.
+    script: Path
 
-        Args:
-            script: Path to a script file which defines a 'runner' function.
-
-        Raises:
-            AttributeError: If the module does not have a valid 'runner' function.
-        """
-        mod = _load_module(script, "flepimop2.engine.wrapped")
+    @model_validator(mode="after")
+    def _validate_script(self) -> Self:
+        mod = _load_module(self.script, "flepimop2.engine.wrapped")
         if not _validate_function(mod, "runner"):
-            msg = f"Module at {script} does not have a valid 'runner' function."
+            msg = f"Module at {self.script} does not have a valid 'runner' function."
             raise AttributeError(msg)
-        super().__init__(mod.runner)
+        self._runner = mod.runner
+        return self
 
 
-def build(script: PathLike[str]) -> WrapperEngine:
+def build(config: dict[str, Any] | ModuleModel) -> WrapperEngine:
     """
     Build a `WrapperEngine` from a configuration arguments.
 
     Args:
-        script: Path to a script file which defines a 'runner' function.
+        config: Configuration dictionary or a `ModuleModel` instance to construct the
+            wrapper engine from.
 
     Returns:
         The constructed wrapper engine instance.
     """
-    return WrapperEngine(script)
+    return WrapperEngine.model_validate(
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )
