@@ -40,7 +40,7 @@ class ShellProcess(ModuleModel, ProcessABC):
             raise RuntimeError(msg)
 
 
-def build(config: dict[str, Any]) -> ShellProcess:
+def build(config: dict[str, Any] | ModuleModel) -> ShellProcess:
     """
     Build a [`ShellProcess`][flepimop2.process.shell.ShellProcess] from a configuration.
 
@@ -53,4 +53,6 @@ def build(config: dict[str, Any]) -> ShellProcess:
         The ready-to-use [`ShellProcess`][flepimop2.process.shell.ShellProcess]
             instance.
     """
-    return ShellProcess.model_validate(config)
+    return ShellProcess.model_validate(
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )

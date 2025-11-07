@@ -7,19 +7,12 @@ import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2._utils import _load_builder
+from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
 
 class BackendABC(ABC):
     """Abstract base class for flepimop2 file IO backends."""
-
-    def __init__(self, backend_model: dict[str, Any]) -> None:  # noqa: B027
-        """
-        Initialize the backend with the given configuration.
-
-        Args:
-            backend_model: The configuration dictionary for the backend.
-        """
 
     def save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
         """
@@ -54,7 +47,7 @@ class BackendABC(ABC):
         ...
 
 
-def build(config: dict[str, Any]) -> BackendABC:
+def build(config: dict[str, Any] | ModuleModel) -> BackendABC:
     """Build a `BackendABC` from a configuration dictionary.
 
     Args:
@@ -68,8 +61,9 @@ def build(config: dict[str, Any]) -> BackendABC:
     Raises:
         TypeError: If the built backend is not an instance of BackendABC.
     """
-    builder = _load_builder(f"flepimop2.backend.{config.pop('module', 'csv')}")
-    backend = builder.build(**config)
+    config = config.model_dump() if isinstance(config, ModuleModel) else config
+    builder = _load_builder(f"flepimop2.backend.{config.get('module', 'csv')}")
+    backend = builder.build(config)
     if not isinstance(backend, BackendABC):
         msg = "The built backend is not an instance of BackendABC."
         raise TypeError(msg)

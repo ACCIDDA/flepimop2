@@ -1,37 +1,43 @@
 """CSV backend for flepimop2."""
 
 import os
-from os import PathLike
 from pathlib import Path
+from typing import Any, Literal
 
 import numpy as np
 from numpy.typing import NDArray
+from pydantic import Field, field_validator
 
 from flepimop2.backend import BackendABC
+from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
 
-class CsvBackend(BackendABC):
+class CsvBackend(ModuleModel, BackendABC):
     """CSV backend for saving numpy arrays to CSV files."""
 
-    def __init__(self, root: PathLike[str] | None) -> None:
+    module: Literal["csv"] = "csv"
+    root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
+
+    @field_validator("root", mode="after")
+    @classmethod
+    def _validate_root(cls, root: Path) -> Path:
         """
-        Initialize the CSV backend with configuration.
+        Validate that the root path is a writable directory.
 
         Args:
-            root: Base output directory for CSV files.
+            root: The root path to validate.
+
+        Returns:
+            The validated root path.
 
         Raises:
-            TypeError: If the 'root' is not a string or Path.
+            TypeError: If the root path is not a directory or is not writable.
         """
-        base_path = Path(root) if root is not None else Path.cwd() / "model_output"
-        if base_path.is_file():
-            msg = "The 'path' in backend configuration must be a directory."
+        if not (root.is_dir() and os.access(root, os.W_OK)):
+            msg = f"The specified 'root' is not a directory or is not writable: {root}"
             raise TypeError(msg)
-        if not (base_path.exists() and os.access(base_path, os.W_OK)):
-            msg = f"The specified 'path' does not exist or is not writable: {base_path}"
-            raise TypeError(msg)
-        self.base_path = base_path
+        return root
 
     def _get_file_path(self, run_meta: RunMeta) -> Path:
         """
@@ -46,7 +52,7 @@ class CsvBackend(BackendABC):
         timestamp_str = run_meta.timestamp.strftime("%Y%m%d_%H%M%S")
         name_part = f"{run_meta.name}_" if run_meta.name else ""
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.csv"
-        return self.base_path / filename
+        return self.root / filename
 
     def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
         """
@@ -74,16 +80,17 @@ class CsvBackend(BackendABC):
         return np.loadtxt(file_path, delimiter=",")
 
 
-def build(root: PathLike[str] | None = None) -> BackendABC:
+def build(config: dict[str, Any] | ModuleModel) -> CsvBackend:
     """
     Build a `CsvBackend` from a configuration dictionary.
 
     Args:
-        root: Base output directory for CSV files. 'module' key, which will be used to
-            lookup the Backend module path. The module will have "flepimop2.backends."
-            prepended.
+        config: Configuration dictionary or a `ModuleModel` to construct the CSV backend
+            from.
 
     Returns:
         The constructed csv backend.
     """
-    return CsvBackend(root)
+    return CsvBackend.model_validate(
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )

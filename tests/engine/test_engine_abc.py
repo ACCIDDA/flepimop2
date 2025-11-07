@@ -1,12 +1,19 @@
 """Tests for `EngineABC` and default `WrapperEngine`."""
 
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import numpy as np
 import pytest
 from numpy.typing import NDArray
 
 from flepimop2.engine import EngineABC
+from flepimop2.system import SystemABC
+
+
+class DummySystem(SystemABC):
+    """A dummy system for testing purposes."""
+
+    module: Literal["dummy"] = "dummy"
 
 
 def sample_step(
@@ -29,9 +36,11 @@ def sample_step(
 @pytest.mark.parametrize("engine", [EngineABC()])
 def test_abstraction_error(engine: EngineABC) -> None:
     """Test `EngineABC` raises `NotImplementedError` when not overridden."""
+    system = DummySystem()
+    system._stepper = sample_step
     with pytest.raises(NotImplementedError):
-        engine._runner(
-            sample_step,
+        engine.run(
+            system,
             np.array([0.0], dtype=np.float64),
             np.array([1.0, 2.0, 3.0], dtype=np.float64),
             {},
