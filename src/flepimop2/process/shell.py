@@ -19,7 +19,7 @@ class ShellProcess(ModuleModel, ProcessABC):
         args: Arguments to pass to the shell command.
     """
 
-    module: Literal["shell"] = "shell"
+    module: Literal["flepimop2.process.shell"] = "flepimop2.process.shell"
     command: str = Field(min_length=1)
     args: list[str] = Field(default_factory=list)
 

@@ -13,7 +13,7 @@ from flepimop2.system import SystemABC
 class WrapperSystem(ModuleModel, SystemABC):
     """A `SystemABC` which wraps a user-defined script file."""
 
-    module: Literal["wrapper"] = "wrapper"
+    module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     script: Path
 
     @model_validator(mode="after")

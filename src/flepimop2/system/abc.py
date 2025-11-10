@@ -67,10 +67,10 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     Raises:
         TypeError: If the built system is not an instance of SystemABC.
     """
-    config = {"module": "wrapper"} | (
+    config = {"module": "flepimop2.system.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(f"flepimop2.system.{config['module']}")
+    builder = _load_builder(config["module"])
     system = builder.build(config)
     if not isinstance(system, SystemABC):
         msg = "The built system is not an instance of SystemABC."
