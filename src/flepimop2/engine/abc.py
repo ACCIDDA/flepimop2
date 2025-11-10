@@ -83,10 +83,10 @@ def build(config: dict[str, Any] | ModuleModel) -> EngineABC:
     Raises:
         TypeError: If the built engine is not an instance of EngineABC.
     """
-    config = {"module": "wrapper"} | (
+    config = {"module": "flepimop2.engine.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(f"flepimop2.engine.{config['module']}")
+    builder = _load_builder(config["module"])
     engine = builder.build(config)
     if not isinstance(engine, EngineABC):
         msg = "The built engine is not an instance of EngineABC."

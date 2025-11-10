@@ -18,7 +18,13 @@ TEST_SYSTEM_SCRIPT: Final = (
 
 @pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
 @pytest.mark.parametrize(
-    "system", [system_build({"module": "wrapper", "script": TEST_SYSTEM_SCRIPT})]
+    "system",
+    [
+        system_build({
+            "module": "flepimop2.system.wrapper",
+            "script": TEST_SYSTEM_SCRIPT,
+        })
+    ],
 )
 @pytest.mark.parametrize("params", [{"offset": 1.0}])
 def test_wrapper_system(

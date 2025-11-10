@@ -61,8 +61,10 @@ def build(config: dict[str, Any] | ModuleModel) -> BackendABC:
     Raises:
         TypeError: If the built backend is not an instance of BackendABC.
     """
-    config = config.model_dump() if isinstance(config, ModuleModel) else config
-    builder = _load_builder(f"flepimop2.backend.{config.get('module', 'csv')}")
+    config = {"module": "flepimop2.backend.csv"} | (
+        config.model_dump() if isinstance(config, ModuleModel) else config
+    )
+    builder = _load_builder(config["module"])
     backend = builder.build(config)
     if not isinstance(backend, BackendABC):
         msg = "The built backend is not an instance of BackendABC."

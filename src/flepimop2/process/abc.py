@@ -40,10 +40,10 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
     Raises:
         TypeError: If the built process is not an instance of ProcessABC.
     """
-    config = {"module": "shell"} | (
+    config = {"module": "flepimop2.process.shell"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(f"flepimop2.process.{config['module']}")
+    builder = _load_builder(config["module"])
     process = builder.build(config)
     if not isinstance(process, ProcessABC):
         msg = "The built process is not an instance of ProcessABC."

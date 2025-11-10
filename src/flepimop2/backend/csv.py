@@ -16,7 +16,7 @@ from flepimop2.meta import RunMeta
 class CsvBackend(ModuleModel, BackendABC):
     """CSV backend for saving numpy arrays to CSV files."""
 
-    module: Literal["csv"] = "csv"
+    module: Literal["flepimop2.backend.csv"] = "flepimop2.backend.csv"
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
 
     @field_validator("root", mode="after")

@@ -1,0 +1,15 @@
+---
+name: 'example-provider'
+system:
+  - module: 'external_provider.stepper'
+engine:
+  - module: 'external_provider.runner'
+backend:
+  - module: 'flepimop2.backend.csv'
+simulate:
+  demo:
+    times: '0.0:0.1:10'
+parameters:
+  S0: 999
+  I0: 1
+  R0: 0
