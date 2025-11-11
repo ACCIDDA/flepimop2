@@ -16,12 +16,20 @@ TEST_SYSTEM_SCRIPT: Final = (
 ).absolute()
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "module": "wrapper",
+            "script": TEST_ENGINE_SCRIPT,
+        }
+    ],
+)
 @pytest.mark.parametrize(
     "system",
     [
         system_build({
-            "module": "flepimop2.system.wrapper",
+            "module": "wrapper",
             "script": TEST_SYSTEM_SCRIPT,
         })
     ],

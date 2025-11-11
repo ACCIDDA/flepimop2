@@ -3,6 +3,7 @@
 import subprocess  # noqa: S404
 from pathlib import Path
 from shutil import which
+from textwrap import dedent
 
 import pytest
 
@@ -25,6 +26,31 @@ def which_uv() -> str:
     return str(Path(result).absolute())
 
 
+def _configure_namespace_pyproject(project_root: Path) -> None:
+    """Configure the external provider package as a namespace distribution."""
+    pyproject = project_root / "pyproject.toml"
+    content = dedent(
+        """
+        [build-system]
+        requires = ["setuptools>=68"]
+        build-backend = "setuptools.build_meta"
+
+        [project]
+        name = "flepimop2-external-provider"
+        version = "0.1.0"
+        description = "Example components for flepimop2 integration tests."
+        readme = "README.md"
+        requires-python = ">=3.11"
+
+        [tool.setuptools.packages.find]
+        where = ["src"]
+        include = ["flepimop2*"]
+        namespaces = true
+        """
+    )
+    pyproject.write_text(content, encoding="utf-8")
+
+
 def external_provider_project(
     tmp_path: Path, uv: str | None = None, src_dest_map: dict[Path, Path] | None = None
 ) -> None:
@@ -39,8 +65,9 @@ def external_provider_project(
 
     Notes:
         This fixture creates a temporary external provider package called
-        `external_provider` using `uv`, adds the necessary dependencies, and
-        installs it in a virtual environment. The directory structure looks like:
+        `external_provider` using `uv`, configures it as a namespace package rooted
+        at `flepimop2`, and installs it in a virtual environment. The directory
+        structure looks like:
         ```
         ./
         ├── .venv/
@@ -50,8 +77,9 @@ def external_provider_project(
         │   ├── pyproject.toml
         │   ├── README.md
         │   ├── src/
-        │   │   └── external_provider/
-        │   │       └── __init__.py
+        │   │   └── flepimop2/
+        │   │       ├── engine/
+        │   │       └── system/
         │   └── uv.lock
         └── model_output/
 
@@ -79,20 +107,7 @@ def external_provider_project(
         cwd=external_provider_package,
         check=True,
     )
-    subprocess.run(  # noqa: S603
-        [uv, "add", "numpy"],
-        capture_output=True,
-        text=True,
-        cwd=external_provider_package,
-        check=True,
-    )
-    subprocess.run(  # noqa: S603
-        [uv, "add", "--editable", flepimop],
-        capture_output=True,
-        text=True,
-        cwd=external_provider_package,
-        check=True,
-    )
+    _configure_namespace_pyproject(external_provider_package)
     # Add the stepper & runner modules and configuration file
     src_dest_map = src_dest_map or {}
     for src, dest in src_dest_map.items():

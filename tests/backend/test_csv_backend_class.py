@@ -39,7 +39,7 @@ def test_csv_backend_save_and_read_round_trip(
     run_meta: RunMeta,
 ) -> None:
     """Test that saving and reading an array returns the same data."""
-    backend = build({"module": "flepimop2.backend.csv", "root": str(tmp_path)})
+    backend = build({"module": "csv", "root": str(tmp_path)})
 
     backend.save(sample_array, run_meta)
     loaded_array = backend.read(run_meta)

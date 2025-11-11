@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils import _load_builder
+from flepimop2._utils._module import _load_builder, _resolve_module_name
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.protocol import SystemProtocol
 
@@ -67,11 +67,12 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     Raises:
         TypeError: If the built system is not an instance of SystemABC.
     """
-    config = {"module": "flepimop2.system.wrapper"} | (
+    config_dict = {"module": "flepimop2.system.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(config["module"])
-    system = builder.build(config)
+    config_dict["module"] = _resolve_module_name(config_dict["module"], "system")
+    builder = _load_builder(config_dict["module"])
+    system = builder.build(config_dict)
     if not isinstance(system, SystemABC):
         msg = "The built system is not an instance of SystemABC."
         raise TypeError(msg)

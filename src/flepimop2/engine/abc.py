@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils import _load_builder
+from flepimop2._utils._module import _load_builder, _resolve_module_name
 from flepimop2.configuration import ModuleModel
 from flepimop2.engine.protocol import EngineProtocol
 from flepimop2.system import SystemABC, SystemProtocol
@@ -83,11 +83,12 @@ def build(config: dict[str, Any] | ModuleModel) -> EngineABC:
     Raises:
         TypeError: If the built engine is not an instance of EngineABC.
     """
-    config = {"module": "flepimop2.engine.wrapper"} | (
+    config_dict = {"module": "flepimop2.engine.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(config["module"])
-    engine = builder.build(config)
+    config_dict["module"] = _resolve_module_name(config_dict["module"], "engine")
+    builder = _load_builder(config_dict["module"])
+    engine = builder.build(config_dict)
     if not isinstance(engine, EngineABC):
         msg = "The built engine is not an instance of EngineABC."
         raise TypeError(msg)

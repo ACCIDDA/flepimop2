@@ -3,6 +3,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
 from pathlib import Path
 from types import ModuleType
+from typing import Literal
 
 
 def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
@@ -32,3 +33,30 @@ def _load_builder(mod_name: str) -> ModuleType:
         return mod
     msg = f"Module '{mod_name}' does not have a valid 'build' function."
     raise AttributeError(msg)
+
+
+def _resolve_module_name(
+    module_name: str, component: Literal["backend", "engine", "process", "system"]
+) -> str:
+    """
+    Resolve a module name that may omit the full namespace.
+
+    Args:
+        module_name: The configured module name (possibly short).
+        component: The component type (e.g., "backend", "engine", etc.).
+
+    Returns:
+        The fully qualified module name.
+
+    Examples:
+        >>> from flepimop2._utils._module import _resolve_module_name
+        >>> _resolve_module_name("s3", "backend")
+        'flepimop2.backend.s3'
+        >>> _resolve_module_name("custom_pkg.custom_module", "process")
+        'custom_pkg.custom_module'
+        >>> _resolve_module_name("flepimop2.engine.euler", "engine")
+        'flepimop2.engine.euler'
+    """
+    if "." in module_name:
+        return module_name
+    return f"flepimop2.{component}.{module_name}"
