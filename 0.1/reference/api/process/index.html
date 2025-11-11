@@ -1461,10 +1461,10 @@ The module will have "flepimop2.process." prepended.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built process is not an instance of ProcessABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;shell&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.process.shell&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
         <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
     <span class="p">)</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.process.</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">process</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ProcessABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built process is not an instance of ProcessABC.&quot;</span>
@@ -1768,10 +1768,10 @@ The module will have "flepimop2.process." prepended.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built process is not an instance of ProcessABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;shell&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.process.shell&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
         <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
     <span class="p">)</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.process.</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">process</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ProcessABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built process is not an instance of ProcessABC.&quot;</span>
@@ -1857,7 +1857,7 @@ The module will have "flepimop2.process." prepended.</p>
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.process.shell.ShellProcess.module">module</span></code></td>
             <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;shell&#39;]</code>
+                  <code><span title="typing.Literal">Literal</span>[&#39;flepimop2.process.shell&#39;]</code>
             </td>
             <td>
               <div class="doc-md-description">

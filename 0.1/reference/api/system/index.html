@@ -1893,10 +1893,10 @@ implementations should override this with a valid stepper function.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built system is not an instance of SystemABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;wrapper&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.system.wrapper&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
         <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
     <span class="p">)</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.system.</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">system</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">SystemABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built system is not an instance of SystemABC.&quot;</span>
@@ -2337,10 +2337,10 @@ implementations should override this with a valid stepper function.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built system is not an instance of SystemABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;wrapper&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.system.wrapper&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
         <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
     <span class="p">)</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.system.</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">system</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">SystemABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built system is not an instance of SystemABC.&quot;</span>

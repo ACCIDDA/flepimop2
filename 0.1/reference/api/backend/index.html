@@ -1579,7 +1579,9 @@ will be used to lookup the Backend module path. The module will have
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BackendABC</span><span class="p">:</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BackendABC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a `BackendABC` from a configuration dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -1593,8 +1595,10 @@ will be used to lookup the Backend module path. The module will have
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built backend is not an instance of BackendABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.backend.</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;csv&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.backend.csv&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
+    <span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">backend</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built backend is not an instance of BackendABC.&quot;</span>
@@ -1994,7 +1998,9 @@ will be used to lookup the Backend module path. The module will have
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BackendABC</span><span class="p">:</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BackendABC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a `BackendABC` from a configuration dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -2008,8 +2014,10 @@ will be used to lookup the Backend module path. The module will have
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the built backend is not an instance of BackendABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flepimop2.backend.</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;csv&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.backend.csv&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
+    <span class="p">)</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">backend</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built backend is not an instance of BackendABC.&quot;</span>
