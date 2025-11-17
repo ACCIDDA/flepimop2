@@ -5,7 +5,7 @@ from pathlib import Path
 
 from yaml import safe_load
 
-from flepimop2.configuration import FixedParameterSpecificationModel
+from flepimop2.configuration._parameters import FixedParameterSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
 
 

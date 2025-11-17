@@ -35,12 +35,12 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
             / "src"
             / "flepimop2"
             / "system"
-            / "sir.py",
+            / "sir_system.py",
             cwd / "euler.py": Path("external_provider")
             / "src"
             / "flepimop2"
             / "engine"
-            / "euler.py",
+            / "euler_engine.py",
         },
     )
     monkeypatch.chdir(tmp_path)

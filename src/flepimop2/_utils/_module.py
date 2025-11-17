@@ -51,12 +51,11 @@ def _resolve_module_name(
     Examples:
         >>> from flepimop2._utils._module import _resolve_module_name
         >>> _resolve_module_name("s3", "backend")
-        'flepimop2.backend.s3'
+        'flepimop2.backend.s3_backend'
         >>> _resolve_module_name("custom_pkg.custom_module", "process")
         'custom_pkg.custom_module'
-        >>> _resolve_module_name("flepimop2.engine.euler", "engine")
-        'flepimop2.engine.euler'
+
     """
     if "." in module_name:
         return module_name
-    return f"flepimop2.{component}.{module_name}"
+    return f"flepimop2.{component}.{module_name}_{component}"

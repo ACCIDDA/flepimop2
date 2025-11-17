@@ -5,8 +5,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.configuration import ModuleModel
-from flepimop2.system import SystemABC
+from flepimop2.configuration._module import ModuleModel
+from flepimop2.system.system_base import SystemABC
 
 
 def stepper(

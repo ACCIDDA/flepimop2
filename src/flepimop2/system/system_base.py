@@ -6,8 +6,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2._utils._module import _load_builder, _resolve_module_name
-from flepimop2.configuration import ModuleModel
-from flepimop2.system.protocol import SystemProtocol
+from flepimop2.configuration._module import ModuleModel
+from flepimop2.system.system_protocol import SystemProtocol
 
 
 def _no_step_function(
@@ -67,7 +67,7 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     Raises:
         TypeError: If the built system is not an instance of SystemABC.
     """
-    config_dict = {"module": "flepimop2.system.wrapper"} | (
+    config_dict = {"module": "flepimop2.system.wrapper_system"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
     config_dict["module"] = _resolve_module_name(config_dict["module"], "system")

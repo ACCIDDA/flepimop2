@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from numpy.typing import NDArray
 
-from flepimop2.engine import EngineABC
-from flepimop2.system import SystemABC
+from flepimop2.engine.engine_base import EngineABC
+from flepimop2.system.system_base import SystemABC
 
 
 class DummySystem(SystemABC):

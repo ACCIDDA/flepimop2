@@ -5,7 +5,7 @@ from typing import Literal
 import numpy as np
 import pytest
 
-from flepimop2.system import SystemABC
+from flepimop2.system.system_base import SystemABC
 
 
 class DummySystem(SystemABC):

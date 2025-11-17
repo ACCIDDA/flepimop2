@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _load_builder, _resolve_module_name
-from flepimop2.configuration import ModuleModel
+from flepimop2.configuration._module import ModuleModel
 
 
 class ProcessABC(ABC):

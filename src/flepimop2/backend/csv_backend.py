@@ -8,15 +8,15 @@ import numpy as np
 from numpy.typing import NDArray
 from pydantic import Field, field_validator
 
-from flepimop2.backend import BackendABC
-from flepimop2.configuration import ModuleModel
+from flepimop2.backend.backend_base import BackendABC
+from flepimop2.configuration._module import ModuleModel
 from flepimop2.meta import RunMeta
 
 
 class CsvBackend(ModuleModel, BackendABC):
     """CSV backend for saving numpy arrays to CSV files."""
 
-    module: Literal["flepimop2.backend.csv"] = "flepimop2.backend.csv"
+    module: Literal["flepimop2.backend.csv_backend"] = "flepimop2.backend.csv_backend"
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
 
     @field_validator("root", mode="after")

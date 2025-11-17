@@ -6,14 +6,16 @@ from typing import Any, Literal, Self
 from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
-from flepimop2.configuration import ModuleModel
-from flepimop2.system import SystemABC
+from flepimop2.configuration._module import ModuleModel
+from flepimop2.system.system_base import SystemABC
 
 
 class WrapperSystem(ModuleModel, SystemABC):
     """A `SystemABC` which wraps a user-defined script file."""
 
-    module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
+    module: Literal["flepimop2.system.wrapper_system"] = (
+        "flepimop2.system.wrapper_system"
+    )
     script: Path
 
     @model_validator(mode="after")

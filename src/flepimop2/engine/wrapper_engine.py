@@ -6,8 +6,8 @@ from typing import Any, Self
 from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
-from flepimop2.configuration import ModuleModel
-from flepimop2.engine.abc import EngineABC
+from flepimop2.configuration._module import ModuleModel
+from flepimop2.engine.engine_base import EngineABC
 
 
 class WrapperEngine(ModuleModel, EngineABC):

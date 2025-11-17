@@ -5,9 +5,9 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.configuration import ModuleModel
-from flepimop2.engine import EngineABC
-from flepimop2.system import SystemProtocol
+from flepimop2.configuration._module import ModuleModel
+from flepimop2.engine.engine_base import EngineABC
+from flepimop2.system.system_protocol import SystemProtocol
 
 
 def runner(

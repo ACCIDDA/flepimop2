@@ -1,11 +1,11 @@
-"""Unit tests for the `ClickHandler` class in `flepimop2.logging` module."""
+"""Unit tests for the `ClickHandler` class in `flepimop2.flepilog` module."""
 
 import io
 import logging
 
 import pytest
 
-from flepimop2.logging import _PUNCTUATION, ClickHandler
+from flepimop2.flepilog import _PUNCTUATION, ClickHandler
 
 
 @pytest.mark.parametrize(

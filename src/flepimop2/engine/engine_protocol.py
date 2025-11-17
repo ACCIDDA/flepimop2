@@ -5,7 +5,7 @@ from typing import Any, Protocol, runtime_checkable
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.system import SystemProtocol
+from flepimop2.system.system_protocol import SystemProtocol
 
 
 @runtime_checkable
