@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from flepimop2.system import build
+from flepimop2.system.abc import build
 
 TEST_SCRIPT = Path(__file__).with_suffix("") / "dummy_system.py"
 

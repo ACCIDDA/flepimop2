@@ -1,14 +1,13 @@
 """Abstract class for Engines to evolve Dynamic Systems."""
 
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils import _load_builder
+from flepimop2._utils._module import _load_builder, _resolve_module_name
 from flepimop2.configuration import ModuleModel
-from flepimop2.engine.protocol import EngineProtocol
-from flepimop2.system import SystemABC, SystemProtocol
+from flepimop2.system.abc import SystemABC, SystemProtocol
 
 
 def _no_run_func(
@@ -20,6 +19,22 @@ def _no_run_func(
 ) -> NDArray[np.float64]:
     msg = "EngineABC::_runner must be provided by a concrete implementation."
     raise NotImplementedError(msg)
+
+
+@runtime_checkable
+class EngineProtocol(Protocol):
+    """Type-definition (Protocol) for engine runner functions."""
+
+    def __call__(
+        self,
+        stepper: SystemProtocol,
+        times: NDArray[np.float64],
+        state: NDArray[np.float64],
+        params: dict[str, Any],
+        **kwargs: Any,
+    ) -> NDArray[np.float64]:
+        """Protocol for engine runner functions."""
+        ...
 
 
 class EngineABC:
@@ -83,11 +98,13 @@ def build(config: dict[str, Any] | ModuleModel) -> EngineABC:
     Raises:
         TypeError: If the built engine is not an instance of EngineABC.
     """
-    config = {"module": "flepimop2.engine.wrapper"} | (
+    config_dict = {"module": "flepimop2.engine.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(config["module"])
-    engine = builder.build(config)
+    module = _resolve_module_name(config_dict["module"], "engine")
+    config_dict["module"] = module
+    builder = _load_builder(module)
+    engine = builder.build(config_dict)
     if not isinstance(engine, EngineABC):
         msg = "The built engine is not an instance of EngineABC."
         raise TypeError(msg)

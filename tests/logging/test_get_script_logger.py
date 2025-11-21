@@ -1,4 +1,4 @@
-"""Unit tests for the `get_script_logger` function in `flepimop2.logging` module."""
+"""Unit tests for `get_script_logger` in `flepimop2._cli._logging`."""
 
 import logging
 import random
@@ -6,7 +6,11 @@ import string
 
 import pytest
 
-from flepimop2.logging import DEFAULT_LOG_FORMAT, LoggingLevel, get_script_logger
+from flepimop2._cli._logging import (
+    DEFAULT_LOG_FORMAT,
+    LoggingLevel,
+    get_script_logger,
+)
 
 
 @pytest.mark.parametrize("name", ["foobar", "fizzbuzz"])

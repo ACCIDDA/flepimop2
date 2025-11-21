@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2.configuration import ModuleModel
-from flepimop2.system import SystemABC
+from flepimop2.system.abc import SystemABC
 
 
 def stepper(

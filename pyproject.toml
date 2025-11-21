@@ -59,6 +59,8 @@ ignore = [
     "CPY001",   # Missing copyright notice at top of file
     "D203",     # 1 blank line required before class docstring
     "D212",     # Multi-line docstring summary should start at the first line
+    "INP001",   # Implicit namespace package
+    "PLC2701",  # Private name import from external module
     "PLR2004",  # Consider replacing magic number with a constant variable
 ]
 
@@ -67,8 +69,6 @@ allow-star-arg-any = true
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*" = [
-    "INP001",   # Implicit namespace package
-    "PLC2701",  # Private name import from external module
     "PLR6301",  # Method could be a function, class method, or static method
     "S101",     # Use of `assert` detected
     "SLF001",   # Private member accessed
@@ -79,3 +79,12 @@ allow-star-arg-any = true
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.mypy]
+exclude = ["^build/"]
+namespace_packages = true
+mypy_path = ["src"]
+explicit_package_bases = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flepimop2"]
