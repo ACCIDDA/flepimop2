@@ -57,6 +57,24 @@ def get_python_files(package_dir: Path) -> list[Path]:
     return [file for file in sorted(package_dir.glob("*.py")) if is_public_module(file)]
 
 
+def get_subpackages_with_init(package_dir: Path) -> list[Path]:
+    """Return direct subpackages that contain an __init__.py."""
+    return [
+        child
+        for child in sorted(package_dir.iterdir())
+        if child.is_dir()
+        and (child / "__init__.py").exists()
+        and is_public_module(child)
+    ]
+
+
+def has_init_in_tree(package_dir: Path) -> bool:
+    """Return True if the directory contains any `__init__.py` beneath it."""
+    return any(
+        pkg_init.name == "__init__.py" for pkg_init in package_dir.rglob("__init__.py")
+    )
+
+
 def generate_api_doc(item_path: Path, src_root: Path, output_dir: Path) -> str:
     """Generate API documentation for a package or module.
 
@@ -76,17 +94,21 @@ def generate_api_doc(item_path: Path, src_root: Path, output_dir: Path) -> str:
     output_file = output_dir / f"{doc_name}.md"
 
     # Start building the content
-    lines = [
-        f"# {doc_name.capitalize()}",
-        "",
-        f"## ::: {module_name}",
-        "",
-    ]
+    lines = [f"# {doc_name.capitalize()}", ""]
+
+    # Only include package-level directive if this path has its own __init__.py
+    if item_path.is_file() or (
+        item_path.is_dir() and (item_path / "__init__.py").exists()
+    ):
+        lines.extend((f"## ::: {module_name}", ""))
 
     # If it's a package directory, add references to each submodule
     if item_path.is_dir():
         for py_file in get_python_files(item_path):
             submodule_name = get_module_name(py_file, src_root)
+            lines.extend((f"### ::: {submodule_name}", ""))
+        for subpkg in get_subpackages_with_init(item_path):
+            submodule_name = get_module_name(subpkg, src_root)
             lines.extend((f"### ::: {submodule_name}", ""))
 
     # Write the file
@@ -161,11 +183,17 @@ def main() -> None:
     # Find all public packages and modules
     generated_docs = []
     for item in sorted(flepimop2_root.iterdir()):
+        if item.name == "py.typed":
+            continue
         if not is_public_module(item):
             continue
-        if (item.is_dir() and (item / "__init__.py").exists()) or item.is_file():
-            doc_name = generate_api_doc(item, src_root, output_dir)
-            generated_docs.append(doc_name)
+        if item.is_dir():
+            if not has_init_in_tree(item):
+                continue
+        elif item.suffix != ".py":
+            continue
+        doc_name = generate_api_doc(item, src_root, output_dir)
+        generated_docs.append(doc_name)
 
     # Update mkdocs.yml navigation
     update_mkdocs_nav(mkdocs_path, generated_docs)

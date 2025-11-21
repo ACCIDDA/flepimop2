@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.system import SystemProtocol
+from flepimop2.system.abc import SystemProtocol
 
 
 def runner(

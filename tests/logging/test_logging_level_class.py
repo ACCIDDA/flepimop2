@@ -1,10 +1,10 @@
-"""Unit tests for the `LoggingLevel` class in `flepimop2.logging` module."""
+"""Unit tests for the `LoggingLevel` class in `flepimop2._cli._logging` module."""
 
 import logging
 
 import pytest
 
-from flepimop2.logging import LoggingLevel
+from flepimop2._cli._logging import LoggingLevel
 
 
 @pytest.mark.parametrize("verbosity", [-1, -100])

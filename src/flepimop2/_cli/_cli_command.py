@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-from flepimop2.logging import get_script_logger
+from flepimop2._cli._logging import get_script_logger
 
 _COMMAND_NAME_REGEX = re.compile(r"(?<!^)(?=[A-Z])")
 

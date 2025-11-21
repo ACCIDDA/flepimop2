@@ -1,5 +1,5 @@
 """
-Logging utilities for consistent script output.
+Logging utilities for consistent CLI output.
 
 This module provides functionality for creating consistent outputs from CLI tools
 provided by this package.
@@ -103,7 +103,7 @@ def get_script_logger(
         `verbosity` and a custom handler for outputting for CLI tools.
 
     Examples:
-        >>> from flepimop2.logging import get_script_logger
+        >>> from flepimop2._cli._logging import get_script_logger
         >>> logger = get_script_logger(__name__, 3)
         >>> logger.info("This is a log info message")  # doctest: +SKIP
         2024-10-29 16:07:20,272:INFO> This is a log info message.
@@ -138,7 +138,7 @@ class LoggingLevel(IntEnum):
             continue running.
 
     Examples:
-        >>> from flepimop2.logging import LoggingLevel
+        >>> from flepimop2._cli._logging import LoggingLevel
         >>> LoggingLevel.DEBUG
         <LoggingLevel.DEBUG: 10>
         >>> LoggingLevel.from_verbosity(2)

@@ -38,66 +38,62 @@ def external_provider_project(
             the external provider package.
 
     Notes:
-        This fixture creates a temporary external provider package called
-        `external_provider` using `uv`, adds the necessary dependencies, and
-        installs it in a virtual environment. The directory structure looks like:
+        This fixture creates a temporary implicit namespace provider package that
+        contributes modules under the `flepimop2.*` namespace. The directory structure
+        looks like:
         ```
         ./
         ├── .venv/
         ├── external_provider/
-        │   ├── .python-version
-        │   ├── .venv/
         │   ├── pyproject.toml
-        │   ├── README.md
-        │   ├── src/
-        │   │   └── external_provider/
-        │   │       └── __init__.py
-        │   └── uv.lock
+        │   └── src/
+        │       └── flepimop2/
+        │           ├── engine/
+        │           │   └── euler.py
+        │           └── system/
+        │               └── sir.py
         └── model_output/
-
-        7 directories, 5 files
         ```
-        You can then add additional source files to the package by providing a
-        mapping of source paths to destination paths via the `src_dest_map`
-        argument. Both `external_provider` and `flepimop2` will be installed in the
-        the top level `.venv` virtual environment, so when running commands using this
-        temporary directory make sure to use this virtual environment's Python
-        interpreter.
+        You can add additional source files by providing a mapping of source paths to
+        destination paths via the `src_dest_map` argument. Both the namespace provider
+        and `flepimop2` will be installed in the the top level `.venv` virtual
+        environment, so when running commands using this temporary directory make sure
+        to use this virtual environment's Python interpreter.
 
     """
-    # Create a temporary external provider package
     uv = uv or which_uv()
     external_provider_package = tmp_path / "external_provider"
     external_provider_package.mkdir(parents=True, exist_ok=True)
     (tmp_path / "model_output").mkdir(parents=True, exist_ok=True)
     flepimop = str(Path(__file__).parent.parent.parent)
-    # Initialize the package using 'uv'
-    subprocess.run(  # noqa: S603
-        [uv, "init", "--package", "--vcs", "none"],
-        capture_output=True,
-        text=True,
-        cwd=external_provider_package,
-        check=True,
-    )
-    subprocess.run(  # noqa: S603
-        [uv, "add", "numpy"],
-        capture_output=True,
-        text=True,
-        cwd=external_provider_package,
-        check=True,
-    )
-    subprocess.run(  # noqa: S603
-        [uv, "add", "--editable", flepimop],
-        capture_output=True,
-        text=True,
-        cwd=external_provider_package,
-        check=True,
-    )
-    # Add the stepper & runner modules and configuration file
+
+    pyproject_text = """\
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "example-provider"
+version = "0.0.0"
+requires-python = ">=3.11"
+dependencies = ["numpy", "flepimop2"]
+
+[tool.hatch.build.targets.wheel]
+# Ensure implicit namespace packages under flepimop2.* are included.
+packages = ["src/flepimop2"]
+"""
+    (external_provider_package / "pyproject.toml").write_text(pyproject_text)
+
+    # Ensure namespace package directories exist even without __init__.py
+    (external_provider_package / "src" / "flepimop2").mkdir(parents=True, exist_ok=True)
+
+    # Add the namespace modules and configuration file
     src_dest_map = src_dest_map or {}
     for src, dest in src_dest_map.items():
-        (tmp_path / dest).parent.mkdir(parents=True, exist_ok=True)
-        (tmp_path / dest).write_text(src.read_text())
+        dest_path = tmp_path / dest
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        dest_path.write_text(src.read_text())
+
     # Install the package
     subprocess.run(  # noqa: S603
         [uv, "venv"],

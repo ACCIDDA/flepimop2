@@ -6,7 +6,7 @@ from typing import Any, Literal
 from pydantic import Field
 
 from flepimop2.configuration import ModuleModel
-from flepimop2.process import ProcessABC
+from flepimop2.process.abc import ProcessABC
 
 
 class ShellProcess(ModuleModel, ProcessABC):
