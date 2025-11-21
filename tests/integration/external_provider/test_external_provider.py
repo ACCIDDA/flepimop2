@@ -31,14 +31,16 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
         uv=uv,
         src_dest_map={
             cwd / "config.yaml": Path("config.yaml"),
-            cwd / "runner.py": Path("external_provider")
+            cwd / "euler.py": Path("external_provider")
             / "src"
-            / "external_provider"
-            / "runner.py",
-            cwd / "stepper.py": Path("external_provider")
+            / "flepimop2"
+            / "engine"
+            / "euler.py",
+            cwd / "sir.py": Path("external_provider")
             / "src"
-            / "external_provider"
-            / "stepper.py",
+            / "flepimop2"
+            / "system"
+            / "sir.py",
         },
     )
     monkeypatch.chdir(tmp_path)

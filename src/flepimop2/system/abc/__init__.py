@@ -1,13 +1,23 @@
 """Abstract class for Dynamic Systems."""
 
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils import _load_builder
+from flepimop2._utils._module import _load_builder, _resolve_module_name
 from flepimop2.configuration import ModuleModel
-from flepimop2.system.protocol import SystemProtocol
+
+
+@runtime_checkable
+class SystemProtocol(Protocol):
+    """Type-definition (Protocol) for system stepper functions."""
+
+    def __call__(
+        self, time: np.float64, state: NDArray[np.float64], **kwargs: Any
+    ) -> NDArray[np.float64]:
+        """Protocol for system stepper functions."""
+        ...
 
 
 def _no_step_function(
@@ -67,11 +77,13 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     Raises:
         TypeError: If the built system is not an instance of SystemABC.
     """
-    config = {"module": "flepimop2.system.wrapper"} | (
+    config_dict = {"module": "flepimop2.system.wrapper"} | (
         config.model_dump() if isinstance(config, ModuleModel) else config
     )
-    builder = _load_builder(config["module"])
-    system = builder.build(config)
+    module = _resolve_module_name(config_dict["module"], "system")
+    config_dict["module"] = module
+    builder = _load_builder(module)
+    system = builder.build(config_dict)
     if not isinstance(system, SystemABC):
         msg = "The built system is not an instance of SystemABC."
         raise TypeError(msg)

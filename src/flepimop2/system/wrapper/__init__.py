@@ -7,7 +7,7 @@ from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
-from flepimop2.system import SystemABC
+from flepimop2.system.abc import SystemABC
 
 
 class WrapperSystem(ModuleModel, SystemABC):

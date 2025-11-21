@@ -6,8 +6,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2.configuration import ModuleModel
-from flepimop2.engine import EngineABC
-from flepimop2.system import SystemProtocol
+from flepimop2.engine.abc import EngineABC
+from flepimop2.system.abc import SystemProtocol
 
 
 def runner(
