@@ -54,7 +54,6 @@ nav:
           - Backend: reference/api/backend.md
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
-          - Logging: reference/api/logging.md
           - Meta: reference/api/meta.md
           - Process: reference/api/process.md
           - System: reference/api/system.md

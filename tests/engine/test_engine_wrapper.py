@@ -6,9 +6,9 @@ from typing import Final
 import numpy as np
 import pytest
 
-from flepimop2.engine import build as engine_build
-from flepimop2.system import SystemABC
-from flepimop2.system import build as system_build
+from flepimop2.engine.abc import build as engine_build
+from flepimop2.system.abc import SystemABC
+from flepimop2.system.abc import build as system_build
 
 TEST_ENGINE_SCRIPT: Final = Path(__file__).with_suffix("") / "dummy_engine.py"
 TEST_SYSTEM_SCRIPT: Final = (

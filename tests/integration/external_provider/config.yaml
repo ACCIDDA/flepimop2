@@ -1,11 +1,11 @@
 ---
 name: 'example-provider'
 system:
-  - module: 'external_provider.stepper'
+  - module: 'sir'
 engine:
-  - module: 'external_provider.runner'
+  - module: 'euler'
 backend:
-  - module: 'flepimop2.backend.csv'
+  - module: 'csv'
 simulate:
   demo:
     times: '0.0:0.1:10'

@@ -8,7 +8,7 @@ import pytest
 from numpy.testing import assert_array_equal
 from numpy.typing import NDArray
 
-from flepimop2.backend import build
+from flepimop2.backend.abc import build
 from flepimop2.meta import RunMeta
 
 

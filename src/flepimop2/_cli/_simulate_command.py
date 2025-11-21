@@ -6,13 +6,13 @@ from pathlib import Path
 
 import numpy as np
 
-import flepimop2.backend as backend_module
-import flepimop2.engine as engine_module
-import flepimop2.system as system_module
 from flepimop2._cli._cli_command import CliCommand
 from flepimop2._utils._click import _get_config_target
+from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import ConfigurationModel
+from flepimop2.engine.abc import build as build_engine
 from flepimop2.meta import RunMeta
+from flepimop2.system.abc import build as build_system
 
 
 class SimulateCommand(CliCommand):
@@ -66,9 +66,9 @@ class SimulateCommand(CliCommand):
         if dry_run:
             return
 
-        stepobj = system_module.build(stepper)
-        engineobj = engine_module.build(engine)
-        backendobj = backend_module.build(backend)
+        stepobj = build_system(stepper)
+        engineobj = build_engine(engine)
+        backendobj = build_backend(backend)
 
         res = engineobj.run(stepobj, simconfig.t_eval, initial_state, pars)
 

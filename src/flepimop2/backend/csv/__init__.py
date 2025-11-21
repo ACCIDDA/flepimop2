@@ -8,7 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 from pydantic import Field, field_validator
 
-from flepimop2.backend import BackendABC
+from flepimop2.backend.abc import BackendABC
 from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
