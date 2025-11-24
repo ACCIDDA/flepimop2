@@ -635,34 +635,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/api/logging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Logging
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/api/meta/" class="md-nav__link">
         
   
@@ -963,11 +935,11 @@
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Initialized <code>flepimop2</code>.</li>
-<li>Added <code>flepimop2</code> CLI and associated infrastructure, most of which is not public except the <code>flepimop2.logging</code> module.</li>
 <li>Added documentation using <code>mkdocs</code> that includes API/CLI reference as well as reusing <code>CHANGELOG.md</code> and <code>CONTRIBUTING.md</code> where appropriate.</li>
 <li>Added basic configuration models to parse and serialize configuration files. These are contained in the <code>flepimop2.configuration</code> module.</li>
 <li>Added core simulation infrastructure including engines (machinery to evolve a model) and systems (descriptions of model changes). These are contained in the <code>flepimop2.engine/system/backend</code> modules.</li>
 <li>Added the ability to execute auxiliary commands in the context of <code>flepimop2</code> with the <code>flepimop2 process</code> CLI backed by the <code>flepimop.process</code> module.</li>
+<li>Converted <code>flepimop2</code> to a PEP420 implicit namespace package so external providers can inject themselves into the <code>flepimop2</code> namespace. This allows users to reference modules by name only and then <code>flepimop2</code> will resolve the kind of module based on its location in a configuration file. See <a href="https://github.com/ACCIDDA/flepimop2/issues/45">#45</a>.</li>
 </ul>
 
 
