@@ -1,7 +1,7 @@
 """Shell process for flepimop2."""
 
 from subprocess import run  # noqa: S404
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import Field
 
@@ -38,21 +38,3 @@ class ShellProcess(ModuleModel, ProcessABC):
         if result.returncode != 0:
             msg = f"Command failed with exit code {result.returncode}: {self.command}"
             raise RuntimeError(msg)
-
-
-def build(config: dict[str, Any] | ModuleModel) -> ShellProcess:
-    """
-    Build a [`ShellProcess`][flepimop2.process.shell.ShellProcess] from a configuration.
-
-    Args:
-        config: Configuration dictionary to create a shell process. If module key is
-            defined, it must be "shell". Must contain a 'command' key with the shell
-            command to execute.
-
-    Returns:
-        The ready-to-use [`ShellProcess`][flepimop2.process.shell.ShellProcess]
-            instance.
-    """
-    return ShellProcess.model_validate(
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )

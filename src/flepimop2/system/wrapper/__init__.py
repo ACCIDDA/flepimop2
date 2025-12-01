@@ -1,7 +1,7 @@
 """A `SystemABC` which wraps a user-defined script file."""
 
 from pathlib import Path
-from typing import Any, Literal, Self
+from typing import Literal, Self
 
 from pydantic import model_validator
 
@@ -33,18 +33,3 @@ class WrapperSystem(ModuleModel, SystemABC):
             raise AttributeError(msg)
         self._stepper = mod.stepper
         return self
-
-
-def build(config: dict[str, Any] | ModuleModel) -> WrapperSystem:
-    """
-    Build a `WrapperSystem` from a configuration arguments.
-
-    Args:
-        config: Configuration dictionary or a `ModuleModel` instance.
-
-    Returns:
-        The constructed wrapper system instance.
-    """
-    return WrapperSystem.model_validate(
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )

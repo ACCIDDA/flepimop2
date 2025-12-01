@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils._module import _load_builder, _resolve_module_name
+from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
@@ -58,17 +58,5 @@ def build(config: dict[str, Any] | ModuleModel) -> BackendABC:
     Returns:
         The constructed backend instance.
 
-    Raises:
-        TypeError: If the built backend is not an instance of BackendABC.
     """
-    config_dict = {"module": "flepimop2.backend.csv"} | (
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )
-    module = _resolve_module_name(config_dict["module"], "backend")
-    config_dict["module"] = module
-    builder = _load_builder(module)
-    backend = builder.build(config_dict)
-    if not isinstance(backend, BackendABC):
-        msg = "The built backend is not an instance of BackendABC."
-        raise TypeError(msg)
-    return backend
+    return _build(config, "backend", "flepimop2.backend.csv", BackendABC)  # type: ignore[type-abstract]

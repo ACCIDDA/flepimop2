@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
@@ -78,19 +78,3 @@ class CsvBackend(ModuleModel, BackendABC):
         """
         file_path = self._get_file_path(run_meta)
         return np.loadtxt(file_path, delimiter=",")
-
-
-def build(config: dict[str, Any] | ModuleModel) -> CsvBackend:
-    """
-    Build a `CsvBackend` from a configuration dictionary.
-
-    Args:
-        config: Configuration dictionary or a `ModuleModel` to construct the CSV backend
-            from.
-
-    Returns:
-        The constructed csv backend.
-    """
-    return CsvBackend.model_validate(
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )
