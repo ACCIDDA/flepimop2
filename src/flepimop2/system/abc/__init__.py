@@ -5,7 +5,7 @@ from typing import Any, Protocol, runtime_checkable
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2._utils._module import _load_builder, _resolve_module_name
+from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 
 
@@ -74,17 +74,5 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     Returns:
         The constructed system instance.
 
-    Raises:
-        TypeError: If the built system is not an instance of SystemABC.
     """
-    config_dict = {"module": "flepimop2.system.wrapper"} | (
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )
-    module = _resolve_module_name(config_dict["module"], "system")
-    config_dict["module"] = module
-    builder = _load_builder(module)
-    system = builder.build(config_dict)
-    if not isinstance(system, SystemABC):
-        msg = "The built system is not an instance of SystemABC."
-        raise TypeError(msg)
-    return system
+    return _build(config, "system", "flepimop2.system.wrapper", SystemABC)

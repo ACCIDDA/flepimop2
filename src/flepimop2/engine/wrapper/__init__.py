@@ -1,7 +1,7 @@
 """A `EngineABC` which wraps a user-defined script file."""
 
 from pathlib import Path
-from typing import Any, Self
+from typing import Self
 
 from pydantic import model_validator
 
@@ -23,19 +23,3 @@ class WrapperEngine(ModuleModel, EngineABC):
             raise AttributeError(msg)
         self._runner = mod.runner
         return self
-
-
-def build(config: dict[str, Any] | ModuleModel) -> WrapperEngine:
-    """
-    Build a `WrapperEngine` from a configuration arguments.
-
-    Args:
-        config: Configuration dictionary or a `ModuleModel` instance to construct the
-            wrapper engine from.
-
-    Returns:
-        The constructed wrapper engine instance.
-    """
-    return WrapperEngine.model_validate(
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )

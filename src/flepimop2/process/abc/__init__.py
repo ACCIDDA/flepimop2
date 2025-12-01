@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from flepimop2._utils._module import _load_builder, _resolve_module_name
+from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 
@@ -55,17 +55,5 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
     Returns:
         ProcessABC: The constructed process object.
 
-    Raises:
-        TypeError: If the built process is not an instance of ProcessABC.
     """
-    config_dict = {"module": "flepimop2.process.shell"} | (
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )
-    module = _resolve_module_name(config_dict["module"], "process")
-    config_dict["module"] = module
-    builder = _load_builder(module)
-    process = builder.build(config_dict)
-    if not isinstance(process, ProcessABC):
-        msg = "The built process is not an instance of ProcessABC."
-        raise TypeError(msg)
-    return process
+    return _build(config, "process", "flepimop2.process.shell", ProcessABC)  # type: ignore[type-abstract]
