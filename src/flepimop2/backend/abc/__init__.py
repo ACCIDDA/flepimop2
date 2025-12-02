@@ -8,13 +8,13 @@ from numpy.typing import NDArray
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
-from flepimop2.meta import RunMeta
+from flepimop2.configuration._action import ActionModel
 
 
 class BackendABC(ABC):
     """Abstract base class for flepimop2 file IO backends."""
 
-    def save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
+    def save(self, data: NDArray[np.float64], run_meta: ActionModel) -> None:
         """
         Save a numpy array to storage.
 
@@ -24,7 +24,7 @@ class BackendABC(ABC):
         """
         return self._save(data, run_meta)
 
-    def read(self, run_meta: RunMeta) -> NDArray[np.float64]:
+    def read(self, run_meta: ActionModel) -> NDArray[np.float64]:
         """
         Read a numpy array from storage.
 
@@ -37,12 +37,12 @@ class BackendABC(ABC):
         return self._read(run_meta)
 
     @abstractmethod
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
+    def _save(self, data: NDArray[np.float64], run_meta: ActionModel) -> None:
         """Backend-specific implementation for saving data."""
         ...
 
     @abstractmethod
-    def _read(self, run_meta: RunMeta) -> NDArray[np.float64]:
+    def _read(self, run_meta: ActionModel) -> NDArray[np.float64]:
         """Backend-specific implementation for reading data."""
         ...
 

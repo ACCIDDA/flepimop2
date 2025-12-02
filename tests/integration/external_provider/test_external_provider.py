@@ -5,6 +5,7 @@ import subprocess  # noqa: S404
 from pathlib import Path
 
 import pytest
+import yaml
 
 from flepimop2._testing import external_provider_project, which_uv
 
@@ -46,12 +47,15 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
     monkeypatch.chdir(tmp_path)
     # Pre-test
     assert len(list((tmp_path / "model_output").iterdir())) == 0
+    assert not (tmp_path / "out_config.yaml").exists()
     # Run the simulation using the external provider package
     result = subprocess.run(  # noqa: S603
         [
             str(tmp_path / ".venv" / "bin" / "flepimop2"),
             "simulate",
             "config.yaml",
+            "--out-config",
+            "out_config.yaml",
         ],
         capture_output=True,
         text=True,
@@ -63,5 +67,12 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
     model_output = list((tmp_path / "model_output").iterdir())
     assert len(model_output) == 1
     csv = model_output[0]
-    assert re.match(r"^simulate_\d{8}_\d{6}\.csv$", csv.name)
+    assert re.match(r"^example-provider_simulate_\d{8}_\d{6}\.csv$", csv.name)
     assert csv.stat().st_size > 0
+    assert (tmp_path / "out_config.yaml").exists()
+    out_config = Path(tmp_path / "out_config.yaml").read_text(encoding="utf-8")
+    config_data = yaml.safe_load(out_config)
+    assert "history" in config_data
+    assert len(config_data["history"]) == 1
+    action_entry = config_data["history"][0]
+    assert action_entry["action"] == "simulate"
