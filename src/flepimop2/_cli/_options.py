@@ -26,6 +26,15 @@ COMMON_OPTIONS: Final = {
         default=False,
         help="Should this command be run using dry run?",
     ),
+    "out_config": click.option(
+        "-o",
+        "--out-config",
+        type=click.Path(
+            exists=False, dir_okay=False, writable=True, path_type=pathlib.Path
+        ),
+        default=None,
+        help="Path to write the resolved configuration to.",
+    ),
     "path": click.argument(
         "path",
         type=click.Path(

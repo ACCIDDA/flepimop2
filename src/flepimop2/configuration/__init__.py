@@ -1,6 +1,7 @@
 """Representations of parsed configuration files."""
 
 __all__ = [
+    "ActionModel",
     "ConfigurationModel",
     "IdentifierString",
     "ModuleGroupModel",
@@ -8,6 +9,7 @@ __all__ = [
     "SimulateSpecificationModel",
 ]
 
+from flepimop2.configuration._action import ActionModel
 from flepimop2.configuration._configuration import ConfigurationModel
 from flepimop2.configuration._module import ModuleGroupModel, ModuleModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
