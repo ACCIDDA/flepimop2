@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/reference/api/meta/">
+        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/reference/api/exceptions/">
       
       
-        <link rel="prev" href="../exceptions/">
+        <link rel="prev" href="../engine/">
       
       
-        <link rel="next" href="../process/">
+        <link rel="next" href="../meta/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Meta - flepimop2 Documentation</title>
+        <title>Exceptions - flepimop2 Documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#meta" class="md-skip">
+        <a href="#exceptions" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Meta
+              Exceptions
             
           </span>
         </div>
@@ -638,34 +638,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../exceptions/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Exceptions
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -685,7 +657,7 @@
   <span class="md-ellipsis">
     
   
-    Meta
+    Exceptions
   
 
     
@@ -703,7 +675,7 @@
   <span class="md-ellipsis">
     
   
-    Meta
+    Exceptions
   
 
     
@@ -729,22 +701,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#flepimop2.meta" class="md-nav__link">
+  <a href="#flepimop2.exceptions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        meta
+        exceptions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="meta">
+    <nav class="md-nav" aria-label="exceptions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#flepimop2.meta.RunMeta" class="md-nav__link">
+  <a href="#flepimop2.exceptions.Flepimop2Error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RunMeta
+        Flepimop2Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.exceptions.Flepimop2ValidationError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flepimop2ValidationError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.exceptions.ValidationIssue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ValidationIssue
       
     </span>
   </a>
@@ -760,6 +754,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../meta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meta
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -918,22 +940,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#flepimop2.meta" class="md-nav__link">
+  <a href="#flepimop2.exceptions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        meta
+        exceptions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="meta">
+    <nav class="md-nav" aria-label="exceptions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#flepimop2.meta.RunMeta" class="md-nav__link">
+  <a href="#flepimop2.exceptions.Flepimop2Error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RunMeta
+        Flepimop2Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.exceptions.Flepimop2ValidationError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flepimop2ValidationError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.exceptions.ValidationIssue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ValidationIssue
       
     </span>
   </a>
@@ -962,22 +1006,22 @@
 
 
 
-<h1 id="meta">Meta<a class="headerlink" href="#meta" title="Permanent link">&para;</a></h1>
+<h1 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h1>
 
 
 <div class="doc doc-object doc-module">
 
 
 
-<h2 id="flepimop2.meta" class="doc doc-heading">
-            <code>meta</code>
+<h2 id="flepimop2.exceptions" class="doc doc-heading">
+            <code>exceptions</code>
 
 
-<a href="#flepimop2.meta" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flepimop2.exceptions" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents first">
 
-        <p>Metadata types for flepimop2 runs.</p>
+        <p>Custom exceptions provided by the <code>flepimop2</code> package.</p>
 
 
 
@@ -1002,20 +1046,76 @@
 
 
 
-<h3 id="flepimop2.meta.RunMeta" class="doc doc-heading">
-            <code>RunMeta</code>
+<h3 id="flepimop2.exceptions.Flepimop2Error" class="doc doc-heading">
+            <code>Flepimop2Error</code>
 
 
-<a href="#flepimop2.meta.RunMeta" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flepimop2.exceptions.Flepimop2Error" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="typing.NamedTuple">NamedTuple</span></code></p>
+              Bases: <code><span title="Exception">Exception</span></code></p>
 
 
 
-        <p>Metadata for a flepimop2 run.</p>
+        <p>Base class for exceptions provided by <code>flepimop2</code>.</p>
+<p>This class serves as the root for all custom exceptions in the <code>flepimop2</code> library.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="flepimop2.exceptions.Flepimop2ValidationError" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span></code>
+
+<a href="#flepimop2.exceptions.Flepimop2ValidationError" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Flepimop2Error (flepimop2.exceptions._flepimop2_error.Flepimop2Error)" href="#flepimop2.exceptions.Flepimop2Error">Flepimop2Error</a></code></p>
+
+
+
+        <p>Exception raised for validation errors from <code>flepimop2</code>.</p>
+<p>This exception's main purpose is to signal that validation has failed
+within the <code>flepimop2</code> library and provides detailed information about
+the validation issues encountered, typically provided by an external
+provider package. The main benefit of this exception is to encapsulate
+multiple validation issues into a single error object, making it easier
+to handle and report validation failures as well as providing a consistent
+interface for validation errors across different parts of the <code>flepimop2</code>
+library.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -1029,36 +1129,13 @@
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><span title="flepimop2.meta.RunMeta.action">action</span></code></td>
+            <td><code><span title="flepimop2.exceptions.Flepimop2ValidationError.issues">issues</span></code></td>
             <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;simulate&#39;]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The action performed in the run (e.g., "simulate").</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="flepimop2.meta.RunMeta.timestamp">timestamp</span></code></td>
-            <td>
-                  <code><span title="datetime.datetime">datetime</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The timestamp when the run was executed. Defaults to current UTC
-time.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="flepimop2.meta.RunMeta.name">name</span></code></td>
-            <td>
-                  <code><span title="str">str</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>An optional name for the run, typically pulled from the config.</p>
+                <p>A list of <code>ValidationIssue</code> instances representing the validation
+errors.</p>
               </div>
             </td>
           </tr>
@@ -1067,14 +1144,215 @@ time.</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunMeta</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_meta</span> <span class="o">=</span> <span class="n">RunMeta</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;test_run&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_meta</span><span class="o">.</span><span class="n">action</span>
-<span class="go">&#39;simulate&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_meta</span><span class="o">.</span><span class="n">timestamp</span>
-<span class="go">datetime.datetime(..., tzinfo=datetime.timezone.utc)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_meta</span><span class="o">.</span><span class="n">name</span>
-<span class="go">&#39;test_run&#39;</span>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Flepimop2ValidationError</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">issues</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;missing_parameter&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parameter&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma * (S / N)&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Compartment &#39;E&#39; is unreachable.&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;unreachable_compartment&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compartment&quot;</span><span class="p">:</span> <span class="s2">&quot;E&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exception</span> <span class="o">=</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="n">issues</span><span class="p">)</span>
+<span class="go">[ValidationIssue(msg=&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;,</span>
+<span class="go">                 kind=&#39;missing_parameter&#39;,</span>
+<span class="go">                 ctx={&#39;parameter&#39;: &#39;gamma&#39;, &#39;transition&#39;: &#39;gamma * (S / N)&#39;}),</span>
+<span class="go"> ValidationIssue(msg=&quot;Compartment &#39;E&#39; is unreachable.&quot;,</span>
+<span class="go">                 kind=&#39;unreachable_compartment&#39;,</span>
+<span class="go">                 ctx={&#39;compartment&#39;: &#39;E&#39;})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+<span class="go">2 validation issues encountered:</span>
+<span class="go">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
+<span class="go">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">flepimop2.exceptions.Flepimop2ValidationError</span>: <span class="n">2 validation issues encountered:</span>
+<span class="x">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
+<span class="x">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
+</code></pre></div>
+
+        <p>Initialize the Flepimop2ValidationError.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>issues</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="ValidationIssue(msg, kind, ctx=None)
+
+  
+      dataclass
+   (flepimop2.exceptions._flepimop2_validation_error.ValidationIssue)" href="#flepimop2.exceptions.ValidationIssue">ValidationIssue</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A list of <code>ValidationIssue</code> instances representing the validation
+errors.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+                  <details class="mkdocstrings-source">
+                    <summary>Source code in <code>src/flepimop2/exceptions/_flepimop2_validation_error.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize the Flepimop2ValidationError.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        issues: A list of `ValidationIssue` instances representing the validation</span>
+<span class="sd">            errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">issues</span> <span class="o">=</span> <span class="n">issues</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_issues</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="flepimop2.exceptions.ValidationIssue" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">ValidationIssue</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#flepimop2.exceptions.ValidationIssue" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Represents a single validation issue encountered during data validation.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="flepimop2.exceptions.ValidationIssue.msg">msg</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A human readable description of the validation issue.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="flepimop2.exceptions.ValidationIssue.kind">kind</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The type/category of the validation issue.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="flepimop2.exceptions.ValidationIssue.ctx">ctx</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional context providing additional information about the issue.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationIssue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">issue</span> <span class="o">=</span> <span class="n">ValidationIssue</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Invalid wrapper data format.&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;invalid_format&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;expected_format&quot;</span><span class="p">:</span> <span class="s2">&quot;JSON&quot;</span><span class="p">,</span> <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+<span class="go">ValidationIssue(msg=&#39;Invalid wrapper data format.&#39;,</span>
+<span class="go">                kind=&#39;invalid_format&#39;,</span>
+<span class="go">                ctx={&#39;expected_format&#39;: &#39;JSON&#39;, &#39;line&#39;: 42})</span>
 </code></pre></div>
 
 
