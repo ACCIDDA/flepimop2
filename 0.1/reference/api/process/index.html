@@ -818,17 +818,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#flepimop2.process.shell.build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        build
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1023,17 +1012,6 @@
     <span class="md-ellipsis">
       
         ShellProcess
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.process.shell.build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        build
       
     </span>
   </a>
@@ -1325,29 +1303,6 @@ The module will have "flepimop2.process." prepended.</p>
     </table>
 
 
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="TypeError">TypeError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If the built process is not an instance of ProcessABC.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/process/abc/__init__.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
@@ -1362,19 +1317,7 @@ The module will have "flepimop2.process." prepended.</p>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessABC</span><span class="p">:</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessABC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a `ProcessABC` from a configuration dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -1385,20 +1328,8 @@ The module will have "flepimop2.process." prepended.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        ProcessABC: The constructed process object.</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: If the built process is not an instance of ProcessABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.process.shell&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="p">)</span>
-    <span class="n">module</span> <span class="o">=</span> <span class="n">_resolve_module_name</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">],</span> <span class="s2">&quot;process&quot;</span><span class="p">)</span>
-    <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
-    <span class="n">process</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ProcessABC</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built process is not an instance of ProcessABC.&quot;</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">process</span>
+    <span class="k">return</span> <span class="n">_build</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="s2">&quot;flepimop2.process.shell&quot;</span><span class="p">,</span> <span class="n">ProcessABC</span><span class="p">)</span>  <span class="c1"># type: ignore[type-abstract]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1541,116 +1472,6 @@ The module will have "flepimop2.process." prepended.</p>
 
 </div>
 
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="flepimop2.process.shell.build" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></code>
-
-<a href="#flepimop2.process.shell.build" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Build a <a class="autorefs autorefs-internal" href="#flepimop2.process.shell.ShellProcess"><code>ShellProcess</code></a> from a configuration.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>config</code>
-            </td>
-            <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration.ModuleModel)" href="../configuration/#flepimop2.configuration.ModuleModel">ModuleModel</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Configuration dictionary to create a shell process. If module key is
-defined, it must be "shell". Must contain a 'command' key with the shell
-command to execute.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="ShellProcess (flepimop2.process.shell.ShellProcess)" href="#flepimop2.process.shell.ShellProcess">ShellProcess</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The ready-to-use <a class="autorefs autorefs-internal" href="#flepimop2.process.shell.ShellProcess"><code>ShellProcess</code></a>
-instance.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/flepimop2/process/shell/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShellProcess</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a [`ShellProcess`][flepimop2.process.shell.ShellProcess] from a configuration.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        config: Configuration dictionary to create a shell process. If module key is</span>
-<span class="sd">            defined, it must be &quot;shell&quot;. Must contain a &#39;command&#39; key with the shell</span>
-<span class="sd">            command to execute.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The ready-to-use [`ShellProcess`][flepimop2.process.shell.ShellProcess]</span>
-<span class="sd">            instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">ShellProcess</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 
 

@@ -745,17 +745,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#flepimop2.engine.wrapper.build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        build
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1045,17 +1034,6 @@
     <span class="md-ellipsis">
       
         WrapperEngine
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.engine.wrapper.build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        build
       
     </span>
   </a>
@@ -1597,55 +1575,20 @@ engine from.</p>
     </table>
 
 
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="TypeError">TypeError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If the built engine is not an instance of EngineABC.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/engine/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EngineABC</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EngineABC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a `EngineABC` from a configuration dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -1655,20 +1598,8 @@ engine from.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        The constructed engine instance.</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: If the built engine is not an instance of EngineABC.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">config_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;flepimop2.engine.wrapper&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="p">)</span>
-    <span class="n">module</span> <span class="o">=</span> <span class="n">_resolve_module_name</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">],</span> <span class="s2">&quot;engine&quot;</span><span class="p">)</span>
-    <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_load_builder</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">EngineABC</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The built engine is not an instance of EngineABC.&quot;</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">engine</span>
+    <span class="k">return</span> <span class="n">_build</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="s2">&quot;flepimop2.engine.wrapper&quot;</span><span class="p">,</span> <span class="n">EngineABC</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1790,110 +1721,6 @@ engine from.</p>
 
 </div>
 
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="flepimop2.engine.wrapper.build" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></code>
-
-<a href="#flepimop2.engine.wrapper.build" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Build a <code>WrapperEngine</code> from a configuration arguments.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>config</code>
-            </td>
-            <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | <a class="autorefs autorefs-internal" title="ModuleModel (flepimop2.configuration.ModuleModel)" href="../configuration/#flepimop2.configuration.ModuleModel">ModuleModel</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Configuration dictionary or a <code>ModuleModel</code> instance to construct the
-wrapper engine from.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="WrapperEngine(*args, **kwargs) (flepimop2.engine.wrapper.WrapperEngine)" href="#flepimop2.engine.wrapper.WrapperEngine">WrapperEngine</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The constructed wrapper engine instance.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/flepimop2/engine/wrapper/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WrapperEngine</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a `WrapperEngine` from a configuration arguments.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        config: Configuration dictionary or a `ModuleModel` instance to construct the</span>
-<span class="sd">            wrapper engine from.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The constructed wrapper engine instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">WrapperEngine</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 
 
