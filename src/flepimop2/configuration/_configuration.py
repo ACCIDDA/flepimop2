@@ -3,8 +3,8 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from flepimop2.configuration._module import ModuleGroupModel
-from flepimop2.configuration._parameters import ParameterSpecificationModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
+from flepimop2.configuration._types import IdentifierString
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
 
 
@@ -33,8 +33,10 @@ class ConfigurationModel(
     systems: ModuleGroupModel = Field(default_factory=dict)
     backends: ModuleGroupModel = Field(default_factory=dict)
     process: ModuleGroupModel = Field(default_factory=dict)
-    parameters: dict[str, ParameterSpecificationModel] = Field(default_factory=dict)
-    simulate: dict[str, SimulateSpecificationModel] = Field(default_factory=dict)
+    parameters: ModuleGroupModel = Field(default_factory=dict)
+    simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
+        default_factory=dict
+    )
 
     def _check_simulate_engines_or_systems(
         self, kind: Literal["engine", "system", "backend"]
@@ -52,8 +54,8 @@ class ConfigurationModel(
         defined = set(getattr(self, f"{kind}s").keys())
         if missing := items - defined:
             msg = (
-                f"{kind.capitalize()}s referenced in simulate not "
-                f"defined: {missing}. Available {kind}s: {defined}"
+                f"{kind}s referenced in simulate not defined: "
+                f"{missing}. Available {kind}s: {defined}"
             )
             raise ValueError(msg)
 
@@ -90,8 +92,8 @@ class ConfigurationModel(
             Traceback (most recent call last):
                 ...
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
-              Value error, Engines referenced in simulate not defined: {'fizz'}. Available engines: {'foo'} [...]
-                For further information visit https://errors.pydantic.dev/2.12/v/value_error
+              Value error, engines referenced in simulate not defined: {'fizz'}. Available engines: {'foo'} [...]
+                For further information visit ...
         """  # noqa: E501
         self._check_simulate_engines_or_systems("engine")
         return self
@@ -129,8 +131,8 @@ class ConfigurationModel(
             Traceback (most recent call last):
                 ...
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
-              Value error, Systems referenced in simulate not defined: {'buzz'}. Available systems: {'bar'} [...]
-                For further information visit https://errors.pydantic.dev/2.12/v/value_error
+              Value error, systems referenced in simulate not defined: {'buzz'}. Available systems: {'bar'} [...]
+                For further information visit ...
         """  # noqa: E501
         self._check_simulate_engines_or_systems("system")
         return self
@@ -168,8 +170,8 @@ class ConfigurationModel(
             Traceback (most recent call last):
                 ...
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
-              Value error, Backends referenced in simulate not defined: {'db'}. Available backends: {'csv'} [...]
-                For further information visit https://errors.pydantic.dev/2.12/v/value_error
+              Value error, backends referenced in simulate not defined: {'db'}. Available backends: {'csv'} [...]
+                For further information visit ...
         """  # noqa: E501
         self._check_simulate_engines_or_systems("backend")
         return self

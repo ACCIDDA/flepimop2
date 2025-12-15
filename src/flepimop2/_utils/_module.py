@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from flepimop2.configuration import ModuleModel
 
 T = TypeVar("T")
-Namespace = Literal["backend", "engine", "process", "system"]
+Namespace = Literal["backend", "engine", "parameter", "process", "system"]
 
 
 def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:

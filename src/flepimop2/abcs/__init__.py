@@ -11,6 +11,7 @@ __all__ = [
     "BackendABC",
     "EngineABC",
     "EngineProtocol",
+    "ParameterABC",
     "ProcessABC",
     "SystemABC",
     "SystemProtocol",
@@ -18,5 +19,6 @@ __all__ = [
 
 from flepimop2.backend.abc import BackendABC
 from flepimop2.engine.abc import EngineABC, EngineProtocol
+from flepimop2.parameter.abc import ParameterABC
 from flepimop2.process.abc import ProcessABC
 from flepimop2.system.abc import SystemABC, SystemProtocol

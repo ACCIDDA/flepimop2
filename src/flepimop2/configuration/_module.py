@@ -3,6 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
 from flepimop2._utils._pydantic import _to_default_dict
+from flepimop2.configuration._types import IdentifierString
 
 
 class ModuleModel(BaseModel):
@@ -18,8 +19,7 @@ class ModuleModel(BaseModel):
     module: str = Field(min_length=1)
 
 
-ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+ModuleGroupModel = Annotated[
+    dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)
+]
 """Module group configuration model for flepimop2."""
-
-ModuleTarget = Annotated[str, Field(min_length=1)]
-"""Module key type for flepimop2."""

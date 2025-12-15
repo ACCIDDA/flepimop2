@@ -57,6 +57,7 @@ nav:
           - Engine: reference/api/engine.md
           - Exceptions: reference/api/exceptions.md
           - Meta: reference/api/meta.md
+          - Parameter: reference/api/parameter.md
           - Process: reference/api/process.md
           - System: reference/api/system.md
       - CLI: reference/cli.md
