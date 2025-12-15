@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
+from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.system.abc import SystemABC, SystemProtocol
 
 
@@ -14,7 +14,7 @@ def _no_run_func(
     stepper: SystemProtocol,
     times: NDArray[np.float64],
     state: NDArray[np.float64],
-    params: dict[str, Any],
+    params: dict[IdentifierString, Any],
     **kwargs: Any,
 ) -> NDArray[np.float64]:
     msg = "EngineABC::_runner must be provided by a concrete implementation."
@@ -30,7 +30,7 @@ class EngineProtocol(Protocol):
         stepper: SystemProtocol,
         times: NDArray[np.float64],
         state: NDArray[np.float64],
-        params: dict[str, Any],
+        params: dict[IdentifierString, Any],
         **kwargs: Any,
     ) -> NDArray[np.float64]:
         """Protocol for engine runner functions."""
@@ -60,7 +60,7 @@ class EngineABC:
         system: SystemABC,
         eval_times: NDArray[np.float64],
         initial_state: NDArray[np.float64],
-        params: dict[str, Any],
+        params: dict[IdentifierString, Any],
         **kwargs: Any,
     ) -> NDArray[np.float64]:
         """

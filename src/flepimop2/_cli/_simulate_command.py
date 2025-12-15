@@ -12,6 +12,7 @@ from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.engine.abc import build as build_engine
 from flepimop2.meta import RunMeta
+from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.system.abc import build as build_system
 
 
@@ -38,38 +39,43 @@ class SimulateCommand(CliCommand):
             dry_run: Whether dry run mode is enabled.
             target: Optional target simulate config to use.
         """
-        configmodel = ConfigurationModel.from_yaml(config)
-        simconfig = _get_config_target(configmodel.simulate, target, "simulate")
+        config_model = ConfigurationModel.from_yaml(config)
+        simulate_config = _get_config_target(config_model.simulate, target, "simulate")
 
-        backend = configmodel.backends[simconfig.backend].model_dump()
-        stepper = configmodel.systems[simconfig.system].model_dump()
-        engine = configmodel.engines[simconfig.engine].model_dump()
-        params = configmodel.parameters
+        system_config = config_model.systems[simulate_config.system].model_dump()
+        engine_config = config_model.engines[simulate_config.engine].model_dump()
+        backend_config = config_model.backends[simulate_config.backend].model_dump()
 
+        s0 = build_parameter(config_model.parameters["s0"])
+        i0 = build_parameter(config_model.parameters["i0"])
+        r0 = build_parameter(config_model.parameters["r0"])
         initial_state = np.array(
             [
-                params.pop("S0").value,
-                params.pop("I0").value,
-                params.pop("R0").value,
+                s0.sample().item(),
+                i0.sample().item(),
+                r0.sample().item(),
             ],
             dtype=np.float64,
         )
-        pars = {k: v.value for k, v in params.items()}
+        params = {
+            k: build_parameter(v).sample().item()
+            for k, v in config_model.parameters.items()
+            if k not in {"s0", "i0", "r0"}
+        }
 
-        self.info(f"  System: {simconfig.system} => {stepper}")
-        self.info(f"  Engine: {simconfig.engine} => {engine}")
-        self.info(f"  Backend: {simconfig.backend} => {backend}")
+        self.info(f"  System: {simulate_config.system} => {system_config}")
+        self.info(f"  Engine: {simulate_config.engine} => {engine_config}")
+        self.info(f"  Backend: {simulate_config.backend} => {backend_config}")
         self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
-        self.info(f"  Params: {pars} [{type(pars)}]")
-        self.info(f"  T: {simconfig.times}")
+        self.info(f"  Params: {params} [{type(params)}]")
+        self.info(f"  T: {simulate_config.times}")
 
         if dry_run:
             return
 
-        stepobj = build_system(stepper)
-        engineobj = build_engine(engine)
-        backendobj = build_backend(backend)
+        system = build_system(system_config)
+        engine = build_engine(engine_config)
+        backend = build_backend(backend_config)
 
-        res = engineobj.run(stepobj, simconfig.t_eval, initial_state, pars)
-
-        backendobj.save(res, RunMeta())
+        res = engine.run(system, simulate_config.t_eval, initial_state, params)
+        backend.save(res, RunMeta())

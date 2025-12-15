@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._pydantic import RangeSpec, _to_np_array
-from flepimop2.configuration._module import ModuleTarget
+from flepimop2.configuration._types import IdentifierString
 
 
 class SimulateSpecificationModel(BaseModel):
@@ -20,9 +20,9 @@ class SimulateSpecificationModel(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    engine: ModuleTarget = "default"
-    system: ModuleTarget = "default"
-    backend: ModuleTarget = "default"
+    engine: IdentifierString = "default"
+    system: IdentifierString = "default"
+    backend: IdentifierString = "default"
     times: RangeSpec
     params: dict[str, float] | None = Field(default_factory=dict)
 

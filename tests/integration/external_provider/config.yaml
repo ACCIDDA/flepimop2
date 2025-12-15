@@ -10,6 +10,12 @@ simulate:
   demo:
     times: '0.0:0.1:10'
 parameters:
-  S0: 999
-  I0: 1
-  R0: 0
+  s0:
+    module: 'fixed'
+    value: 999
+  i0:
+    module: 'fixed'
+    value: 1
+  r0:
+    module: 'fixed'
+    value: 0

@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from flepimop2.configuration import ModuleModel
+from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemProtocol
 
@@ -14,7 +14,7 @@ def runner(
     stepper: SystemProtocol,
     times: NDArray[np.float64],
     state: NDArray[np.float64],
-    params: dict[str, Any],
+    params: dict[IdentifierString, Any],
     **kwargs: Any,  # noqa: ARG001
 ) -> NDArray[np.float64]:
     """
