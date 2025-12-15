@@ -14,3 +14,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added core simulation infrastructure including engines (machinery to evolve a model) and systems (descriptions of model changes). These are contained in the `flepimop2.engine/system/backend` modules.
 - Added the ability to execute auxiliary commands in the context of `flepimop2` with the `flepimop2 process` CLI backed by the `flepimop.process` module.
 - Converted `flepimop2` to a PEP420 implicit namespace package so external providers can inject themselves into the `flepimop2` namespace. This allows users to reference modules by name only and then `flepimop2` will resolve the kind of module based on its location in a configuration file. See [#45](https://github.com/ACCIDDA/flepimop2/issues/45).
+- Added `flepimop2.abcs` as a convenient re-export of ABCs/protocols for developer use. See [#85](https://github.com/ACCIDDA/flepimop2/issues/85).

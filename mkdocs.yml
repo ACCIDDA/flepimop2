@@ -51,6 +51,7 @@ nav:
       - Adding A New CLI Command: development/adding-a-new-cli-command.md
   - Reference:
       - API:
+          - Abcs: reference/api/abcs.md
           - Backend: reference/api/backend.md
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
