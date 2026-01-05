@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -685,6 +685,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.IdentifierString" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IdentifierString
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -696,32 +707,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleTarget" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ModuleTarget
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ConfigurationModel" class="md-nav__link">
     <span class="md-ellipsis">
       
         ConfigurationModel
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.FixedParameterSpecificationModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FixedParameterSpecificationModel
       
     </span>
   </a>
@@ -852,6 +841,34 @@
     
   
     Meta
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parameter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter
   
 
     
@@ -1030,6 +1047,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.IdentifierString" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IdentifierString
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1041,32 +1069,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleTarget" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ModuleTarget
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ConfigurationModel" class="md-nav__link">
     <span class="md-ellipsis">
       
         ConfigurationModel
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.FixedParameterSpecificationModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FixedParameterSpecificationModel
       
     </span>
   </a>
@@ -1172,8 +1178,30 @@
 
 
 
+<h3 id="flepimop2.configuration.IdentifierString" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">IdentifierString</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;^[a-z]([a-z0-9</span><span class="se">\\</span><span class="s1">_]*[a-z0-9])?$&#39;</span><span class="p">),</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">_identifier_string</span><span class="p">)]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.IdentifierString" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A string type representing a valid identifier for named configuration elements.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h3 id="flepimop2.configuration.ModuleGroupModel" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ModuleGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
+            <code class="highlight language-python"><span class="n">ModuleGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -1185,28 +1213,6 @@
     <div class="doc doc-contents ">
 
         <p>Module group configuration model for flepimop2.</p>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="flepimop2.configuration.ModuleTarget" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ModuleTarget</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
-  </span>
-
-<a href="#flepimop2.configuration.ModuleTarget" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Module key type for flepimop2.</p>
 
     </div>
 
@@ -1259,7 +1265,7 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.engines">engines</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1274,7 +1280,7 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.systems">systems</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1289,7 +1295,7 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.backends">backends</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1304,7 +1310,7 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.process">process</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[str, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1319,7 +1325,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.parameters">parameters</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="flepimop2.configuration._parameters.ParameterSpecificationModel">ParameterSpecificationModel</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ModuleGroupModel)" href="#flepimop2.configuration.ModuleGroupModel">ModuleGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1330,7 +1340,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.simulate">simulate</span></code></td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="SimulateSpecificationModel (flepimop2.configuration._simulate.SimulateSpecificationModel)" href="#flepimop2.configuration.SimulateSpecificationModel">SimulateSpecificationModel</a>]</code>
+                  <code><span title="dict">dict</span>[<a class="autorefs autorefs-internal" title="IdentifierString = Annotated[str, Field(min_length=1, max_length=255, pattern='^[a-z]([a-z0-9\\_]*[a-z0-9])?$'), AfterValidator(_identifier_string)]
+
+  
+      module-attribute
+   (flepimop2.configuration._types.IdentifierString)" href="#flepimop2.configuration.IdentifierString">IdentifierString</a>, <a class="autorefs autorefs-internal" title="SimulateSpecificationModel (flepimop2.configuration._simulate.SimulateSpecificationModel)" href="#flepimop2.configuration.SimulateSpecificationModel">SimulateSpecificationModel</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1340,101 +1354,6 @@
           </tr>
       </tbody>
     </table>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="flepimop2.configuration.FixedParameterSpecificationModel" class="doc doc-heading">
-            <code>FixedParameterSpecificationModel</code>
-
-
-<a href="#flepimop2.configuration.FixedParameterSpecificationModel" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
-
-
-
-        <p>Fixed parameter specification model.</p>
-<p>This model represents a parameter with a fixed value.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="flepimop2.configuration.FixedParameterSpecificationModel.type">type</span></code></td>
-            <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;fixed&#39;]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The type of the parameter specification, fixed to "fixed".</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="flepimop2.configuration.FixedParameterSpecificationModel.value">value</span></code></td>
-            <td>
-                  <code><span title="float">float</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The fixed numeric value of the parameter.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedParameterSpecificationModel</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">param</span> <span class="o">=</span> <span class="n">FixedParameterSpecificationModel</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">12.34</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">param</span>
-<span class="go">FixedParameterSpecificationModel(type=&#39;fixed&#39;, value=12.34)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">param</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
-<span class="go">12.34</span>
-</code></pre></div>
 
 
 
@@ -1571,11 +1490,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.engine">engine</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+                  <code><a class="autorefs autorefs-internal" title="IdentifierString = Annotated[str, Field(min_length=1, max_length=255, pattern='^[a-z]([a-z0-9\\_]*[a-z0-9])?$'), AfterValidator(_identifier_string)]
 
   
       module-attribute
-   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
+   (flepimop2.configuration._types.IdentifierString)" href="#flepimop2.configuration.IdentifierString">IdentifierString</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1586,11 +1505,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.system">system</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+                  <code><a class="autorefs autorefs-internal" title="IdentifierString = Annotated[str, Field(min_length=1, max_length=255, pattern='^[a-z]([a-z0-9\\_]*[a-z0-9])?$'), AfterValidator(_identifier_string)]
 
   
       module-attribute
-   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
+   (flepimop2.configuration._types.IdentifierString)" href="#flepimop2.configuration.IdentifierString">IdentifierString</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1601,11 +1520,11 @@
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.SimulateSpecificationModel.backend">backend</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleTarget = Annotated[str, Field(min_length=1)]
+                  <code><a class="autorefs autorefs-internal" title="IdentifierString = Annotated[str, Field(min_length=1, max_length=255, pattern='^[a-z]([a-z0-9\\_]*[a-z0-9])?$'), AfterValidator(_identifier_string)]
 
   
       module-attribute
-   (flepimop2.configuration._module.ModuleTarget)" href="#flepimop2.configuration.ModuleTarget">ModuleTarget</a></code>
+   (flepimop2.configuration._types.IdentifierString)" href="#flepimop2.configuration.IdentifierString">IdentifierString</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1769,10 +1688,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
