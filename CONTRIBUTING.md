@@ -130,7 +130,7 @@ The documentation structure is defined in `mkdocs.yml`.
 
 ### Viewing Documentation Locally
 
-To preview documentation changes locally you can run `just serve` which will build the documentation and start a local server at `http://127.0.0.1:8000/`. To only build the documentation you can run `just build` which will generate the documentation site in the `site/` directory.
+To preview documentation changes locally you can run `just serve` which will build the documentation and start a local server at `http://127.0.0.1:8000/flepimop2/`. To only build the documentation you can run `just docs` which will generate the documentation site in the `site/` directory.
 
 ### Documentation Testing
 
