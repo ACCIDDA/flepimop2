@@ -1636,7 +1636,7 @@ uv run pytest tests/{module}/test_{function}.py -v  # Run specific test file
 </code></pre>
 <p>The documentation structure is defined in <code>mkdocs.yml</code>.</p>
 <h3 id="viewing-documentation-locally">Viewing Documentation Locally<a class="headerlink" href="#viewing-documentation-locally" title="Permanent link">&para;</a></h3>
-<p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/</code>. To only build the documentation you can run <code>just build</code> which will generate the documentation site in the <code>site/</code> directory.</p>
+<p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/flepimop2/</code>. To only build the documentation you can run <code>just docs</code> which will generate the documentation site in the <code>site/</code> directory.</p>
 <h3 id="documentation-testing">Documentation Testing<a class="headerlink" href="#documentation-testing" title="Permanent link">&para;</a></h3>
 <p>In addition to unit tests and doctests, code contained in the documentation is also tested. This is ran as a part of <code>just</code>/<code>just pytest</code>. Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use <a href="https://sybil.readthedocs.io/en/latest/"><code>Sybil</code></a>.</p>
 <h2 id="pull-request-process">Pull Request Process<a class="headerlink" href="#pull-request-process" title="Permanent link">&para;</a></h2>
