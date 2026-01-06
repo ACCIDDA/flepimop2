@@ -25,7 +25,9 @@ class ConfigurationModel(
         backends: A dictionary of backend configurations.
         process: A dictionary of process configurations.
         parameters: A dictionary of parameter configurations.
+        groups: A dictionary mapping group names to parameter name mappings.
         simulate: A dictionary of simulation configurations.
+
     """
 
     name: str | None = None
@@ -34,6 +36,9 @@ class ConfigurationModel(
     backends: ModuleGroupModel = Field(default_factory=dict)
     process: ModuleGroupModel = Field(default_factory=dict)
     parameters: ModuleGroupModel = Field(default_factory=dict)
+    groups: dict[IdentifierString, dict[IdentifierString, IdentifierString]] = Field(
+        default_factory=dict
+    )
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )
@@ -49,6 +54,7 @@ class ConfigurationModel(
 
         Raises:
             ValueError: If any referenced engines or systems are not defined.
+
         """
         items = {getattr(sim, kind) for sim in self.simulate.values()}
         defined = set(getattr(self, f"{kind}s").keys())
@@ -94,6 +100,7 @@ class ConfigurationModel(
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
               Value error, engines referenced in simulate not defined: {'fizz'}. Available engines: {'foo'} [...]
                 For further information visit ...
+
         """  # noqa: E501
         self._check_simulate_engines_or_systems("engine")
         return self
@@ -133,6 +140,7 @@ class ConfigurationModel(
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
               Value error, systems referenced in simulate not defined: {'buzz'}. Available systems: {'bar'} [...]
                 For further information visit ...
+
         """  # noqa: E501
         self._check_simulate_engines_or_systems("system")
         return self
@@ -172,6 +180,53 @@ class ConfigurationModel(
             pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
               Value error, backends referenced in simulate not defined: {'db'}. Available backends: {'csv'} [...]
                 For further information visit ...
+
         """  # noqa: E501
         self._check_simulate_engines_or_systems("backend")
+        return self
+
+    @model_validator(mode="after")
+    def _check_groups_parameters(self) -> Self:
+        """
+        Ensure that all parameters referenced in groups exist.
+
+        Returns:
+            The validated `ConfigurationModel` instance.
+
+        Raises:
+            ValueError: If any of the parameters referenced in groups are not defined
+                in parameters.
+
+        Examples:
+            >>> from flepimop2.configuration import ConfigurationModel
+            >>> config = {
+            ...     "parameters": {
+            ...         "param1": {"module": "test"},
+            ...     },
+            ...     "groups": {
+            ...         "group1": {
+            ...             "new_param1": "missing_param",
+            ...         },
+            ...     },
+            ... }
+            >>> ConfigurationModel.model_validate(config)
+            Traceback (most recent call last):
+                ...
+            pydantic_core._pydantic_core.ValidationError: 1 validation error for ConfigurationModel
+              Value error, parameters referenced in groups not defined: {'missing_param'}. Available parameters: {'param1'} [...]
+                For further information visit ...
+
+        """  # noqa: E501
+        referenced_params = {
+            param
+            for group_mappings in self.groups.values()
+            for param in group_mappings.values()
+        }
+        defined_params = set(self.parameters.keys())
+        if missing := referenced_params - defined_params:
+            msg = (
+                f"parameters referenced in groups not defined: "
+                f"{missing}. Available parameters: {defined_params}"
+            )
+            raise ValueError(msg)
         return self
