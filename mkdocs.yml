@@ -48,6 +48,7 @@ nav:
       - Getting Started: guides/getting-started.md
   - Development:
       - Contributing: development/contributing.md
+      - Creating An External Provider Package: development/creating-an-external-provider-package.md
       - Adding A New CLI Command: development/adding-a-new-cli-command.md
   - Reference:
       - API:
