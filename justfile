@@ -47,4 +47,4 @@ docs: reference
 
 # Serve the documentation locally using `mkdocs`
 serve: reference
-    uv run mkdocs serve
+    uv run mkdocs serve --livereload

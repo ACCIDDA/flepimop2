@@ -12,6 +12,8 @@ edit_uri: ''
 theme:
   name: material
   custom_dir: overrides
+  features:
+    - content.code.copy
 
 # Plugins
 plugins:
@@ -40,6 +42,12 @@ markdown_extensions:
       toc_depth: 4
   - attr_list
   - mkdocs-click
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: docs/.
 
 # Navigation structure
 nav:
