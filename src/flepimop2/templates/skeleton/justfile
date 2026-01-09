@@ -1,0 +1,3 @@
+[doc('Create a virtual environment using conda')]
+venv:
+	conda env create --prefix "venv/" --file environment.yaml
