@@ -10,7 +10,7 @@ from sybil.parsers.markdown import PythonCodeBlockParser, SkipParser
 
 
 def documentation_setup(documentation_setup: dict[str, Any]) -> None:  # noqa: ARG001
-    """Create and chnange to a temporary directory for documentation tests."""
+    """Create and change to a temporary directory for documentation tests."""
     directory = Path(TemporaryDirectory().name)
     directory.mkdir(parents=True, exist_ok=True)
     chdir(directory)

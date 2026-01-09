@@ -26,6 +26,13 @@ COMMON_OPTIONS: Final = {
         default=False,
         help="Should this command be run using dry run?",
     ),
+    "path": click.argument(
+        "path",
+        type=click.Path(
+            exists=False, file_okay=False, writable=True, path_type=pathlib.Path
+        ),
+        default=None,
+    ),
     "target": click.option(
         "-t",
         "--target",
