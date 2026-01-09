@@ -17,3 +17,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added `flepimop2.abcs` as a convenient re-export of ABCs/protocols for developer use. See [#85](https://github.com/ACCIDDA/flepimop2/issues/85).
 - Made parameters modular, similar to backends/engines/processes/systems, to allow external packages to provide their own parameter types. See [#75](https://github.com/ACCIDDA/flepimop2/issues/75).
 - Restricted the name of user defined backends/engines/parameters/processes/systems to comply with the custom `IdentifierString` type.
+- Added a new `flepimop2 skeleton` CLI command for scaffolding a project repository. See [#84](https://github.com/ACCIDDA/flepimop2/issues/84).
