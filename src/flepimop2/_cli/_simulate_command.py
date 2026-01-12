@@ -10,8 +10,8 @@ from flepimop2._cli._cli_command import CliCommand
 from flepimop2._utils._click import _get_config_target
 from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import ConfigurationModel
+from flepimop2.configuration._action import ActionModel
 from flepimop2.engine.abc import build as build_engine
-from flepimop2.meta import RunMeta
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.system.abc import build as build_system
 
@@ -28,16 +28,18 @@ class SimulateCommand(CliCommand):
         self,
         *,
         config: Path,
-        dry_run: bool,
         target: str | None = None,
+        out_config: Path | None = None,
+        dry_run: bool = False,
     ) -> None:
         """
         Execute the simulation.
 
         Args:
             config: Path to the configuration file.
-            dry_run: Whether dry run mode is enabled.
             target: Optional target simulate config to use.
+            out_config: Optional path to write the resolved configuration to.
+            dry_run: Whether dry run mode is enabled.
         """
         config_model = ConfigurationModel.from_yaml(config)
         simulate_config = _get_config_target(config_model.simulate, target, "simulate")
@@ -77,5 +79,12 @@ class SimulateCommand(CliCommand):
         engine = build_engine(engine_config)
         backend = build_backend(backend_config)
 
-        res = engine.run(system, simulate_config.t_eval, initial_state, params)
-        backend.save(res, RunMeta())
+        result = engine.run(system, simulate_config.t_eval, initial_state, params)
+
+        action = ActionModel(action="simulate", name=config_model.name)
+        backend.save(result, action)
+
+        if out_config is not None:
+            config_model.history.append(action)
+            config_model.to_yaml(out_config)
+            self.debug(f"Wrote resolved configuration to: {out_config}")
