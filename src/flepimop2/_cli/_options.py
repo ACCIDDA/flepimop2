@@ -26,6 +26,15 @@ COMMON_OPTIONS: Final = {
         default=False,
         help="Should this command be run using dry run?",
     ),
+    "groups": click.option(
+        "-g",
+        "--group",
+        "groups",
+        default=None,
+        type=str,
+        multiple=True,
+        help="The parameter group(s) to use for this command.",
+    ),
     "path": click.argument(
         "path",
         type=click.Path(
