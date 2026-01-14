@@ -1,0 +1,1724 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/creating-an-external-provider-package/">
+      
+      
+        <link rel="prev" href="../contributing/">
+      
+      
+        <link rel="next" href="../adding-a-new-cli-command/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Creating An External Provider Package - flepimop2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#creating-an-external-provider-package" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="flepimop2 Documentation" class="md-header__button md-logo" aria-label="flepimop2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            flepimop2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Creating An External Provider Package
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ACCIDDA/flepimop2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ACCIDDA/flepimop2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="flepimop2 Documentation" class="md-nav__button md-logo" aria-label="flepimop2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    flepimop2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ACCIDDA/flepimop2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ACCIDDA/flepimop2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating An External Provider Package
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating An External Provider Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-an-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is an External Provider Package?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brief-overview-of-namespace-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brief Overview of Namespace Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-the-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the External Provider Package
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating the External Provider Package">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-initialize-the-package-with-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Initialize the Package with uv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-configure-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Configure pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-the-directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create the Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-implement-the-npzbackend-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Implement the NpzBackend Class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Implement the NpzBackend Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approach-1-inherit-from-modulemodel-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach 1: Inherit from ModuleModel (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#approach-2-custom-build-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach 2: Custom build Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-install-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Install the Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-use-the-backend-in-a-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Use the Backend in a Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-your-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Your External Provider Package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding-a-new-cli-command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding A New CLI Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/abcs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Abcs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/meta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meta
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/parameter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-an-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is an External Provider Package?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brief-overview-of-namespace-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brief Overview of Namespace Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-the-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the External Provider Package
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating the External Provider Package">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-initialize-the-package-with-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Initialize the Package with uv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-configure-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Configure pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-the-directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create the Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-implement-the-npzbackend-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Implement the NpzBackend Class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Implement the NpzBackend Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approach-1-inherit-from-modulemodel-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach 1: Inherit from ModuleModel (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#approach-2-custom-build-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approach 2: Custom build Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-install-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Install the Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-use-the-backend-in-a-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Use the Backend in a Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-your-external-provider-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Your External Provider Package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<!-- skip: start -->
+<h1 id="creating-an-external-provider-package">Creating an External Provider Package<a class="headerlink" href="#creating-an-external-provider-package" title="Permanent link">&para;</a></h1>
+<p>This tutorial will show how to:</p>
+<ul>
+<li>Create an external provider package that extends <code>flepimop2</code> functionality.</li>
+<li>Structure the package as a PEP 420 implicit namespace package.</li>
+<li>Implement a custom backend module class.</li>
+<li>Use the external provider package in a <code>flepimop2</code> configuration file.</li>
+</ul>
+<p>In this tutorial, we will create a new backend package called <code>flepimop2-npz-backend</code> that provides an <code>NpzBackend</code> class for saving and loading NumPy arrays using the <code>.npz</code> format.</p>
+<h2 id="what-is-an-external-provider-package">What is an External Provider Package?<a class="headerlink" href="#what-is-an-external-provider-package" title="Permanent link">&para;</a></h2>
+<p>An external provider package allows users to extend <code>flepimop2</code> with custom implementations of systems, engines, backends, or processors without modifying the core <code>flepimop2</code> codebase. This is particularly useful for:</p>
+<ul>
+<li>Domain-specific models or algorithms.</li>
+<li>Custom file formats or storage backends.</li>
+<li>Specialized processing pipelines.</li>
+<li>Experimental features that may not be suitable for the core library.</li>
+</ul>
+<p>External provider packages leverage Python's namespace package mechanism to seamlessly integrate with <code>flepimop2</code>'s module resolution system.</p>
+<h2 id="brief-overview-of-namespace-packages">Brief Overview of Namespace Packages<a class="headerlink" href="#brief-overview-of-namespace-packages" title="Permanent link">&para;</a></h2>
+<p><code>flepimop2</code> uses <a href="https://peps.python.org/pep-0420/">PEP 420 implicit namespace packages</a> to allow external packages to contribute modules that can be referenced directly in configuration files. This means:</p>
+<ul>
+<li>External packages can add modules under the <code>flepimop2.*</code> namespace without conflicts.</li>
+<li>Users can reference modules by short names (e.g., <code>module: 'npz'</code>) instead of full paths.</li>
+<li><code>flepimop2</code> automatically resolves <code>module: 'npz'</code> to <code>flepimop2.backend.npz</code> when loading backend configurations.</li>
+</ul>
+<p>The key to making this work is:</p>
+<ol>
+<li><strong>No <code>__init__.py</code> files</strong> in the namespace directories (e.g., <code>src/flepimop2/</code>, <code>src/flepimop2/backend/</code>)</li>
+<li>Proper configuration in <code>pyproject.toml</code> to tell the build system where to find the namespace packages</li>
+<li>Only the leaf module directory (e.g., <code>src/flepimop2/backend/npz/</code>) should have an <code>__init__.py</code> file</li>
+</ol>
+<p>For more details, see the <a href="https://packaging.python.org/en/latest/guides/packaging-namespace-packages/">Python Packaging Guide on Namespace Packages</a>.</p>
+<h2 id="creating-the-external-provider-package">Creating the External Provider Package<a class="headerlink" href="#creating-the-external-provider-package" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-initialize-the-package-with-uv">Step 1: Initialize the Package with <code>uv</code><a class="headerlink" href="#step-1-initialize-the-package-with-uv" title="Permanent link">&para;</a></h3>
+<p>First, create a new Python package using <code>uv</code> with the <code>hatch</code> build backend:</p>
+<pre><code class="language-bash"># Create a new directory for your package
+mkdir flepimop2-npz-backend
+cd flepimop2-npz-backend
+
+# Initialize a new Python package
+uv init --package --build-backend hatchling
+
+# Add dependencies
+uv add numpy
+uv add &quot;git+https://github.com/ACCIDDA/flepimop2&quot;
+</code></pre>
+<p>This creates a basic package structure with a <code>pyproject.toml</code> file configured to use the Hatch build backend.</p>
+<h3 id="step-2-configure-pyprojecttoml">Step 2: Configure <code>pyproject.toml</code><a class="headerlink" href="#step-2-configure-pyprojecttoml" title="Permanent link">&para;</a></h3>
+<p>Edit the generated <code>pyproject.toml</code> file to configure the namespace package and add <code>flepimop2</code> as a dependency. Your <code>pyproject.toml</code> should look like this:</p>
+<pre><code class="language-toml">[project]
+name = &quot;flepimop2-npz-backend&quot;
+version = &quot;0.1.0&quot;
+description = &quot;An external provider for flepimop2 for saving and reading npz files.&quot;
+readme = &quot;README.md&quot;
+requires-python = &quot;&gt;=3.11&quot;
+dependencies = [
+    &quot;flepimop2&quot;,
+    &quot;numpy&gt;=2.3.5&quot;,
+]
+
+[build-system]
+requires = [&quot;hatchling&quot;]
+build-backend = &quot;hatchling.build&quot;
+
+[tool.hatch.build.targets.wheel]
+packages = [&quot;src/flepimop2&quot;]
+
+[tool.uv.sources]
+flepimop2 = { git = &quot;https://github.com/ACCIDDA/flepimop2&quot; }
+</code></pre>
+<p>The critical configuration here is <code>[tool.hatch.build.targets.wheel]</code>, which tells Hatch to package everything under <code>src/flepimop2</code> as part of the <code>flepimop2</code> namespace.</p>
+<h3 id="step-3-create-the-directory-structure">Step 3: Create the Directory Structure<a class="headerlink" href="#step-3-create-the-directory-structure" title="Permanent link">&para;</a></h3>
+<p>Create the following directory structure for your namespace package:</p>
+<pre><code class="language-bash">rm -r src/
+mkdir -p src/flepimop2/backend/npz
+</code></pre>
+<p>Do not create <code>__init__.py</code> files in <code>src/flepimop2/</code> or <code>src/flepimop2/backend/</code>. These directories must remain empty to function as namespace packages. Only create an <code>__init__.py</code> file in the leaf module directory.</p>
+<p>Your directory structure should look like this:</p>
+<pre><code>flepimop2-npz-backend/
+├── pyproject.toml
+├── README.md
+└── src/
+    └── flepimop2/          # NO __init__.py (namespace package)
+        └── backend/        # NO __init__.py (namespace package)
+            └── npz/        # This directory WILL have __init__.py
+                └── __init__.py
+</code></pre>
+<p>The lack of <code>__init__.py</code> files in the intermediate directories (<code>flepimop2/</code> and <code>backend/</code>) is what makes them namespace packages, allowing multiple packages to contribute to the same namespace without conflicts.</p>
+<h3 id="step-4-implement-the-npzbackend-class">Step 4: Implement the <code>NpzBackend</code> Class<a class="headerlink" href="#step-4-implement-the-npzbackend-class" title="Permanent link">&para;</a></h3>
+<p>Now we'll implement the <code>NpzBackend</code> class in <code>src/flepimop2/backend/npz/__init__.py</code>. Backends, similar to other modules, must implement the <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a> class which defines the interface. There are two approaches to implementing a module class in <code>flepimop2</code>.</p>
+<h4 id="approach-1-inherit-from-modulemodel-recommended">Approach 1: Inherit from <code>ModuleModel</code> (Recommended)<a class="headerlink" href="#approach-1-inherit-from-modulemodel-recommended" title="Permanent link">&para;</a></h4>
+<p>When you inherit from <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>, your class becomes a Pydantic model that handles configuration validation automatically. You don't need to write a separate <code>build</code> function.</p>
+<pre><code class="language-python">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;
+
+import os
+from pathlib import Path
+from typing import Literal
+
+import numpy as np
+from numpy.typing import NDArray
+from pydantic import Field, field_validator
+
+from flepimop2.abcs import BackendABC
+from flepimop2.configuration import ModuleModel
+from flepimop2.meta import RunMeta
+
+
+class NpzBackend(ModuleModel, BackendABC):
+    &quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;
+
+    module: Literal[&quot;flepimop2.backend.npz&quot;] = &quot;flepimop2.backend.npz&quot;
+    root: Path = Field(default_factory=lambda: Path.cwd() / &quot;model_output&quot;)
+    compressed: bool = Field(default=True, description=&quot;Use compression when saving&quot;)
+
+    @field_validator(&quot;root&quot;, mode=&quot;after&quot;)
+    @classmethod
+    def _validate_root(cls, root: Path) -&gt; Path:
+        &quot;&quot;&quot;
+        Validate that the root path is a writable directory.
+
+        Args:
+            root: The root path to validate.
+
+        Returns:
+            The validated root path.
+
+        Raises:
+            TypeError: If the root path is not a directory or is not writable.
+        &quot;&quot;&quot;
+        if not (root.is_dir() and os.access(root, os.W_OK)):
+            msg = f&quot;The specified 'root' is not a directory or is not writable: {root}&quot;
+            raise TypeError(msg)
+        return root
+
+    def _get_file_path(self, run_meta: RunMeta) -&gt; Path:
+        &quot;&quot;&quot;
+        Generate a dynamic file path based on run metadata.
+
+        Args:
+            run_meta: Metadata about the current run.
+
+        Returns:
+            The dynamically generated file path.
+        &quot;&quot;&quot;
+        timestamp_str = run_meta.timestamp.strftime(&quot;%Y%m%d_%H%M%S&quot;)
+        name_part = f&quot;{run_meta.name}_&quot; if run_meta.name else &quot;&quot;
+        filename = f&quot;{name_part}{run_meta.action}_{timestamp_str}.npz&quot;
+        return self.root / filename
+
+    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -&gt; None:
+        &quot;&quot;&quot;
+        Save a numpy array to an NPZ file.
+
+        Args:
+            data: The numpy array to save.
+            run_meta: Metadata about the current run.
+        &quot;&quot;&quot;
+        file_path = self._get_file_path(run_meta)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if self.compressed:
+            np.savez_compressed(file_path, data=data)
+        else:
+            np.savez(file_path, data=data)
+
+    def _read(self, run_meta: RunMeta) -&gt; NDArray[np.float64]:
+        &quot;&quot;&quot;
+        Read a numpy array from an NPZ file.
+
+        Args:
+            run_meta: Metadata about the current run.
+
+        Returns:
+            The numpy array read from the NPZ file.
+        &quot;&quot;&quot;
+        file_path = self._get_file_path(run_meta)
+        with np.load(file_path) as npz_file:
+            return npz_file[&quot;data&quot;]
+</code></pre>
+<p>The key points of this approach are:</p>
+<ul>
+<li>The class inherits from both <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> and <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a>.</li>
+<li>The <code>module</code> field uses a <code>Literal</code> type hint to specify the exact module path.</li>
+<li>Pydantic's <code>Field</code> is used to define configuration options with defaults and descriptions.</li>
+<li>Field validators can be used for custom validation logic.</li>
+<li>No separate <code>build</code> function is needed, <code>flepimop2</code> is able to inspect that this class inherits <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> and creates a default <code>build</code> function.</li>
+</ul>
+<p>This is the generally recommended approach for constructing modules.</p>
+<h4 id="approach-2-custom-build-function">Approach 2: Custom <code>build</code> Function<a class="headerlink" href="#approach-2-custom-build-function" title="Permanent link">&para;</a></h4>
+<p>If you don't inherit from <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>, you need to provide a custom <code>build</code> function that constructs your class from a configuration dictionary:</p>
+<pre><code class="language-python">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;
+
+import os
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+from numpy.typing import NDArray
+
+from flepimop2.abcs import BackendABC
+from flepimop2.configuration import ModuleModel
+from flepimop2.meta import RunMeta
+
+
+class NpzBackend(BackendABC):
+    &quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;
+
+    def __init__(self, root: Path | None = None, compressed: bool = True) -&gt; None:
+        &quot;&quot;&quot;
+        Initialize the NPZ backend.
+
+        Args:
+            root: The root directory for saving files. Defaults to ./model_output
+            compressed: Whether to use compression when saving. Defaults to True.
+
+        Raises:
+            TypeError: If root is not a writable directory.
+        &quot;&quot;&quot;
+        self.root = root if root is not None else Path.cwd() / &quot;model_output&quot;
+        self.compressed = compressed
+
+        if not (self.root.is_dir() and os.access(self.root, os.W_OK)):
+            msg = f&quot;The specified 'root' is not a directory or is not writable: {self.root}&quot;
+            raise TypeError(msg)
+
+    def _get_file_path(self, run_meta: RunMeta) -&gt; Path:
+        &quot;&quot;&quot;
+        Generate a dynamic file path based on run metadata.
+
+        Args:
+            run_meta: Metadata about the current run.
+
+        Returns:
+            The dynamically generated file path.
+        &quot;&quot;&quot;
+        timestamp_str = run_meta.timestamp.strftime(&quot;%Y%m%d_%H%M%S&quot;)
+        name_part = f&quot;{run_meta.name}_&quot; if run_meta.name else &quot;&quot;
+        filename = f&quot;{name_part}{run_meta.action}_{timestamp_str}.npz&quot;
+        return self.root / filename
+
+    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -&gt; None:
+        &quot;&quot;&quot;
+        Save a numpy array to an NPZ file.
+
+        Args:
+            data: The numpy array to save.
+            run_meta: Metadata about the current run.
+        &quot;&quot;&quot;
+        file_path = self._get_file_path(run_meta)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if self.compressed:
+            np.savez_compressed(file_path, data=data)
+        else:
+            np.savez(file_path, data=data)
+
+    def _read(self, run_meta: RunMeta) -&gt; NDArray[np.float64]:
+        &quot;&quot;&quot;
+        Read a numpy array from an NPZ file.
+
+        Args:
+            run_meta: Metadata about the current run.
+
+        Returns:
+            The numpy array read from the NPZ file.
+        &quot;&quot;&quot;
+        file_path = self._get_file_path(run_meta)
+        with np.load(file_path) as npz_file:
+            return npz_file[&quot;data&quot;]
+
+
+def build(config: dict[str, Any] | ModuleModel) -&gt; NpzBackend:
+    &quot;&quot;&quot;
+    Build an NPZ backend from a configuration.
+
+    Args:
+        config: Configuration dictionary or ModuleModel containing backend settings.
+            Expected keys:
+            - root (optional): Path to the output directory
+            - compressed (optional): Whether to use compression
+
+    Returns:
+        An instance of NpzBackend.
+    &quot;&quot;&quot;
+    config_dict = config.model_dump() if isinstance(config, ModuleModel) else config
+    config_dict = {k: v for k, v in config.items() if k != &quot;module&quot;}
+    if &quot;root&quot; in config_dict and isinstance(config_dict[&quot;root&quot;], str):
+        config_dict[&quot;root&quot;] = Path(config_dict[&quot;root&quot;])
+    return NpzBackend(**config_dict)
+</code></pre>
+<p>The key points of this approach are:</p>
+<ul>
+<li>The class only inherits from <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a>, not <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>.</li>
+<li>Manual validation is performed in <code>__init__</code>.</li>
+<li>A separate <code>build</code> function is required to construct instances from configuration.</li>
+<li>The <code>build</code> function must handle both <code>dict</code> and <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> inputs.</li>
+<li>More manual work, but provides complete control over instantiation.</li>
+</ul>
+<p>This approach is generally not recommended unless you have very advanced needs that Pydantic based configuration parsing and validating does not support.</p>
+<h3 id="step-5-install-the-package">Step 5: Install the Package<a class="headerlink" href="#step-5-install-the-package" title="Permanent link">&para;</a></h3>
+<p>Install your package in development mode:</p>
+<pre><code class="language-bash">uv pip install -e .
+</code></pre>
+<p>This makes the <code>flepimop2.backend.npz</code> module available to <code>flepimop2</code>.</p>
+<h3 id="step-6-use-the-backend-in-a-configuration-file">Step 6: Use the Backend in a Configuration File<a class="headerlink" href="#step-6-use-the-backend-in-a-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Now you can use your custom backend in a <code>flepimop2</code> configuration file with <code>module: 'npz'</code> like so:</p>
+<pre><code class="language-yaml">backend:
+  - module: 'npz'
+    root: './npz_output'
+    compressed: true
+</code></pre>
+<p>When <code>flepimop2</code> processes this configuration:</p>
+<ol>
+<li>It sees <code>module: 'npz'</code> in the backend section.</li>
+<li>It prepends <code>flepimop2.backend.</code> to resolve it to <code>flepimop2.backend.npz</code>.</li>
+<li>It imports the module from your external package.</li>
+<li>If using Approach 1, it instantiates <code>NpzBackend</code> directly using a default <code>build</code> function.</li>
+<li>If using Approach 2, it calls the <code>build</code> function with the configuration.</li>
+</ol>
+<h2 id="testing-your-external-provider-package">Testing Your External Provider Package<a class="headerlink" href="#testing-your-external-provider-package" title="Permanent link">&para;</a></h2>
+<p>It's important to test your external provider package to ensure it integrates correctly with <code>flepimop2</code>. Here's a minimal unit test:</p>
+<pre><code class="language-python">&quot;&quot;&quot;Unit test for NPZ backend.&quot;&quot;&quot;
+
+from pathlib import Path
+import numpy as np
+from flepimop2.backend.npz import NpzBackend
+from flepimop2.meta import RunMeta
+
+
+def test_npz_backend_save_and_load(tmp_path: Path) -&gt; None:
+    &quot;&quot;&quot;Test that NPZ backend can save and load data.&quot;&quot;&quot;
+    # Create backend instance
+    backend = NpzBackend(root=tmp_path, compressed=True)
+
+    # Create test data
+    test_data = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+    # Create run metadata
+    run_meta = RunMeta(name=&quot;test&quot;, action=&quot;simulate&quot;)
+
+    # Save data
+    backend.save(test_data, run_meta)
+
+    # Verify file was created
+    output_files = list(tmp_path.glob(&quot;*.npz&quot;))
+    assert len(output_files) == 1
+
+    # Load data and verify it matches
+    loaded_data = backend.read(run_meta)
+    np.testing.assert_array_equal(loaded_data, test_data)
+</code></pre>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered:</p>
+<ul>
+<li>What external provider packages are and why they're useful.</li>
+<li>How PEP 420 namespace packages enable seamless integration with <code>flepimop2</code>.</li>
+<li>Creating a new external provider package using <code>uv</code> and <code>hatchling</code>.</li>
+<li>Proper directory structure for namespace packages (no <code>__init__.py</code> in intermediate directories).</li>
+<li>Two approaches for implementing module classes:</li>
+<li>Inheriting from <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> for automatic Pydantic validation (recommended).</li>
+<li>Using a custom <code>build</code> function for complete control.</li>
+<li>Using your external provider package in <code>flepimop2</code> configuration files.</li>
+<li>Testing your external provider package.</li>
+</ul>
+<p>With this knowledge, you can extend <code>flepimop2</code> with custom systems, engines, backends, and processors that integrate seamlessly with the core framework.</p>
+<!-- skip: end -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
