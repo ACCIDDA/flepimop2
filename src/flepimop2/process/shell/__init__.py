@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from flepimop2.configuration import ModuleModel
+from flepimop2.configuration import ConfigurationModel, ModuleModel
 from flepimop2.process.abc import ProcessABC
 
 
@@ -23,9 +23,13 @@ class ShellProcess(ModuleModel, ProcessABC):
     command: str = Field(min_length=1)
     args: list[str] = Field(default_factory=list)
 
-    def _process(self, *, dry_run: bool) -> None:
+    def _process(self, *, configuration: ConfigurationModel, dry_run: bool) -> None:  # noqa: ARG002
         """
         Execute a shell command.
+
+        Args:
+            configuration: The configuration model containing all config data.
+            dry_run: If True, the command will be echoed instead of executed.
 
         Raises:
             RuntimeError: If the command execution fails.

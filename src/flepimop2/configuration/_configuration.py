@@ -2,6 +2,7 @@ from typing import Literal, Self
 
 from pydantic import Field, model_validator
 
+from flepimop2.configuration._action import ActionModel
 from flepimop2.configuration._module import ModuleGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._types import IdentifierString
@@ -26,6 +27,7 @@ class ConfigurationModel(
         process: A dictionary of process configurations.
         parameters: A dictionary of parameter configurations.
         simulate: A dictionary of simulation configurations.
+        history: A list of actions that have been performed.
     """
 
     name: str | None = None
@@ -37,6 +39,7 @@ class ConfigurationModel(
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )
+    history: list[ActionModel] = Field(default_factory=list)
 
     def _check_simulate_engines_or_systems(
         self, kind: Literal["engine", "system", "backend"]

@@ -4,18 +4,23 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
+from flepimop2._utils._module import _load_builder as _load_builder
+from flepimop2._utils._module import _resolve_module_name as _resolve_module_name
+from flepimop2.configuration import ConfigurationModel, ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 
 
 class ProcessABC(ABC):
     """Abstract base class for flepimop2 processing steps."""
 
-    def execute(self, *, dry_run: bool = False) -> None:
+    def execute(
+        self, *, configuration: ConfigurationModel, dry_run: bool = False
+    ) -> None:
         """
         Execute a processing step.
 
         Args:
+            configuration: The configuration model containing all config data.
             dry_run: If True, the process will not actually execute but will simulate
                 execution.
 
@@ -26,10 +31,10 @@ class ProcessABC(ABC):
             if result:
                 raise Flepimop2ValidationError(result)
             return None
-        return self._process(dry_run=dry_run)
+        return self._process(configuration=configuration, dry_run=dry_run)
 
     @abstractmethod
-    def _process(self, *, dry_run: bool) -> None:
+    def _process(self, *, configuration: ConfigurationModel, dry_run: bool) -> None:
         """Backend-specific implementation for processing data."""
         ...
 
