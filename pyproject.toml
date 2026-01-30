@@ -64,6 +64,7 @@ ignore = [
     "INP001",   # Implicit namespace package
     "PLC2701",  # Private name import from external module
     "PLR2004",  # Consider replacing magic number with a constant variable
+    "RUF067",   # Non-trivial `__init__.py` file detected
 ]
 
 [tool.ruff.lint.flake8-annotations]
@@ -90,3 +91,4 @@ explicit_package_bases = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/flepimop2"]
+include = ["src/flepimop2/templates"]
