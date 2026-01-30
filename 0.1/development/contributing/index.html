@@ -1588,22 +1588,22 @@
 <ol>
 <li>Clone the repository:</li>
 </ol>
-<pre><code class="language-shell">git clone git@github.com:ACCIDDA/flepimop2.git
-cd flepimop2
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ACCIDDA/flepimop2.git
+<span class="nb">cd</span><span class="w"> </span>flepimop2
+</code></pre></div>
 <ol>
 <li>Create a virtual environment and install dependencies:</li>
 </ol>
-<pre><code class="language-shell">uv sync --dev
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--dev
+</code></pre></div>
 <p>This creates a <code>.venv</code> virtual environment and installs the package along with all development dependencies (mypy, pytest, ruff, mkdocs). If you need to create an environment with a specific python version you can also run:</p>
-<pre><code class="language-shell">uv sync --dev --python 3.12
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--dev<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+</code></pre></div>
 <ol>
 <li>Verify your setup</li>
 </ol>
-<pre><code class="language-shell">just
-</code></pre>
+<div class="highlight"><pre><span></span><code>just
+</code></pre></div>
 <p>This runs the default development checks:</p>
 <ul>
 <li><code>ruff format</code> - Format code.</li>
@@ -1624,13 +1624,13 @@ cd flepimop2
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="organization">Organization<a class="headerlink" href="#organization" title="Permanent link">&para;</a></h3>
 <p>Tests are organized to mirror the source code structure:</p>
-<pre><code>tests/
+<div class="highlight"><pre><span></span><code>tests/
 |-- {module}/
 |   |-- {submodule}/
 |   |   |-- test_{function}.py     # Tests for individual functions
 |   |   |-- test_{class}_class.py  # Tests for classes
 |   |-- test_{function}.py
-</code></pre>
+</code></pre></div>
 <p><strong>Examples:</strong></p>
 <ul>
 <li><code>tests/logging/test_get_script_logger.py</code> - Tests for the <code>get_script_logger</code> function.</li>
@@ -1640,9 +1640,9 @@ cd flepimop2
 </ul>
 <h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
 <p>Running all tests is a part of running <code>just</code> or if you want to run only the tests instead of all checks you can run <code>just pytest</code>. For more advanced running please use <code>pytest</code> directly:</p>
-<pre><code class="language-shell">uv run pytest tests/{module}/ -v                    # Run all tests in a module
-uv run pytest tests/{module}/test_{function}.py -v  # Run specific test file
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/<span class="w"> </span>-v<span class="w">                    </span><span class="c1"># Run all tests in a module</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/test_<span class="o">{</span><span class="k">function</span><span class="o">}</span>.py<span class="w"> </span>-v<span class="w">  </span><span class="c1"># Run specific test file</span>
+</code></pre></div>
 <p>For more information on how to invoke pytest please refer to the <a href="https://docs.pytest.org/en/stable/how-to/usage.html">How to invoke pytest</a> documentation.</p>
 <h3 id="writing-tests">Writing Tests<a class="headerlink" href="#writing-tests" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1657,11 +1657,11 @@ uv run pytest tests/{module}/test_{function}.py -v  # Run specific test file
 <p>We use <a href="https://www.mkdocs.org/">MkDocs</a> for documentation.</p>
 <h3 id="editing-documentation">Editing Documentation<a class="headerlink" href="#editing-documentation" title="Permanent link">&para;</a></h3>
 <p>Documentation files are located in the <code>docs/</code> directory:</p>
-<pre><code>docs/
+<div class="highlight"><pre><span></span><code>docs/
 |-- index.md                # Home page
 |-- guides/
     |-- getting-started.md  # Getting started guide
-</code></pre>
+</code></pre></div>
 <p>The documentation structure is defined in <code>mkdocs.yml</code>.</p>
 <h3 id="viewing-documentation-locally">Viewing Documentation Locally<a class="headerlink" href="#viewing-documentation-locally" title="Permanent link">&para;</a></h3>
 <p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/flepimop2/</code>. To only build the documentation you can run <code>just docs</code> which will generate the documentation site in the <code>site/</code> directory.</p>
@@ -1785,7 +1785,7 @@ uv run pytest tests/{module}/test_{function}.py -v  # Run specific test file
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>

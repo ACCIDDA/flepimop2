@@ -1334,50 +1334,50 @@
 <h2 id="creating-the-external-provider-package">Creating the External Provider Package<a class="headerlink" href="#creating-the-external-provider-package" title="Permanent link">&para;</a></h2>
 <h3 id="step-1-initialize-the-package-with-uv">Step 1: Initialize the Package with <code>uv</code><a class="headerlink" href="#step-1-initialize-the-package-with-uv" title="Permanent link">&para;</a></h3>
 <p>First, create a new Python package using <code>uv</code> with the <code>hatch</code> build backend:</p>
-<pre><code class="language-bash"># Create a new directory for your package
-mkdir flepimop2-npz-backend
-cd flepimop2-npz-backend
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a new directory for your package</span>
+mkdir<span class="w"> </span>flepimop2-npz-backend
+<span class="nb">cd</span><span class="w"> </span>flepimop2-npz-backend
 
-# Initialize a new Python package
-uv init --package --build-backend hatchling
+<span class="c1"># Initialize a new Python package</span>
+uv<span class="w"> </span>init<span class="w"> </span>--package<span class="w"> </span>--build-backend<span class="w"> </span>hatchling
 
-# Add dependencies
-uv add numpy
-uv add &quot;git+https://github.com/ACCIDDA/flepimop2&quot;
-</code></pre>
+<span class="c1"># Add dependencies</span>
+uv<span class="w"> </span>add<span class="w"> </span>numpy
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;git+https://github.com/ACCIDDA/flepimop2&quot;</span>
+</code></pre></div>
 <p>This creates a basic package structure with a <code>pyproject.toml</code> file configured to use the Hatch build backend.</p>
 <h3 id="step-2-configure-pyprojecttoml">Step 2: Configure <code>pyproject.toml</code><a class="headerlink" href="#step-2-configure-pyprojecttoml" title="Permanent link">&para;</a></h3>
 <p>Edit the generated <code>pyproject.toml</code> file to configure the namespace package and add <code>flepimop2</code> as a dependency. Your <code>pyproject.toml</code> should look like this:</p>
-<pre><code class="language-toml">[project]
-name = &quot;flepimop2-npz-backend&quot;
-version = &quot;0.1.0&quot;
-description = &quot;An external provider for flepimop2 for saving and reading npz files.&quot;
-readme = &quot;README.md&quot;
-requires-python = &quot;&gt;=3.11&quot;
-dependencies = [
-    &quot;flepimop2&quot;,
-    &quot;numpy&gt;=2.3.5&quot;,
-]
+<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;flepimop2-npz-backend&quot;</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span>
+<span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;An external provider for flepimop2 for saving and reading npz files.&quot;</span>
+<span class="n">readme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;README.md&quot;</span>
+<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.11&quot;</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;flepimop2&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;numpy&gt;=2.3.5&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-[build-system]
-requires = [&quot;hatchling&quot;]
-build-backend = &quot;hatchling.build&quot;
+<span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;hatchling&quot;</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hatchling.build&quot;</span>
 
-[tool.hatch.build.targets.wheel]
-packages = [&quot;src/flepimop2&quot;]
+<span class="k">[tool.hatch.build.targets.wheel]</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;src/flepimop2&quot;</span><span class="p">]</span>
 
-[tool.uv.sources]
-flepimop2 = { git = &quot;https://github.com/ACCIDDA/flepimop2&quot; }
-</code></pre>
+<span class="k">[tool.uv.sources]</span>
+<span class="n">flepimop2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/ACCIDDA/flepimop2&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
 <p>The critical configuration here is <code>[tool.hatch.build.targets.wheel]</code>, which tells Hatch to package everything under <code>src/flepimop2</code> as part of the <code>flepimop2</code> namespace.</p>
 <h3 id="step-3-create-the-directory-structure">Step 3: Create the Directory Structure<a class="headerlink" href="#step-3-create-the-directory-structure" title="Permanent link">&para;</a></h3>
 <p>Create the following directory structure for your namespace package:</p>
-<pre><code class="language-bash">rm -r src/
-mkdir -p src/flepimop2/backend/npz
-</code></pre>
+<div class="highlight"><pre><span></span><code>rm<span class="w"> </span>-r<span class="w"> </span>src/
+mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
+</code></pre></div>
 <p>Do not create <code>__init__.py</code> files in <code>src/flepimop2/</code> or <code>src/flepimop2/backend/</code>. These directories must remain empty to function as namespace packages. Only create an <code>__init__.py</code> file in the leaf module directory.</p>
 <p>Your directory structure should look like this:</p>
-<pre><code>flepimop2-npz-backend/
+<div class="highlight"><pre><span></span><code>flepimop2-npz-backend/
 ├── pyproject.toml
 ├── README.md
 └── src/
@@ -1385,99 +1385,99 @@ mkdir -p src/flepimop2/backend/npz
         └── backend/        # NO __init__.py (namespace package)
             └── npz/        # This directory WILL have __init__.py
                 └── __init__.py
-</code></pre>
+</code></pre></div>
 <p>The lack of <code>__init__.py</code> files in the intermediate directories (<code>flepimop2/</code> and <code>backend/</code>) is what makes them namespace packages, allowing multiple packages to contribute to the same namespace without conflicts.</p>
 <h3 id="step-4-implement-the-npzbackend-class">Step 4: Implement the <code>NpzBackend</code> Class<a class="headerlink" href="#step-4-implement-the-npzbackend-class" title="Permanent link">&para;</a></h3>
 <p>Now we'll implement the <code>NpzBackend</code> class in <code>src/flepimop2/backend/npz/__init__.py</code>. Backends, similar to other modules, must implement the <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a> class which defines the interface. There are two approaches to implementing a module class in <code>flepimop2</code>.</p>
 <h4 id="approach-1-inherit-from-modulemodel-recommended">Approach 1: Inherit from <code>ModuleModel</code> (Recommended)<a class="headerlink" href="#approach-1-inherit-from-modulemodel-recommended" title="Permanent link">&para;</a></h4>
 <p>When you inherit from <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>, your class becomes a Pydantic model that handles configuration validation automatically. You don't need to write a separate <code>build</code> function.</p>
-<pre><code class="language-python">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;</span>
 
-import os
-from pathlib import Path
-from typing import Literal
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
-import numpy as np
-from numpy.typing import NDArray
-from pydantic import Field, field_validator
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 
-from flepimop2.abcs import BackendABC
-from flepimop2.configuration import ModuleModel
-from flepimop2.meta import RunMeta
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.abcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunMeta</span>
 
 
-class NpzBackend(ModuleModel, BackendABC):
-    &quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;
+<span class="k">class</span><span class="w"> </span><span class="nc">NpzBackend</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;</span>
 
-    module: Literal[&quot;flepimop2.backend.npz&quot;] = &quot;flepimop2.backend.npz&quot;
-    root: Path = Field(default_factory=lambda: Path.cwd() / &quot;model_output&quot;)
-    compressed: bool = Field(default=True, description=&quot;Use compression when saving&quot;)
+    <span class="n">module</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flepimop2.backend.npz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.backend.npz&quot;</span>
+    <span class="n">root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;model_output&quot;</span><span class="p">)</span>
+    <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use compression when saving&quot;</span><span class="p">)</span>
 
-    @field_validator(&quot;root&quot;, mode=&quot;after&quot;)
-    @classmethod
-    def _validate_root(cls, root: Path) -&gt; Path:
-        &quot;&quot;&quot;
-        Validate that the root path is a writable directory.
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate that the root path is a writable directory.</span>
 
-        Args:
-            root: The root path to validate.
+<span class="sd">        Args:</span>
+<span class="sd">            root: The root path to validate.</span>
 
-        Returns:
-            The validated root path.
+<span class="sd">        Returns:</span>
+<span class="sd">            The validated root path.</span>
 
-        Raises:
-            TypeError: If the root path is not a directory or is not writable.
-        &quot;&quot;&quot;
-        if not (root.is_dir() and os.access(root, os.W_OK)):
-            msg = f&quot;The specified 'root' is not a directory or is not writable: {root}&quot;
-            raise TypeError(msg)
-        return root
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the root path is not a directory or is not writable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The specified &#39;root&#39; is not a directory or is not writable: </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">root</span>
 
-    def _get_file_path(self, run_meta: RunMeta) -&gt; Path:
-        &quot;&quot;&quot;
-        Generate a dynamic file path based on run metadata.
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a dynamic file path based on run metadata.</span>
 
-        Args:
-            run_meta: Metadata about the current run.
+<span class="sd">        Args:</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
 
-        Returns:
-            The dynamically generated file path.
-        &quot;&quot;&quot;
-        timestamp_str = run_meta.timestamp.strftime(&quot;%Y%m%d_%H%M%S&quot;)
-        name_part = f&quot;{run_meta.name}_&quot; if run_meta.name else &quot;&quot;
-        filename = f&quot;{name_part}{run_meta.action}_{timestamp_str}.npz&quot;
-        return self.root / filename
+<span class="sd">        Returns:</span>
+<span class="sd">            The dynamically generated file path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timestamp_str</span> <span class="o">=</span> <span class="n">run_meta</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">name_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_&quot;</span> <span class="k">if</span> <span class="n">run_meta</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name_part</span><span class="si">}{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp_str</span><span class="si">}</span><span class="s2">.npz&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span>
 
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -&gt; None:
-        &quot;&quot;&quot;
-        Save a numpy array to an NPZ file.
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save a numpy array to an NPZ file.</span>
 
-        Args:
-            data: The numpy array to save.
-            run_meta: Metadata about the current run.
-        &quot;&quot;&quot;
-        file_path = self._get_file_path(run_meta)
-        file_path.parent.mkdir(parents=True, exist_ok=True)
+<span class="sd">        Args:</span>
+<span class="sd">            data: The numpy array to save.</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_path</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
+        <span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        if self.compressed:
-            np.savez_compressed(file_path, data=data)
-        else:
-            np.savez(file_path, data=data)
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compressed</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
-    def _read(self, run_meta: RunMeta) -&gt; NDArray[np.float64]:
-        &quot;&quot;&quot;
-        Read a numpy array from an NPZ file.
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read a numpy array from an NPZ file.</span>
 
-        Args:
-            run_meta: Metadata about the current run.
+<span class="sd">        Args:</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
 
-        Returns:
-            The numpy array read from the NPZ file.
-        &quot;&quot;&quot;
-        file_path = self._get_file_path(run_meta)
-        with np.load(file_path) as npz_file:
-            return npz_file[&quot;data&quot;]
-</code></pre>
+<span class="sd">        Returns:</span>
+<span class="sd">            The numpy array read from the NPZ file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_path</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">npz_file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">npz_file</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+</code></pre></div>
 <p>The key points of this approach are:</p>
 <ul>
 <li>The class inherits from both <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> and <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a>.</li>
@@ -1489,106 +1489,106 @@ class NpzBackend(ModuleModel, BackendABC):
 <p>This is the generally recommended approach for constructing modules.</p>
 <h4 id="approach-2-custom-build-function">Approach 2: Custom <code>build</code> Function<a class="headerlink" href="#approach-2-custom-build-function" title="Permanent link">&para;</a></h4>
 <p>If you don't inherit from <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>, you need to provide a custom <code>build</code> function that constructs your class from a configuration dictionary:</p>
-<pre><code class="language-python">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;NPZ backend for flepimop2.&quot;&quot;&quot;</span>
 
-import os
-from pathlib import Path
-from typing import Any
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-import numpy as np
-from numpy.typing import NDArray
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
-from flepimop2.abcs import BackendABC
-from flepimop2.configuration import ModuleModel
-from flepimop2.meta import RunMeta
-
-
-class NpzBackend(BackendABC):
-    &quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;
-
-    def __init__(self, root: Path | None = None, compressed: bool = True) -&gt; None:
-        &quot;&quot;&quot;
-        Initialize the NPZ backend.
-
-        Args:
-            root: The root directory for saving files. Defaults to ./model_output
-            compressed: Whether to use compression when saving. Defaults to True.
-
-        Raises:
-            TypeError: If root is not a writable directory.
-        &quot;&quot;&quot;
-        self.root = root if root is not None else Path.cwd() / &quot;model_output&quot;
-        self.compressed = compressed
-
-        if not (self.root.is_dir() and os.access(self.root, os.W_OK)):
-            msg = f&quot;The specified 'root' is not a directory or is not writable: {self.root}&quot;
-            raise TypeError(msg)
-
-    def _get_file_path(self, run_meta: RunMeta) -&gt; Path:
-        &quot;&quot;&quot;
-        Generate a dynamic file path based on run metadata.
-
-        Args:
-            run_meta: Metadata about the current run.
-
-        Returns:
-            The dynamically generated file path.
-        &quot;&quot;&quot;
-        timestamp_str = run_meta.timestamp.strftime(&quot;%Y%m%d_%H%M%S&quot;)
-        name_part = f&quot;{run_meta.name}_&quot; if run_meta.name else &quot;&quot;
-        filename = f&quot;{name_part}{run_meta.action}_{timestamp_str}.npz&quot;
-        return self.root / filename
-
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -&gt; None:
-        &quot;&quot;&quot;
-        Save a numpy array to an NPZ file.
-
-        Args:
-            data: The numpy array to save.
-            run_meta: Metadata about the current run.
-        &quot;&quot;&quot;
-        file_path = self._get_file_path(run_meta)
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if self.compressed:
-            np.savez_compressed(file_path, data=data)
-        else:
-            np.savez(file_path, data=data)
-
-    def _read(self, run_meta: RunMeta) -&gt; NDArray[np.float64]:
-        &quot;&quot;&quot;
-        Read a numpy array from an NPZ file.
-
-        Args:
-            run_meta: Metadata about the current run.
-
-        Returns:
-            The numpy array read from the NPZ file.
-        &quot;&quot;&quot;
-        file_path = self._get_file_path(run_meta)
-        with np.load(file_path) as npz_file:
-            return npz_file[&quot;data&quot;]
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.abcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunMeta</span>
 
 
-def build(config: dict[str, Any] | ModuleModel) -&gt; NpzBackend:
-    &quot;&quot;&quot;
-    Build an NPZ backend from a configuration.
+<span class="k">class</span><span class="w"> </span><span class="nc">NpzBackend</span><span class="p">(</span><span class="n">BackendABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;</span>
 
-    Args:
-        config: Configuration dictionary or ModuleModel containing backend settings.
-            Expected keys:
-            - root (optional): Path to the output directory
-            - compressed (optional): Whether to use compression
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the NPZ backend.</span>
 
-    Returns:
-        An instance of NpzBackend.
-    &quot;&quot;&quot;
-    config_dict = config.model_dump() if isinstance(config, ModuleModel) else config
-    config_dict = {k: v for k, v in config.items() if k != &quot;module&quot;}
-    if &quot;root&quot; in config_dict and isinstance(config_dict[&quot;root&quot;], str):
-        config_dict[&quot;root&quot;] = Path(config_dict[&quot;root&quot;])
-    return NpzBackend(**config_dict)
-</code></pre>
+<span class="sd">        Args:</span>
+<span class="sd">            root: The root directory for saving files. Defaults to ./model_output</span>
+<span class="sd">            compressed: Whether to use compression when saving. Defaults to True.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If root is not a writable directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;model_output&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compressed</span> <span class="o">=</span> <span class="n">compressed</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The specified &#39;root&#39; is not a directory or is not writable: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a dynamic file path based on run metadata.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The dynamically generated file path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timestamp_str</span> <span class="o">=</span> <span class="n">run_meta</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">name_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_&quot;</span> <span class="k">if</span> <span class="n">run_meta</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name_part</span><span class="si">}{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp_str</span><span class="si">}</span><span class="s2">.npz&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save a numpy array to an NPZ file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: The numpy array to save.</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_path</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
+        <span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compressed</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read a numpy array from an NPZ file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            run_meta: Metadata about the current run.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The numpy array read from the NPZ file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_path</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">npz_file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">npz_file</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NpzBackend</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an NPZ backend from a configuration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config: Configuration dictionary or ModuleModel containing backend settings.</span>
+<span class="sd">            Expected keys:</span>
+<span class="sd">            - root (optional): Path to the output directory</span>
+<span class="sd">            - compressed (optional): Whether to use compression</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of NpzBackend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span>
+    <span class="n">config_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;module&quot;</span><span class="p">}</span>
+    <span class="k">if</span> <span class="s2">&quot;root&quot;</span> <span class="ow">in</span> <span class="n">config_dict</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">NpzBackend</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
+</code></pre></div>
 <p>The key points of this approach are:</p>
 <ul>
 <li>The class only inherits from <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a>, not <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a>.</li>
@@ -1600,16 +1600,16 @@ def build(config: dict[str, Any] | ModuleModel) -&gt; NpzBackend:
 <p>This approach is generally not recommended unless you have very advanced needs that Pydantic based configuration parsing and validating does not support.</p>
 <h3 id="step-5-install-the-package">Step 5: Install the Package<a class="headerlink" href="#step-5-install-the-package" title="Permanent link">&para;</a></h3>
 <p>Install your package in development mode:</p>
-<pre><code class="language-bash">uv pip install -e .
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
 <p>This makes the <code>flepimop2.backend.npz</code> module available to <code>flepimop2</code>.</p>
 <h3 id="step-6-use-the-backend-in-a-configuration-file">Step 6: Use the Backend in a Configuration File<a class="headerlink" href="#step-6-use-the-backend-in-a-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Now you can use your custom backend in a <code>flepimop2</code> configuration file with <code>module: 'npz'</code> like so:</p>
-<pre><code class="language-yaml">backend:
-  - module: 'npz'
-    root: './npz_output'
-    compressed: true
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">backend</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;npz&#39;</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;./npz_output&#39;</span>
+<span class="w">    </span><span class="nt">compressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 <p>When <code>flepimop2</code> processes this configuration:</p>
 <ol>
 <li>It sees <code>module: 'npz'</code> in the backend section.</li>
@@ -1620,36 +1620,36 @@ def build(config: dict[str, Any] | ModuleModel) -&gt; NpzBackend:
 </ol>
 <h2 id="testing-your-external-provider-package">Testing Your External Provider Package<a class="headerlink" href="#testing-your-external-provider-package" title="Permanent link">&para;</a></h2>
 <p>It's important to test your external provider package to ensure it integrates correctly with <code>flepimop2</code>. Here's a minimal unit test:</p>
-<pre><code class="language-python">&quot;&quot;&quot;Unit test for NPZ backend.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit test for NPZ backend.&quot;&quot;&quot;</span>
 
-from pathlib import Path
-import numpy as np
-from flepimop2.backend.npz import NpzBackend
-from flepimop2.meta import RunMeta
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.backend.npz</span><span class="w"> </span><span class="kn">import</span> <span class="n">NpzBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunMeta</span>
 
 
-def test_npz_backend_save_and_load(tmp_path: Path) -&gt; None:
-    &quot;&quot;&quot;Test that NPZ backend can save and load data.&quot;&quot;&quot;
-    # Create backend instance
-    backend = NpzBackend(root=tmp_path, compressed=True)
+<span class="k">def</span><span class="w"> </span><span class="nf">test_npz_backend_save_and_load</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that NPZ backend can save and load data.&quot;&quot;&quot;</span>
+    <span class="c1"># Create backend instance</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">NpzBackend</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">compressed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    # Create test data
-    test_data = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    <span class="c1"># Create test data</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]])</span>
 
-    # Create run metadata
-    run_meta = RunMeta(name=&quot;test&quot;, action=&quot;simulate&quot;)
+    <span class="c1"># Create run metadata</span>
+    <span class="n">run_meta</span> <span class="o">=</span> <span class="n">RunMeta</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;simulate&quot;</span><span class="p">)</span>
 
-    # Save data
-    backend.save(test_data, run_meta)
+    <span class="c1"># Save data</span>
+    <span class="n">backend</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">)</span>
 
-    # Verify file was created
-    output_files = list(tmp_path.glob(&quot;*.npz&quot;))
-    assert len(output_files) == 1
+    <span class="c1"># Verify file was created</span>
+    <span class="n">output_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.npz&quot;</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 
-    # Load data and verify it matches
-    loaded_data = backend.read(run_meta)
-    np.testing.assert_array_equal(loaded_data, test_data)
-</code></pre>
+    <span class="c1"># Load data and verify it matches</span>
+    <span class="n">loaded_data</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">loaded_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+</code></pre></div>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>This tutorial covered:</p>
 <ul>
@@ -1714,7 +1714,7 @@ def test_npz_backend_save_and_load(tmp_path: Path) -&gt; None:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>

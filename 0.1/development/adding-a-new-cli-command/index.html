@@ -1235,87 +1235,87 @@
 <p>This infrastructure utilizes <a href="https://click.palletsprojects.com/en/stable/"><code>click</code></a> so it may be helpful to reference their documentation occasionally. </p>
 <h2 id="adding-the-flepimop2-hello-command">Adding The <code>flepimop2 hello</code> Command<a class="headerlink" href="#adding-the-flepimop2-hello-command" title="Permanent link">&para;</a></h2>
 <p>In particular this tutorial will be add a new command to the <code>flepimop2</code> CLI called <code>hello</code> which will take a new number argument. The end result of this tutorial will be:</p>
-<pre><code class="language-shell">$ flepimop2 --help
-Usage: flepimop2 [OPTIONS] COMMAND [ARGS]...
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>flepimop2<span class="w"> </span>--help
+Usage:<span class="w"> </span>flepimop2<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
-  flepimop2 - Flexible Epidemic Modeling Pipeline (version 2).
+<span class="w">  </span>flepimop2<span class="w"> </span>-<span class="w"> </span>Flexible<span class="w"> </span>Epidemic<span class="w"> </span>Modeling<span class="w"> </span>Pipeline<span class="w"> </span><span class="o">(</span>version<span class="w"> </span><span class="m">2</span><span class="o">)</span>.
 
 Options:
-  --version  Show the version and exit.
-  --help     Show this message and exit.
+<span class="w">  </span>--version<span class="w">  </span>Show<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--help<span class="w">     </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
-  build     Compile and build a model defined in a configuration file.
-  hello     This command says hello a specified number of times.
-  process   Execute a processing step based on a configuration file.
-  simulate  Run simulations based on a configuration file.
-$ flepimop2 hello --help
-Usage: flepimop2 hello [OPTIONS] [TIMES]
+<span class="w">  </span>build<span class="w">     </span>Compile<span class="w"> </span>and<span class="w"> </span>build<span class="w"> </span>a<span class="w"> </span>model<span class="w"> </span>defined<span class="w"> </span><span class="k">in</span><span class="w"> </span>a<span class="w"> </span>configuration<span class="w"> </span>file.
+<span class="w">  </span>hello<span class="w">     </span>This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>says<span class="w"> </span>hello<span class="w"> </span>a<span class="w"> </span>specified<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>times.
+<span class="w">  </span>process<span class="w">   </span>Execute<span class="w"> </span>a<span class="w"> </span>processing<span class="w"> </span>step<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>configuration<span class="w"> </span>file.
+<span class="w">  </span>simulate<span class="w">  </span>Run<span class="w"> </span>simulations<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>configuration<span class="w"> </span>file.
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>--help
+Usage:<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>TIMES<span class="o">]</span>
 
-  This command says hello a specified number of times.
+<span class="w">  </span>This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>says<span class="w"> </span>hello<span class="w"> </span>a<span class="w"> </span>specified<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>times.
 
 Options:
-  --dry-run        Should this command be run using dry run?
-  -v, --verbosity  The verbosity level to use for this command.
-  --help           Show this message and exit.
-</code></pre>
+<span class="w">  </span>--dry-run<span class="w">        </span>Should<span class="w"> </span>this<span class="w"> </span><span class="nb">command</span><span class="w"> </span>be<span class="w"> </span>run<span class="w"> </span>using<span class="w"> </span>dry<span class="w"> </span>run?
+<span class="w">  </span>-v,<span class="w"> </span>--verbosity<span class="w">  </span>The<span class="w"> </span>verbosity<span class="w"> </span>level<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>command.
+<span class="w">  </span>--help<span class="w">           </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</code></pre></div>
 <h3 id="add-the-hellocommand-class">Add The <code>HelloCommand</code> Class<a class="headerlink" href="#add-the-hellocommand-class" title="Permanent link">&para;</a></h3>
 <p>The first step is to implement the <code>HelloCommand</code> class in a new <code>src/flepimop2/_cli/_hello_command.py</code> file.</p>
-<pre><code class="language-python">&quot;&quot;&quot;Hello command implementation.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Hello command implementation.&quot;&quot;&quot;</span>
 
-__all__ = []
-
-
-from flepimop2._cli._cli_command import CliCommand
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
 
 
-class HelloCommand(CliCommand):
-    &quot;&quot;&quot;This command says hello a specified number of times.&quot;&quot;&quot;
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._cli_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">CliCommand</span>
 
-    def run(self, *, times: int, dry_run: bool) -&gt; None:  # type: ignore[override]
-        &quot;&quot;&quot;
-        Say hello a specified number of times.
 
-        Args:
-            times: The number of times to say hello.
-            dry_run: Whether dry run mode is enabled.
-        &quot;&quot;&quot;
-        if dry_run:
-            self.info(f&quot;Would said hello {times} time(s).&quot;)
-            return
-        for i in range(times):
-            self.info(f&quot;({i + 1}/{times}) Hello, world!&quot;)
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloCommand</span><span class="p">(</span><span class="n">CliCommand</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This command says hello a specified number of times.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Say hello a specified number of times.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            times: The number of times to say hello.</span>
+<span class="sd">            dry_run: Whether dry run mode is enabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Would said hello </span><span class="si">{</span><span class="n">times</span><span class="si">}</span><span class="s2"> time(s).&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">times</span><span class="si">}</span><span class="s2">) Hello, world!&quot;</span><span class="p">)</span>
+</code></pre></div>
 <p>The <code>run</code> method contains the logic of the command and it's keyword arguments correspond to the options/arguments requested from <code>COMMON_OPTIONS</code>. The <code>CliCommand</code> also provides consistent logging infrastructure in the form of the <code>log</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, and <code>critical</code> methods. Note that a <code>verbosity</code> option is not explicitly requested, this option is added by default to the command and <code>CliCommand</code> handles translating the given verbosity to a logging level so developers only need to concern themselves with calling the appropriate logging method. To ease development the class docstring will be used as the help string for the command and the command's name is extracted from the class name.</p>
 <h3 id="adding-a-new-option">Adding A New Option<a class="headerlink" href="#adding-a-new-option" title="Permanent link">&para;</a></h3>
 <p>The implementation of <code>flepimop2 hello</code> needs a times argument. To add this argument a developer needs to add it to the <code>COMMON_OPTIONS</code> dictionary in <code>src/flepimop2/_cli/_options.py</code>.</p>
-<pre><code class="language-python"># Dictionary of common Click options and arguments
-# These can be requested by command classes to maintain consistency
-COMMON_OPTIONS: Final = {
-    ...
-    &quot;times&quot;: click.argument(
-        &quot;times&quot;,
-        type=click.IntRange(min=1),
-        default=1,
-        required=False,
-    ),
-    ...
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># Dictionary of common Click options and arguments</span>
+<span class="c1"># These can be requested by command classes to maintain consistency</span>
+<span class="n">COMMON_OPTIONS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">...</span>
+    <span class="s2">&quot;times&quot;</span><span class="p">:</span> <span class="n">click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span>
+        <span class="s2">&quot;times&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">IntRange</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>This adds a new <code>times</code> argument to the <code>COMMON_OPTIONS</code> dictionary. Note that the argument is not tied specifically to the <code>flepimop2 hello</code> command since this argument could be used by other commands.</p>
 <h3 id="register-the-new-command">Register The New Command<a class="headerlink" href="#register-the-new-command" title="Permanent link">&para;</a></h3>
 <p>The final step is to register the new command with the <code>flepimop2</code> CLI by adding a call to <code>register_command</code> in <code>src/flepimop2/_cli/_cli.py</code>.</p>
-<pre><code class="language-python">...
-from flepimop2._cli._build_command import BuildCommand
-from flepimop2._cli._hello_command import HelloCommand
-from flepimop2._cli._process_command import ProcessCommand
-...
-# Register all commands
-register_command(BuildCommand, cli)
-register_command(SimulateCommand, cli)
-register_command(ProcessCommand, cli)
-register_command(HelloCommand, cli)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._build_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuildCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._hello_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelloCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._process_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessCommand</span>
+<span class="o">...</span>
+<span class="c1"># Register all commands</span>
+<span class="n">register_command</span><span class="p">(</span><span class="n">BuildCommand</span><span class="p">,</span> <span class="n">cli</span><span class="p">)</span>
+<span class="n">register_command</span><span class="p">(</span><span class="n">SimulateCommand</span><span class="p">,</span> <span class="n">cli</span><span class="p">)</span>
+<span class="n">register_command</span><span class="p">(</span><span class="n">ProcessCommand</span><span class="p">,</span> <span class="n">cli</span><span class="p">)</span>
+<span class="n">register_command</span><span class="p">(</span><span class="n">HelloCommand</span><span class="p">,</span> <span class="n">cli</span><span class="p">)</span>
+</code></pre></div>
 <p>The <code>register_command</code> function takes the CLI command class as it's first argument and the <a href="https://click.palletsprojects.com/en/stable/api/#click.Group"><code>click.Group</code></a> to attach the command to. In this case the command is being attached to the main cli, <code>cli</code>, so it can be invoked <code>flepimop2 hello</code>. But one could have created a new click group so one could have nested subcommands, i.e. <code>flepimop2 greetings hello</code>.</p>
 <h2 id="testing-a-new-command">Testing A New Command<a class="headerlink" href="#testing-a-new-command" title="Permanent link">&para;</a></h2>
 <p>Before preparing this command for a PR it's important to test the new command. There are two types of testing:</p>
@@ -1325,36 +1325,36 @@ register_command(HelloCommand, cli)
 </ol>
 <h3 id="ad-hoc-testing">Ad-Hoc Testing<a class="headerlink" href="#ad-hoc-testing" title="Permanent link">&para;</a></h3>
 <p>The first pass for testing a new command should be ad-hoc testing because it's the easiest way to get feedback during development. This entails running the command several times and manually checking that the output matches the expected.</p>
-<pre><code class="language-shell">$ flepimop2 hello --help
-Usage: flepimop2 hello [OPTIONS] [TIMES]
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>--help
+Usage:<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>TIMES<span class="o">]</span>
 
-  This command says hello a specified number of times.
+<span class="w">  </span>This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>says<span class="w"> </span>hello<span class="w"> </span>a<span class="w"> </span>specified<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>times.
 
 Options:
-  --dry-run        Should this command be run using dry run?
-  -v, --verbosity  The verbosity level to use for this command.
-  --help           Show this message and exit.
-$ flepimop2 hello 3
-$ flepimop2 hello -v 3
-$ flepimop2 hello -vv 3
-2025-11-06 09:48:40,962:INFO&gt; (1/3) Hello, world!
-2025-11-06 09:48:40,962:INFO&gt; (2/3) Hello, world!
-2025-11-06 09:48:40,962:INFO&gt; (3/3) Hello, world!
-$ flepimop2 hello -vvv 3
-2025-11-06 09:48:46,452:DEBUG&gt; Given 2 options/arguments:
-2025-11-06 09:48:46,452:DEBUG&gt; times   = 3.
-2025-11-06 09:48:46,452:DEBUG&gt; dry_run = 0.
-2025-11-06 09:48:46,452:INFO&gt; (1/3) Hello, world!
-2025-11-06 09:48:46,452:INFO&gt; (2/3) Hello, world!
-2025-11-06 09:48:46,452:INFO&gt; (3/3) Hello, world!
-$ flepimop2 hello -vv --dry-run 5
-2025-11-06 09:49:00,106:INFO&gt; Would said hello 5 time(s).
-$ flepimop2 hello 0
-Usage: flepimop2 hello [OPTIONS] [TIMES]
-Try 'flepimop2 hello --help' for help.
+<span class="w">  </span>--dry-run<span class="w">        </span>Should<span class="w"> </span>this<span class="w"> </span><span class="nb">command</span><span class="w"> </span>be<span class="w"> </span>run<span class="w"> </span>using<span class="w"> </span>dry<span class="w"> </span>run?
+<span class="w">  </span>-v,<span class="w"> </span>--verbosity<span class="w">  </span>The<span class="w"> </span>verbosity<span class="w"> </span>level<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>command.
+<span class="w">  </span>--help<span class="w">           </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span><span class="m">3</span>
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>-v<span class="w"> </span><span class="m">3</span>
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>-vv<span class="w"> </span><span class="m">3</span>
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:40,962:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">1</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:40,962:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">2</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:40,962:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">3</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>-vvv<span class="w"> </span><span class="m">3</span>
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:DEBUG&gt;<span class="w"> </span>Given<span class="w"> </span><span class="m">2</span><span class="w"> </span>options/arguments:
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:DEBUG&gt;<span class="w"> </span><span class="nb">times</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>.
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:DEBUG&gt;<span class="w"> </span><span class="nv">dry_run</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">1</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">2</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:48:46,452:INFO&gt;<span class="w"> </span><span class="o">(</span><span class="m">3</span>/3<span class="o">)</span><span class="w"> </span>Hello,<span class="w"> </span>world!
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span>-vv<span class="w"> </span>--dry-run<span class="w"> </span><span class="m">5</span>
+<span class="m">2025</span>-11-06<span class="w"> </span><span class="m">09</span>:49:00,106:INFO&gt;<span class="w"> </span>Would<span class="w"> </span>said<span class="w"> </span>hello<span class="w"> </span><span class="m">5</span><span class="w"> </span>time<span class="o">(</span>s<span class="o">)</span>.
+$<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span><span class="m">0</span>
+Usage:<span class="w"> </span>flepimop2<span class="w"> </span>hello<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>TIMES<span class="o">]</span>
+Try<span class="w"> </span><span class="s1">&#39;flepimop2 hello --help&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>help.
 
-Error: Invalid value for '[TIMES]': 0 is not in the range x&gt;=1.
-</code></pre>
+Error:<span class="w"> </span>Invalid<span class="w"> </span>value<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s1">&#39;[TIMES]&#39;</span>:<span class="w"> </span><span class="m">0</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>range<span class="w"> </span>x&gt;<span class="o">=</span><span class="m">1</span>.
+</code></pre></div>
 <p>This quick ad-hoc testing matches the following expected behavior:</p>
 <ul>
 <li>The command should only produce output at <code>-vv</code> and above because it uses the <code>info</code> method to log output.</li>
@@ -1369,53 +1369,53 @@ Error: Invalid value for '[TIMES]': 0 is not in the range x&gt;=1.
 <li>Is the behavior essential to the CLI command? For example, the output logged to the user is non-essential. <code>flepimop2</code> does not make guarantees about CLI output consistency across versions. The only case where one might want to test the logged output is to see if a particular branch was reached, i.e. a certain message is only emitted if certain conditions are met.</li>
 </ol>
 <p>With that being said, the <code>flepimop2 hello</code> command does not have behavior that would be worth unit testing. For the purposes of unit testing change the <code>HelloCommand.run</code> method to:</p>
-<pre><code class="language-python">...
-    def run(self, *, times: int, dry_run: bool) -&gt; None:  # type: ignore[override]
-        &quot;&quot;&quot;
-        Say hello a specified number of times.
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Say hello a specified number of times.</span>
 
-        Args:
-            times: The number of times to say hello.
-            dry_run: Whether dry run mode is enabled.
+<span class="sd">        Args:</span>
+<span class="sd">            times: The number of times to say hello.</span>
+<span class="sd">            dry_run: Whether dry run mode is enabled.</span>
 
-        Raises:
-            ValueError: If `times` is greater than 10.
-        &quot;&quot;&quot;
-        if times &gt; 10:
-            msg = &quot;Cannot say hello more than 10 times.&quot;
-            raise ValueError(msg)
-        if dry_run:
-            self.info(f&quot;Would said hello {times} time(s).&quot;)
-            return
-        for i in range(times):
-            self.info(f&quot;({i + 1}/{times}) Hello, world!&quot;)
-</code></pre>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If `times` is greater than 10.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">times</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot say hello more than 10 times.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Would said hello </span><span class="si">{</span><span class="n">times</span><span class="si">}</span><span class="s2"> time(s).&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">times</span><span class="si">}</span><span class="s2">) Hello, world!&quot;</span><span class="p">)</span>
+</code></pre></div>
 <p>Now the command has behavior, raising an exception, that is worth testing and cannot be pushed to the object being operated on or an external function. To unit test this behavior add the following to <code>tests/_cli/test_hello_command.py</code>:</p>
-<pre><code class="language-python">&quot;&quot;&quot;Unit tests for the `flepimop2 hello` CLI command.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit tests for the `flepimop2 hello` CLI command.&quot;&quot;&quot;</span>
 
-from flepimop2._cli._hello_command import HelloCommand
-import pytest
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._hello_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelloCommand</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 
 
-def test_raises_value_error_if_times_exceeds_limit() -&gt; None:
-    &quot;&quot;&quot;Test that ValueError is raised if times &gt; 10.&quot;&quot;&quot;
-    command = HelloCommand()
-    with pytest.raises(ValueError, match=r&quot;Cannot say hello more than 10 times.&quot;):
-        command.run(times=11, dry_run=False)
-</code></pre>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_raises_value_error_if_times_exceeds_limit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that ValueError is raised if times &gt; 10.&quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">HelloCommand</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Cannot say hello more than 10 times.&quot;</span><span class="p">):</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
 <p>Another benefit to <code>flepimop2</code>'s CLI infrastructure is that the <code>run</code> method of a <code>CliCommand</code> subclass can be tested directly rather than needing to use <a href="https://docs.python.org/3/library/subprocess.html#subprocess.run"><code>subprocess.run</code></a> or <a href="https://click.palletsprojects.com/en/stable/testing/"><code>click.testing.CliRunner</code></a>. If the verbosity level needs to be controlled for a unit test a developer could modify this test by invoking <code>HelloCommand.__call__</code> instead with the same arguments as <code>run</code> but including verbosity like so:</p>
-<pre><code class="language-python">&quot;&quot;&quot;Unit tests for the `flepimop2 hello` CLI command.&quot;&quot;&quot;
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit tests for the `flepimop2 hello` CLI command.&quot;&quot;&quot;</span>
 
-from flepimop2._cli._hello_command import HelloCommand
-import pytest
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2._cli._hello_command</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelloCommand</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 
 
-def test_raises_value_error_if_times_exceeds_limit() -&gt; None:
-    &quot;&quot;&quot;Test that ValueError is raised if times &gt; 10.&quot;&quot;&quot;
-    command = HelloCommand()
-    with pytest.raises(ValueError, match=r&quot;Cannot say hello more than 10 times.&quot;):
-        command(times=11, dry_run=False, verbosity=0)
-</code></pre>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_raises_value_error_if_times_exceeds_limit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that ValueError is raised if times &gt; 10.&quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">HelloCommand</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Cannot say hello more than 10 times.&quot;</span><span class="p">):</span>
+        <span class="n">command</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>This tutorial covered:</p>
 <ul>
@@ -1474,7 +1474,7 @@ def test_raises_value_error_if_times_exceeds_limit() -&gt; None:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
