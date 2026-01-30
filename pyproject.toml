@@ -41,10 +41,12 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "docs/",
     "src/flepimop2/",
     "tests/",
 ]
+
+[tool.ruff]
+exclude = ["docs/assets/*.py"]
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -81,7 +83,7 @@ allow-star-arg-any = true
 convention = "google"
 
 [tool.mypy]
-exclude = ["^build/"]
+exclude = ["^build/", "^docs/"]
 namespace_packages = true
 mypy_path = ["src"]
 explicit_package_bases = true

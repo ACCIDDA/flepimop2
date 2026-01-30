@@ -3,9 +3,10 @@
 from typing import Any
 
 import numpy as np
-from flepimop2.system.abc import SystemProtocol
 from numpy.typing import NDArray
 from scipy.integrate import solve_ivp
+
+from flepimop2.system.abc import SystemProtocol
 
 
 def runner(
@@ -13,7 +14,7 @@ def runner(
     times: NDArray[np.float64],
     y0: NDArray[np.float64],
     params: dict[str, Any] | None = None,
-    **solver_options: Any,  # noqa: ANN401
+    **solver_options: Any,
 ) -> NDArray[np.float64]:
     """Solve an initial value problem using scipy.solve_ivp.
 
