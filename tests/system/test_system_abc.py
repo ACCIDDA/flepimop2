@@ -5,13 +5,18 @@ from typing import Literal
 import numpy as np
 import pytest
 
-from flepimop2.system.abc import SystemABC
+from flepimop2.system.abc import SystemABC, SystemProperties
+from flepimop2.typing import StateChangeEnum
 
 
 class DummySystem(SystemABC):
     """A dummy system for testing purposes."""
 
     module: Literal["dummy"] = "dummy"
+
+    def properties(self) -> SystemProperties:
+        """Return dummy system properties."""
+        return SystemProperties(state_change=StateChangeEnum.FLOW)
 
 
 @pytest.mark.parametrize("system", [DummySystem()])

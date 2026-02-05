@@ -7,7 +7,8 @@ from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
-from flepimop2.system.abc import SystemABC
+from flepimop2.system.abc import SystemABC, SystemProperties
+from flepimop2.typing import StateChangeEnum
 
 
 class WrapperSystem(ModuleModel, SystemABC):
@@ -15,6 +16,7 @@ class WrapperSystem(ModuleModel, SystemABC):
 
     module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     script: Path
+    state_change: StateChangeEnum = StateChangeEnum.FLOW
 
     @model_validator(mode="after")
     def _validate_stepper(self) -> Self:
@@ -33,3 +35,12 @@ class WrapperSystem(ModuleModel, SystemABC):
             raise AttributeError(msg)
         self._stepper = mod.stepper
         return self
+
+    def properties(self) -> SystemProperties:
+        """
+        Get the properties of the system.
+
+        Returns:
+            A `SystemProperties` instance containing the system's properties.
+        """
+        return SystemProperties(state_change=self.state_change)
