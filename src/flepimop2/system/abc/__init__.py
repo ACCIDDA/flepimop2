@@ -1,12 +1,16 @@
 """Abstract class for Dynamic Systems."""
 
+__all__ = ["SystemABC", "SystemProtocol", "build"]
+
+import inspect
 from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
-from flepimop2.typing import Float64NDArray
+from flepimop2.module import ModuleABC
+from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 @runtime_checkable
@@ -29,10 +33,46 @@ def _no_step_function(
     raise NotImplementedError(msg)
 
 
-class SystemABC:
-    """Abstract class for Dynamic Systems."""
+class SystemABC(ModuleABC):
+    """
+    Abstract class for Dynamic Systems.
+
+    Attributes:
+        module: The module name for the system.
+        state_change: The type of state change.
+        options: Optional dictionary of additional options the system exposes for
+            `flepimop2` to take advantage of.
+
+    """
+
+    state_change: StateChangeEnum
 
     _stepper: SystemProtocol
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        """
+        Ensure concrete subclasses define a valid state change type.
+
+        Args:
+            **kwargs: Additional keyword arguments passed to parent classes.
+
+        Raises:
+            TypeError: If a concrete subclass does not define `state_change`.
+
+        """
+        super().__init_subclass__(**kwargs)
+        if inspect.isabstract(cls):
+            return
+        annotations = inspect.get_annotations(cls)
+        has_state_change = (
+            "state_change" in cls.__dict__ or "state_change" in annotations
+        )
+        if not has_state_change:
+            msg = (
+                f"Concrete class '{cls.__name__}' must define 'state_change' as "
+                "a class attribute or type annotation."
+            )
+            raise TypeError(msg)
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ARG002
         """
@@ -75,4 +115,9 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
         The constructed system instance.
 
     """
-    return _build(config, "system", "flepimop2.system.wrapper", SystemABC)
+    return _build(
+        config,
+        "system",
+        "flepimop2.system.wrapper",
+        SystemABC,
+    )

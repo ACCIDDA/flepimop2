@@ -2,15 +2,16 @@
 
 __all__ = ["ParameterABC", "build"]
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
+from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray
 
 
-class ParameterABC(ABC):
+class ParameterABC(ModuleABC):
     """Abstract base class for parameters."""
 
     @abstractmethod
@@ -28,10 +29,10 @@ def build(config: dict[str, Any] | ModuleModel) -> ParameterABC:
 
     Args:
         config: Configuration dictionary or a `ModuleModel` instance to construct the
-            engine from.
+            parameter from.
 
     Returns:
-        The constructed engine instance.
+        The constructed parameter instance.
 
     """
     return _build(config, "parameter", "flepimop2.parameter.wrapper", ParameterABC)  # type: ignore[type-abstract]

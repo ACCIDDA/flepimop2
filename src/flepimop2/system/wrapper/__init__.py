@@ -1,20 +1,25 @@
 """A `SystemABC` which wraps a user-defined script file."""
 
+__all__ = ["WrapperSystem"]
+
 from pathlib import Path
-from typing import Literal, Self
+from typing import Any, Literal, Self
 
 from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.abc import SystemABC
+from flepimop2.typing import StateChangeEnum
 
 
 class WrapperSystem(ModuleModel, SystemABC):
     """A `SystemABC` which wraps a user-defined script file."""
 
     module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
+    state_change: StateChangeEnum
     script: Path
+    options: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def _validate_stepper(self) -> Self:

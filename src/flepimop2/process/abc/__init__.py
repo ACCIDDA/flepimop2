@@ -1,14 +1,17 @@
 """Abstract base class for flepimop2 processing steps."""
 
-from abc import ABC, abstractmethod
+__all__ = ["ProcessABC", "build"]
+
+from abc import abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
+from flepimop2.module import ModuleABC
 
 
-class ProcessABC(ABC):
+class ProcessABC(ModuleABC):
     """Abstract base class for flepimop2 processing steps."""
 
     def execute(self, *, dry_run: bool = False) -> None:

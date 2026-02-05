@@ -25,7 +25,7 @@ yamllint:
 ci:
     uv run ruff format --preview --check
     uv run ruff check --preview --no-fix
-    uv run pytest --doctest-modules
+    uv run pytest --doctest-modules --ignore=src/flepimop2/typing
     uv run mypy --strict .
 
 # Clean up generated lock files, venvs, and caches

@@ -1,9 +1,13 @@
 """Abstract class for Engines to evolve Dynamic Systems."""
 
+__all__ = ["EngineABC", "EngineProtocol", "build"]
+
 from typing import Any, Protocol, runtime_checkable
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import IdentifierString, ModuleModel
+from flepimop2.exceptions import ValidationIssue
+from flepimop2.module import ModuleABC
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray
 
@@ -35,7 +39,7 @@ class EngineProtocol(Protocol):
         ...
 
 
-class EngineABC:
+class EngineABC(ModuleABC):
     """Abstract class for Engines to evolve Dynamic Systems."""
 
     _runner: EngineProtocol
@@ -81,6 +85,21 @@ class EngineABC:
             params,
             **kwargs,
         )
+
+    def validate_system(  # noqa: PLR6301
+        self,
+        system: SystemABC,  # noqa: ARG002
+    ) -> list[ValidationIssue] | None:
+        """
+        Validation hook for system properties.
+
+        Args:
+            system: The system to validate.
+
+        Returns:
+            A list of validation issues, or `None` if not implemented.
+        """
+        return None
 
 
 def build(config: dict[str, Any] | ModuleModel) -> EngineABC:

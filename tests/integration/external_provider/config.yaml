@@ -2,8 +2,10 @@
 name: 'example-provider'
 system:
   - module: 'sir'
+    state_change: 'flow'
 engine:
   - module: 'euler'
+    state_change: 'flow'
 backend:
   - module: 'csv'
 simulate:

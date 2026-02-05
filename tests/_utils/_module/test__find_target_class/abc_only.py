@@ -6,5 +6,7 @@ from flepimop2.process.abc import ProcessABC
 class TestProcess(ProcessABC):
     """A test process that inherits from ABC but not BaseModel."""
 
+    module = "test_process"
+
     def _process(self, *, dry_run: bool) -> None:
         """Dummy process implementation."""
