@@ -1,15 +1,18 @@
 """Abstract base class for flepimop2 file IO backends."""
 
-from abc import ABC, abstractmethod
+__all__ = ["BackendABC", "build"]
+
+from abc import abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
+from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray
 
 
-class BackendABC(ABC):
+class BackendABC(ModuleABC):
     """Abstract base class for flepimop2 file IO backends."""
 
     def save(self, data: Float64NDArray, run_meta: RunMeta) -> None:

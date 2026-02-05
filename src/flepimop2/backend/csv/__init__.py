@@ -1,5 +1,7 @@
 """CSV backend for flepimop2."""
 
+__all__ = ["CsvBackend"]
+
 import os
 from pathlib import Path
 from typing import Literal

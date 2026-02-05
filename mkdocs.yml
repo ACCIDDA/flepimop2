@@ -48,6 +48,16 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
       base_path: docs/.
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css
 
 # Navigation structure
 nav:
@@ -57,6 +67,7 @@ nav:
   - Development:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md
+      - Implementing Custom Engines and Systems: development/implementing-custom-engines-and-systems.md
       - Integration Testing: development/integration-testing.md
       - Adding A New CLI Command: development/adding-a-new-cli-command.md
   - Reference:
@@ -67,8 +78,10 @@ nav:
           - Engine: reference/api/engine.md
           - Exceptions: reference/api/exceptions.md
           - Meta: reference/api/meta.md
+          - Module: reference/api/module.md
           - Parameter: reference/api/parameter.md
           - Process: reference/api/process.md
+          - Simulator: reference/api/simulator.md
           - System: reference/api/system.md
           - Testing: reference/api/testing.md
           - Typing: reference/api/typing.md

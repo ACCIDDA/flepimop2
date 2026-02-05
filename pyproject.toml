@@ -57,10 +57,11 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "src/flepimop2/",
+    "src",
     "tests/",
 ]
 addopts = ["--import-mode=importlib", "--doctest-modules"]
+
 
 [tool.ruff]
 exclude = ["docs/assets/*.py"]

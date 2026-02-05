@@ -1,7 +1,6 @@
 """Metadata types for flepimop2 runs."""
 
 __all__ = ["RunMeta"]
-
 from datetime import UTC, datetime
 from typing import Literal, NamedTuple
 

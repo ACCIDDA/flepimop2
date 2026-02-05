@@ -1,5 +1,7 @@
 """Shell process for flepimop2."""
 
+__all__ = ["ShellProcess"]
+
 from subprocess import run  # noqa: S404
 from typing import Literal
 
@@ -14,9 +16,10 @@ class ShellProcess(ModuleModel, ProcessABC):
     Shell process for executing commands.
 
     Attributes:
-        module: The module type, fixed to "shell".
+        module: The module type, fixed to "flepimop2.process.shell".
         command: The shell command to execute.
         args: Arguments to pass to the shell command.
+
     """
 
     module: Literal["flepimop2.process.shell"] = "flepimop2.process.shell"

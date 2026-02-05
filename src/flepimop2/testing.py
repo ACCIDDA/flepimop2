@@ -1,7 +1,6 @@
 """Public testing utilities for `flepimop2`."""
 
 __all__ = ["external_provider_package", "flepimop2_run", "project_skeleton"]
-
 import re
 import subprocess  # noqa: S404
 from pathlib import Path

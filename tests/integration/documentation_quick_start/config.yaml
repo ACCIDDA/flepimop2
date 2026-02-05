@@ -1,22 +1,20 @@
 ---
 system:
   - module: wrapper
+    state_change: flow
     script: model_input/plugins/SIR.py
-
 engine:
   - module: wrapper
+    state_change: flow
     script: model_input/plugins/solve_ivp.py
-
 backend:
   - module: csv
-
 simulate:
   quick_start:
     system: default
     engine: default
     backend: default
     times: "0.0:0.1:10"
-
 parameter:
   beta:
     module: fixed

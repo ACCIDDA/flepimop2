@@ -1,19 +1,26 @@
 """Tests for `EngineABC` and default `WrapperEngine`."""
 
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 import numpy as np
 import pytest
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 class DummySystem(SystemABC):
     """A dummy system for testing purposes."""
 
-    module: Literal["dummy"] = "dummy"
+    module = "dummy"
+    state_change = StateChangeEnum.FLOW
+
+
+class DummyEngine(EngineABC):
+    """A dummy engine for testing purposes."""
+
+    module = "dummy"
 
 
 def sample_step(
@@ -33,7 +40,7 @@ def sample_step(
     return (state + cast("float", kwargs["offset"])) * time
 
 
-@pytest.mark.parametrize("engine", [EngineABC()])
+@pytest.mark.parametrize("engine", [DummyEngine()])
 def test_abstraction_error(engine: EngineABC) -> None:
     """Test `EngineABC` raises `NotImplementedError` when not overridden."""
     system = DummySystem()

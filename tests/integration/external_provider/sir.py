@@ -6,7 +6,7 @@ import numpy as np
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 def stepper(
@@ -38,6 +38,9 @@ def stepper(
 
 class SirSystem(SystemABC):
     """SIR model system."""
+
+    module = "flepimop2.system.sir"
+    state_change = StateChangeEnum.FLOW
 
     def __init__(self) -> None:
         """Initialize the SIR system with the SIR stepper."""

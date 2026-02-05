@@ -44,6 +44,8 @@ def runner(
 class EulerEngine(EngineABC):
     """SIR model runner."""
 
+    module = "flepimop2.engine.euler"
+
     def __init__(self) -> None:
         """Initialize the SIR runner with the SIR runner function."""
         self._runner = runner
