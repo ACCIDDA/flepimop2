@@ -4,10 +4,10 @@ from typing import Any, Literal, cast
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemABC
+from flepimop2.typing import Float64NDArray
 
 
 class DummySystem(SystemABC):
@@ -17,8 +17,8 @@ class DummySystem(SystemABC):
 
 
 def sample_step(
-    time: np.float64, state: NDArray[np.float64], **kwargs: Any
-) -> NDArray[np.float64]:
+    time: np.float64, state: Float64NDArray, **kwargs: Any
+) -> Float64NDArray:
     """
     A simple stepper function for testing purposes.
 

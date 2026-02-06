@@ -5,12 +5,12 @@ from pathlib import Path
 from typing import Literal
 
 import numpy as np
-from numpy.typing import NDArray
 from pydantic import Field, field_validator
 
 from flepimop2.backend.abc import BackendABC
 from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
+from flepimop2.typing import Float64NDArray
 
 
 class CsvBackend(ModuleModel, BackendABC):
@@ -54,7 +54,7 @@ class CsvBackend(ModuleModel, BackendABC):
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.csv"
         return self.root / filename
 
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
+    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
         """
         Save a numpy array to a CSV file.
 
@@ -66,7 +66,7 @@ class CsvBackend(ModuleModel, BackendABC):
         file_path.parent.mkdir(parents=True, exist_ok=True)
         np.savetxt(file_path, data, delimiter=",")
 
-    def _read(self, run_meta: RunMeta) -> NDArray[np.float64]:
+    def _read(self, run_meta: RunMeta) -> Float64NDArray:
         """
         Read a numpy array from a CSV file.
 

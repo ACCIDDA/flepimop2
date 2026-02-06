@@ -6,10 +6,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
-from numpy.typing import NDArray
 
 from flepimop2.backend.abc import build
 from flepimop2.meta import RunMeta
+from flepimop2.typing import Float64NDArray
 
 
 @pytest.mark.parametrize(
@@ -35,7 +35,7 @@ from flepimop2.meta import RunMeta
 )
 def test_csv_backend_save_and_read_round_trip(
     tmp_path: Path,
-    sample_array: NDArray[np.float64],
+    sample_array: Float64NDArray,
     run_meta: RunMeta,
 ) -> None:
     """Test that saving and reading an array returns the same data."""
