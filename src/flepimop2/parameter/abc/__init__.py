@@ -5,18 +5,16 @@ __all__ = ["ParameterABC", "build"]
 from abc import ABC, abstractmethod
 from typing import Any
 
-import numpy as np
-from numpy.typing import NDArray
-
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
+from flepimop2.typing import Float64NDArray
 
 
 class ParameterABC(ABC):
     """Abstract base class for parameters."""
 
     @abstractmethod
-    def sample(self) -> NDArray[np.float64]:
+    def sample(self) -> Float64NDArray:
         """Sample a value from the parameter.
 
         Returns:

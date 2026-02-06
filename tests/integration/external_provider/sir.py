@@ -3,20 +3,20 @@
 from typing import Any
 
 import numpy as np
-from numpy.typing import NDArray
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.abc import SystemABC
+from flepimop2.typing import Float64NDArray
 
 
 def stepper(
     time: np.float64,  # noqa: ARG001
-    state: NDArray[np.float64],
+    state: Float64NDArray,
     *,
     beta: float = 0.3,
     gamma: float = 0.1,
     **kwargs: Any,  # noqa: ARG001
-) -> NDArray[np.float64]:
+) -> Float64NDArray:
     """
     ODE for an SIR model.
 

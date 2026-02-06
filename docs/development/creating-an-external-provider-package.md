@@ -129,7 +129,7 @@ from pathlib import Path
 from typing import Literal
 
 import numpy as np
-from numpy.typing import NDArray
+from flepimop2.typing import Float64NDArray
 from pydantic import Field, field_validator
 
 from flepimop2.abcs import BackendABC
@@ -179,7 +179,7 @@ class NpzBackend(ModuleModel, BackendABC):
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.npz"
         return self.root / filename
 
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
+    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
         """
         Save a numpy array to an NPZ file.
 
@@ -195,7 +195,7 @@ class NpzBackend(ModuleModel, BackendABC):
         else:
             np.savez(file_path, data=data)
 
-    def _read(self, run_meta: RunMeta) -> NDArray[np.float64]:
+    def _read(self, run_meta: RunMeta) -> Float64NDArray:
         """
         Read a numpy array from an NPZ file.
 
@@ -232,7 +232,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from numpy.typing import NDArray
+from flepimop2.typing import Float64NDArray
 
 from flepimop2.abcs import BackendABC
 from flepimop2.configuration import ModuleModel
@@ -275,7 +275,7 @@ class NpzBackend(BackendABC):
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.npz"
         return self.root / filename
 
-    def _save(self, data: NDArray[np.float64], run_meta: RunMeta) -> None:
+    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
         """
         Save a numpy array to an NPZ file.
 
@@ -291,7 +291,7 @@ class NpzBackend(BackendABC):
         else:
             np.savez(file_path, data=data)
 
-    def _read(self, run_meta: RunMeta) -> NDArray[np.float64]:
+    def _read(self, run_meta: RunMeta) -> Float64NDArray:
         """
         Read a numpy array from an NPZ file.
 

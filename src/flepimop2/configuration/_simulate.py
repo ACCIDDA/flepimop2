@@ -1,9 +1,8 @@
-import numpy as np
-from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._pydantic import RangeSpec, _to_np_array
 from flepimop2.configuration._types import IdentifierString
+from flepimop2.typing import Float64NDArray
 
 
 class SimulateSpecificationModel(BaseModel):
@@ -27,7 +26,7 @@ class SimulateSpecificationModel(BaseModel):
     params: dict[str, float] | None = Field(default_factory=dict)
 
     @property
-    def t_eval(self) -> NDArray[np.float64]:
+    def t_eval(self) -> Float64NDArray:
         """
         Get the evaluation times as a NumPy array.
 

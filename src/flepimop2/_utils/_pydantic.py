@@ -12,8 +12,9 @@ from keyword import iskeyword
 from typing import Annotated, TypeVar
 
 import numpy as np
-from numpy.typing import NDArray
 from pydantic import Field, StringConstraints
+
+from flepimop2.typing import Float64NDArray
 
 T = TypeVar("T")
 
@@ -68,7 +69,7 @@ def _to_default_dict(value: dict[str, T] | list[T]) -> dict[str, T]:
     return value
 
 
-def _to_np_array(value: RangeSpec) -> NDArray[np.float64]:
+def _to_np_array(value: RangeSpec) -> Float64NDArray:
     """
     Convert a list of floats or a range specification string to a NumPy array.
 

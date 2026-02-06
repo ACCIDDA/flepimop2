@@ -3,10 +3,10 @@
 from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
-from numpy.typing import NDArray
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
+from flepimop2.typing import Float64NDArray
 
 
 @runtime_checkable
@@ -14,17 +14,17 @@ class SystemProtocol(Protocol):
     """Type-definition (Protocol) for system stepper functions."""
 
     def __call__(
-        self, time: np.float64, state: NDArray[np.float64], **kwargs: Any
-    ) -> NDArray[np.float64]:
+        self, time: np.float64, state: Float64NDArray, **kwargs: Any
+    ) -> Float64NDArray:
         """Protocol for system stepper functions."""
         ...
 
 
 def _no_step_function(
     time: np.float64,
-    state: NDArray[np.float64],
+    state: Float64NDArray,
     **kwargs: Any,
-) -> NDArray[np.float64]:
+) -> Float64NDArray:
     msg = "SystemABC::stepper must be provided by a concrete implementation."
     raise NotImplementedError(msg)
 
@@ -48,8 +48,8 @@ class SystemABC:
         self._stepper = _no_step_function
 
     def step(
-        self, time: np.float64, state: NDArray[np.float64], **params: Any
-    ) -> NDArray[np.float64]:
+        self, time: np.float64, state: Float64NDArray, **params: Any
+    ) -> Float64NDArray:
         """
         Perform a single step of the system's dynamics.
 

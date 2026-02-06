@@ -3,20 +3,20 @@
 from typing import Any
 
 import numpy as np
-from numpy.typing import NDArray
 
 from flepimop2.configuration import IdentifierString
 from flepimop2.system.abc import SystemProtocol
+from flepimop2.typing import Float64NDArray
 
 
 def runner(
     f: SystemProtocol,
-    times: NDArray[np.float64],
-    state: NDArray[np.float64],
+    times: Float64NDArray,
+    state: Float64NDArray,
     params: dict[IdentifierString, Any],
     *,
     accumulate: bool,
-) -> NDArray[np.float64]:
+) -> Float64NDArray:
     """
     A dummy runner function for testing purposes: only evaluates stepper at times.
 

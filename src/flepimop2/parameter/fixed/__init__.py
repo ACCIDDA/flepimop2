@@ -5,10 +5,10 @@ __all__ = ["FixedParameter"]
 from typing import Literal
 
 import numpy as np
-from numpy.typing import NDArray
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import ParameterABC
+from flepimop2.typing import Float64NDArray
 
 
 class FixedParameter(ModuleModel, ParameterABC):
@@ -26,7 +26,7 @@ class FixedParameter(ModuleModel, ParameterABC):
     module: Literal["flepimop2.parameter.fixed"] = "flepimop2.parameter.fixed"
     value: float
 
-    def sample(self) -> NDArray[np.float64]:
+    def sample(self) -> Float64NDArray:
         """
         Return the fixed value of the parameter.
 

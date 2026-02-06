@@ -11,11 +11,11 @@ check:
 
 # Run tests using `pytest`
 pytest:
-    uv run pytest --doctest-modules
+    uv run pytest
 
 # Type check using `mypy`
 mypy:
-    uv run mypy --strict .
+    uv run mypy .
 
 # Lint YAML files using `yamllint`
 yamllint:

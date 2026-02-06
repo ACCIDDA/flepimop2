@@ -44,6 +44,7 @@ testpaths = [
     "src/flepimop2/",
     "tests/",
 ]
+addopts = ["--import-mode=importlib", "--doctest-modules"]
 
 [tool.ruff]
 exclude = ["docs/assets/*.py"]
@@ -84,6 +85,7 @@ allow-star-arg-any = true
 convention = "google"
 
 [tool.mypy]
+strict = true
 exclude = ["^build/", "^docs/"]
 namespace_packages = true
 mypy_path = ["src"]
