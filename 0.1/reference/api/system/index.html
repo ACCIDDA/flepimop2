@@ -14,7 +14,7 @@
         <link rel="prev" href="../process/">
       
       
-        <link rel="next" href="../../cli/">
+        <link rel="next" href="../typing/">
       
       
         
@@ -955,6 +955,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1343,7 +1371,11 @@ implementations should override this with a valid stepper function.</p>
                 <code>state</code>
             </td>
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1385,7 +1417,11 @@ implementations should override this with a valid stepper function.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1414,8 +1450,8 @@ implementations should override this with a valid stepper function.</p>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform a single step of the system&#39;s dynamics.</span>
 
@@ -1503,8 +1539,8 @@ implementations should override this with a valid stepper function.</p>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for system stepper functions.&quot;&quot;&quot;</span>
     <span class="o">...</span>
 </code></pre></div></td></tr></table></div>

@@ -1101,6 +1101,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1573,7 +1601,11 @@ are re-exported here for developer convenience.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1587,7 +1619,9 @@ are re-exported here for developer convenience.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/backend/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
@@ -1595,9 +1629,7 @@ are re-exported here for developer convenience.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a numpy array from storage.</span>
 
@@ -1644,7 +1676,11 @@ are re-exported here for developer convenience.</p>
                 <code>data</code>
             </td>
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1677,15 +1713,15 @@ are re-exported here for developer convenience.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/backend/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save a numpy array to storage.</span>
 
@@ -1784,7 +1820,9 @@ implementations should override this with a valid runner function.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>src/flepimop2/engine/abc/__init__.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -1793,9 +1831,7 @@ implementations should override this with a valid runner function.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ARG002</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ARG002</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the EngineABC.</span>
 
@@ -1869,7 +1905,11 @@ implementations should override this with a valid runner function.</p>
                 <code>eval_times</code>
             </td>
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1885,7 +1925,11 @@ implementations should override this with a valid runner function.</p>
                 <code>initial_state</code>
             </td>
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1947,7 +1991,11 @@ implementations should override this with a valid runner function.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1961,7 +2009,9 @@ implementations should override this with a valid runner function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/engine/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
@@ -1986,16 +2036,14 @@ implementations should override this with a valid runner function.</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">SystemABC</span><span class="p">,</span>
-    <span class="n">eval_times</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
-    <span class="n">initial_state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">eval_times</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the engine with the provided system and parameters.</span>
 
@@ -2086,23 +2134,23 @@ implementations should override this with a valid runner function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/engine/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">stepper</span><span class="p">:</span> <span class="n">SystemProtocol</span><span class="p">,</span>
-    <span class="n">times</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
-    <span class="n">state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">times</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for engine runner functions.&quot;&quot;&quot;</span>
     <span class="o">...</span>
 </code></pre></div></td></tr></table></div>
@@ -2188,7 +2236,11 @@ implementations should override this with a valid runner function.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2202,15 +2254,15 @@ implementations should override this with a valid runner function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/flepimop2/parameter/abc/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample a value from the parameter.</span>
 
 <span class="sd">    Returns:</span>
@@ -2548,7 +2600,11 @@ implementations should override this with a valid stepper function.</p>
                 <code>state</code>
             </td>
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2590,7 +2646,11 @@ implementations should override this with a valid stepper function.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Float64NDArray = npt.NDArray[np.float64]
+
+  
+      module-attribute
+   (flepimop2.typing.Float64NDArray)" href="../typing/#flepimop2.typing.Float64NDArray">Float64NDArray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2619,8 +2679,8 @@ implementations should override this with a valid stepper function.</p>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform a single step of the system&#39;s dynamics.</span>
 
@@ -2708,8 +2768,8 @@ implementations should override this with a valid stepper function.</p>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for system stepper functions.&quot;&quot;&quot;</span>
     <span class="o">...</span>
 </code></pre></div></td></tr></table></div>

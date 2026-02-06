@@ -1030,6 +1030,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/typing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1398,7 +1426,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.abcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendABC</span>
@@ -1448,7 +1476,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
         <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name_part</span><span class="si">}{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp_str</span><span class="si">}</span><span class="s2">.npz&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save a numpy array to an NPZ file.</span>
 
@@ -1464,7 +1492,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
         <span class="k">else</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read a numpy array from an NPZ file.</span>
 
@@ -1496,7 +1524,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.abcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendABC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
@@ -1539,7 +1567,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
         <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name_part</span><span class="si">}{</span><span class="n">run_meta</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp_str</span><span class="si">}</span><span class="s2">.npz&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save a numpy array to an NPZ file.</span>
 
@@ -1555,7 +1583,7 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
         <span class="k">else</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_meta</span><span class="p">:</span> <span class="n">RunMeta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read a numpy array from an NPZ file.</span>
 

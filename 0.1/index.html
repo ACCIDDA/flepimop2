@@ -954,6 +954,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/api/typing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1172,15 +1200,16 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;SIR model plugin for flepimop2 demo.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span>
     <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
     <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;dY/dt for the SIR model.&quot;&quot;&quot;</span>
     <span class="n">y_s</span><span class="p">,</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">infection</span> <span class="o">=</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">y_s</span> <span class="o">*</span> <span class="n">y_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -1196,26 +1225,26 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_ivp</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">runner</span><span class="p">(</span>
     <span class="n">fun</span><span class="p">:</span> <span class="n">SystemProtocol</span><span class="p">,</span>
-    <span class="n">times</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
-    <span class="n">y0</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">times</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="n">y0</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">solver_options</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve an initial value problem using scipy.solve_ivp.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        fun (SystemProtocol): A function that computes derivatives.</span>
-<span class="sd">        times (NDArray[np.float64]): sequence of time points where we evaluate the</span>
+<span class="sd">        times (Float64NDArray): sequence of time points where we evaluate the</span>
 <span class="sd">          solution. Must have length &gt;= 1.</span>
-<span class="sd">        y0 (NDArray[np.float64]): Initial condition.</span>
+<span class="sd">        y0 (Float64NDArray): Initial condition.</span>
 <span class="sd">        params: Optional dict of keyword parameters forwarded to fun.</span>
 <span class="sd">        **solver_options: Additional keyword options forwarded to</span>
 <span class="sd">          scipy.integrate.solve_ivp.</span>

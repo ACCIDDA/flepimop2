@@ -1,15 +1,16 @@
 """SIR model plugin for flepimop2 demo."""
 
 import numpy as np
-from numpy.typing import NDArray
+
+from flepimop2.typing import Float64NDArray
 
 
 def stepper(
     t: float,  # noqa: ARG001
-    y: NDArray[np.float64],
+    y: Float64NDArray,
     beta: float,
     gamma: float,
-) -> NDArray[np.float64]:
+) -> Float64NDArray:
     """dY/dt for the SIR model."""
     y_s, y_i, _ = np.asarray(y, dtype=float)
     infection = (beta * y_s * y_i) / np.sum(y)
