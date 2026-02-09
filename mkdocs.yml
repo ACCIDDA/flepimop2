@@ -57,6 +57,7 @@ nav:
   - Development:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md
+      - Integration Testing: development/integration-testing.md
       - Adding A New CLI Command: development/adding-a-new-cli-command.md
   - Reference:
       - API:
@@ -69,5 +70,7 @@ nav:
           - Parameter: reference/api/parameter.md
           - Process: reference/api/process.md
           - System: reference/api/system.md
+          - Testing: reference/api/testing.md
+          - Typing: reference/api/typing.md
       - CLI: reference/cli.md
   - Changelog: changelog.md

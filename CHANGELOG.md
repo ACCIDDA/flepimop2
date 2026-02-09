@@ -18,3 +18,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Made parameters modular, similar to backends/engines/processes/systems, to allow external packages to provide their own parameter types. See [#75](https://github.com/ACCIDDA/flepimop2/issues/75).
 - Restricted the name of user defined backends/engines/parameters/processes/systems to comply with the custom `IdentifierString` type.
 - Added a new `flepimop2 skeleton` CLI command for scaffolding a project repository. See [#84](https://github.com/ACCIDDA/flepimop2/issues/84).
+- Added `flepimop.testing` with functionality for integration testing, both for `flepimop2` itself and for external provider packages. See [#107](https://github.com/ACCIDDA/flepimop2/issues/107).

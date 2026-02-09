@@ -1,12 +1,11 @@
 """Integration test for external provider functionality."""
 
 import re
-import subprocess  # noqa: S404
 from pathlib import Path
 
 import pytest
 
-from flepimop2._testing import external_provider_project, which_uv
+from flepimop2.testing import external_provider_package, flepimop2_run
 
 
 def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -22,14 +21,13 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
         that the output file is created as expected. It verifies that before running
         the simulation, there are no output files, and after running, exactly one
         output file is created with the expected naming pattern.
+
     """
     # Setup
-    uv = which_uv()
     cwd = Path(__file__).parent.resolve()
-    external_provider_project(
+    external_provider_package(
         tmp_path,
-        uv=uv,
-        src_dest_map={
+        copy_files={
             cwd / "config.yaml": Path("config.yaml"),
             cwd / "euler.py": Path("external_provider")
             / "src"
@@ -47,16 +45,10 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
     # Pre-test
     assert len(list((tmp_path / "model_output").iterdir())) == 0
     # Run the simulation using the external provider package
-    result = subprocess.run(  # noqa: S603
-        [
-            str(tmp_path / ".venv" / "bin" / "flepimop2"),
-            "simulate",
-            "config.yaml",
-        ],
-        capture_output=True,
-        text=True,
+    result = flepimop2_run(
+        "simulate",
+        args=["config.yaml"],
         cwd=tmp_path,
-        check=True,
     )
     # Post-test
     assert result.returncode == 0
