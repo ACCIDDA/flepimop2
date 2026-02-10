@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/guides/getting-started/">
+        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/integration-testing/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../creating-an-external-provider-package/">
       
       
-        <link rel="next" href="../../development/contributing/">
+        <link rel="next" href="../adding-a-new-cli-command/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Getting Started - flepimop2 Documentation</title>
+        <title>Integration Testing - flepimop2 Documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#integration-testing" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              Integration Testing
             
           </span>
         </div>
@@ -264,20 +264,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -298,7 +296,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -313,19 +311,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../guides/getting-started/" class="md-nav__link">
         
   
   
@@ -341,7 +330,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -358,18 +346,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -390,7 +380,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -408,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../contributing/" class="md-nav__link">
         
   
   
@@ -436,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/creating-an-external-provider-package/" class="md-nav__link">
+      <a href="../creating-an-external-provider-package/" class="md-nav__link">
         
   
   
@@ -461,10 +451,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../development/integration-testing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -480,6 +497,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-do-integration-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why do Integration Test?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-in-a-project-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing in a Project Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-in-an-external-provider-package-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing in an External Provider Package Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -492,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/adding-a-new-cli-command/" class="md-nav__link">
+      <a href="../adding-a-new-cli-command/" class="md-nav__link">
         
   
   
@@ -1012,6 +1093,58 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-do-integration-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why do Integration Test?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-in-a-project-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing in a Project Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-in-an-external-provider-package-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing in an External Provider Package Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1027,15 +1160,85 @@
 
 
 
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<p>A brief tutorial on how to get started with <code>flepimop2</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="n">foo</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+<h1 id="integration-testing">Integration Testing<a class="headerlink" href="#integration-testing" title="Permanent link">&para;</a></h1>
+<p>This tutorial will show how to:</p>
+<ul>
+<li>Use <code>flepimop2.testing</code> helpers to run end-to-end scenarios.</li>
+<li>Validate real CLI behavior in a project context or an external provider package context.</li>
+</ul>
+<h2 id="why-do-integration-test">Why do Integration Test?<a class="headerlink" href="#why-do-integration-test" title="Permanent link">&para;</a></h2>
+<p>Integration tests are for checking that packages behave as a user would expect when used with the <code>flepimop2</code> CLI and infrastructure. They are slower than unit tests because they create projects, invoke commands, and run simulations. That cost is worth it when you want confidence that all the pieces work together.</p>
+<p>Because they are slower, integration tests should be broad. Prefer a single test that exercises a full workflow with several assertions rather than lots of tiny variants. Use unit tests for edge cases and fast iteration, and use integration tests for end-to-end scenarios.</p>
+<h2 id="integration-testing-in-a-project-context">Integration Testing in a Project Context<a class="headerlink" href="#integration-testing-in-a-project-context" title="Permanent link">&para;</a></h2>
+<p>The most common type of integration testing, especially for developers of external package providers, is running the <code>flepimop2</code> CLI in a project context. The primary functions a user will use are <code>project_skeleton</code>, which will setup a project in the given directory, and <code>flepimop2_run</code>, which will run the <code>flepimop2</code> CLI in the context of that project.</p>
+<div class="highlight"><span class="filename">tests/integration/my_integration_test/test_simulate.py</span><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">flepimop2_run</span><span class="p">,</span> <span class="n">project_skeleton</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_simulate</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">project_skeleton</span><span class="p">(</span>
+        <span class="n">tmp_path</span><span class="p">,</span>
+        <span class="n">copy_files</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/sir.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;model_input/plugins/sir.py&quot;</span>
+            <span class="p">),</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/solve_ivp.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;model_input/plugins/solve_ivp.py&quot;</span>
+            <span class="p">),</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/config.yaml&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;configs/config.yaml&quot;</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flepimop2_run</span><span class="p">(</span>
+        <span class="s2">&quot;simulate&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;configs/config.yaml&quot;</span><span class="p">],</span>
+        <span class="n">cwd</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
 </code></pre></div>
-<p>And then</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span>
-<span class="mf">6.283185307179586</span>
+<p>Above is a brief example of what an integration test might look like. The key elements of this example are:</p>
+<ul>
+<li>The test provides a temporary directory to <code>project_skeleton</code> and <code>flepimop2_run</code> that is cleaned up after test completion via <a href="https://docs.pytest.org/en/stable/how-to/tmp_path.html"><code>pytest</code>'s <code>tmp_path</code> fixture</a>.</li>
+<li>The files <code>sir.py</code>, <code>solve_ivp.py</code>, and <code>config.yaml</code> are copied from the integration test to the project directory after the project is created via the <code>flepimop2 skeleton</code> CLI.</li>
+<li>The dependencies <code>numpy</code>, <code>pandas</code>, and <code>scipy</code> are additionally installed to the project directory's virtual environment and are available to the <code>flepimop2</code> CLI.</li>
+<li>Finally, the <code>flepimop2_run</code> function invokes the <code>flepimop2 simulate</code> CLI in the project directory and the returned object is a <a href="https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess"><code>subprocess.CompletedProcess</code></a>. However, you could invoke any action available via the <code>flepimop2</code> CLI, for a full list please refer to <code>flepimop2 --help</code>.</li>
+</ul>
+<p>From here a developer would be able to make further assertions about the output of the CLI command itself or contents of the project directory to ensure that the integration test has worked as expected.</p>
+<h2 id="integration-testing-in-an-external-provider-package-context">Integration Testing in an External Provider Package Context<a class="headerlink" href="#integration-testing-in-an-external-provider-package-context" title="Permanent link">&para;</a></h2>
+<p>For tests that need to simulate an external provider package, use <code>external_provider_package</code>. This helper constructs an implicit namespace package under <code>flepimop2.*</code>, installs it into a temporary virtual environment, and lets you run the CLI against it using <code>flepimop2_run</code>. This kind of integration test is very uncommon outside of development for <code>flepimop2</code> itself since this is largely about testing the ability for the <code>flepimop2</code> package to interact with external package providers.</p>
+<div class="highlight"><span class="filename">tests/integration/external_provider/test_simulate.py</span><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">external_provider_package</span><span class="p">,</span> <span class="n">flepimop2_run</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_simulate</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">external_provider_package</span><span class="p">(</span>
+        <span class="n">tmp_path</span><span class="p">,</span>
+        <span class="n">copy_files</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/euler.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;external_provider/src/flepimop2/engine/euler.py&quot;</span>
+            <span class="p">),</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/sir.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;external_provider/src/flepimop2/system/sir.py&quot;</span>
+            <span class="p">),</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/config.yaml&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="s2">&quot;config.yaml&quot;</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flepimop2_run</span><span class="p">(</span>
+        <span class="s2">&quot;simulate&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">],</span>
+        <span class="n">cwd</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
 </code></pre></div>
+<p>Above is a brief example of what an integration test might look like. Similar to the previous example, the key elements of this example are the same, except the <code>external_provider_package</code> creates an external provider package named "example-provider".</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>Integration tests validate the end-to-end user experience of <code>flepimop2</code> using real projects and real CLI commands. Use <code>project_skeleton</code> for project workflows, and use <code>external_provider_package</code> when you need to simulate a provider package install.</p>
+<p>For API details please refer to the <a href="../../reference/api/testing/"><code>flepimop2.testing</code> API reference</a> and for working examples you can refer to the <a href="https://github.com/ACCIDDA/flepimop2/tree/main/tests/integration"><code>flepimop2</code> integration tests</a>.</p>
 
 
 

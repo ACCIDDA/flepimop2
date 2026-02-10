@@ -2,70 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/changelog/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/development/adding-a-new-cli-command/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/development/contributing/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/development/creating-an-external-provider-package/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
+    </url>
+    <url>
+         <loc>https://accidda.github.io/flepimop2/0.1/development/integration-testing/</loc>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/guides/getting-started/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/cli/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/abcs/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/backend/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/configuration/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/engine/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/exceptions/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/meta/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/parameter/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/process/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/system/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
+    </url>
+    <url>
+         <loc>https://accidda.github.io/flepimop2/0.1/reference/api/testing/</loc>
+         <lastmod>2026-02-10</lastmod>
     </url>
     <url>
          <loc>https://accidda.github.io/flepimop2/0.1/reference/api/typing/</loc>
-         <lastmod>2026-02-06</lastmod>
+         <lastmod>2026-02-10</lastmod>
     </url>
 </urlset>
