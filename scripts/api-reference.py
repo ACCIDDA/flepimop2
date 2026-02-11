@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.11,<3.15"
 # dependencies = ["ruamel.yaml"]
 # ///
 """Generate API reference documentation for flepimop2."""

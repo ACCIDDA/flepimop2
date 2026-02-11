@@ -66,6 +66,7 @@ quality: ci-ruff mypy
 # Generate API reference documentation
 [group('docs')]
 reference:
+    uv run scripts/authors.py
     uv run scripts/api-reference.py
     cp CHANGELOG.md docs/changelog.md
     cp CONTRIBUTING.md docs/development/contributing.md
