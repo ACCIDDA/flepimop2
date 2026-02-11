@@ -41,6 +41,9 @@ markdown_extensions:
       permalink: true
       toc_depth: 4
   - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - mkdocs-click
   - admonition
   - pymdownx.details
@@ -88,3 +91,4 @@ nav:
           - Typing: reference/api/typing.md
       - CLI: reference/cli.md
   - Changelog: changelog.md
+  - Authors: authors.md
