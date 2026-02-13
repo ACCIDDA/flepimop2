@@ -7,8 +7,10 @@ import numpy as np
 import pytest
 
 from flepimop2.engine.abc import build as engine_build
-from flepimop2.system.abc import SystemABC
+from flepimop2.exceptions import ValidationIssue
+from flepimop2.system.abc import SystemABC, SystemProperties
 from flepimop2.system.abc import build as system_build
+from flepimop2.typing import StateChangeEnum
 
 TEST_ENGINE_SCRIPT: Final = Path(__file__).with_suffix("") / "dummy_engine.py"
 TEST_SYSTEM_SCRIPT: Final = (
@@ -44,3 +46,18 @@ def test_wrapper_system(
     expected[0, 1:] = [1.0, 2.0]
     expected[1, 1:] = (expected[0, 1:] + params["offset"]) * 2.0
     np.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+def test_wrapper_engine_validate_system_properties(config: dict) -> None:
+    """Test `WrapperEngine` validates system properties compatibility."""
+    engine = engine_build(config)
+
+    compatible = SystemProperties(state_change=StateChangeEnum.FLOW)
+    assert engine.validate_system_properties(compatible) is None
+
+    incompatible = SystemProperties(state_change=StateChangeEnum.DELTA)
+    issues = engine.validate_system_properties(incompatible)
+    assert issues is not None
+    assert all(isinstance(issue, ValidationIssue) for issue in issues)
+    assert [issue.kind for issue in issues] == ["incompatible_system"]

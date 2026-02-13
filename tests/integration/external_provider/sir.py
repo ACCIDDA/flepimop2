@@ -5,8 +5,8 @@ from typing import Any
 import numpy as np
 
 from flepimop2.configuration import ModuleModel
-from flepimop2.system.abc import SystemABC
-from flepimop2.typing import Float64NDArray
+from flepimop2.system.abc import SystemABC, SystemProperties
+from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 def stepper(
@@ -42,6 +42,10 @@ class SirSystem(SystemABC):
     def __init__(self) -> None:
         """Initialize the SIR system with the SIR stepper."""
         self._stepper = stepper
+
+    def properties(self) -> SystemProperties:
+        """Return SIR system properties."""
+        return SystemProperties(state_change=StateChangeEnum.FLOW)
 
 
 def build(config: dict[str, Any] | ModuleModel) -> SirSystem:  # noqa: ARG001

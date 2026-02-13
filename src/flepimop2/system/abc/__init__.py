@@ -1,12 +1,25 @@
 """Abstract class for Dynamic Systems."""
 
-from typing import Any, Protocol, runtime_checkable
+from abc import ABC, abstractmethod
+from typing import Any, NamedTuple, Protocol, runtime_checkable
 
 import numpy as np
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, StateChangeEnum
+
+
+class SystemProperties(NamedTuple):
+    """
+    Properties of a configured system for an engine to consume.
+
+    Attributes:
+        state_change: Type of state change the system implements.
+
+    """
+
+    state_change: StateChangeEnum
 
 
 @runtime_checkable
@@ -29,7 +42,7 @@ def _no_step_function(
     raise NotImplementedError(msg)
 
 
-class SystemABC:
+class SystemABC(ABC):
     """Abstract class for Dynamic Systems."""
 
     _stepper: SystemProtocol
@@ -63,6 +76,15 @@ class SystemABC:
         """
         return self._stepper(time, state, **params)
 
+    @abstractmethod
+    def properties(self) -> SystemProperties:
+        """
+        Get the properties of the system.
+
+        Returns:
+            A `SystemProperties` instance containing the system's properties.
+        """
+
 
 def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
     """
@@ -75,4 +97,9 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
         The constructed system instance.
 
     """
-    return _build(config, "system", "flepimop2.system.wrapper", SystemABC)
+    return _build(
+        config,
+        "system",
+        "flepimop2.system.wrapper",
+        SystemABC,  # type: ignore[type-abstract]
+    )

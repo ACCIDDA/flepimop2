@@ -4,7 +4,8 @@ from typing import Any, Protocol, runtime_checkable
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import IdentifierString, ModuleModel
-from flepimop2.system.abc import SystemABC, SystemProtocol
+from flepimop2.exceptions import ValidationIssue
+from flepimop2.system.abc import SystemABC, SystemProperties, SystemProtocol
 from flepimop2.typing import Float64NDArray
 
 
@@ -81,6 +82,21 @@ class EngineABC:
             params,
             **kwargs,
         )
+
+    def validate_system_properties(  # noqa: PLR6301
+        self,
+        properties: SystemProperties,  # noqa: ARG002
+    ) -> list[ValidationIssue] | None:
+        """
+        Validation hook for system properties.
+
+        Args:
+            properties: The system properties to validate.
+
+        Returns:
+            A list of validation issues, or `None` if not implemented.
+        """
+        return None
 
 
 def build(config: dict[str, Any] | ModuleModel) -> EngineABC:

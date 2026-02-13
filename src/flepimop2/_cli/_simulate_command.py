@@ -7,13 +7,9 @@ from pathlib import Path
 import numpy as np
 
 from flepimop2._cli._cli_command import CliCommand
-from flepimop2._utils._click import _get_config_target
-from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import ConfigurationModel
-from flepimop2.engine.abc import build as build_engine
-from flepimop2.meta import RunMeta
 from flepimop2.parameter.abc import build as build_parameter
-from flepimop2.system.abc import build as build_system
+from flepimop2.simulator import Simulator
 
 
 class SimulateCommand(CliCommand):
@@ -38,13 +34,11 @@ class SimulateCommand(CliCommand):
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
             target: Optional target simulate config to use.
+
+        Raises:
+            ValueError: If the simulator is missing a simulation configuration.
         """
         config_model = ConfigurationModel.from_yaml(config)
-        simulate_config = _get_config_target(config_model.simulate, target, "simulate")
-
-        system_config = config_model.systems[simulate_config.system].model_dump()
-        engine_config = config_model.engines[simulate_config.engine].model_dump()
-        backend_config = config_model.backends[simulate_config.backend].model_dump()
 
         s0 = build_parameter(config_model.parameters["s0"])
         i0 = build_parameter(config_model.parameters["i0"])
@@ -63,19 +57,21 @@ class SimulateCommand(CliCommand):
             if k not in {"s0", "i0", "r0"}
         }
 
-        self.info(f"  System: {simulate_config.system} => {system_config}")
-        self.info(f"  Engine: {simulate_config.engine} => {engine_config}")
-        self.info(f"  Backend: {simulate_config.backend} => {backend_config}")
+        simulator = Simulator.from_configuration_model(config_model, target=target)
+
+        if simulator.simulate_config is None:
+            msg = "simulate_config must be set before running the simulator."
+            raise ValueError(msg)
+
+        for component in ["system", "engine", "backend"]:
+            name = getattr(simulator.simulate_config, component)
+            config = getattr(simulator, f"{component}_config")
+            self.info(f"  {component.capitalize()}: {name} => {config}")
         self.info(f"  Y0: {initial_state} [{type(initial_state)}]")
         self.info(f"  Params: {params} [{type(params)}]")
-        self.info(f"  T: {simulate_config.times}")
+        self.info(f"  T: {simulator.simulate_config.times}")
 
         if dry_run:
             return
 
-        system = build_system(system_config)
-        engine = build_engine(engine_config)
-        backend = build_backend(backend_config)
-
-        res = engine.run(system, simulate_config.t_eval, initial_state, params)
-        backend.save(res, RunMeta())
+        simulator.run(initial_state, params)
