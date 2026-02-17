@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/integration-testing/">
+        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/implementing-custom-engines-and-systems/">
       
       
-        <link rel="prev" href="../implementing-custom-engines-and-systems/">
+        <link rel="prev" href="../creating-an-external-provider-package/">
       
       
-        <link rel="next" href="../adding-a-new-cli-command/">
+        <link rel="next" href="../integration-testing/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Integration Testing - flepimop2 Documentation</title>
+        <title>Implementing Custom Engines and Systems - flepimop2 Documentation</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#integration-testing" class="md-skip">
+        <a href="#implementing-custom-engines-and-systems" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Integration Testing
+              Implementing Custom Engines and Systems
             
           </span>
         </div>
@@ -453,34 +453,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../implementing-custom-engines-and-systems/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Implementing Custom Engines and Systems
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -500,7 +472,7 @@
   <span class="md-ellipsis">
     
   
-    Integration Testing
+    Implementing Custom Engines and Systems
   
 
     
@@ -518,7 +490,7 @@
   <span class="md-ellipsis">
     
   
-    Integration Testing
+    Implementing Custom Engines and Systems
   
 
     
@@ -544,10 +516,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-do-integration-test" class="md-nav__link">
+  <a href="#what-are-systems-and-engines" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why do Integration Test?
+        What are systems and engines?
       
     </span>
   </a>
@@ -555,10 +527,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#integration-testing-in-a-project-context" class="md-nav__link">
+  <a href="#system-implementation-sirsystem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration Testing in a Project Context
+        System Implementation (SirSystem)
       
     </span>
   </a>
@@ -566,10 +538,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#integration-testing-in-an-external-provider-package-context" class="md-nav__link">
+  <a href="#engine-implementation-eulerengine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration Testing in an External Provider Package Context
+        Engine Implementation (EulerEngine)
       
     </span>
   </a>
@@ -591,6 +563,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1186,10 +1186,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-do-integration-test" class="md-nav__link">
+  <a href="#what-are-systems-and-engines" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why do Integration Test?
+        What are systems and engines?
       
     </span>
   </a>
@@ -1197,10 +1197,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#integration-testing-in-a-project-context" class="md-nav__link">
+  <a href="#system-implementation-sirsystem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration Testing in a Project Context
+        System Implementation (SirSystem)
       
     </span>
   </a>
@@ -1208,10 +1208,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#integration-testing-in-an-external-provider-package-context" class="md-nav__link">
+  <a href="#engine-implementation-eulerengine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration Testing in an External Provider Package Context
+        Engine Implementation (EulerEngine)
       
     </span>
   </a>
@@ -1246,85 +1246,167 @@
 
 
 
-<h1 id="integration-testing">Integration Testing<a class="headerlink" href="#integration-testing" title="Permanent link">&para;</a></h1>
-<p>This tutorial will show how to:</p>
+<h1 id="implementing-custom-engines-and-systems">Implementing Custom Engines and Systems<a class="headerlink" href="#implementing-custom-engines-and-systems" title="Permanent link">&para;</a></h1>
+<p>This guide shows how to implement <code>EngineABC</code> and <code>SystemABC</code> so they can be loaded by <code>flepimop2</code> and used in simulations. It mirrors the style of the external provider guide, but focuses only on the engine/system interfaces.</p>
+<p>Below is a minimal example creating new <code>EulerEngine</code> and <code>SirSystem</code>. You can copy these into your own module(s) under the <code>flepimop2.engine</code> and <code>flepimop2.system</code> namespaces.</p>
+<h2 id="what-are-systems-and-engines">What are systems and engines?<a class="headerlink" href="#what-are-systems-and-engines" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Use <code>flepimop2.testing</code> helpers to run end-to-end scenarios.</li>
-<li>Validate real CLI behavior in a project context or an external provider package context.</li>
+<li><strong>System</strong>: implements the model dynamics via a stepper and advertises its properties via the standardized required attributes or non-standardized options.</li>
+<li><strong>Engine</strong>: runs a system stepper over time using an <code>EngineABC</code> runner.</li>
+<li><strong>Compatibility</strong>: engines may validate system properties (e.g., flow vs. delta vs. state semantics) before running.</li>
 </ul>
-<h2 id="why-do-integration-test">Why do Integration Test?<a class="headerlink" href="#why-do-integration-test" title="Permanent link">&para;</a></h2>
-<p>Integration tests are for checking that packages behave as a user would expect when used with the <code>flepimop2</code> CLI and infrastructure. They are slower than unit tests because they create projects, invoke commands, and run simulations. That cost is worth it when you want confidence that all the pieces work together.</p>
-<p>Because they are slower, integration tests should be broad. Prefer a single test that exercises a full workflow with several assertions rather than lots of tiny variants. Use unit tests for edge cases and fast iteration, and use integration tests for end-to-end scenarios.</p>
-<h2 id="integration-testing-in-a-project-context">Integration Testing in a Project Context<a class="headerlink" href="#integration-testing-in-a-project-context" title="Permanent link">&para;</a></h2>
-<p>The most common type of integration testing, especially for developers of external package providers, is running the <code>flepimop2</code> CLI in a project context. The primary functions a user will use are <code>project_skeleton</code>, which will setup a project in the given directory, and <code>flepimop2_run</code>, which will run the <code>flepimop2</code> CLI in the context of that project.</p>
-<div class="highlight"><span class="filename">tests/integration/my_integration_test/test_simulate.py</span><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<h2 id="system-implementation-sirsystem">System Implementation (<code>SirSystem</code>)<a class="headerlink" href="#system-implementation-sirsystem" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Stepper function for SIR model integration tests.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">flepimop2_run</span><span class="p">,</span> <span class="n">project_skeleton</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">test_simulate</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">project_skeleton</span><span class="p">(</span>
-        <span class="n">tmp_path</span><span class="p">,</span>
-        <span class="n">copy_files</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/sir.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;model_input/plugins/sir.py&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/solve_ivp.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;model_input/plugins/solve_ivp.py&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/my_integration_test/config.yaml&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;configs/config.yaml&quot;</span>
-            <span class="p">),</span>
-        <span class="p">},</span>
-        <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flepimop2_run</span><span class="p">(</span>
-        <span class="s2">&quot;simulate&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;configs/config.yaml&quot;</span><span class="p">],</span>
-        <span class="n">cwd</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">StateChangeEnum</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ODE for an SIR model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        time: Current time (not used in this model).</span>
+<span class="sd">        state: Current state array [S, I, R].</span>
+<span class="sd">        **kwargs: Additional parameters (e.g. beta, gamma, etc.).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The change in state.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Implementors add their own logic here</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SirSystem</span><span class="p">(</span><span class="n">SystemABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model system.&quot;&quot;&quot;</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.system.sir&quot;</span>
+    <span class="n">state_change</span> <span class="o">=</span> <span class="n">StateChangeEnum</span><span class="o">.</span><span class="n">FLOW</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SIR system with the SIR stepper.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stepper</span> <span class="o">=</span> <span class="n">stepper</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SirSystem</span><span class="p">:</span>  <span class="c1"># noqa: ARG001</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an SIR system.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of the SIR system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">SirSystem</span><span class="p">()</span>
 </code></pre></div>
-<p>Above is a brief example of what an integration test might look like. The key elements of this example are:</p>
+<p>Key elements in the system implementation:</p>
 <ul>
-<li>The test provides a temporary directory to <code>project_skeleton</code> and <code>flepimop2_run</code> that is cleaned up after test completion via <a href="https://docs.pytest.org/en/stable/how-to/tmp_path.html"><code>pytest</code>'s <code>tmp_path</code> fixture</a>.</li>
-<li>The files <code>sir.py</code>, <code>solve_ivp.py</code>, and <code>config.yaml</code> are copied from the integration test to the project directory after the project is created via the <code>flepimop2 skeleton</code> CLI.</li>
-<li>The dependencies <code>numpy</code>, <code>pandas</code>, and <code>scipy</code> are additionally installed to the project directory's virtual environment and are available to the <code>flepimop2</code> CLI.</li>
-<li>Finally, the <code>flepimop2_run</code> function invokes the <code>flepimop2 simulate</code> CLI in the project directory and the returned object is a <a href="https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess"><code>subprocess.CompletedProcess</code></a>. However, you could invoke any action available via the <code>flepimop2</code> CLI, for a full list please refer to <code>flepimop2 --help</code>.</li>
+<li><code>stepper</code> defines the model dynamics which the engine will call it repeatedly.</li>
+<li><code>SirSystem</code> inherits <code>SystemABC</code> and assigns <code>_stepper</code> in <code>__init__</code> as well as has the required attributes <code>module</code> and <code>state_change</code>.</li>
+<li><code>build(...)</code> provides a standard entry point so <code>flepimop2</code> can construct the system from configuration data. For more details on this you can read the <a href="../creating-an-external-provider-package/">Creating An External Provider Package</a> development guide.</li>
 </ul>
-<p>From here a developer would be able to make further assertions about the output of the CLI command itself or contents of the project directory to ensure that the integration test has worked as expected.</p>
-<h2 id="integration-testing-in-an-external-provider-package-context">Integration Testing in an External Provider Package Context<a class="headerlink" href="#integration-testing-in-an-external-provider-package-context" title="Permanent link">&para;</a></h2>
-<p>For tests that need to simulate an external provider package, use <code>external_provider_package</code>. This helper constructs an implicit namespace package under <code>flepimop2.*</code>, installs it into a temporary virtual environment, and lets you run the CLI against it using <code>flepimop2_run</code>. This kind of integration test is very uncommon outside of development for <code>flepimop2</code> itself since this is largely about testing the ability for the <code>flepimop2</code> package to interact with external package providers.</p>
-<div class="highlight"><span class="filename">tests/integration/external_provider/test_simulate.py</span><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<h2 id="engine-implementation-eulerengine">Engine Implementation (<code>EulerEngine</code>)<a class="headerlink" href="#engine-implementation-eulerengine" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Runner function for SIR model integration tests.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">external_provider_package</span><span class="p">,</span> <span class="n">flepimop2_run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">test_simulate</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">external_provider_package</span><span class="p">(</span>
-        <span class="n">tmp_path</span><span class="p">,</span>
-        <span class="n">copy_files</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/euler.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;external_provider/src/flepimop2/engine/euler.py&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/sir.py&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;external_provider/src/flepimop2/system/sir.py&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/integration/external_provider/config.yaml&quot;</span><span class="p">):</span> <span class="n">Path</span><span class="p">(</span>
-                <span class="s2">&quot;config.yaml&quot;</span>
-            <span class="p">),</span>
-        <span class="p">},</span>
-        <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flepimop2_run</span><span class="p">(</span>
-        <span class="s2">&quot;simulate&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">],</span>
-        <span class="n">cwd</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ModuleModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.engine.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">EngineABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">runner</span><span class="p">(</span>
+    <span class="n">stepper</span><span class="p">:</span> <span class="n">SystemProtocol</span><span class="p">,</span>
+    <span class="n">times</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple Euler runner for the SIR model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        stepper: The system stepper function.</span>
+<span class="sd">        times: Array of time points.</span>
+<span class="sd">        state: The current state array.</span>
+<span class="sd">        params: Additional parameters for the stepper.</span>
+<span class="sd">        **kwargs: Additional keyword arguments for the engine. Unused by this runner.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The evolved time x state array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Implementors add their own logic here</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EulerEngine</span><span class="p">(</span><span class="n">EngineABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model runner.&quot;&quot;&quot;</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.engine.euler&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SIR runner with the SIR runner function.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">runner</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">SystemABC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validation hook for system properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system: The system to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of validation issues, or `None` if not implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">system</span><span class="o">.</span><span class="n">state_change</span> <span class="o">!=</span> <span class="n">StateChangeEnum</span><span class="o">.</span><span class="n">FLOW</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">ValidationIssue</span><span class="p">(</span>
+                    <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
+                        <span class="s2">&quot;Engine state change type, &#39;flow&#39;, is not &quot;</span>
+                        <span class="s2">&quot;compatible with system state change type &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">state_change</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;incompatible_system&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EulerEngine</span><span class="p">:</span>  <span class="c1"># noqa: ARG001</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an SIR engine.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of the SIR engine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">EulerEngine</span><span class="p">()</span>
 </code></pre></div>
-<p>Above is a brief example of what an integration test might look like. Similar to the previous example, the key elements of this example are the same, except the <code>external_provider_package</code> creates an external provider package named "example-provider".</p>
+<p>Key elements in the engine implementation:</p>
+<ul>
+<li><code>runner</code> drives the simulation by applying the stepper across time points.</li>
+<li><code>EulerEngine</code> inherits <code>EngineABC</code> and assigns <code>_runner</code> in <code>__init__</code> as well as has a <code>module</code> attribute that gives it an importable name.</li>
+<li><code>EulerEngine</code> implements the optional <code>validate_system</code> hook to ensure that the system is compatible.</li>
+<li><code>build(...)</code> lets <code>flepimop2</code> construct the engine from configuration data.</li>
+</ul>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>Integration tests validate the end-to-end user experience of <code>flepimop2</code> using real projects and real CLI commands. Use <code>project_skeleton</code> for project workflows, and use <code>external_provider_package</code> when you need to simulate a provider package install.</p>
-<p>For API details please refer to the <a href="../../reference/api/testing/"><code>flepimop2.testing</code> API reference</a> and for working examples you can refer to the <a href="https://github.com/ACCIDDA/flepimop2/tree/main/tests/integration"><code>flepimop2</code> integration tests</a>.</p>
+<p>Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let <code>flepimop2</code> handle construction and validation.</p>
+<ul>
+<li>Systems must supply a stepper function as well as required attributes <code>module</code> and <code>state_change</code>.</li>
+<li>Engines must supply a runner function compatible with <code>SystemProtocol</code> as well as required attributes <code>module</code> and optional system validation hook <code>validate_system</code>.</li>
+<li><code>build(...)</code> provides the standard entry point for configuration-driven construction.</li>
+</ul>
 
 
 
