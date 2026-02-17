@@ -57,6 +57,7 @@ extra_javascript:
   - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
 
 extra_css:
+  - stylesheets/branding.css
   - https://unpkg.com/katex@0/dist/katex.min.css
 
 # Navigation structure
