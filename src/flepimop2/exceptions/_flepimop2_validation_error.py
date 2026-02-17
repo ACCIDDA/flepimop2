@@ -83,7 +83,7 @@ class Flepimop2ValidationError(Flepimop2Error):
         >>> raise Flepimop2ValidationError(issues)
         Traceback (most recent call last):
             ...
-        flepimop2.exceptions.Flepimop2ValidationError: 2 validation issues encountered:
+        flepimop2.exceptions._flepimop2_validation_error.Flepimop2ValidationError: 2 validation issues encountered:
         - [missing_parameter] Model requires undefined parameter 'gamma'. (parameter=gamma, transition=gamma * (S / N))
         - [unreachable_compartment] Compartment 'E' is unreachable. (compartment=E)
 

@@ -1,5 +1,5 @@
 ---
-name: 'GitHub Pages Documentation'
+name: 'github pages'
 
 'on':
   push:
@@ -15,36 +15,26 @@ permissions:
 
 jobs:
   deploy:
-    name: 'Deploy Documentation to GitHub Pages'
+    name: 'deploy documentation to github pages'
     runs-on: 'ubuntu-latest'
-    strategy:
-      matrix:
-        python-version:
-          - '3.12'
     permissions:
       contents: 'write'  # Needed to push to gh-pages
     steps:
-      - name: 'Install just'
-        run: 'sudo apt install just'
-      - name: 'Checkout repository'
+      - name: 'checkout repository'
         uses: 'actions/checkout@v6'
         with:
           ref: 'main'
           persist-credentials: true
-      - name: 'Fetch gh-pages branch'
+      - name: 'setup just and uv'
+        uses: './.github/actions/setup-just-and-uv'
+      - name: 'fetch gh-pages branch'
         run: |
           git fetch origin gh-pages:gh-pages --depth=1
           git config --global user.name "${ACTOR}"
           git config --global user.email "${ACTOR}@users.noreply.github.com"
         env:
           ACTOR: "${{ github.actor }}"
-      - name: 'Setup uv with python ${{ matrix.python-version }}'
-        uses: 'astral-sh/setup-uv@v7'
-        with:
-          enable-cache: true
-          cache-dependency-glob: 'pyproject.toml'
-          python-version: '${{ matrix.python-version }}'
-      - name: 'Extract flepimop2 version'
+      - name: 'extract flepimop2 version'
         id: extract-version
         run: |
           cat > version.py << EOF
@@ -57,9 +47,9 @@ jobs:
           EOF
           uv run -qq python version.py >> $GITHUB_OUTPUT
           rm version.py
-      - name: 'Build API Reference'
+      - name: 'build reference'
         run: 'just reference'
-      - name: 'Deploy to GitHub Pages'
+      - name: 'deploy to github pages'
         run: |
           uv run mike set-default latest
           if [ "${EVENT_NAME}" == "release" ] || [[ $VERSION == 0* ]]; then
