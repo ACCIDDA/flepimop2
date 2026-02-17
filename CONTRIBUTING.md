@@ -2,15 +2,6 @@
 
 This document provides guidelines and instructions for contributing to `flepimop2`, including development conventions and tips for best practices.
 
-## Table of Contents
-
-- [Development Setup](#development-setup)
-- [Code Standards](#code-standards)
-- [Testing](#testing)
-- [Documentation](#documentation)
-- [Pull Request Process](#pull-request-process)
-- [Reporting Issues](#reporting-issues)
-
 ## Development Setup
 
 ### Prerequisites
@@ -48,11 +39,10 @@ just
 
 This runs the default development checks:
 
-- `ruff format` - Format code.
-- `ruff check --fix` - Lint and auto-fix issues.
-- `pytest --doctest-modules` - Run tests including doctests.
-- `mypy --strict` - Type check with strict settings.
-- `yamllint --strict` - Lint YAML files.
+- `just ruff` - Format code and run lint checks with auto-fixes.
+- `just mypy` - Type check the codebase.
+- `just test` - Run non-integration tests with coverage and then integration tests.
+- `just yamllint` - Lint YAML files.
 
 It is recommended that you run this command frequently as you do development work to catch issues early.
 
@@ -65,7 +55,7 @@ We use [`ruff`](https://docs.astral.sh/ruff/) for both formatting and linting:
 - **Formatting**: `ruff format` follows the Black code style.
 - **Linting**: `ruff check` enforces code quality rules.
 
-Run `just` to automatically format and lint your code before committing. Or you can run `just format` and `just check` to run just these steps.
+Run `just` to automatically format/lint, type check, and run tests before committing. If you only want formatting/linting, run `just ruff`.
 
 ## Testing
 
@@ -91,7 +81,14 @@ tests/
 
 ### Running Tests
 
-Running all tests is a part of running `just` or if you want to run only the tests instead of all checks you can run `just pytest`. For more advanced running please use `pytest` directly:
+Test execution is split into explicit workflows:
+
+- `just test` - Local default test workflow (`just cov` then `just integration`).
+- `just cov` - Run tests marked `not integration`, report coverage, and enforce the configured minimum coverage threshold.
+- `just integration` - Run only tests marked `integration` (tests in `tests/integration/` are marked automatically).
+- `just pytest` - Run the full pytest suite (including integration tests) without coverage reporting.
+
+For more advanced test runs, use `pytest` directly:
 
 ```shell
 uv run pytest tests/{module}/ -v                    # Run all tests in a module
@@ -103,7 +100,7 @@ For more information on how to invoke pytest please refer to the [How to invoke 
 ### Writing Tests
 
 - Any public API should have unit tests that reaffirm the documentation's description.
-- If possible unit tests should use `@pytest.mark.parameterize` for generality and ease of adding new test cases.
+- If possible unit tests should use `@pytest.mark.parametrize` for generality and ease of adding new test cases.
 - Use descriptive test names that explain what is being tested. In the case of testing exceptions also the type of exception.
 - For smaller helper functions, especially internal helpers, doctests are sufficient.
 
@@ -134,7 +131,7 @@ To preview documentation changes locally you can run `just serve` which will bui
 
 ### Documentation Testing
 
-In addition to unit tests and doctests, code contained in the documentation is also tested. This is ran as a part of `just`/`just pytest`. Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use [`Sybil`](https://sybil.readthedocs.io/en/latest/).
+In addition to unit tests and doctests, code contained in the documentation is also tested. This is run as a part of pytest-based commands (`just test`, `just cov`, `just pytest`). Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use [`Sybil`](https://sybil.readthedocs.io/en/latest/).
 
 ## Pull Request Process
 
@@ -142,12 +139,13 @@ In addition to unit tests and doctests, code contained in the documentation is a
 
 1. Run CI checks locally using `just ci`. This runs the same checks that CI will run:
 
-- `ruff format --check` - Verify code formatting (no auto-fix).
-- `ruff check --no-fix` - Lint without modifications.
-- `pytest --doctest-modules` - Run test suite.
-- `mypy --strict` - Type checking.
+- `just quality` - CI quality checks (ruff check mode + mypy).
+- `just test` - Coverage-gated non-integration tests and integration tests.
+- `just docs` - Documentation build checks.
 
-If you edit YAML files or the documentation please also run `just yamllint` or `just docs`, respectively. These tasks are separated from the `just ci` command but will also run as a CI check.
+In GitHub Actions, these correspond to the `quality`, `tests`, and `docs` jobs in `.github/workflows/ci.yaml`.
+
+If you edit YAML files, also run `just yamllint`. YAML linting is separate from `just ci`.
 
 2. Update documentation if your changes affect user-facing functionality or add features that require usage guides.
 
@@ -160,13 +158,13 @@ If you edit YAML files or the documentation please also run `just yamllint` or `
 2. Create a pull request with:
 
 - The motivation for and a clear description of the changes.
-- Link any related issues (use "Fixes #123" to auto-close issues).
+- Link any related issues (use "Closes #XYZ" to auto-close issues).
 - Explicitly point out the relevant documentation changes.
 
 ### Pull Request Requirements
 
-- PRs are tested against Python 3.11, 3.12, 3.13, and 3.14 using `just ci`.
-- Documentation must build successfully with `just docs`.
+- Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.
+- Quality checks and documentation build checks run in CI on Python 3.12.
 - At least one maintainer approval is required before merging.
 - Branches must be up to date against `main` before merging and have a linear history. Only rebases are allowed for merging.
 

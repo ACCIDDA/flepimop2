@@ -27,7 +27,6 @@ from flepimop2.typing import Float64NDArray, StateChangeEnum
 def stepper(
     time: np.float64,  # noqa: ARG001
     state: Float64NDArray,
-    *,
     **kwargs: Any,  # noqa: ARG001
 ) -> Float64NDArray:
     """
@@ -83,7 +82,8 @@ import numpy as np
 
 from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.engine.abc import EngineABC
-from flepimop2.system.abc import SystemProtocol
+from flepimop2.exceptions import ValidationIssue
+from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray
 
 

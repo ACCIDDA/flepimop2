@@ -31,6 +31,10 @@ def runner(
         FloatArray: Array with time and state values evaluated at `times`.
         Each row is [t, y...].
 
+    Raises:
+        ValueError: If `times` is not a 1D sequence of time points with length >= 1, or
+            if the first time point is negative.
+
     """
     if not (times.ndim == 1 and times.size >= 1):
         msg = "times must be a 1D sequence of time points"
@@ -44,5 +48,12 @@ def runner(
         raise ValueError(msg)
 
     args = tuple(val for val in params.values()) if params is not None else None
-    result = solve_ivp(fun, (t0, tf), y0, t_eval=times, args=args, **solver_options)
+    result = solve_ivp(
+        fun,
+        (t0, tf),
+        y0,
+        t_eval=times,
+        args=args,  # type: ignore[arg-type]
+        **solver_options,
+    )
     return np.transpose(np.vstack((result.t, result.y)))

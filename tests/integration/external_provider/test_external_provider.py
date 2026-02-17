@@ -8,12 +8,15 @@ import pytest
 from flepimop2.testing import external_provider_package, flepimop2_run
 
 
-def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_external_provider(
+    monkeypatch: pytest.MonkeyPatch, repo_root: Path, tmp_path: Path
+) -> None:
     """
     Test external provider functionality.
 
     Args:
         monkeypatch: Pytest monkeypatch fixture.
+        repo_root: Path to the repository root.
         tmp_path: Temporary directory provided by pytest.
 
     Notes:
@@ -24,21 +27,18 @@ def test_external_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
 
     """
     # Setup
-    cwd = Path(__file__).parent.resolve()
     external_provider_package(
         tmp_path,
         copy_files={
-            cwd / "config.yaml": Path("config.yaml"),
-            cwd / "euler.py": Path("external_provider")
-            / "src"
-            / "flepimop2"
-            / "engine"
-            / "euler.py",
-            cwd / "sir.py": Path("external_provider")
-            / "src"
-            / "flepimop2"
-            / "system"
-            / "sir.py",
+            repo_root / "tests/integration/external_provider/config.yaml": Path(
+                "config.yaml"
+            ),
+            repo_root / "tests/integration/external_provider/euler.py": Path(
+                "external_provider/src/flepimop2/engine/euler.py"
+            ),
+            repo_root / "tests/integration/external_provider/sir.py": Path(
+                "external_provider/src/flepimop2/system/sir.py"
+            ),
         },
     )
     monkeypatch.chdir(tmp_path)
