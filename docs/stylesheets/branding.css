@@ -1,0 +1,31 @@
+.brand-links--footer {
+  display: flex;
+  align-items: center;
+  gap: 1.0rem;
+  margin-left: auto;
+}
+
+.brand-links--footer a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand-links--footer img {
+  display: block;
+  width: auto;
+  max-height: 84px;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .brand-links--footer {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+}
+
+.md-footer-meta__inner {
+  padding: 0.6rem !important;
+}
