@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new `flepimop2 skeleton` CLI command for scaffolding a project repository. See [#84](https://github.com/ACCIDDA/flepimop2/issues/84).
 - Added `flepimop.testing` with functionality for integration testing, both for `flepimop2` itself and for external provider packages. See [#107](https://github.com/ACCIDDA/flepimop2/issues/107).
 - Added a parent class, `ModuleABC`, for all customizable modules that sets a required `module` attribute and provides infrastructure for non-standardized properties information. Also extended said infrastructure to allow for standardized property information for `SystemABC`. See [#113](https://github.com/ACCIDDA/flepimop2/issues/113), [#126](https://github.com/ACCIDDA/flepimop2/issues/126), [#129](https://github.com/ACCIDDA/flepimop2/discussions/129).
+- Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added three kinds of axes, categorical, integer, and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration. These representations of axes are realized via the `Axis` named tuple which has a unified API for integration with other packages. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
 
 ### Changed
 
