@@ -5,7 +5,7 @@ default: dev lint
 dev: ruff mypy test
 
 # Run all default lint tasks
-lint: yamllint
+lint: yamllint changelog
 
 # Run all default CI tasks
 ci: quality test docs
@@ -42,16 +42,12 @@ mypy:
 
 # Clean up generated lock files, venvs, and caches
 [group('dev')]
+[unix]
 clean:
-    rm -f uv.lock
-    rm -rf .*_cache
+    rm -rf .*cache
     rm -rf .venv
     rm -rf site
-
-# Lint YAML files using `yamllint`
-[group('lint')]
-yamllint:
-    uv run yamllint --strict --config-file .yamllint.yaml .
+    rm -f uv.lock
 
 # Run CI `ruff` formatting/linting checks
 [group('ci')]
@@ -65,6 +61,7 @@ quality: ci-ruff mypy
 
 # Generate API reference documentation
 [group('docs')]
+[unix]
 reference:
     uv run scripts/authors.py
     uv run scripts/api-reference.py
@@ -80,3 +77,33 @@ docs: reference
 [group('docs')]
 serve: reference
     uv run mkdocs serve --livereload
+
+# Lint YAML files using `yamllint`
+[group('lint')]
+yamllint:
+    uv run yamllint --strict --config-file .yamllint.yaml .
+
+# Check that CHANGELOG.md was updated relative to main
+[group('lint')]
+[unix]
+changelog:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    BASE_REF="main"
+    if ! git show-ref --verify --quiet "refs/heads/${BASE_REF}"; then
+        git fetch origin "${BASE_REF}:${BASE_REF}"
+    fi
+    COMMIT_COUNT=$(git rev-list --count "${BASE_REF}..HEAD")
+    if [[ "${COMMIT_COUNT}" -eq 1 ]]; then
+        COMMIT_MSG=$(git log -1 --pretty=format:"%s %b")
+        SKIP_REGEX='no[[:space:]]+major[[:space:]]+changes'
+        if echo "${COMMIT_MSG}" | tr '\n' ' ' | grep -Eiq "${SKIP_REGEX}"; then
+            echo "Bypassing changelog check: single commit contains 'no major changes'"
+            exit 0
+        fi
+    fi
+    if ! git diff --name-only "${BASE_REF}...HEAD" | grep -q '^CHANGELOG\.md$'; then
+        echo "Error: Please update CHANGELOG.md"
+        exit 1
+    fi
+    echo "CHANGELOG.md check passed"
