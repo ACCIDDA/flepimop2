@@ -11,6 +11,19 @@ permissions:
   contents: 'read'
 
 jobs:
+  changelog:
+    name: 'changelog'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'checkout repository'
+        uses: 'actions/checkout@v6'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 'setup just and uv'
+        uses: './.github/actions/setup-just-and-uv'
+      - name: 'Check changelog updated'
+        run: 'just changelog'
   docs:
     name: 'docs'
     runs-on: 'ubuntu-latest'

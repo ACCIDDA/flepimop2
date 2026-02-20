@@ -147,9 +147,9 @@ In GitHub Actions, these correspond to the `quality`, `tests`, and `docs` jobs i
 
 If you edit YAML files, also run `just yamllint`. YAML linting is separate from `just ci`.
 
-2. Update documentation if your changes affect user-facing functionality or add features that require usage guides.
+2. Add tests for new functionality or bug fixes. Particularly for bug fixes, the test should be written before the fix and fail without the fix present.
 
-3. Add tests for new functionality or bug fixes. Particularly for bug fixes, the test should be written before the fix and fail without the fix present.
+3. Update documentation if your changes affect user-facing functionality or add features that require usage guides. This should include adding a note to the `CHANGELOG.md` file if the change is more than a "patch" type change.
 
 ### Submitting a Pull Request
 
