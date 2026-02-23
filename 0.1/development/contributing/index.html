@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
@@ -460,17 +460,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Table of Contents
-      
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#development-setup" class="md-nav__link">
@@ -1433,17 +1422,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Table of Contents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#development-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1740,15 +1718,6 @@
 
 <h1 id="contributing-to-flepimop2">Contributing to <code>flepimop2</code><a class="headerlink" href="#contributing-to-flepimop2" title="Permanent link">&para;</a></h1>
 <p>This document provides guidelines and instructions for contributing to <code>flepimop2</code>, including development conventions and tips for best practices.</p>
-<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="#development-setup">Development Setup</a></li>
-<li><a href="#code-standards">Code Standards</a></li>
-<li><a href="#testing">Testing</a></li>
-<li><a href="#documentation">Documentation</a></li>
-<li><a href="#pull-request-process">Pull Request Process</a></li>
-<li><a href="#reporting-issues">Reporting Issues</a></li>
-</ul>
 <h2 id="development-setup">Development Setup<a class="headerlink" href="#development-setup" title="Permanent link">&para;</a></h2>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1778,11 +1747,10 @@
 </code></pre></div>
 <p>This runs the default development checks:</p>
 <ul>
-<li><code>ruff format</code> - Format code.</li>
-<li><code>ruff check --fix</code> - Lint and auto-fix issues.</li>
-<li><code>pytest --doctest-modules</code> - Run tests including doctests.</li>
-<li><code>mypy --strict</code> - Type check with strict settings.</li>
-<li><code>yamllint --strict</code> - Lint YAML files.</li>
+<li><code>just ruff</code> - Format code and run lint checks with auto-fixes.</li>
+<li><code>just mypy</code> - Type check the codebase.</li>
+<li><code>just test</code> - Run non-integration tests with coverage and then integration tests.</li>
+<li><code>just yamllint</code> - Lint YAML files.</li>
 </ul>
 <p>It is recommended that you run this command frequently as you do development work to catch issues early.</p>
 <h2 id="code-standards">Code Standards<a class="headerlink" href="#code-standards" title="Permanent link">&para;</a></h2>
@@ -1792,7 +1760,7 @@
 <li><strong>Formatting</strong>: <code>ruff format</code> follows the Black code style.</li>
 <li><strong>Linting</strong>: <code>ruff check</code> enforces code quality rules.</li>
 </ul>
-<p>Run <code>just</code> to automatically format and lint your code before committing. Or you can run <code>just format</code> and <code>just check</code> to run just these steps.</p>
+<p>Run <code>just</code> to automatically format/lint, type check, and run tests before committing. If you only want formatting/linting, run <code>just ruff</code>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="organization">Organization<a class="headerlink" href="#organization" title="Permanent link">&para;</a></h3>
 <p>Tests are organized to mirror the source code structure:</p>
@@ -1811,7 +1779,14 @@
 <li><code>tests/configuration/test_fixed_parameter_specification_model_class.py</code> - Tests for the <code>FixedParameterSpecificationModel</code> class.</li>
 </ul>
 <h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
-<p>Running all tests is a part of running <code>just</code> or if you want to run only the tests instead of all checks you can run <code>just pytest</code>. For more advanced running please use <code>pytest</code> directly:</p>
+<p>Test execution is split into explicit workflows:</p>
+<ul>
+<li><code>just test</code> - Local default test workflow (<code>just cov</code> then <code>just integration</code>).</li>
+<li><code>just cov</code> - Run tests marked <code>not integration</code>, report coverage, and enforce the configured minimum coverage threshold.</li>
+<li><code>just integration</code> - Run only tests marked <code>integration</code> (tests in <code>tests/integration/</code> are marked automatically).</li>
+<li><code>just pytest</code> - Run the full pytest suite (including integration tests) without coverage reporting.</li>
+</ul>
+<p>For more advanced test runs, use <code>pytest</code> directly:</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/<span class="w"> </span>-v<span class="w">                    </span><span class="c1"># Run all tests in a module</span>
 uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/test_<span class="o">{</span><span class="k">function</span><span class="o">}</span>.py<span class="w"> </span>-v<span class="w">  </span><span class="c1"># Run specific test file</span>
 </code></pre></div>
@@ -1819,7 +1794,7 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <h3 id="writing-tests">Writing Tests<a class="headerlink" href="#writing-tests" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Any public API should have unit tests that reaffirm the documentation's description.</li>
-<li>If possible unit tests should use <code>@pytest.mark.parameterize</code> for generality and ease of adding new test cases.</li>
+<li>If possible unit tests should use <code>@pytest.mark.parametrize</code> for generality and ease of adding new test cases.</li>
 <li>Use descriptive test names that explain what is being tested. In the case of testing exceptions also the type of exception.</li>
 <li>For smaller helper functions, especially internal helpers, doctests are sufficient.</li>
 </ul>
@@ -1838,7 +1813,7 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <h3 id="viewing-documentation-locally">Viewing Documentation Locally<a class="headerlink" href="#viewing-documentation-locally" title="Permanent link">&para;</a></h3>
 <p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/flepimop2/</code>. To only build the documentation you can run <code>just docs</code> which will generate the documentation site in the <code>site/</code> directory.</p>
 <h3 id="documentation-testing">Documentation Testing<a class="headerlink" href="#documentation-testing" title="Permanent link">&para;</a></h3>
-<p>In addition to unit tests and doctests, code contained in the documentation is also tested. This is ran as a part of <code>just</code>/<code>just pytest</code>. Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use <a href="https://sybil.readthedocs.io/en/latest/"><code>Sybil</code></a>.</p>
+<p>In addition to unit tests and doctests, code contained in the documentation is also tested. This is run as a part of pytest-based commands (<code>just test</code>, <code>just cov</code>, <code>just pytest</code>). Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use <a href="https://sybil.readthedocs.io/en/latest/"><code>Sybil</code></a>.</p>
 <h2 id="pull-request-process">Pull Request Process<a class="headerlink" href="#pull-request-process" title="Permanent link">&para;</a></h2>
 <h3 id="before-submitting">Before Submitting<a class="headerlink" href="#before-submitting" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1846,13 +1821,13 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <p>Run CI checks locally using <code>just ci</code>. This runs the same checks that CI will run:</p>
 </li>
 <li>
-<p><code>ruff format --check</code> - Verify code formatting (no auto-fix).</p>
+<p><code>just quality</code> - CI quality checks (ruff check mode + mypy).</p>
 </li>
-<li><code>ruff check --no-fix</code> - Lint without modifications.</li>
-<li><code>pytest --doctest-modules</code> - Run test suite.</li>
-<li><code>mypy --strict</code> - Type checking.</li>
+<li><code>just test</code> - Coverage-gated non-integration tests and integration tests.</li>
+<li><code>just docs</code> - Documentation build checks.</li>
 </ol>
-<p>If you edit YAML files or the documentation please also run <code>just yamllint</code> or <code>just docs</code>, respectively. These tasks are separated from the <code>just ci</code> command but will also run as a CI check.</p>
+<p>In GitHub Actions, these correspond to the <code>quality</code>, <code>tests</code>, and <code>docs</code> jobs in <code>.github/workflows/ci.yaml</code>.</p>
+<p>If you edit YAML files, also run <code>just yamllint</code>. YAML linting is separate from <code>just ci</code>.</p>
 <ol>
 <li>
 <p>Update documentation if your changes affect user-facing functionality or add features that require usage guides.</p>
@@ -1872,13 +1847,13 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <li>
 <p>The motivation for and a clear description of the changes.</p>
 </li>
-<li>Link any related issues (use "Fixes #123" to auto-close issues).</li>
+<li>Link any related issues (use "Closes #XYZ" to auto-close issues).</li>
 <li>Explicitly point out the relevant documentation changes.</li>
 </ol>
 <h3 id="pull-request-requirements">Pull Request Requirements<a class="headerlink" href="#pull-request-requirements" title="Permanent link">&para;</a></h3>
 <ul>
-<li>PRs are tested against Python 3.11, 3.12, 3.13, and 3.14 using <code>just ci</code>.</li>
-<li>Documentation must build successfully with <code>just docs</code>.</li>
+<li>Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.</li>
+<li>Quality checks and documentation build checks run in CI on Python 3.12.</li>
 <li>At least one maintainer approval is required before merging.</li>
 <li>Branches must be up to date against <code>main</code> before merging and have a linear history. Only rebases are allowed for merging.</li>
 </ul>

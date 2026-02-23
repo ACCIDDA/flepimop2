@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
@@ -1272,7 +1272,6 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
     <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1325,7 +1324,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ModuleModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.engine.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">EngineABC</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationIssue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemABC</span><span class="p">,</span> <span class="n">SystemProtocol</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
 
 
