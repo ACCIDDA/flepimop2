@@ -2,7 +2,7 @@
 
 __all__ = ["EngineABC", "EngineProtocol", "build"]
 
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, Self, runtime_checkable
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import IdentifierString, ModuleModel
@@ -57,6 +57,51 @@ class EngineABC(ModuleABC):
         """
         self._runner = _no_run_func
 
+    def build_runner(self) -> EngineProtocol:  # noqa: PLR6301
+        """
+        Build the runner function for this engine.
+
+        Concrete implementations can override this hook to dynamically construct
+        runner functions from instance state.
+
+        Returns:
+            The runner function for this engine.
+        """
+        return _no_run_func
+
+    def build(self) -> Self:
+        """
+        Build the engine internals required for running systems.
+
+        This method is idempotent and supports three strategies, in order:
+
+        1. Keep an existing instance-level runner if already set.
+        2. Reuse a class-level `_runner` callable if provided.
+        3. Fallback to `build_runner()` for dynamic construction.
+
+        Returns:
+            The built engine instance.
+
+        Raises:
+            TypeError: If `build_runner()` returns a non-callable object.
+        """
+        current_runner = getattr(self, "_runner", _no_run_func)
+        if current_runner is not _no_run_func:
+            return self
+
+        class_runner = type(self).__dict__.get("_runner")
+        if isinstance(class_runner, staticmethod):
+            class_runner = class_runner.__func__
+        if callable(class_runner) and class_runner is not _no_run_func:
+            self._runner = class_runner
+            return self
+
+        self._runner = self.build_runner()
+        if not callable(self._runner):
+            msg = "EngineABC::build_runner must return a callable runner function."
+            raise TypeError(msg)
+        return self
+
     def run(
         self,
         system: SystemABC,
@@ -78,6 +123,8 @@ class EngineABC(ModuleABC):
         Returns:
             The evolved time x state array.
         """
+        self.build()
+        system.build()
         return self._runner(
             system._stepper,  # noqa: SLF001
             eval_times,

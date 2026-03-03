@@ -2,6 +2,8 @@
 
 This guide shows how to implement `EngineABC` and `SystemABC` so they can be loaded by `flepimop2` and used in simulations. It mirrors the style of the external provider guide, but focuses only on the engine/system interfaces.
 
+For full API signatures and attributes, see the [`SystemABC` API reference](./../reference/api/system.md#flepimop2.system.abc.SystemABC) and the [`EngineABC` API reference](./../reference/api/engine.md#flepimop2.engine.abc.EngineABC).
+
 Below is a minimal example creating new `EulerEngine` and `SirSystem`. You can copy these into your own module(s) under the `flepimop2.engine` and `flepimop2.system` namespaces.
 
 ## What are systems and engines?
@@ -50,9 +52,14 @@ class SirSystem(SystemABC):
     module = "flepimop2.system.sir"
     state_change = StateChangeEnum.FLOW
 
-    def __init__(self) -> None:
-        """Initialize the SIR system with the SIR stepper."""
-        self._stepper = stepper
+    def build_stepper(self):
+        """
+        Build the system stepper.
+
+        Returns:
+            The stepper function for this system.
+        """
+        return stepper
 
 
 def build(config: dict[str, Any] | ModuleModel) -> SirSystem:  # noqa: ARG001
@@ -67,9 +74,18 @@ def build(config: dict[str, Any] | ModuleModel) -> SirSystem:  # noqa: ARG001
 
 Key elements in the system implementation:
 
-- `stepper` defines the model dynamics which the engine will call it repeatedly.
-- `SirSystem` inherits `SystemABC` and assigns `_stepper` in `__init__` as well as has the required attributes `module` and `state_change`.
+- `stepper` defines the model dynamics which the engine will call repeatedly.
+- `SirSystem` inherits `SystemABC`, defines the required attributes `module` and `state_change`, and overrides `build_stepper` to provide the stepper.
 - `build(...)` provides a standard entry point so `flepimop2` can construct the system from configuration data. For more details on this you can read the [Creating An External Provider Package](./creating-an-external-provider-package.md) development guide.
+
+For very simple systems, you can define a class-level `_stepper` instead of overriding `build_stepper`:
+
+```python
+class SirSystem(SystemABC):
+    module = "flepimop2.system.sir"
+    state_change = StateChangeEnum.FLOW
+    _stepper = staticmethod(stepper)
+```
 
 ## Engine Implementation (`EulerEngine`)
 
@@ -84,7 +100,7 @@ from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 def runner(
@@ -116,10 +132,15 @@ class EulerEngine(EngineABC):
 
     module = "flepimop2.engine.euler"
 
-    def __init__(self) -> None:
-        """Initialize the SIR runner with the SIR runner function."""
-        self._runner = runner
-    
+    def build_runner(self):
+        """
+        Build the engine runner.
+
+        Returns:
+            The runner function for this engine.
+        """
+        return runner
+
     def validate_system(self, system: SystemABC) -> list[ValidationIssue] | None:
         """
         Validation hook for system properties.
@@ -157,14 +178,22 @@ def build(config: dict[str, Any] | ModuleModel) -> EulerEngine:  # noqa: ARG001
 Key elements in the engine implementation:
 
 - `runner` drives the simulation by applying the stepper across time points.
-- `EulerEngine` inherits `EngineABC` and assigns `_runner` in `__init__` as well as has a `module` attribute that gives it an importable name.
+- `EulerEngine` inherits `EngineABC`, defines `module`, and overrides `build_runner` to provide the runner.
 - `EulerEngine` implements the optional `validate_system` hook to ensure that the system is compatible.
 - `build(...)` lets `flepimop2` construct the engine from configuration data.
+
+For very simple engines, you can define a class-level `_runner` instead of overriding `build_runner`:
+
+```python
+class EulerEngine(EngineABC):
+    module = "flepimop2.engine.euler"
+    _runner = staticmethod(runner)
+```
 
 ## Summary
 
 Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let `flepimop2` handle construction and validation.
 
-- Systems must supply a stepper function as well as required attributes `module` and `state_change`.
-- Engines must supply a runner function compatible with `SystemProtocol` as well as required attributes `module` and optional system validation hook `validate_system`.
+- Systems must supply a stepper function compatible with `SystemProtocol` as well as required attributes `module` and `state_change`.
+- Engines must supply a runner function compatible with `EngineProtocol` as well as required attribute `module` and optional validation hook `validate_system`.
 - `build(...)` provides the standard entry point for configuration-driven construction.
