@@ -19,13 +19,17 @@ TEST_SYSTEM_SCRIPT: Final = (
 ).absolute()
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+@pytest.mark.parametrize(
+    "config",
+    [{"script": TEST_ENGINE_SCRIPT, "state_change": StateChangeEnum.FLOW}],
+)
 @pytest.mark.parametrize(
     "system",
     [
         system_build({
             "module": "flepimop2.system.wrapper",
             "script": TEST_SYSTEM_SCRIPT,
+            "state_change": StateChangeEnum.FLOW,
         })
     ],
 )
@@ -49,7 +53,10 @@ def test_wrapper_system(
     np.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+@pytest.mark.parametrize(
+    "config",
+    [{"script": TEST_ENGINE_SCRIPT, "state_change": StateChangeEnum.FLOW}],
+)
 def test_wrapper_engine_validate_system_properties(config: dict) -> None:
     """Test `WrapperEngine` validates system properties compatibility."""
     engine = engine_build(config)

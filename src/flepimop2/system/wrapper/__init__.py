@@ -3,13 +3,11 @@
 __all__ = ["WrapperSystem"]
 
 from pathlib import Path
-from typing import Any, Literal, Self
-
-from pydantic import model_validator
+from typing import Any, Literal, cast
 
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
-from flepimop2.system.abc import SystemABC
+from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import StateChangeEnum
 
 
@@ -21,13 +19,12 @@ class WrapperSystem(ModuleModel, SystemABC):
     script: Path
     options: dict[str, Any] | None = None
 
-    @model_validator(mode="after")
-    def _validate_stepper(self) -> Self:
+    def build_stepper(self) -> SystemProtocol:
         """
-        Validator to load and validate the stepper function from the script file.
+        Load and validate the wrapped script stepper function.
 
         Returns:
-            The validated `WrapperSystem` instance.
+            The validated stepper function from the wrapped script.
 
         Raises:
             AttributeError: If the module does not have a valid 'stepper' function.
@@ -36,5 +33,4 @@ class WrapperSystem(ModuleModel, SystemABC):
         if not _validate_function(mod, "stepper"):
             msg = f"Module at {self.script} does not have a valid 'stepper' function."
             raise AttributeError(msg)
-        self._stepper = mod.stepper
-        return self
+        return cast("SystemProtocol", mod.stepper)

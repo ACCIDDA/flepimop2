@@ -3,7 +3,7 @@
 __all__ = ["SystemABC", "SystemProtocol", "build"]
 
 import inspect
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, Self, runtime_checkable
 
 import numpy as np
 
@@ -87,6 +87,46 @@ class SystemABC(ModuleABC):
         """
         self._stepper = _no_step_function
 
+    def build_stepper(self) -> SystemProtocol:  # noqa: PLR6301
+        """
+        Build the stepper function for this system.
+
+        Concrete implementations can override this hook to dynamically construct
+        stepper functions from instance state.
+
+        Returns:
+            The stepper function for this system.
+        """
+        return _no_step_function
+
+    def build(self) -> Self:
+        """
+        Build the system internals required for stepping.
+
+        This method is idempotent and supports three strategies, in order:
+
+        1. Keep an existing instance-level stepper if already set.
+        2. Reuse a class-level `_stepper` callable if provided.
+        3. Fallback to `build_stepper()` for dynamic construction.
+
+        Returns:
+            The built system instance.
+
+        """
+        current_stepper = getattr(self, "_stepper", _no_step_function)
+        if current_stepper is not _no_step_function:
+            return self
+
+        class_stepper = type(self).__dict__.get("_stepper")
+        if isinstance(class_stepper, staticmethod):
+            class_stepper = class_stepper.__func__
+        if callable(class_stepper) and class_stepper is not _no_step_function:
+            self._stepper = class_stepper
+            return self
+
+        self._stepper = self.build_stepper()
+        return self
+
     def step(
         self, time: np.float64, state: Float64NDArray, **params: Any
     ) -> Float64NDArray:
@@ -101,6 +141,7 @@ class SystemABC(ModuleABC):
         Returns:
             The next state array after one step.
         """
+        self.build()
         return self._stepper(time, state, **params)
 
 
@@ -115,9 +156,4 @@ def build(config: dict[str, Any] | ModuleModel) -> SystemABC:
         The constructed system instance.
 
     """
-    return _build(
-        config,
-        "system",
-        "flepimop2.system.wrapper",
-        SystemABC,
-    )
+    return _build(config, "system", "flepimop2.system.wrapper", SystemABC)
