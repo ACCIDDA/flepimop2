@@ -41,8 +41,7 @@ def _checked_partial(
 
     validation_errors = []
 
-    if forbidden is None:
-        forbidden = set()
+    forbidden = forbidden or set()
 
     # Validate that forbidden keys are not offered
     if forbidden.intersection(offered_keys):
