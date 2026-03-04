@@ -5,7 +5,7 @@ Helper for functools.partial with validation of offered parameters against a
 function signature.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 
@@ -65,7 +65,9 @@ def test_static_parameters_fixed(func: Callable[..., int]) -> None:
 
 
 @testpars
-def test_set_static_parameter_throws_error_on_fixed_time(func: Callable[..., int]) -> None:
+def test_set_static_parameter_throws_error_on_fixed_time(
+    func: Callable[..., int],
+) -> None:
     """Confirm error thrown when attempting to fix time parameter."""
     with pytest.raises(Flepimop2ValidationError):
         _checked_partial(func, forbidden={"b"}, b=100)

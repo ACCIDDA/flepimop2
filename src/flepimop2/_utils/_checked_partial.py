@@ -1,11 +1,13 @@
 import functools
 import inspect
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from flepimop2.configuration._types import IdentifierString
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 
 T = TypeVar("T")
+
 
 def _checked_partial(
     func: Callable[..., T],
