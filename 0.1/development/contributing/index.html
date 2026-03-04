@@ -1857,10 +1857,10 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <p>If you edit YAML files, also run <code>just yamllint</code>. YAML linting is separate from <code>just ci</code>.</p>
 <ol>
 <li>
-<p>Update documentation if your changes affect user-facing functionality or add features that require usage guides.</p>
+<p>Add tests for new functionality or bug fixes. Particularly for bug fixes, the test should be written before the fix and fail without the fix present.</p>
 </li>
 <li>
-<p>Add tests for new functionality or bug fixes. Particularly for bug fixes, the test should be written before the fix and fail without the fix present.</p>
+<p>Update documentation if your changes affect user-facing functionality or add features that require usage guides. This should include adding a note to the <code>CHANGELOG.md</code> file if the change is more than a "patch" type change.</p>
 </li>
 </ol>
 <h3 id="submitting-a-pull-request">Submitting a Pull Request<a class="headerlink" href="#submitting-a-pull-request" title="Permanent link">&para;</a></h3>
