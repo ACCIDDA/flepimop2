@@ -1,6 +1,8 @@
 """Abstract class for Engines to evolve Dynamic Systems."""
 
-__all__ = ["EngineABC", "EngineProtocol", "build"]
+__all__ = ["EngineABC", "EngineProtocol", "build", "GeneratorProtocol"]
+
+import functools
 
 from typing import Any, Protocol, runtime_checkable
 
@@ -38,6 +40,17 @@ class EngineProtocol(Protocol):
         """Protocol for engine runner functions."""
         ...
 
+class GeneratorProtocol(Protocol):
+    """Type-definition (Protocol) for generator functions."""
+
+    def __call__(
+        self,
+        times: Float64NDArray,
+        state: Float64NDArray,
+        params: dict[IdentifierString, Any],
+    ) -> Float64NDArray:
+        """Protocol for engine generator functions."""
+        ...
 
 class EngineABC(ModuleABC):
     """Abstract class for Engines to evolve Dynamic Systems."""
@@ -56,6 +69,35 @@ class EngineABC(ModuleABC):
             **kwargs: Keyword arguments.
         """
         self._runner = _no_run_func
+
+    def bind(
+        self,
+        system: SystemABC,
+        times: Float64NDArray,
+        params: dict[IdentifierString, Any],
+        **kwargs: Any,
+    ) -> GeneratorProtocol:
+        """
+        Bind a System and other Engine settings to create a GeneratorProtocol.
+
+        This method uses the Engine to translate a SystemProtocol into a GeneratorProtocol.
+
+        Args:
+            system: A system that can be bound to generate parameters or configurations.
+            times: Array of time points for evaluation.
+            params: static parameters for the stepper.
+            **kwargs: any additional arguments for the engine.
+        """
+
+        # bind any fixed parameters to create a targetted stepper
+        bound_stepper = system.bind(params)
+
+        generator = functools.partial(
+            func = self._runner,
+            stepper = bound_stepper,
+        )
+
+        return generator
 
     def run(
         self,
@@ -85,6 +127,8 @@ class EngineABC(ModuleABC):
             params,
             **kwargs,
         )
+
+         
 
     def validate_system(  # noqa: PLR6301
         self,

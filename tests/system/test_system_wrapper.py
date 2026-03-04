@@ -6,12 +6,13 @@ from typing import Any
 import numpy as np
 import pytest
 
+from flepimop2.typing import StateChangeEnum
 from flepimop2.system.abc import build
 
-TEST_SCRIPT = Path(__file__).with_suffix("") / "dummy_system.py"
+TEST_SCRIPT = Path(__file__).parent / "dummy_system.py"
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_SCRIPT}])
+@pytest.mark.parametrize("config", [{"script": TEST_SCRIPT, "state_change": StateChangeEnum.DELTA}])
 def test_wrapper_system(config: dict[str, Any]) -> None:
     """Test `WrapperSystem` loads a script and uses its `stepper` function."""
     system = build(config)
