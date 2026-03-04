@@ -1,14 +1,23 @@
 """Abstract class for Dynamic Systems."""
 
-__all__ = ["SystemABC", "SystemProtocol", "build"]
+__all__ = [
+    "Flepimop2ValidationError",
+    "SystemABC",
+    "SystemProtocol",
+    "ValidationIssue",
+    "build",
+]
 
 import inspect
 from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 
+from flepimop2._utils._checked_partial import _checked_partial
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
+from flepimop2.configuration._types import IdentifierString
+from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray, StateChangeEnum
 
@@ -86,6 +95,34 @@ class SystemABC(ModuleABC):
             **kwargs: Keyword arguments.
         """
         self._stepper = _no_step_function
+
+    def bind(
+        self,
+        params: dict[IdentifierString, Any] | None = None,
+        **kwargs: Any,
+    ) -> SystemProtocol:
+        """
+        Bind static parameters to the system's stepper function.
+
+        Args:
+            params: A dictionary of parameters to statically define for the System.
+            **kwargs: Additional parameters to statically define for the System.
+
+        Returns:
+            A SystemProtocol for this System with static parameters defined.
+
+        Raises: # noqa: DOC502
+            Flepimop2ValidationError: If params contains "time" or "state" keys,
+                or parameters not in the System definition,
+                or if the parameter values are incompatible with System definition.
+
+        """
+        return _checked_partial(
+            func=self._stepper,
+            forbidden={"time", "state"},
+            params=params,
+            **kwargs,
+        )
 
     def step(
         self, time: np.float64, state: Float64NDArray, **params: Any

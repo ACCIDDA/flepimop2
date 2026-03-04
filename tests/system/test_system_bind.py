@@ -1,0 +1,62 @@
+"""Tests `SystemABC` ability to bind static parameters."""
+
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from flepimop2.exceptions import Flepimop2ValidationError
+from flepimop2.system.abc import SystemABC, build
+from flepimop2.typing import StateChangeEnum
+
+TEST_SCRIPT = Path(__file__).parent / "dummy_system.py"
+system = build({"script": TEST_SCRIPT, "state_change": StateChangeEnum.DELTA})
+
+testpar = pytest.mark.parametrize("test_system", [system])
+
+
+@testpar
+def test_set_valid_static_parameters(test_system: SystemABC) -> None:
+    """Confirm no errors when setting all valid parameters."""
+    offset = 5.0
+    initial_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
+    newproto = test_system.bind(offset=offset)
+    assert all(newproto(1.0, initial_state) == (initial_state + offset))
+
+
+@testpar
+def test_set_valid_static_parameters_dict_version(test_system: SystemABC) -> None:
+    """Confirm no errors when setting all valid parameters."""
+    test_system.bind(params={"offset": 5.0})
+
+
+@testpar
+def test_set_static_parameter_throws_error_on_fixed_time(
+    test_system: SystemABC,
+) -> None:
+    """Confirm error thrown when attempting to fix time parameter."""
+    with pytest.raises(Flepimop2ValidationError):
+        test_system.bind(time=100)
+
+
+@testpar
+def test_set_static_parameter_throws_error_on_fixed_state(
+    test_system: SystemABC,
+) -> None:
+    """Confirm error thrown when attempting to fix state parameter."""
+    with pytest.raises(Flepimop2ValidationError):
+        test_system.bind(state=[1.0, 2.0, 3.0])
+
+
+@testpar
+def test_set_nonexistent_parameter_throws_error(test_system: SystemABC) -> None:
+    """Confirm error thrown when setting a parameter that does not exist."""
+    with pytest.raises(Flepimop2ValidationError):
+        test_system.bind(nonexistent_param=5.0)
+
+
+@testpar
+def test_set_parameter_with_invalid_type_throws_error(test_system: SystemABC) -> None:
+    """Confirm error thrown when setting parameter with invalid type."""
+    with pytest.raises(Flepimop2ValidationError):
+        test_system.bind(offset="invalid_string")
