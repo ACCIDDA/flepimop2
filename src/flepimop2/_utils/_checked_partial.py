@@ -1,17 +1,18 @@
 import functools
 import inspect
-from typing import Any, Protocol
+from typing import Any, Callable, TypeVar
 
 from flepimop2.configuration._types import IdentifierString
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 
+T = TypeVar("T")
 
 def _checked_partial(
-    func: Protocol,
+    func: Callable[..., T],
     forbidden: set[IdentifierString] | None = None,
     params: dict[IdentifierString, Any] | None = None,
     **kwargs: Any,
-) -> Protocol:
+) -> Callable[..., T]:
     """
     Bind static parameters to a callable, checking their validity.
 

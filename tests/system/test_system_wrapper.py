@@ -16,10 +16,11 @@ TEST_SCRIPT = Path(__file__).parent / "system_wrapper_assets" / "dummy_system.py
 def test_wrapper_system(config: dict[str, Any]) -> None:
     """Test `WrapperSystem` loads a script and uses its `stepper` function."""
     system = build(config)
-    result = system.step(
-        np.float64(1.0), np.array([1.0, 2.0, 3.0], dtype=np.float64), offset=1.0
-    )
-    expected = np.array([2.0, 3.0, 4.0], dtype=np.float64)
+    time = np.float64(1.0)
+    offset = 1.0
+    init_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
+    result = system.step(time, init_state, offset=offset)
+    expected = init_state + offset
     np.testing.assert_array_equal(result, expected)
 
 

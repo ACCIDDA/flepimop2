@@ -5,7 +5,7 @@ Helper for functools.partial with validation of offered parameters against a
 function signature.
 """
 
-from typing import Protocol
+from typing import Callable
 
 import pytest
 
@@ -31,21 +31,21 @@ testpars = pytest.mark.parametrize("func", [dummy_func])
 
 
 @testpars
-def test_set_valid_static_parameters(func: Protocol) -> None:
+def test_set_valid_static_parameters(func: Callable[..., int]) -> None:
     """Confirm no errors when setting all valid parameters."""
     newfun = _checked_partial(func, forbidden={"b"}, a=5)
     assert newfun(b=10, c=2) == 100
 
 
 @testpars
-def test_set_valid_static_parameters_dict_version(func: Protocol) -> None:
+def test_set_valid_static_parameters_dict_version(func: Callable[..., int]) -> None:
     """Confirm no errors when setting all valid parameters."""
     newfun = _checked_partial(func, forbidden={"b"}, params={"a": 5})
     assert newfun(b=10, c=2) == 100
 
 
 @testpars
-def test_unset_edge_case(func: Protocol) -> None:
+def test_unset_edge_case(func: Callable[..., int]) -> None:
     """Confirm no errors when setting all valid parameters."""
     newfun = _checked_partial(func)
     assert newfun(a=5, b=10, c=2) == 100
@@ -57,7 +57,7 @@ def test_unset_edge_case(func: Protocol) -> None:
     "but should raise error.",
     strict=True,
 )
-def test_static_parameters_fixed(func: Protocol) -> None:
+def test_static_parameters_fixed(func: Callable[..., int]) -> None:
     """Confirm errors when calling with a static parameter set."""
     newfun = _checked_partial(func, forbidden={"b"}, a=5)
     with pytest.raises(TypeError):
@@ -65,21 +65,21 @@ def test_static_parameters_fixed(func: Protocol) -> None:
 
 
 @testpars
-def test_set_static_parameter_throws_error_on_fixed_time(func: Protocol) -> None:
+def test_set_static_parameter_throws_error_on_fixed_time(func: Callable[..., int]) -> None:
     """Confirm error thrown when attempting to fix time parameter."""
     with pytest.raises(Flepimop2ValidationError):
         _checked_partial(func, forbidden={"b"}, b=100)
 
 
 @testpars
-def test_set_nonexistent_parameter_throws_error(func: Protocol) -> None:
+def test_set_nonexistent_parameter_throws_error(func: Callable[..., int]) -> None:
     """Confirm error thrown when setting a parameter that does not exist."""
     with pytest.raises(Flepimop2ValidationError):
         _checked_partial(func, nonexistent_param=5.0)
 
 
 @testpars
-def test_set_parameter_with_invalid_type_throws_error(func: Protocol) -> None:
+def test_set_parameter_with_invalid_type_throws_error(func: Callable[..., int]) -> None:
     """Confirm error thrown when setting parameter with invalid type."""
     with pytest.raises(Flepimop2ValidationError):
         _checked_partial(func, c="invalid_string")
