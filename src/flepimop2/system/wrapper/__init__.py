@@ -3,7 +3,7 @@
 __all__ = ["WrapperSystem"]
 
 from pathlib import Path
-from typing import Any, Literal, Self
+from typing import Literal, Self
 
 from pydantic import model_validator
 
@@ -19,7 +19,6 @@ class WrapperSystem(ModuleModel, SystemABC):
     module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     state_change: StateChangeEnum
     script: Path
-    options: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def _validate_stepper(self) -> Self:
