@@ -1,7 +1,7 @@
 """Tests for `EngineABC` and default `WrapperEngine`."""
 
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 import numpy as np
 import pytest
@@ -13,31 +13,39 @@ from flepimop2.system.abc import build as system_build
 from flepimop2.system.wrapper import WrapperSystem
 from flepimop2.typing import StateChangeEnum
 
-TEST_ENGINE_SCRIPT: Final = Path(__file__).with_suffix("") / "dummy_engine.py"
+TEST_ENGINE_SCRIPT: Final = (
+    Path(__file__).parent / "engine_wrapper_assets" / "dummy_engine.py"
+)
 TEST_SYSTEM_SCRIPT: Final = (
-    Path(__file__).parent.parent / "system" / "test_system_wrapper" / "dummy_system.py"
+    Path(__file__).parent.parent
+    / "system"
+    / "system_wrapper_assets"
+    / "dummy_system.py"
 ).absolute()
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
+@pytest.mark.parametrize(
+    "config", [{"script": TEST_ENGINE_SCRIPT, "state_change": "flow"}]
+)
 @pytest.mark.parametrize(
     "system",
     [
         system_build({
             "module": "flepimop2.system.wrapper",
             "script": TEST_SYSTEM_SCRIPT,
+            "state_change": "flow",
         })
     ],
 )
 @pytest.mark.parametrize("params", [{"offset": 1.0}])
 def test_wrapper_system(
-    config: dict, system: SystemABC, params: dict[str, float]
+    config: dict[str, Any], system: SystemABC, params: dict[str, float]
 ) -> None:
     """Test `WrapperEngine` loads a script and uses its `runner` function."""
     engine = engine_build(config)
     result = engine.run(
         system,
-        [1.0, 2.0],
+        np.array([1.0, 2.0], dtype=np.float64),
         np.array([1.0, 2.0], dtype=np.float64),
         params,
         accumulate=False,
@@ -49,8 +57,10 @@ def test_wrapper_system(
     np.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_ENGINE_SCRIPT}])
-def test_wrapper_engine_validate_system_properties(config: dict) -> None:
+@pytest.mark.parametrize(
+    "config", [{"script": TEST_ENGINE_SCRIPT, "state_change": "flow"}]
+)
+def test_wrapper_engine_validate_system_properties(config: dict[str, Any]) -> None:
     """Test `WrapperEngine` validates system properties compatibility."""
     engine = engine_build(config)
 
