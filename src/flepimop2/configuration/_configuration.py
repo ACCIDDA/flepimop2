@@ -2,6 +2,7 @@ from typing import Literal, Self
 
 from pydantic import Field, model_validator
 
+from flepimop2.configuration._axes import AxesGroupModel
 from flepimop2.configuration._module import ModuleGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._types import IdentifierString
@@ -29,6 +30,7 @@ class ConfigurationModel(
     """
 
     name: str | None = None
+    axes: AxesGroupModel = Field(default_factory=dict)
     engines: ModuleGroupModel = Field(default_factory=dict)
     systems: ModuleGroupModel = Field(default_factory=dict)
     backends: ModuleGroupModel = Field(default_factory=dict)
