@@ -39,6 +39,19 @@ class EngineProtocol(Protocol):
         ...
 
 
+@runtime_checkable
+class ApplianceProtocol(Protocol):
+    """Type-definition (Protocol) for engine runner functions."""
+
+    def __call__(
+        self,
+        state: Float64NDArray,
+        params: dict[IdentifierString, Any],
+    ) -> Float64NDArray:
+        """Protocol for engine runner functions."""
+        ...
+
+
 class EngineABC(ModuleABC):
     """Abstract class for Engines to evolve Dynamic Systems."""
 
