@@ -7,7 +7,6 @@ import numpy as np
 import pytest
 
 from flepimop2.system.abc import build
-from flepimop2.typing import StateChangeEnum
 
 TEST_SCRIPT = Path(__file__).parent / "system_wrapper_assets" / "dummy_system.py"
 

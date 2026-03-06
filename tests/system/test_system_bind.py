@@ -8,7 +8,7 @@ import pytest
 from flepimop2.system.abc import SystemABC, build
 from flepimop2.typing import StateChangeEnum
 
-TEST_SCRIPT = Path(__file__).parent / "dummy_system.py"
+TEST_SCRIPT = Path(__file__).parent / "system_wrapper_assets" / "dummy_system.py"
 system = build({"script": TEST_SCRIPT, "state_change": StateChangeEnum.DELTA})
 
 testpar = pytest.mark.parametrize("test_system", [system])
