@@ -10,7 +10,6 @@ from collections.abc import Callable
 import pytest
 
 from flepimop2._utils._checked_partial import _checked_partial
-from flepimop2.exceptions import Flepimop2ValidationError
 
 
 def dummy_func(a: int, b: int, c: int) -> int:
@@ -35,20 +34,11 @@ def test_set_valid_static_parameters(func: Callable[..., int]) -> None:
     """Confirm no errors when setting all valid parameters."""
     newfun = _checked_partial(func, forbidden={"b"}, a=5)
     assert newfun(b=10, c=2) == 100
-
-
-@testpars
-def test_set_valid_static_parameters_dict_version(func: Callable[..., int]) -> None:
-    """Confirm no errors when setting all valid parameters."""
-    newfun = _checked_partial(func, forbidden={"b"}, params={"a": 5})
-    assert newfun(b=10, c=2) == 100
-
-
-@testpars
-def test_unset_edge_case(func: Callable[..., int]) -> None:
-    """Confirm no errors when setting all valid parameters."""
+    assert newfun(a=2, c=2, b=10) == 40
+    newfun = _checked_partial(func, forbidden={"b"}, params={"a": 10})
+    assert newfun(b=10, c=2) == 200
     newfun = _checked_partial(func)
-    assert newfun(a=5, b=10, c=2) == 100
+    assert newfun(a=1, b=10, c=2) == 20
 
 
 @testpars
@@ -68,20 +58,10 @@ def test_static_parameters_fixed(func: Callable[..., int]) -> None:
 def test_set_static_parameter_throws_error_on_fixed_time(
     func: Callable[..., int],
 ) -> None:
-    """Confirm error thrown when attempting to fix time parameter."""
-    with pytest.raises(Flepimop2ValidationError):
+    """Confirm errors raised for various invalid scenarios."""
+    with pytest.raises(TypeError):
         _checked_partial(func, forbidden={"b"}, b=100)
-
-
-@testpars
-def test_set_nonexistent_parameter_throws_error(func: Callable[..., int]) -> None:
-    """Confirm error thrown when setting a parameter that does not exist."""
-    with pytest.raises(Flepimop2ValidationError):
+    with pytest.raises(TypeError):
         _checked_partial(func, nonexistent_param=5.0)
-
-
-@testpars
-def test_set_parameter_with_invalid_type_throws_error(func: Callable[..., int]) -> None:
-    """Confirm error thrown when setting parameter with invalid type."""
-    with pytest.raises(Flepimop2ValidationError):
+    with pytest.raises(TypeError):
         _checked_partial(func, c="invalid_string")

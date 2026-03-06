@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 from flepimop2.configuration._types import IdentifierString
-from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 
 T = TypeVar("T")
 
@@ -28,9 +27,15 @@ def _checked_partial(
         A partial function with static parameters bound.
 
     Raises:
-        Flepimop2ValidationError: If forbidden keys are offered
-            or if value types are incompatible with func signature.
+        TypeError: If offered forbidden keys, keys not in `func` signature, or
+            keys with values of incompatible types with `func` signature.
 
+    Examples:
+        >>> def example_func(a: float, b: list[float], c: float) -> float:
+        ...     return sum([a, c, *b])
+        >>> new_func = _checked_partial(example_func, forbidden={"b"}, c=5.0)
+        >>> new_func(a=1.0, b=[1.0, 2.0, 3.0])
+        12.0
     """
     # Combine params and kwargs, with kwargs taking precedence
     combined_params = {**(params or {}), **kwargs}
@@ -46,7 +51,7 @@ def _checked_partial(
     # Validate that forbidden keys are not offered
     if forbidden.intersection(offered_keys):
         msg = f"Cannot bind forbidden keys: {forbidden}; offered keys: {offered_keys}."
-        validation_errors.append(ValidationIssue(msg, "binding_values"))
+        validation_errors.append(msg)
 
     # Validate that offered keys are in the func signature
     signature = inspect.signature(func)
@@ -57,7 +62,7 @@ def _checked_partial(
             f"{invalid_keys}. Eligible system parameters are: "
             f"{signature_keys - forbidden}."
         )
-        validation_errors.append(ValidationIssue(msg, "binding_values"))
+        validation_errors.append(msg)
 
     # Validate parameter value types against signature annotations
     for key, value in signature.parameters.items():
@@ -71,9 +76,13 @@ def _checked_partial(
                     f"Parameter '{key}' (type {type(combined_params[key]).__name__}) "
                     f"could not be cast to {expected_type.__name__}. Error: {e!s}"
                 )
-                validation_errors.append(ValidationIssue(msg, "binding_values"))
+                validation_errors.append(msg)
 
     if validation_errors:
-        raise Flepimop2ValidationError(validation_errors)
+        validation_errors = [
+            "Setting System static parameters failed.",
+            *validation_errors,
+        ]
+        raise TypeError("\n".join(validation_errors))
 
     return functools.partial(func, **combined_params)
