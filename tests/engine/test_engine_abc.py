@@ -7,7 +7,8 @@ import pytest
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import Float64NDArray, StateChangeEnum
+from flepimop2.system.abc import build as system_build
+from flepimop2.typing import Float64NDArray, StateChangeEnum, with_flow
 
 
 class DummySystem(SystemABC):
@@ -22,7 +23,7 @@ class DummyEngine(EngineABC):
 
     module = "dummy"
 
-
+@with_flow("flow")
 def sample_step(
     time: np.float64, state: Float64NDArray, **kwargs: Any
 ) -> Float64NDArray:
@@ -43,8 +44,7 @@ def sample_step(
 @pytest.mark.parametrize("engine", [DummyEngine()])
 def test_abstraction_error(engine: EngineABC) -> None:
     """Test `EngineABC` raises `NotImplementedError` when not overridden."""
-    system = DummySystem()
-    system._stepper = sample_step
+    system = system_build(sample_step)
     with pytest.raises(NotImplementedError):
         engine.run(
             system,
