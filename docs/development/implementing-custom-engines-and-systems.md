@@ -1,75 +1,78 @@
 # Implementing Custom Engines and Systems
 
-This guide shows how to implement `EngineABC` and `SystemABC` so they can be loaded by `flepimop2` and used in simulations. It mirrors the style of the external provider guide, but focuses only on the engine/system interfaces.
+This guide shows how to implement `EngineABC` and `SystemABC` modules so they can be used in `flepimop2` for simulation. This guide mirrors the external provider guide, but focuses only on the engine/system interfaces.
 
 Below is a minimal example creating new `EulerEngine` and `SirSystem`. You can copy these into your own module(s) under the `flepimop2.engine` and `flepimop2.system` namespaces.
 
 ## What are systems and engines?
 
-- **System**: implements the model dynamics via a stepper and advertises its properties via the standardized required attributes or non-standardized options.
-- **Engine**: runs a system stepper over time using an `EngineABC` runner.
-- **Compatibility**: engines may validate system properties (e.g., flow vs. delta vs. state semantics) before running.
+To answer this question, let's start from a more general picture of doing modeling. There's are lots elements to that task, but they generally build upon the foundation of "having a model". We think about creating that foundation in three steps: defining __model worlds__, translating those worlds into __model representations__, and using those representations to create __model implementations__.
 
-## System Implementation (`SirSystem`)
+A __model world__ defines the interesting processes and states, and generally what is "in" the model (endogenous dynamics) versus "out" (exogenous effects). For the classic SIR model, the model world is roughly "There are Susceptible, Infectious, and Recovered populations. Those populations interact at a constant rate, and when S and I interact some constant fraction of interactions convert S to I. The I population converts at a constant rate into R population." Note that this world definition only concerns the states (S, I, R) and processes (infection of S into I; recovery of I into R), not any formal mathematics.
+
+A __model representation__ translates the world into a particular mathematical framework. Taking again the classic SIR model, ordinary differential equations for the states would be a representation. As would Gillespie-style stochastic equations, update rules for individuals on a network, and so on.
+
+A __model implementation__ creates a computationally-useful version of those representations.
+
+The `flepimop2` tool captures these three steps using the configuration files, **System**s, and **Engine**s. This enables users to focus as much as possible in the __model world__ step, while developers automate as much as possible with modules for the other steps. Put another way: people should think of what they write in `flepimop2` configuration files as expressing their __model worlds__. Then, a **System** module translates that expression into __model representations__. Finally, an **Engine** module converts **System**s into fully-usable calculators. With reliable calculators in hand, researchers can then rapidly conduct their scientific or public health analyses.
+
+To make all that work, `flepimop2` provides standard object definitions so that these parts can work together.
+
+## Example System Implementation (`SirSystem`)
+
+While any given **System** object represents a particular model world, a **System** *module* should be a way to build *many* model worlds. Thus, a module that only builds SIR is really only building one world: while that can be run with different parameters and different initial conditions and so on, there's really only one structure.
+
+For now, however, we'll stick with a module that only contains this single world. Since there's only the single world, we can implement all the pieces directly:
 
 ```python
 """Stepper function for SIR model integration tests."""
 
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
 from flepimop2.configuration import ModuleModel
-from flepimop2.system.abc import SystemABC
+from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray, StateChangeEnum
 
-
-def stepper(
-    time: np.float64,  # noqa: ARG001
+def global_sir(
+    time: np.float64,
     state: Float64NDArray,
-    **kwargs: Any,  # noqa: ARG001
+    beta: np.float64,
+    gamma: np.float64,
 ) -> Float64NDArray:
     """
-    ODE for an SIR model.
+    SIR model stepper function.
 
     Args:
-        time: Current time (not used in this model).
-        state: Current state array [S, I, R].
-        **kwargs: Additional parameters (e.g. beta, gamma, etc.).
+        time: Current time point (unused in this autonomous system).
+        state: Array of [S, I, R] populations.
+        beta: Transmission rate.
+        gamma: Recovery rate.
 
     Returns:
-        The change in state.
+        Array of state derivatives [dS/dt, dI/dt, dR/dt].
     """
-    # Implementors add their own logic here
-    pass
+    return np.array([
+        -beta * state[0] * state[1],
+        beta * state[0] * state[1] - gamma * state[1],
+        gamma * state[1]
+    ])
 
-
-class SirSystem(SystemABC):
+class SirSystem(ModuleModel, SystemABC):
     """SIR model system."""
 
-    module = "flepimop2.system.sir"
-    state_change = StateChangeEnum.FLOW
+    module : Literal["flepimop2.system.sir"] = "flepimop2.system.sir"
+    state_change : StateChangeEnum = StateChangeEnum.FLOW
+    _stepper : SystemProtocol = global_sir
 
-    def __init__(self) -> None:
-        """Initialize the SIR system with the SIR stepper."""
-        self._stepper = stepper
-
-
-def build(config: dict[str, Any] | ModuleModel) -> SirSystem:  # noqa: ARG001
-    """
-    Build an SIR system.
-
-    Returns:
-        An instance of the SIR system.
-    """
-    return SirSystem()
 ```
 
 Key elements in the system implementation:
 
-- `stepper` defines the model dynamics which the engine will call it repeatedly.
-- `SirSystem` inherits `SystemABC` and assigns `_stepper` in `__init__` as well as has the required attributes `module` and `state_change`.
-- `build(...)` provides a standard entry point so `flepimop2` can construct the system from configuration data. For more details on this you can read the [Creating An External Provider Package](./creating-an-external-provider-package.md) development guide.
+- **SirSystem** inherits from **ModuleModel** and **SystemABC**. **SystemABC** adds the generic capabilities for all system objects. **ModuleModel** simplifies building the system from the configuration file (by making **SirSystem** into a Pydantic model). This simplification means you don't have to implement the standard entry point `build(...)`; for more details, see [Creating An External Provider Package](./creating-an-external-provider-package.md).
+- As required by the inherited classes, **SirSystem** defines the module namespace, the state change type (i.e. flow vs delta vs next), and the `_stepper` method.
+- Here we're setting `_stepper` to the `global_sir` definition, since **SirSystem** only builds one model world: SIR.
 
 ## Engine Implementation (`EulerEngine`)
 
