@@ -8,8 +8,8 @@ from flepimop2._utils._module import _build
 from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.module import ModuleABC
-from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray
+from flepimop2.system.abc import SystemABC
+from flepimop2.typing import Float64NDArray, SystemProtocol
 
 
 def _no_run_func(
@@ -79,7 +79,7 @@ class EngineABC(ModuleABC):
             The evolved time x state array.
         """
         return self._runner(
-            system._stepper,  # noqa: SLF001
+            system.bind(),  # noqa: SLF001
             eval_times,
             initial_state,
             params,

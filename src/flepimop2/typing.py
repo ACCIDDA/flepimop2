@@ -15,8 +15,9 @@ Examples:
 
 __all__ = ["Float64NDArray", "RaiseOnMissing", "RaiseOnMissingType", "StateChangeEnum"]
 
+from collections.abc import Callable
 from enum import StrEnum
-from typing import Final, Literal
+from typing import Any, Final, Literal, Protocol, runtime_checkable
 
 import numpy as np
 import numpy.typing as npt
@@ -83,3 +84,46 @@ class StateChangeEnum(StrEnum):
     The state change is described directly by the new state values,
     i.e. \\( x(t + \\Delta t) = x_{new} \\).
     """
+
+
+@runtime_checkable
+class SystemProtocol(Protocol):
+    """Type-definition (Protocol) for system stepper functions."""
+
+    def __call__(
+        self, time: np.float64, state: Float64NDArray, **kwargs: Any
+    ) -> Float64NDArray:
+        """Protocol for system stepper functions."""
+
+    state_change: StateChangeEnum
+    """The type of state change for this system, if provided."""
+
+
+def with_flow(
+    flow: str | StateChangeEnum,
+) -> Callable[[SystemProtocol], SystemProtocol]:
+    """
+    Decorator to add a `state_change` attribute to a system stepper function.
+
+    Args:
+        flow: The type of state change to associate with the stepper function.
+
+    Returns:
+        A decorator that adds the `state_change` attribute to SystemProtocols.
+
+    Examples:
+        >>> from flepimop2.typing import with_flow, StateChangeEnum
+        >>> @with_flow(StateChangeEnum.FLOW)
+        ... def my_stepper(time, state, param1):
+        ...     # stepper implementation
+        ...     pass
+        >>> my_stepper.state_change
+        <StateChangeEnum.FLOW: 'flow'>
+    """
+    flow = StateChangeEnum(flow)  # cast to enum if given as string
+
+    def decorator(func: SystemProtocol) -> SystemProtocol:
+        func.state_change = flow
+        return func
+
+    return decorator
