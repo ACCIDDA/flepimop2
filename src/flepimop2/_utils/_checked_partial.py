@@ -145,6 +145,10 @@ def _checked_partial(
                 and expected_type is not Any
             ):
                 try:
+                    if isinstance(expected_type, type) and isinstance(
+                        params[key], expected_type
+                    ):
+                        continue
                     casted_value = expected_type(params[key])
                     params[key] = casted_value
                 except (ValueError, TypeError) as e:
