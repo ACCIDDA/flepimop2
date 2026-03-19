@@ -21,8 +21,10 @@ from typing import Any, Final
 import numpy as np
 import pytest
 
+from flepimop2.axis import ResolvedShape
 from flepimop2.engine.abc import build as engine_build
 from flepimop2.exceptions import ValidationIssue
+from flepimop2.parameter.abc import ParameterValue
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as system_build
 from flepimop2.typing import StateChangeEnum
@@ -51,9 +53,13 @@ TEST_SYSTEM_SCRIPT: Final = (
         })
     ],
 )
-@pytest.mark.parametrize("params", [{"offset": 1.0}])
+@pytest.mark.parametrize(
+    "params", [{"offset": ParameterValue(np.array(1.0), ResolvedShape())}]
+)
 def test_wrapper_system(
-    config: dict[str, Any], system: SystemABC, params: dict[str, float]
+    config: dict[str, Any],
+    system: SystemABC,
+    params: dict[str, ParameterValue],
 ) -> None:
     """Test `WrapperEngine` loads a script and uses its `runner` function."""
     engine = engine_build(config)
@@ -67,7 +73,7 @@ def test_wrapper_system(
     expected = np.zeros((2, 3), dtype=np.float64)
     expected[:, 0] = [1.0, 2.0]
     expected[0, 1:] = [1.0, 2.0]
-    expected[1, 1:] = (expected[0, 1:] + params["offset"]) * 2.0
+    expected[1, 1:] = (expected[0, 1:] + params["offset"].item()) * 2.0
     np.testing.assert_array_equal(result, expected)
 
 
