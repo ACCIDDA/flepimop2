@@ -28,6 +28,8 @@ jobs:
           persist-credentials: false
       - name: 'setup just and uv'
         uses: './.github/actions/setup-just-and-uv'
+        with:
+          enable-cache: false
       - name: 'Check changelog updated'
         run: 'just changelog'
   docs:
@@ -56,11 +58,9 @@ jobs:
         run: 'just quality'
   tests:
     name: 'tests (${{ matrix.python-version }}-${{ matrix.coverage }})'
-    needs:
-      - 'docs'
-      - 'quality'
     runs-on: 'ubuntu-latest'
     strategy:
+      fail-fast: false
       matrix:
         include:
           - python-version: '3.11'
