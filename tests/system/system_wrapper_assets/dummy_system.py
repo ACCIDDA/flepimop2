@@ -1,11 +1,13 @@
 """A dummy stepper function for testing `WrapperSystem`."""
 
-import numpy as np
-
 from flepimop2.typing import Float64NDArray
 
 
-def stepper(time: float, state: Float64NDArray, offset: np.float64) -> Float64NDArray:
+def stepper(
+    time: float,
+    state: Float64NDArray,
+    offset: float,
+) -> Float64NDArray:
     """
     A dummy stepper function for testing purposes: (state + offset) * time.
 
