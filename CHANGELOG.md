@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration and `flepimop2.axis` module for realizing & manipulating axes from configuration. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
 
 ### Changed
 
@@ -62,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `flepimop.testing` with functionality for integration testing, both for `flepimop2` itself and for external provider packages. See [#107](https://github.com/ACCIDDA/flepimop2/issues/107).
 - Added a parent class, `ModuleABC`, for all customizable modules that sets a required `module` attribute and provides infrastructure for non-standardized properties information. Also extended said infrastructure to allow for standardized property information for `SystemABC`. See [#113](https://github.com/ACCIDDA/flepimop2/issues/113), [#126](https://github.com/ACCIDDA/flepimop2/issues/126), [#129](https://github.com/ACCIDDA/flepimop2/discussions/129).
 - Add "binding" to `SystemABC` objects to convert fully generic signature to a simulation needs-specific signature.
-- Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration, but setting this currently results in a warning since it has no effect. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
 - Refactor `SystemABC` type approach to binding (and fix knock on mypy typing issues, circular dependency issues). Briefly, a `SystemABC` implementation now only needs to provide `_bind_impl` which fixes (or not) parameters in the system. This update adds another internal implementation (`AdapterSystem`) for directly creating a system from locally `def`d function (vs `WrapperSystem` which reads from a file).
 - Added infrastructure for submitting package to PyPI. See [#123](https://github.com/ACCIDDA/flepimop2/issues/123), [#142](https://github.com/ACCIDDA/flepimop2/issues/142), [#195](https://github.com/ACCIDDA/flepimop2/issues/195), [#196](https://github.com/ACCIDDA/flepimop2/issues/196).
 - Modules can now declare their name via the `module` keyword argument to class declaration to simplify naming for developers. See [#88](https://github.com/ACCIDDA/flepimop2/issues/88).
