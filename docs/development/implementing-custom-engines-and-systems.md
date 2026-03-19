@@ -32,14 +32,15 @@ from typing import Any, Literal
 import numpy as np
 
 from flepimop2.configuration import ModuleModel
+from flepimop2.parameter.abc import ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 def global_sir(
     time: np.float64,
     state: Float64NDArray,
-    beta: np.float64,
-    gamma: np.float64,
+    beta: ParameterValue,
+    gamma: ParameterValue,
 ) -> Float64NDArray:
     """
     SIR model stepper function.
@@ -47,16 +48,16 @@ def global_sir(
     Args:
         time: Current time point (unused in this autonomous system).
         state: Array of [S, I, R] populations.
-        beta: Transmission rate.
-        gamma: Recovery rate.
+        beta: Transmission-rate parameter.
+        gamma: Recovery-rate parameter.
 
     Returns:
         Array of state derivatives [dS/dt, dI/dt, dR/dt].
     """
     return np.array([
-        -beta * state[0] * state[1],
-        beta * state[0] * state[1] - gamma * state[1],
-        gamma * state[1]
+        -beta.item() * state[0] * state[1],
+        beta.item() * state[0] * state[1] - gamma.item() * state[1],
+        gamma.item() * state[1]
     ])
 
 class SirSystem(ModuleModel, SystemABC):
@@ -86,6 +87,7 @@ import numpy as np
 from flepimop2.configuration import IdentifierString, ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
+from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray
 
@@ -93,8 +95,9 @@ from flepimop2.typing import Float64NDArray
 def runner(
     stepper: SystemProtocol,
     times: Float64NDArray,
-    state: Float64NDArray,
-    params: dict[IdentifierString, Any],
+    initial_state: dict[IdentifierString, ParameterValue],
+    params: dict[IdentifierString, ParameterValue],
+    model_state: ModelStateSpecification | None = None,
     **kwargs: Any,  # noqa: ARG001
 ) -> Float64NDArray:
     """
@@ -103,8 +106,9 @@ def runner(
     Args:
         stepper: The system stepper function.
         times: Array of time points.
-        state: The current state array.
-        params: Additional parameters for the stepper.
+        initial_state: Structured initial-state parameters.
+        params: Additional structured parameters for the stepper.
+        model_state: Specification describing how to order the initial state.
         **kwargs: Additional keyword arguments for the engine. Unused by this runner.
 
     Returns:
