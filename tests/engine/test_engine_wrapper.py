@@ -24,7 +24,7 @@ import pytest
 from flepimop2.axis import ResolvedShape
 from flepimop2.engine.abc import build as engine_build
 from flepimop2.exceptions import ValidationIssue
-from flepimop2.parameter.abc import ParameterValue
+from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as system_build
 from flepimop2.typing import StateChangeEnum
@@ -66,8 +66,12 @@ def test_wrapper_system(
     result = engine.run(
         system,
         np.array([1.0, 2.0], dtype=np.float64),
-        np.array([1.0, 2.0], dtype=np.float64),
+        {
+            "x0": ParameterValue(np.array(1.0), ResolvedShape()),
+            "x1": ParameterValue(np.array(2.0), ResolvedShape()),
+        },
         params,
+        model_state=ModelStateSpecification(parameter_names=("x0", "x1")),
         accumulate=False,
     )
     expected = np.zeros((2, 3), dtype=np.float64)

@@ -1,5 +1,10 @@
 ---
 name: 'example-provider'
+axes:
+  age:
+    kind: 'continuous'
+    domain: [0.0, 90.0]
+    size: 3
 system:
   - module: 'sir'
     state_change: 'flow'
@@ -14,10 +19,19 @@ simulate:
 parameters:
   s0:
     module: 'fixed'
-    value: 999
+    value: [999, 899, 799]
+    shape: ['age']
   i0:
     module: 'fixed'
-    value: 1
+    value: [1, 1, 1]
+    shape: ['age']
   r0:
     module: 'fixed'
-    value: 0
+    value: [0, 0, 0]
+    shape: ['age']
+  gamma:
+    module: 'fixed'
+    value: 0.1
+  beta:
+    module: 'linear'
+    slope: 0.001

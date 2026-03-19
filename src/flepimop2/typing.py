@@ -29,7 +29,6 @@ Examples:
 """
 
 __all__ = [
-    "EngineProtocol",
     "Float64NDArray",
     "IdentifierString",
     "RaiseOnMissing",
@@ -206,19 +205,3 @@ def as_system_protocol(func: _SystemCallable[_P]) -> SystemProtocol:
         The function cast as SystemProtocol.
     """
     return cast("SystemProtocol", func)
-
-
-@runtime_checkable
-class EngineProtocol(Protocol):
-    """Type-definition (Protocol) for engine runner functions."""
-
-    def __call__(
-        self,
-        stepper: SystemProtocol,
-        times: Float64NDArray,
-        state: Float64NDArray,
-        params: dict[IdentifierString, Any],
-        **kwargs: Any,
-    ) -> Float64NDArray:
-        """Protocol for engine runner functions."""
-        ...
