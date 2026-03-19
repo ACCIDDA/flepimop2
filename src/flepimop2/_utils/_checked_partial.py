@@ -72,6 +72,10 @@ def _checked_partial(
                 expected_type is not inspect.Parameter.empty
                 and expected_type is not Any
             ):
+                if isinstance(expected_type, type) and isinstance(
+                    combined_params[key], expected_type
+                ):
+                    continue
                 try:
                     casted_value = expected_type(combined_params[key])
                     combined_params[key] = casted_value
