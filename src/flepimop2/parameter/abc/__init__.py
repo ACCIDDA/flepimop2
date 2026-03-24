@@ -35,4 +35,4 @@ def build(config: dict[str, Any] | ModuleModel) -> ParameterABC:
         The constructed parameter instance.
 
     """
-    return _build(config, "parameter", "flepimop2.parameter.wrapper", ParameterABC)  # type: ignore[type-abstract]
+    return _build(config, "parameter", "flepimop2.parameter.wrapper", ParameterABC)

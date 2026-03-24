@@ -3,16 +3,22 @@
 __all__ = ["WrapperSystem"]
 
 from pathlib import Path
-from typing import Any, Literal, Self, override
+from typing import Any, Literal, ParamSpec, Self, override
 
 from pydantic import PrivateAttr, model_validator
 
 from flepimop2._utils._checked_partial import _checked_partial
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
-from flepimop2.configuration._types import IdentifierString
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import StateChangeEnum, SystemProtocol
+from flepimop2.typing import (
+    IdentifierString,
+    StateChangeEnum,
+    SystemCallable,
+    SystemProtocol,
+)
+
+P = ParamSpec("P")
 
 
 class WrapperSystem(ModuleModel, SystemABC):
@@ -43,11 +49,9 @@ class WrapperSystem(ModuleModel, SystemABC):
 
     @override
     def _bind_impl(
-        self, params: dict[IdentifierString, Any] | None = None, **kwargs: Any
-    ) -> SystemProtocol:
+        self, params: dict[IdentifierString, Any] | None = None
+    ) -> SystemCallable[P]:
         return _checked_partial(
             func=self._stepper,
-            forbidden={"time", "state"},
             params=params,
-            **kwargs,
         )

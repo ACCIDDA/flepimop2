@@ -1,18 +1,19 @@
 """Private utilities for dynamic module loading and validation."""
 
 import inspect
+from abc import ABCMeta
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal, TypeVar, cast
 
 from pydantic import BaseModel
 
 from flepimop2.configuration import ModuleModel
+from flepimop2.module import ModuleABC
 
-T = TypeVar("T")
 Namespace = Literal["backend", "engine", "parameter", "process", "system"]
 
 
@@ -165,11 +166,14 @@ def _resolve_module_name(module: str, namespace: Namespace) -> str:
     return module if "." in module else f"flepimop2.{namespace}.{module}"
 
 
+T = TypeVar("T", bound=ModuleABC)
+
+
 def _build(
     config: dict[str, Any] | ModuleModel,
     namespace: Namespace,
     default_module: str,
-    enforced_type: type[T],
+    enforced_type: type[T] | ABCMeta,
 ) -> T:
     """
     Build an instance from a configuration dictionary.
@@ -198,6 +202,6 @@ def _build(
     builder = _load_builder(module)
     instance = builder.build(config_dict)
     if not isinstance(instance, enforced_type):
-        msg = f"The built instance is not an instance of {enforced_type.__name__}."
+        msg = f"The built instance is not an instance of {enforced_type}."
         raise TypeError(msg)
-    return instance
+    return cast("T", instance)

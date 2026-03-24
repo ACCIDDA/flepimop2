@@ -4,10 +4,10 @@ from typing import Any
 
 import numpy as np
 
-from flepimop2.configuration import IdentifierString, ModuleModel
+from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemProtocol
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, IdentifierString
 
 
 def runner(

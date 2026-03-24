@@ -10,17 +10,25 @@ __all__ = [
 
 import inspect
 from abc import abstractmethod
-from typing import Any, Literal, override
+from typing import Any, Literal, ParamSpec, override
 
 import numpy as np
 
-from flepimop2._utils._checked_partial import _checked_partial
+from flepimop2._utils._checked_partial import _checked_partial, _consolidate_args
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
-from flepimop2.configuration._types import IdentifierString
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleABC
-from flepimop2.typing import Float64NDArray, StateChangeEnum, SystemProtocol
+from flepimop2.typing import (
+    Float64NDArray,
+    IdentifierString,
+    StateChangeEnum,
+    SystemCallable,
+    SystemProtocol,
+    with_flow,
+)
+
+P = ParamSpec("P")
 
 
 class SystemABC(ModuleABC):
@@ -87,12 +95,15 @@ class SystemABC(ModuleABC):
                 or parameters not in the System definition,
                 or if the parameter values are incompatible with System definition.
         """  # noqa: DOC502
-        return self._bind_impl(params=params, **kwargs)
+        checked_pars = _consolidate_args(
+            forbidden={"time", "state"}, params=params, **kwargs
+        )
+        return with_flow(self.state_change)(self._bind_impl(params=checked_pars))
 
     @abstractmethod
     def _bind_impl(
-        self, params: dict[IdentifierString, Any] | None = None, **kwargs: Any
-    ) -> SystemProtocol:
+        self, params: dict[IdentifierString, Any] | None = None
+    ) -> SystemCallable[P]:
         """
         Abstract method to create a particular SystemProtocol.
 
@@ -101,7 +112,6 @@ class SystemABC(ModuleABC):
 
         Args:
             params: A dictionary of parameters to statically define for the System.
-            **kwargs: Additional parameters to statically define for the System.
 
         Returns:
             A SystemProtocol for this System with static parameters defined.
@@ -148,26 +158,25 @@ class AdapterSystem(SystemABC):
         Initialize the AdapterSystem with a state change and a stepper.
 
         Raises:
-            ValueError: If the provided stepper's state_change is unspecified.
+            TypeError: If the provided stepper does not meet the SystemProtocol
+                requirements.
         """
         if not isinstance(stepper, SystemProtocol):
             msg = (
                 "For AdapterSystem, stepper must have a state_change attribute; "
                 "use @flepimop2.typing.with_flow(...) decorator to add one."
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
         self.state_change = stepper.state_change
         self.stepper = stepper
 
     @override
     def _bind_impl(
-        self, params: dict[IdentifierString, Any] | None = None, **kwargs: Any
-    ) -> SystemProtocol:
+        self, params: dict[IdentifierString, Any] | None = None
+    ) -> SystemCallable[P]:
         return _checked_partial(
             func=self.stepper,
-            forbidden={"time", "state"},
             params=params,
-            **kwargs,
         )
 
 

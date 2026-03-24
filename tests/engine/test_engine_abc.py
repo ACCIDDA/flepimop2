@@ -1,31 +1,17 @@
 """Tests for `EngineABC` and default `WrapperEngine`."""
 
-from typing import Any, cast
-
 import numpy as np
 import pytest
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as system_build
-from flepimop2.typing import Float64NDArray, StateChangeEnum, with_flow
+from flepimop2.typing import Float64NDArray, with_flow
 
-
-class DummySystem(SystemABC):
-    """A dummy system for testing purposes."""
-
-    module = "dummy"
-    state_change = StateChangeEnum.FLOW
-
-
-class DummyEngine(EngineABC):
-    """A dummy engine for testing purposes."""
-
-    module = "dummy"
 
 @with_flow("flow")
 def sample_step(
-    time: np.float64, state: Float64NDArray, **kwargs: Any
+    time: np.float64, state: Float64NDArray, offset: np.float64
 ) -> Float64NDArray:
     """
     A simple stepper function for testing purposes.
@@ -33,18 +19,27 @@ def sample_step(
     Args:
         time: The current time as a float64.
         state: The current state as a numpy array.
-        **kwargs: Additional keyword arguments, including 'offset'.
+        offset: The offset value.
 
     Returns:
         The updated state after applying the stepper logic.
     """
-    return (state + cast("float", kwargs["offset"])) * time
+    return (state + offset) * time
+
+
+DummySystem = system_build(sample_step)
+
+
+class DummyEngine(EngineABC):
+    """A dummy engine for testing purposes."""
+
+    module = "dummy"
 
 
 @pytest.mark.parametrize("engine", [DummyEngine()])
-def test_abstraction_error(engine: EngineABC) -> None:
+@pytest.mark.parametrize("system", [DummySystem])
+def test_abstraction_error(engine: EngineABC, system: SystemABC) -> None:
     """Test `EngineABC` raises `NotImplementedError` when not overridden."""
-    system = system_build(sample_step)
     with pytest.raises(NotImplementedError):
         engine.run(
             system,

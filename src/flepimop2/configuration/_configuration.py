@@ -5,8 +5,8 @@ from pydantic import Field, model_validator
 from flepimop2.configuration._axes import AxesGroupModel
 from flepimop2.configuration._module import ModuleGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
-from flepimop2.configuration._types import IdentifierString
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
+from flepimop2.typing import IdentifierString
 
 
 class ConfigurationModel(

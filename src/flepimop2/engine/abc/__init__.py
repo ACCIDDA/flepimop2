@@ -2,14 +2,19 @@
 
 __all__ = ["EngineABC", "EngineProtocol", "build"]
 
-from typing import Any, Protocol, runtime_checkable
+from typing import Any
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import IdentifierString, ModuleModel
+from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.module import ModuleABC
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import Float64NDArray, SystemProtocol
+from flepimop2.typing import (
+    EngineProtocol,
+    Float64NDArray,
+    IdentifierString,
+    SystemProtocol,
+)
 
 
 def _no_run_func(
@@ -21,22 +26,6 @@ def _no_run_func(
 ) -> Float64NDArray:
     msg = "EngineABC::_runner must be provided by a concrete implementation."
     raise NotImplementedError(msg)
-
-
-@runtime_checkable
-class EngineProtocol(Protocol):
-    """Type-definition (Protocol) for engine runner functions."""
-
-    def __call__(
-        self,
-        stepper: SystemProtocol,
-        times: Float64NDArray,
-        state: Float64NDArray,
-        params: dict[IdentifierString, Any],
-        **kwargs: Any,
-    ) -> Float64NDArray:
-        """Protocol for engine runner functions."""
-        ...
 
 
 class EngineABC(ModuleABC):
@@ -79,7 +68,7 @@ class EngineABC(ModuleABC):
             The evolved time x state array.
         """
         return self._runner(
-            system.bind(),  # noqa: SLF001
+            system.bind(),
             eval_times,
             initial_state,
             params,

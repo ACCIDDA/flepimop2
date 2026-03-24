@@ -8,7 +8,9 @@ from flepimop2.typing import Float64NDArray, with_flow
 
 
 @with_flow("flow")
-def stepper(time: float, state: Float64NDArray, offset: np.float64) -> Float64NDArray:
+def stepper(
+    time: np.float64, state: Float64NDArray, offset: np.float64
+) -> Float64NDArray:
     """
     A dummy stepper function for testing purposes: (state + offset) * time.
 
@@ -24,7 +26,7 @@ def stepper(time: float, state: Float64NDArray, offset: np.float64) -> Float64ND
 
 
 def bad_stepper(
-    time: float, state: Float64NDArray, offset: np.float64
+    time: np.float64, state: Float64NDArray, offset: np.float64
 ) -> Float64NDArray:
     """
     A dummy stepper function for testing purposes, unannotated with flow.
@@ -55,5 +57,5 @@ def test_wrapper_system(stepper: SystemProtocol) -> None:
 @pytest.mark.parametrize("stepper", [bad_stepper])
 def test_wrapper_system_bad_stepper(stepper: SystemProtocol) -> None:
     """Test `AdapterSystem` raises an error if the stepper is not properly annotated."""
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         build(stepper)
