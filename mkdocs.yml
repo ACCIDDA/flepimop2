@@ -90,5 +90,6 @@ nav:
           - Testing: reference/api/testing.md
           - Typing: reference/api/typing.md
       - CLI: reference/cli.md
+  - Connectors: connectors.md
   - Changelog: changelog.md
   - Authors: authors.md
