@@ -37,11 +37,8 @@ def _consolidate_args(
 
     params = params or {}
     # confirm that kwargs and params do not have overlapping keys
-    if set(params.keys()).intersection(kwargs.keys()):
-        msg = (
-            "Cannot offer overlapping keys in params and kwargs: "
-            f"{set(params.keys()).intersection(kwargs.keys())}."
-        )
+    if overlapping_keys := set(params.keys()).intersection(kwargs.keys()):
+        msg = f"Cannot offer overlapping keys in params and kwargs: {overlapping_keys}."
         validation_errors.append(msg)
 
     combined_params = {**params, **kwargs}
