@@ -28,10 +28,22 @@ def _consolidate_args(
         TypeError: If offered forbidden keys.
 
     Examples:
-        >>> def example_func(a: float, b: list[float], c: float) -> float:
-        ...     return sum([a, c, *b])
         >>> _consolidate_args(forbidden={"b"}, params={"a": 1.0}, c=5.0)
         {'a': 1.0, 'c': 5.0}
+        >>> _consolidate_args(forbidden={"b"}, a=1.0, c=5.0)
+        {'a': 1.0, 'c': 5.0}
+        >>> _consolidate_args(forbidden={"b"}, params={"a": 1.0, "c": 5.0})
+        {'a': 1.0, 'c': 5.0}
+        >>> _consolidate_args(forbidden={"b"}, params={"b": 2.0})
+        Traceback (most recent call last):
+            ...
+        TypeError: Consolidating static parameters failed.
+        Cannot bind forbidden keys: {'b'}; offered keys: {'b'}.
+        >>> _consolidate_args(params={"a": 1.0}, c=5.0, a=2.0)
+        Traceback (most recent call last):
+            ...
+        TypeError: Consolidating static parameters failed.
+        Cannot offer overlapping keys in params and kwargs: {'a'}.
     """
     validation_errors: list[str] = []
 
