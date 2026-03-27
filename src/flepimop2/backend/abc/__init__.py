@@ -60,4 +60,4 @@ def build(config: dict[str, Any] | ModuleModel) -> BackendABC:
         The constructed backend instance.
 
     """
-    return _build(config, "backend", "flepimop2.backend.csv", BackendABC)  # type: ignore[type-abstract]
+    return _build(config, "backend", "flepimop2.backend.csv", BackendABC)

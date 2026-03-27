@@ -59,4 +59,4 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
         ProcessABC: The constructed process object.
 
     """
-    return _build(config, "process", "flepimop2.process.shell", ProcessABC)  # type: ignore[type-abstract]
+    return _build(config, "process", "flepimop2.process.shell", ProcessABC)

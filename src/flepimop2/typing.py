@@ -15,14 +15,80 @@ Examples:
 
 __all__ = ["Float64NDArray", "RaiseOnMissing", "RaiseOnMissingType", "StateChangeEnum"]
 
+from collections.abc import Callable
 from enum import StrEnum
-from typing import Final, Literal
+from keyword import iskeyword
+from typing import (
+    Annotated,
+    Any,
+    Concatenate,
+    Final,
+    Literal,
+    ParamSpec,
+    Protocol,
+    cast,
+    runtime_checkable,
+)
 
 import numpy as np
 import numpy.typing as npt
+from pydantic import AfterValidator, Field
 
 Float64NDArray = npt.NDArray[np.float64]
 """Alias for a NumPy ndarray with float64 data type."""
+
+
+def _identifier_string(value: str) -> str:
+    """
+    Validate that a string is a valid identifier string.
+
+    Args:
+        value: The string to validate.
+
+    Returns:
+        The validated identifier string.
+
+    Raises:
+        ValueError: If the string is not a valid identifier.
+
+    Examples:
+        >>> from flepimop2.typing import _identifier_string
+        >>> _identifier_string("valid_name_123")
+        'valid_name_123'
+        >>> _identifier_string("A")
+        'A'
+        >>> _identifier_string("nameWithCaps")
+        'nameWithCaps'
+        >>> _identifier_string("1invalidStart")
+        Traceback (most recent call last):
+            ...
+        ValueError: '1invalidStart' is not a valid identifier string or is a keyword.
+        >>> _identifier_string("invalid char!")
+        Traceback (most recent call last):
+            ...
+        ValueError: 'invalid char!' is not a valid identifier string or is a keyword.
+        >>> _identifier_string("")
+        Traceback (most recent call last):
+            ...
+        ValueError: '' is not a valid identifier string or is a keyword.
+        >>> _identifier_string("def")
+        Traceback (most recent call last):
+            ...
+        ValueError: 'def' is not a valid identifier string or is a keyword.
+
+    """
+    if not value.isidentifier() or iskeyword(value):
+        msg = f"'{value}' is not a valid identifier string or is a keyword."
+        raise ValueError(msg)
+    return value
+
+
+IdentifierString = Annotated[
+    str,
+    Field(min_length=1, max_length=255, pattern=r"^[a-z]([a-z0-9\_]*[a-z0-9])?$"),
+    AfterValidator(_identifier_string),
+]
+"""A string type representing a valid identifier for named configuration elements."""
 
 
 class RaiseOnMissingType:
@@ -83,3 +149,66 @@ class StateChangeEnum(StrEnum):
     The state change is described directly by the new state values,
     i.e. \\( x(t + \\Delta t) = x_{new} \\).
     """
+
+
+P = ParamSpec("P")
+SystemCallable = Callable[Concatenate[np.float64, Float64NDArray, P], Float64NDArray]
+
+
+@runtime_checkable
+class SystemProtocol(Protocol):
+    """Type-definition (Protocol) for system stepper functions."""
+
+    def __call__(
+        self, time: np.float64, state: Float64NDArray, **kwargs: Any
+    ) -> Float64NDArray:
+        """Protocol for system stepper functions."""
+
+    state_change: StateChangeEnum
+    """The type of state change for this system, if provided."""
+
+
+def with_flow(
+    flow: str | StateChangeEnum,
+) -> Callable[[SystemCallable[P]], SystemProtocol]:
+    """
+    Decorator to add a `state_change` attribute to a system stepper function.
+
+    Args:
+        flow: The type of state change to associate with the stepper function.
+
+    Returns:
+        A decorator that adds the `state_change` attribute to SystemProtocols.
+
+    Examples:
+        >>> from flepimop2.typing import with_flow, StateChangeEnum
+        >>> @with_flow(StateChangeEnum.FLOW)
+        ... def my_stepper(time, state, param1):
+        ...     # stepper implementation
+        ...     pass
+        >>> my_stepper.state_change
+        <StateChangeEnum.FLOW: 'flow'>
+    """
+    flow = StateChangeEnum(flow)  # cast to enum if given as string
+
+    def decorator(func: SystemCallable[P]) -> SystemProtocol:
+        func.state_change = flow  # type: ignore[attr-defined]
+        return cast("SystemProtocol", func)
+
+    return decorator
+
+
+@runtime_checkable
+class EngineProtocol(Protocol):
+    """Type-definition (Protocol) for engine runner functions."""
+
+    def __call__(
+        self,
+        stepper: SystemProtocol,
+        times: Float64NDArray,
+        state: Float64NDArray,
+        params: dict[IdentifierString, Any],
+        **kwargs: Any,
+    ) -> Float64NDArray:
+        """Protocol for engine runner functions."""
+        ...

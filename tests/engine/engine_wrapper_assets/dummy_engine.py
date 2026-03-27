@@ -4,9 +4,8 @@ from typing import Any
 
 import numpy as np
 
-from flepimop2.configuration import IdentifierString
 from flepimop2.system.abc import SystemProtocol
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, IdentifierString
 
 
 def runner(

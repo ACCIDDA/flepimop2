@@ -1,8 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._pydantic import RangeSpec, _to_np_array
-from flepimop2.configuration._types import IdentifierString
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, IdentifierString
 
 
 class SimulateSpecificationModel(BaseModel):

@@ -3,14 +3,22 @@
 __all__ = ["WrapperSystem"]
 
 from pathlib import Path
-from typing import Literal, Self
+from typing import Any, Literal, ParamSpec, Self, override
 
-from pydantic import model_validator
+from pydantic import PrivateAttr, model_validator
 
+from flepimop2._utils._checked_partial import _checked_partial
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import StateChangeEnum
+from flepimop2.typing import (
+    IdentifierString,
+    StateChangeEnum,
+    SystemCallable,
+    SystemProtocol,
+)
+
+P = ParamSpec("P")
 
 
 class WrapperSystem(ModuleModel, SystemABC):
@@ -19,6 +27,7 @@ class WrapperSystem(ModuleModel, SystemABC):
     module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     state_change: StateChangeEnum
     script: Path
+    _stepper: SystemProtocol = PrivateAttr()
 
     @model_validator(mode="after")
     def _validate_stepper(self) -> Self:
@@ -37,3 +46,12 @@ class WrapperSystem(ModuleModel, SystemABC):
             raise AttributeError(msg)
         self._stepper = mod.stepper
         return self
+
+    @override
+    def _bind_impl(
+        self, params: dict[IdentifierString, Any] | None = None
+    ) -> SystemCallable[P]:
+        return _checked_partial(
+            func=self._stepper,
+            params=params,
+        )

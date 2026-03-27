@@ -4,7 +4,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, Field, model_validator
 
-from flepimop2.configuration._types import IdentifierString
+from flepimop2.typing import IdentifierString
 
 
 class ContinuousAxisModel(BaseModel):
