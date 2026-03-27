@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a parent class, `ModuleABC`, for all customizable modules that sets a required `module` attribute and provides infrastructure for non-standardized properties information. Also extended said infrastructure to allow for standardized property information for `SystemABC`. See [#113](https://github.com/ACCIDDA/flepimop2/issues/113), [#126](https://github.com/ACCIDDA/flepimop2/issues/126), [#129](https://github.com/ACCIDDA/flepimop2/discussions/129).
 - Add "binding" to `SystemABC` objects to convert fully generic signature to a simulation needs-specific signature.
 - Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration, but setting this currently results in a warning since it has no effect. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
+- Added runtime axis resolution via `flepimop2.axis`, structured `ParameterValue` outputs, and system-declared `requested_parameters()`/`model_state()` contracts so parameters, initial conditions, and system inputs are shaped from named axes and passed through the simulation runtime as structured values instead of hard-coded scalar state. See [#115](https://github.com/ACCIDDA/flepimop2/issues/115).
 
 ### Changed
 

@@ -13,7 +13,12 @@ Examples:
     numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]]
 """
 
-__all__ = ["Float64NDArray", "RaiseOnMissing", "RaiseOnMissingType", "StateChangeEnum"]
+__all__ = [
+    "Float64NDArray",
+    "RaiseOnMissing",
+    "RaiseOnMissingType",
+    "StateChangeEnum",
+]
 
 from enum import StrEnum
 from typing import Final, Literal
