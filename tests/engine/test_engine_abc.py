@@ -5,13 +5,15 @@ import pytest
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.system.abc import SystemABC
-from flepimop2.system.abc import build as system_build
-from flepimop2.typing import Float64NDArray, with_flow
+from flepimop2.system.abc import wrap as system_wrap
+from flepimop2.typing import Float64NDArray, StateChangeEnum, as_system_protocol
 
 
-@with_flow("flow")
+@as_system_protocol
 def sample_step(
-    time: np.float64, state: Float64NDArray, offset: np.float64
+    time: np.float64,
+    state: Float64NDArray,
+    offset: np.float64,
 ) -> Float64NDArray:
     """
     A simple stepper function for testing purposes.
@@ -27,7 +29,7 @@ def sample_step(
     return (state + offset) * time
 
 
-DummySystem = system_build(sample_step)
+DummySystem = system_wrap(sample_step, StateChangeEnum.STATE)
 
 
 class DummyEngine(EngineABC):

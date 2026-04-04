@@ -11,7 +11,7 @@ from flepimop2.typing import (
     Float64NDArray,
     IdentifierString,
     StateChangeEnum,
-    SystemCallable,
+    SystemProtocol,
 )
 
 
@@ -50,7 +50,7 @@ class SirSystem(SystemABC):
     @override
     def _bind_impl(
         self, params: dict[IdentifierString, Any] | None = None
-    ) -> SystemCallable[P]:
+    ) -> SystemProtocol:
         return functools.partial(sir_stepper, **(params or {}))
 
 

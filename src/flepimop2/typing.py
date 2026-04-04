@@ -13,7 +13,15 @@ Examples:
     numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]]
 """
 
-__all__ = ["Float64NDArray", "RaiseOnMissing", "RaiseOnMissingType", "StateChangeEnum"]
+__all__ = [
+    "EngineProtocol",
+    "Float64NDArray",
+    "IdentifierString",
+    "RaiseOnMissing",
+    "RaiseOnMissingType",
+    "StateChangeEnum",
+    "SystemProtocol",
+]
 
 from collections.abc import Callable
 from enum import StrEnum
@@ -150,9 +158,10 @@ class StateChangeEnum(StrEnum):
     i.e. \\( x(t + \\Delta t) = x_{new} \\).
     """
 
-
-P = ParamSpec("P")
-SystemCallable = Callable[Concatenate[np.float64, Float64NDArray, P], Float64NDArray]
+    ERROR = "error"
+    """
+    The state change is mis-specified.
+    """
 
 
 @runtime_checkable
@@ -163,39 +172,25 @@ class SystemProtocol(Protocol):
         self, time: np.float64, state: Float64NDArray, **kwargs: Any
     ) -> Float64NDArray:
         """Protocol for system stepper functions."""
-
-    state_change: StateChangeEnum
-    """The type of state change for this system, if provided."""
+        ...
 
 
-def with_flow(
-    flow: str | StateChangeEnum,
-) -> Callable[[SystemCallable[P]], SystemProtocol]:
+_P = ParamSpec("_P")
+
+_SystemCallable = Callable[Concatenate[np.float64, Float64NDArray, _P], Float64NDArray]
+
+
+def as_system_protocol(func: _SystemCallable[_P]) -> SystemProtocol:
     """
-    Decorator to add a `state_change` attribute to a system stepper function.
+    Decorator to mark a function as a SystemProtocol.
 
     Args:
-        flow: The type of state change to associate with the stepper function.
+        func: A callable matching the SystemProtocol signature.
 
     Returns:
-        A decorator that adds the `state_change` attribute to SystemProtocols.
-
-    Examples:
-        >>> from flepimop2.typing import with_flow, StateChangeEnum
-        >>> @with_flow(StateChangeEnum.FLOW)
-        ... def my_stepper(time, state, param1):
-        ...     # stepper implementation
-        ...     pass
-        >>> my_stepper.state_change
-        <StateChangeEnum.FLOW: 'flow'>
+        The function cast as SystemProtocol.
     """
-    flow = StateChangeEnum(flow)  # cast to enum if given as string
-
-    def decorator(func: SystemCallable[P]) -> SystemProtocol:
-        func.state_change = flow  # type: ignore[attr-defined]
-        return cast("SystemProtocol", func)
-
-    return decorator
+    return cast("SystemProtocol", func)
 
 
 @runtime_checkable

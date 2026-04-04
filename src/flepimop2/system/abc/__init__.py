@@ -10,7 +10,7 @@ __all__ = [
 
 import inspect
 from abc import abstractmethod
-from typing import Any, Literal, ParamSpec, override
+from typing import Any, Literal, override
 
 import numpy as np
 
@@ -23,12 +23,8 @@ from flepimop2.typing import (
     Float64NDArray,
     IdentifierString,
     StateChangeEnum,
-    SystemCallable,
     SystemProtocol,
-    with_flow,
 )
-
-P = ParamSpec("P")
 
 
 class SystemABC(ModuleABC):
@@ -98,12 +94,12 @@ class SystemABC(ModuleABC):
         checked_pars = _consolidate_args(
             forbidden={"time", "state"}, params=params, **kwargs
         )
-        return with_flow(self.state_change)(self._bind_impl(params=checked_pars))
+        return self._bind_impl(params=checked_pars)
 
     @abstractmethod
     def _bind_impl(
         self, params: dict[IdentifierString, Any] | None = None
-    ) -> SystemCallable[P]:
+    ) -> SystemProtocol:
         """
         Abstract method to create a particular SystemProtocol.
 
@@ -146,41 +142,44 @@ class SystemABC(ModuleABC):
         return self.bind()(time, state, **params)
 
 
-class AdapterSystem(SystemABC):
+class _AdapterSystem(SystemABC):
     """A `SystemABC` which wraps a user-defined function."""
 
-    module: Literal["flepimop2.system.adapter"] = "flepimop2.system.adapter"
+    module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     state_change: StateChangeEnum
     stepper: SystemProtocol
+    options: dict[IdentifierString, Any]
 
-    def __init__(self, stepper: SystemProtocol) -> None:
+    def __init__(
+        self,
+        state_change: StateChangeEnum,
+        stepper: SystemProtocol,
+        options: dict[IdentifierString, Any] | None = None,
+    ) -> None:
         """
         Initialize the AdapterSystem with a state change and a stepper.
 
-        Raises:
-            TypeError: If the provided stepper does not meet the SystemProtocol
-                requirements.
+        Args:
+            state_change: The type of state change for the system.
+            stepper: A user-defined function that implements the system's dynamics.
+            options: Optional dictionary of additional information about the system.
+
         """
-        if not isinstance(stepper, SystemProtocol):
-            msg = (
-                "For AdapterSystem, stepper must have a state_change attribute; "
-                "use @flepimop2.typing.with_flow(...) decorator to add one."
-            )
-            raise TypeError(msg)
-        self.state_change = stepper.state_change
+        self.state_change = state_change
         self.stepper = stepper
+        self.options = options or {}
 
     @override
     def _bind_impl(
         self, params: dict[IdentifierString, Any] | None = None
-    ) -> SystemCallable[P]:
+    ) -> SystemProtocol:
         return _checked_partial(
             func=self.stepper,
             params=params,
         )
 
 
-def build(config: SystemProtocol | dict[str, Any] | ModuleModel) -> SystemABC:
+def build(config: dict[IdentifierString, Any] | ModuleModel) -> SystemABC:
     """
     Build a `SystemABC` from a configuration dictionary.
 
@@ -191,11 +190,46 @@ def build(config: SystemProtocol | dict[str, Any] | ModuleModel) -> SystemABC:
         The constructed system instance.
 
     """
-    if isinstance(config, SystemProtocol) or inspect.isfunction(config):
-        return AdapterSystem(stepper=config)
     return _build(
         config,
         "system",
         "flepimop2.system.wrapper",
         SystemABC,
+    )
+
+
+def wrap(
+    stepper: SystemProtocol,
+    state_change: StateChangeEnum,
+    options: dict[IdentifierString, Any] | None = None,
+) -> SystemABC:
+    """
+    Adapt a user-defined function into a `SystemABC`.
+
+    Args:
+        stepper: A user-defined function that implements the system's dynamics.
+        state_change: The type of state change for the system.
+        options: Optional dictionary of additional information about the system.
+
+    Returns:
+        A `SystemABC` instance that wraps the provided stepper function.
+
+    Raises:
+        TypeError: If the provided stepper function does not conform to the expected
+        signature or if offered an erroneous state_change.
+    """
+    if not isinstance(state_change, StateChangeEnum):
+        msg = (
+            "state_change must be an instance of StateChangeEnum; "
+            f"got {type(state_change)}."
+        )
+        raise TypeError(msg)
+    if state_change == StateChangeEnum.ERROR:
+        msg = "state_change cannot be StateChangeEnum.ERROR for a valid system."
+        raise TypeError(msg)
+
+    return _AdapterSystem(
+        state_change=state_change,
+        stepper=stepper,
+        options=options,
     )
