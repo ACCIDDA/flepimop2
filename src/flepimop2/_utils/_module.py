@@ -133,8 +133,9 @@ def _load_builder(
         # Validate returns an instance of the class; we cast it to the expected T_co
         return cast("T_co", target_class.model_validate(_as_dict(config)))
 
-    setattr(mod, "build", dynamic_build)
-    return cast("Buildable[T_co]", mod)
+    res = cast("Buildable[T_co]", mod)
+    res.build = dynamic_build
+    return res
 
 
 def _validate_function(module: ModuleType, func_name: str) -> bool:
