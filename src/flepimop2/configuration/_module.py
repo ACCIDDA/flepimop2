@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
 from flepimop2._utils._pydantic import _to_default_dict
-from flepimop2.configuration._types import IdentifierString
+from flepimop2.typing import IdentifierString
 
 
 class ModuleModel(BaseModel):

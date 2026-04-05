@@ -1,19 +1,67 @@
 """Private utilities for dynamic module loading and validation."""
 
 import inspect
+from abc import ABCMeta
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal, Protocol, TypeVar, cast, runtime_checkable
 
 from pydantic import BaseModel
 
 from flepimop2.configuration import ModuleModel
+from flepimop2.module import ModuleABC
+from flepimop2.typing import IdentifierString
 
-T = TypeVar("T")
 Namespace = Literal["backend", "engine", "parameter", "process", "system"]
+
+T_co = TypeVar("T_co", bound=ModuleABC, covariant=True)
+
+
+@runtime_checkable
+class Buildable(Protocol[T_co]):
+    """
+    Protocol for modules that can be built from a configuration.
+
+    This protocol defines the expected interface for modules that can be built using
+    the `_build` function. It requires a `build` method that takes a configuration
+    dictionary or a `ModuleModel` instance and returns an instance of type `T`.
+
+    Attributes:
+        build: A callable that constructs an instance of type `T` from a
+        configuration.
+
+    """
+
+    def build(self, config: dict[Any, Any] | ModuleModel) -> T_co: ...
+
+
+def _as_dict(
+    config: dict[IdentifierString, Any] | ModuleModel | None = None,
+) -> dict[IdentifierString, Any]:
+    """
+    Ensure a Model can be used as a dictionary.
+
+    Args:
+        config: The configuration to potentially convert.
+
+    Returns:
+        A dictionary representation of the configuration.
+
+    Raises:
+        TypeError: If the config is not a dictionary, ModuleModel, or None.
+    """
+    if config is None:
+        return {}
+    if isinstance(config, ModuleModel):
+        return config.model_dump()
+    if isinstance(config, dict):
+        return config.copy()
+
+    msg = f"Expected config to be a dict or ModuleModel, got {type(config).__name__}"
+    raise TypeError(msg)
 
 
 def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
@@ -47,6 +95,47 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _load_builder(
+    mod_name: str, _enforced_type: type[T_co] | ABCMeta
+) -> Buildable[T_co]:
+    """
+    Load a Python module from a given file path as a given name.
+
+    Args:
+        mod_name: The name of the module to load.
+        _enforced_type: The type that the loaded module must enforce.
+
+    Returns:
+        The loaded module.
+
+    Raises:
+        AttributeError: If the module does not have a 'build' function or a valid
+            BaseModel for default building.
+
+    """
+    mod = import_module(mod_name)
+
+    # Check if module already satisfies the protocol
+    if isinstance(mod, Buildable):
+        # We cast because runtime check doesn't guarantee the internal T_co
+        return cast("Buildable[T_co]", mod)
+
+    target_class = _find_target_class(mod, mod_name)
+    if target_class is None:
+        msg = f"Module '{mod_name}' lacks a 'build' function or valid BaseModel."
+        raise AttributeError(msg)
+
+    # We define the internal function. Note that 'target_class'
+    # needs to be cast to T_co since we're promising the caller a T_co.
+    def dynamic_build(config: dict[IdentifierString, Any] | ModuleModel) -> T_co:
+        # Validate returns an instance of the class; we cast it to the expected T_co
+        return cast("T_co", target_class.model_validate(_as_dict(config)))
+
+    res = cast("Buildable[T_co]", mod)
+    res.build = dynamic_build
+    return res
 
 
 def _validate_function(module: ModuleType, func_name: str) -> bool:
@@ -95,49 +184,6 @@ def _find_target_class(mod: ModuleType, mod_name: str) -> type[BaseModel] | None
     return None
 
 
-def _load_builder(mod_name: str) -> ModuleType:
-    """
-    Load a module and ensure it has a valid build function.
-
-    Args:
-        mod_name: The fully qualified module name to load.
-
-    Returns:
-        The loaded module.
-
-    Raises:
-        AttributeError: If the module does not have a valid build function.
-
-    Notes:
-        A valid build function is either defined directly in the module,
-        or can be dynamically created if the module contains a target
-        class that supports a default build function.
-
-    """
-    # Try to import a build function directly
-    # and return the module if found
-    mod = import_module(mod_name)
-    if _validate_function(mod, "build"):
-        return mod
-
-    # If a build function is not found see if the target
-    # class can be loaded with a default build function
-    target_class = _find_target_class(mod, mod_name)
-    if target_class is None:
-        msg = f"Module '{mod_name}' does not have a valid 'build' function."
-        raise AttributeError(msg)
-
-    # If the target class supports a default build function,
-    # dynamically add it to the module and return it
-    def build(config: dict[str, Any] | ModuleModel) -> BaseModel:
-        return target_class.model_validate(
-            config.model_dump() if isinstance(config, ModuleModel) else config
-        )
-
-    mod.build = build  # type: ignore[attr-defined]
-    return mod
-
-
 def _resolve_module_name(module: str, namespace: Namespace) -> str:
     """
     Resolve a module name, optionally prefixing it with a namespace.
@@ -169,8 +215,8 @@ def _build(
     config: dict[str, Any] | ModuleModel,
     namespace: Namespace,
     default_module: str,
-    enforced_type: type[T],
-) -> T:
+    enforced_type: type[T_co] | ABCMeta,
+) -> T_co:
     """
     Build an instance from a configuration dictionary.
 
@@ -188,16 +234,23 @@ def _build(
         The constructed instance.
 
     Raises:
-        TypeError: If the built instance is not of the expected type.
+        TypeError: If the built instance does not match the enforced type.
+
     """
-    config_dict = {"module": default_module} | (
-        config.model_dump() if isinstance(config, ModuleModel) else config
-    )
-    module = _resolve_module_name(config_dict["module"], namespace)
-    config_dict["module"] = module
-    builder = _load_builder(module)
+    config_dict = _as_dict(config)
+    if "module" not in config_dict:
+        config_dict["module"] = default_module
+    module_path = _resolve_module_name(config_dict["module"], namespace)
+    config_dict["module"] = module_path
+
+    # Anchor T_co by passing enforced_type
+    builder: Buildable[T_co] = _load_builder(module_path, enforced_type)
+
     instance = builder.build(config_dict)
+
+    # Final runtime safety check since we've done a lot of casting
     if not isinstance(instance, enforced_type):
-        msg = f"The built instance is not an instance of {enforced_type.__name__}."
+        msg = f"Built {type(instance)}, expected {enforced_type}"
         raise TypeError(msg)
+
     return instance

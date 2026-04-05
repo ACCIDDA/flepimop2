@@ -48,10 +48,10 @@ badfun = pytest.mark.parametrize("func", [dumb_func])
 @pars
 def test_set_valid_static_parameters(func: Callable[..., int]) -> None:
     """Confirm no errors when setting all valid parameters."""
-    newfun = _checked_partial(func, forbidden={"b"}, a=5)
+    newfun = _checked_partial(func, {"a": 5})
     assert newfun(b=10, c=2) == 100
     assert newfun(a=2, c=2, b=10) == 40
-    newfun = _checked_partial(func, forbidden={"b"}, params={"a": 10})
+    newfun = _checked_partial(func, {"a": 10})
     assert newfun(b=10, c=2) == 200
     newfun = _checked_partial(func)
     assert newfun(a=1, b=10, c=2) == 20
@@ -65,26 +65,24 @@ def test_set_valid_static_parameters(func: Callable[..., int]) -> None:
 )
 def test_static_parameters_fixed(func: Callable[..., int]) -> None:
     """Confirm errors when calling with a static parameter set."""
-    newfun = _checked_partial(func, forbidden={"b"}, a=5)
+    newfun = _checked_partial(func, {"a": 5})
     with pytest.raises(TypeError):
         newfun(a=5, b=10, c=2)
 
 
 @pars
-def test_set_static_parameter_throws_error_on_fixed_time(
+def test_set_static_parameter_throws_error_on_invalid_params(
     func: Callable[..., int],
 ) -> None:
     """Confirm errors raised for various invalid scenarios."""
     with pytest.raises(TypeError):
-        _checked_partial(func, forbidden={"b"}, b=100)
+        _checked_partial(func, {"nonexistent_param": 5.0})
     with pytest.raises(TypeError):
-        _checked_partial(func, nonexistent_param=5.0)
-    with pytest.raises(TypeError):
-        _checked_partial(func, c="invalid_string")
+        _checked_partial(func, {"c": "invalid_string"})
 
 
 @badfun
 def test_unannotated_function_raises(func: Callable[..., int]) -> None:
     """Confirm that a function without annotations does not raise an error."""
-    _checked_partial(func, a="a string")
-    _checked_partial(func, b="57.5")
+    _checked_partial(func, {"a": "a string"})
+    _checked_partial(func, {"b": "57.5"})
