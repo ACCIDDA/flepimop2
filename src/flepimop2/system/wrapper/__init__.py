@@ -3,7 +3,7 @@
 from typing import Any
 
 from flepimop2._utils._checked_partial import _checked_partial as _checked_partial
-from flepimop2._utils._module import _load_module, _validate_function
+from flepimop2._utils._module import _as_dict, _load_module, _validate_function
 from flepimop2.configuration import ModuleModel
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import wrap as system_wrap
@@ -30,7 +30,7 @@ def build(config: dict[IdentifierString, Any] | ModuleModel) -> SystemABC:
     Raises:
         AttributeError: If the loaded module does not have a valid 'stepper' function.
     """
-    config = config if isinstance(config, dict) else config.model_dump()
+    config = _as_dict(config)
     config_options = config.get("options", {})
 
     if script := config.get("script", config_options.get("script")):
