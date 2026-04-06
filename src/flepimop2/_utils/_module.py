@@ -98,7 +98,7 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
 
 
 def _load_builder(
-    mod_name: str, _enforced_type: type[T_co] | ABCMeta | None = None
+    mod_name: str, enforced_type: type[T_co] | ABCMeta | None = None
 ) -> Buildable[T_co]:
     """
     Load a Python module from a given file path as a given name.
@@ -122,16 +122,12 @@ def _load_builder(
         # We cast because runtime check doesn't guarantee the internal T_co
         return cast("Buildable[T_co]", mod)
 
-    target_class = _find_target_class(mod, mod_name)
-    if target_class is None:
-        msg = f"Module '{mod_name}' does not have a valid 'build' function."
-        raise AttributeError(msg)
-    builder_class: type[BaseModel] = target_class
+    target_class: T_co = _find_target_class(mod, mod_name, enforced_type)
 
     class _BuilderWrapper:
         def build(self, config: dict[Any, Any] | ModuleModel) -> T_co:  # noqa: PLR6301
             # Validate returns an instance of the class; we cast it to the expected T_co
-            return cast("T_co", builder_class.model_validate(_as_dict(config)))
+            return cast("T_co", target_class.model_validate(_as_dict(config)))
 
     return _BuilderWrapper()
 
@@ -151,7 +147,9 @@ def _validate_function(module: ModuleType, func_name: str) -> bool:
     return hasattr(module, func_name) and callable(getattr(module, func_name))
 
 
-def _find_target_class(mod: ModuleType, mod_name: str) -> type[BaseModel] | None:
+def _find_target_class(
+    mod: ModuleType, mod_name: str, enforced_type: type[T_co]
+) -> T_co:
     """
     Find a BaseModel subclass defined in a module.
 
@@ -163,9 +161,13 @@ def _find_target_class(mod: ModuleType, mod_name: str) -> type[BaseModel] | None
     Args:
         mod: The module to search.
         mod_name: The fully qualified module name.
+        enforced_type: The type that the loaded module must enforce.
 
     Returns:
-        The target BaseModel subclass if found, None otherwise.
+        The target BaseModel subclass.
+
+    Raises:
+        AttributeError: If no valid target class is found in the module.
 
     """
     possible_objs = [
@@ -175,11 +177,12 @@ def _find_target_class(mod: ModuleType, mod_name: str) -> type[BaseModel] | None
     ]
     for obj in possible_objs:
         try:
-            if issubclass(obj, BaseModel):
+            if issubclass(obj, enforced_type):
                 return obj
         except TypeError:
             continue
-    return None
+    msg = f"Module '{mod_name}' does not have a valid {enforced_type.__name__} subclass for building."
+    raise AttributeError(msg)
 
 
 def _resolve_module_name(module: str, namespace: Namespace) -> str:
