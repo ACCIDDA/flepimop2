@@ -98,7 +98,7 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
 
 
 def _load_builder(
-    mod_name: str, _enforced_type: type[T_co] | ABCMeta
+    mod_name: str, _enforced_type: type[T_co] | ABCMeta | None = None
 ) -> Buildable[T_co]:
     """
     Load a Python module from a given file path as a given name.
@@ -124,18 +124,16 @@ def _load_builder(
 
     target_class = _find_target_class(mod, mod_name)
     if target_class is None:
-        msg = f"Module '{mod_name}' lacks a 'build' function or valid BaseModel."
+        msg = f"Module '{mod_name}' does not have a valid 'build' function."
         raise AttributeError(msg)
+    builder_class: type[BaseModel] = target_class
 
-    # We define the internal function. Note that 'target_class'
-    # needs to be cast to T_co since we're promising the caller a T_co.
-    def dynamic_build(config: dict[IdentifierString, Any] | ModuleModel) -> T_co:
-        # Validate returns an instance of the class; we cast it to the expected T_co
-        return cast("T_co", target_class.model_validate(_as_dict(config)))
+    class _BuilderWrapper:
+        def build(self, config: dict[Any, Any] | ModuleModel) -> T_co:  # noqa: PLR6301
+            # Validate returns an instance of the class; we cast it to the expected T_co
+            return cast("T_co", builder_class.model_validate(_as_dict(config)))
 
-    res = cast("Buildable[T_co]", mod)
-    res.build = dynamic_build
-    return res
+    return _BuilderWrapper()
 
 
 def _validate_function(module: ModuleType, func_name: str) -> bool:
