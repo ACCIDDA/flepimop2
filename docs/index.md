@@ -29,44 +29,22 @@ This will create a new directory, `quick_start_project` and populate that direct
 
 The most basic skeleton does not provide a system or engine: you will need to specify those. Here is an example [SIR system](assets/SIR.py) and an example [ODE engine](assets/solve_ivp.py):
 
-??? example "Basic SIR Model"
+??? example "Basic SIR Model - `model_input/plugins/SIR.py`"
     ```python
     --8<-- "assets/SIR.py"
     ```
 
-??? example "Basic scipy ODE Solver Engine"
+??? example "Basic scipy ODE Solver Engine - `model_input/plugins/solve_ivp.py`"
     ```python
     --8<-- "assets/solve_ivp.py"
     ```
 
 You'll also need to update the skeleton configuration file with these additions and set some parameters:
 
-```yaml
-system:
-  - module: wrapper
-    script: model_input/plugins/SIR.py
-
-engine:
-  - module: wrapper
-    script: model_input/plugins/solve_ivp.py
-
-parameter:
-  beta:
-    module: fixed
-    value: 0.3
-  gamma:
-    module: fixed
-    value: 0.1
-  s0:
-    module: fixed
-    value: 999
-  i0:
-    module: fixed
-    value: 1
-  r0:
-    module: fixed
-    value: 0
-```
+??? example "Configuration File - `configs/config.yaml`"
+    ```yaml
+    --8<-- "assets/config.yaml"
+    ```
 
 ### Simulate an Outbreak
 

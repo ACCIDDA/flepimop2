@@ -14,9 +14,7 @@ def test_quick_start_simulate(repo_root: Path, tmp_path: Path) -> None:
     project_skeleton(
         tmp_path,
         copy_files={
-            repo_root / "tests/integration/documentation_quick_start/config.yaml": Path(
-                "configs/config.yaml"
-            ),
+            repo_root / "docs/assets/config.yaml": Path("configs/config.yaml"),
             repo_root / "docs/assets/SIR.py": Path("model_input/plugins/SIR.py"),
             repo_root / "docs/assets/solve_ivp.py": Path(
                 "model_input/plugins/solve_ivp.py"

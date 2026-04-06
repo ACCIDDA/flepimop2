@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ...
+- Updated the documentation quick start integration test to use the same configuration file as the documentation homepage to ensure the two stay in sync. See [#185](https://github.com/ACCIDDA/flepimop2/issues/185).
 
 ### Deprecated
 
