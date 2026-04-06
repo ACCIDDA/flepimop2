@@ -9,8 +9,9 @@ __all__ = [
 ]
 
 import inspect
+import sys
 from abc import abstractmethod
-from typing import Any, Literal, override
+from typing import Any, Literal
 
 import numpy as np
 
@@ -25,6 +26,11 @@ from flepimop2.typing import (
     StateChangeEnum,
     SystemProtocol,
 )
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 
 class SystemABC(ModuleABC):
@@ -216,7 +222,7 @@ def wrap(
 
     Raises:
         TypeError: If the provided stepper function does not conform to the expected
-        signature or if offered an erroneous state_change.
+            signature or if offered an erroneous state_change.
     """
     if not isinstance(state_change, StateChangeEnum):
         msg = (

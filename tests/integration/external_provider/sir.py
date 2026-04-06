@@ -1,7 +1,8 @@
 """Stepper function for SIR model integration tests."""
 
 import functools
-from typing import Any, ParamSpec, override
+import sys
+from typing import Any, ParamSpec
 
 import numpy as np
 
@@ -13,6 +14,11 @@ from flepimop2.typing import (
     StateChangeEnum,
     SystemProtocol,
 )
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 
 def sir_stepper(
