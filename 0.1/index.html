@@ -1394,7 +1394,7 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 <p>This will create a new directory, <code>quick_start_project</code> and populate that directory with some files. The <code>-v</code> flag (for "verbose") will cause <code>skeleton</code> to also display the created directory structure.</p>
 <p>The most basic skeleton does not provide a system or engine: you will need to specify those. Here is an example <a href="assets/SIR.py">SIR system</a> and an example <a href="assets/solve_ivp.py">ODE engine</a>:</p>
 <details class="example">
-<summary>Basic SIR Model</summary>
+<summary>Basic SIR Model - <code>model_input/plugins/SIR.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;SIR model plugin for flepimop2 demo.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1429,7 +1429,7 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 </code></pre></div>
 </details>
 <details class="example">
-<summary>Basic scipy ODE Solver Engine</summary>
+<summary>Basic scipy ODE Solver Engine - <code>model_input/plugins/solve_ivp.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;ODE solver plugin that wraps `scipy.integrate.solve_ivp` for flepimop2 demo.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
@@ -1492,14 +1492,25 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 </code></pre></div>
 </details>
 <p>You'll also need to update the skeleton configuration file with these additions and set some parameters:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">system</span><span class="p">:</span>
+<details class="example">
+<summary>Configuration File - <code>configs/config.yaml</code></summary>
+<div class="highlight"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">system</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wrapper</span>
+<span class="w">    </span><span class="nt">state_change</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flow</span>
 <span class="w">    </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_input/plugins/SIR.py</span>
-
 <span class="nt">engine</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wrapper</span>
+<span class="w">    </span><span class="nt">state_change</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flow</span>
 <span class="w">    </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_input/plugins/solve_ivp.py</span>
-
+<span class="nt">backend</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">csv</span>
+<span class="nt">simulate</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">quick_start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">system</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">    </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">    </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">    </span><span class="nt">times</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.0:0.1:10&quot;</span>
 <span class="nt">parameter</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">beta</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
@@ -1517,6 +1528,7 @@ pipx<span class="w"> </span>install<span class="w"> </span>.
 <span class="w">    </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
+</details>
 <h3 id="simulate-an-outbreak">Simulate an Outbreak<a class="headerlink" href="#simulate-an-outbreak" title="Permanent link">&para;</a></h3>
 <p>Within the <code>quick_start_project</code> folder, you can now use <code>flepimop2</code> to run your model:</p>
 <div class="highlight"><pre><span></span><code>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
