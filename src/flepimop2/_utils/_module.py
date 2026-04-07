@@ -35,7 +35,27 @@ class Buildable(Protocol[T_co]):
 
     """
 
-    def build(self, config: dict[Any, Any] | ModuleModel) -> T_co: ...
+    def build(self, config: dict[IdentifierString, Any] | ModuleModel) -> T_co: ...
+
+
+class PydanticBuildable(Protocol[T_co]):
+    """
+    Protocol for modules that can be built from a configuration using Pydantic.
+
+    This protocol defines the expected interface for modules that can be built using
+    the `_build` function with a default builder. It requires that the module is a
+    subclass of `pydantic.BaseModel` and has a `model_validate` method that can
+    construct an instance of type `T` from a configuration.
+
+    Attributes:
+        model_validate: A callable that constructs an instance of type `T` from a
+        configuration, per the pydantic BaseModel.model_validate.
+
+    """
+
+    @classmethod
+    def model_validate(cls, obj: Any) -> T_co:  # noqa: ANN401
+        ...
 
 
 def _as_dict(
@@ -105,7 +125,7 @@ def _load_builder(
 
     Args:
         mod_name: The name of the module to load.
-        _enforced_type: The type that the loaded module must enforce.
+        enforced_type: The type that the loaded module must enforce.
 
     Returns:
         The loaded module.
@@ -114,7 +134,7 @@ def _load_builder(
         AttributeError: If the module does not have a 'build' function or a valid
             BaseModel for default building.
 
-    """
+    """  # noqa: DOC502
     mod = import_module(mod_name)
 
     # Check if module already satisfies the protocol
@@ -122,12 +142,14 @@ def _load_builder(
         # We cast because runtime check doesn't guarantee the internal T_co
         return cast("Buildable[T_co]", mod)
 
-    target_class: T_co = _find_target_class(mod, mod_name, enforced_type)
+    target_class: PydanticBuildable[T_co] = _find_target_class(
+        mod, mod_name, enforced_type
+    )
 
     class _BuilderWrapper:
-        def build(self, config: dict[Any, Any] | ModuleModel) -> T_co:  # noqa: PLR6301
+        def build(self, config: dict[IdentifierString, Any] | ModuleModel) -> T_co:  # noqa: PLR6301
             # Validate returns an instance of the class; we cast it to the expected T_co
-            return cast("T_co", target_class.model_validate(_as_dict(config)))
+            return target_class.model_validate(_as_dict(config))
 
     return _BuilderWrapper()
 
@@ -148,8 +170,8 @@ def _validate_function(module: ModuleType, func_name: str) -> bool:
 
 
 def _find_target_class(
-    mod: ModuleType, mod_name: str, enforced_type: type[T_co]
-) -> T_co:
+    mod: ModuleType, mod_name: str, enforced_type: type[T_co] | ABCMeta
+) -> PydanticBuildable[T_co]:
     """
     Find a BaseModel subclass defined in a module.
 
@@ -177,11 +199,14 @@ def _find_target_class(
     ]
     for obj in possible_objs:
         try:
-            if issubclass(obj, enforced_type):
-                return obj
+            if issubclass(obj, BaseModel) and issubclass(obj, enforced_type):
+                return cast("PydanticBuildable[T_co]", obj)
         except TypeError:
             continue
-    msg = f"Module '{mod_name}' does not have a valid {enforced_type.__name__} subclass for building."
+    msg = (
+        f"Module '{mod_name}' does not have a {enforced_type.__name__} class "
+        f"which is also a pydantic BaseModel."
+    )
     raise AttributeError(msg)
 
 
