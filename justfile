@@ -46,6 +46,7 @@ mypy:
 clean:
     rm -rf .*cache
     rm -rf .venv
+    rm -rf dist
     rm -rf site
     rm -f uv.lock
 
@@ -78,6 +79,42 @@ docs: reference
 serve: reference
     uv run mkdocs serve --livereload
 
+# Build sdist and wheel, then validate package metadata
+[unix]
+[group('build')]
+build-check:
+    rm -rf dist/
+    uv run python -m build
+    uv run python -m twine check --strict dist/*
+
+# Install the built wheel into a clean room and run non-integration tests
+[unix]
+[group('build')]
+build-test:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    CLEANROOM="$(mktemp -d)"
+    HAD_LOCK='false'
+    if [ -f uv.lock ]; then
+        HAD_LOCK='true'
+    fi
+    trap 'rm -rf "${CLEANROOM}"; if [ "${HAD_LOCK}" = "false" ]; then rm -f uv.lock; fi' EXIT
+    uv lock --python "${UV_PYTHON_VERSION:-3.12}"
+    uv export --frozen --only-group dev --no-emit-project --format requirements.txt --no-hashes --output-file "${CLEANROOM}/dev-requirements.txt" >/dev/null
+    uv run python -m build --wheel --outdir "${CLEANROOM}/dist"
+    uv venv --python "${UV_PYTHON_VERSION:-3.12}" "${CLEANROOM}/venv"
+    uv pip install --python "${CLEANROOM}/venv/bin/python" "${CLEANROOM}"/dist/*.whl
+    uv pip install --python "${CLEANROOM}/venv/bin/python" -r "${CLEANROOM}/dev-requirements.txt"
+    cp pyproject.toml "${CLEANROOM}/pyproject.toml"
+    cp -R tests "${CLEANROOM}/tests"
+    cp conftest.py "${CLEANROOM}/conftest.py"
+    cd "${CLEANROOM}"
+    "${CLEANROOM}/venv/bin/pytest" --import-mode=importlib tests --quiet --exitfirst -m "not integration"
+
+# Run all package build validations
+[group('build')]
+build-all: build-check build-test
+
 # Lint YAML files using `yamllint`
 [group('lint')]
 yamllint:
@@ -107,3 +144,17 @@ changelog:
         exit 1
     fi
     echo "CHANGELOG.md check passed"
+
+# Validate release metadata without creating a GitHub release
+[group('release')]
+release-check:
+    uv run python scripts/release.py
+
+# Create the GitHub release after all checks pass
+[group('release')]
+release +FLAGS='':
+    uv run python scripts/release.py {{FLAGS}}
+
+# Run the full local release preflight
+[group('release')]
+release-validate: build-all release-check

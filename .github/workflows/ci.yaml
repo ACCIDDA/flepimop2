@@ -56,8 +56,28 @@ jobs:
         uses: './.github/actions/setup-just-and-uv'
       - name: 'run quality checks'
         run: 'just quality'
+  package:
+    name: 'package'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'checkout repository'
+        uses: 'actions/checkout@v6'
+        with:
+          persist-credentials: false
+      - name: 'setup just and uv'
+        uses: './.github/actions/setup-just-and-uv'
+        with:
+          python-version: '3.12'
+      - name: 'check package artifacts'
+        run: 'just build-check'
+        env:
+          UV_PYTHON_VERSION: '3.12'
   tests:
     name: 'tests (${{ matrix.python-version }}-${{ matrix.coverage }})'
+    needs:
+      - 'docs'
+      - 'package'
+      - 'quality'
     runs-on: 'ubuntu-latest'
     strategy:
       fail-fast: false
