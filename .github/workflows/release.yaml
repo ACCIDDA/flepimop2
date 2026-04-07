@@ -1,0 +1,121 @@
+---
+name: 'Release'
+
+'on':
+  workflow_dispatch:
+    inputs:
+      publish-target:
+        description: 'Package publish target'
+        required: true
+        default: 'none'
+        type: 'choice'
+        options:
+          - 'none'
+          - 'testpypi'
+          - 'pypi'
+      create-github-release:
+        description: 'Create the GitHub release after publishing'
+        required: true
+        default: false
+        type: 'boolean'
+      deploy-docs:
+        description: 'Deploy versioned docs after creating the GitHub release'
+        required: true
+        default: false
+        type: 'boolean'
+
+permissions:
+  contents: 'read'
+
+jobs:
+  validate:
+    name: 'validate release'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'fail if PyPI publish is requested'
+        if: "${{ github.event.inputs.publish-target == 'pypi' }}"
+        run: |
+          # `flepimop2` is not ready for submission to PyPI yet.
+          echo "Publishing to PyPI is intentionally disabled for this"
+          echo "repository."
+          exit 1
+      - name: 'checkout repository'
+        uses: 'actions/checkout@v6'
+        with:
+          fetch-depth: 0
+      - name: 'setup just and uv'
+        uses: './.github/actions/setup-just-and-uv'
+        with:
+          python-version: '3.12'
+      - name: 'run release preflight'
+        run: 'just release-validate'
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          UV_PYTHON_VERSION: '3.12'
+      - name: 'upload package artifacts'
+        uses: 'actions/upload-artifact@v6'
+        with:
+          name: 'dist'
+          path: 'dist/*'
+          if-no-files-found: 'error'
+  publish-pypi:
+    name: 'publish to PyPI'
+    needs:
+      - 'validate'
+    runs-on: 'ubuntu-latest'
+    if: "${{ github.event.inputs.publish-target == 'testpypi' }}"
+    permissions:
+      id-token: 'write'
+    steps:
+      - name: 'download package artifacts'
+        uses: 'actions/download-artifact@v8'
+        with:
+          name: 'dist'
+          path: 'dist'
+      - name: 'publish package to TestPyPI'
+        uses: 'pypa/gh-action-pypi-publish@release/v1'
+        with:
+          repository-url: 'https://test.pypi.org/legacy/'
+  create-github-release:
+    name: 'create GitHub release'
+    needs:
+      - 'validate'
+      - 'publish-pypi'
+    if: >-
+      ${{
+        github.event.inputs.create-github-release == 'true' &&
+        (github.event.inputs.publish-target == 'none' ||
+        needs.publish-pypi.result == 'success')
+      }}
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'write'
+    steps:
+      - name: 'checkout repository'
+        uses: 'actions/checkout@v6'
+        with:
+          fetch-depth: 0
+      - name: 'setup just and uv'
+        uses: './.github/actions/setup-just-and-uv'
+        with:
+          python-version: '3.12'
+      - name: 'create release'
+        run: 'just release --create'
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          UV_PYTHON_VERSION: '3.12'
+  deploy-docs:
+    name: 'deploy release docs'
+    needs:
+      - 'create-github-release'
+    if: >-
+      ${{
+        github.event.inputs.deploy-docs == 'true' &&
+        needs.create-github-release.result == 'success'
+      }}
+    permissions:
+      contents: 'write'
+    uses: './.github/workflows/gh-pages.yaml'
+    with:
+      deploy-mode: 'release'
+    secrets: 'inherit'

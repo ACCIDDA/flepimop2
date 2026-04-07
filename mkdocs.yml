@@ -74,6 +74,7 @@ nav:
       - Implementing Custom Engines and Systems: development/implementing-custom-engines-and-systems.md
       - Integration Testing: development/integration-testing.md
       - Adding A New CLI Command: development/adding-a-new-cli-command.md
+      - Creating A Release: development/creating-a-release.md
   - Reference:
       - API:
           - Abcs: reference/api/abcs.md

@@ -133,6 +133,20 @@ To preview documentation changes locally you can run `just serve` which will bui
 
 In addition to unit tests and doctests, code contained in the documentation is also tested. This is run as a part of pytest-based commands (`just test`, `just cov`, `just pytest`). Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use [`Sybil`](https://sybil.readthedocs.io/en/latest/).
 
+## Packaging
+
+Packaging checks are available through the `build` recipe group:
+
+- `just build-check` - Build the source distribution and wheel, then run
+  `twine check --strict` on the generated artifacts.
+- `just build-test` - Build the wheel, install it into a clean-room virtual
+  environment, export the current development dependencies, and run the
+  non-integration test suite against the installed wheel.
+- `just build-all` - Run both `build-check` and `build-test`.
+
+These commands are useful when preparing a release or when making changes that
+could affect packaging metadata, installability, or build artifacts.
+
 ## Pull Request Process
 
 ### Before Submitting
@@ -144,6 +158,8 @@ In addition to unit tests and doctests, code contained in the documentation is a
 - `just docs` - Documentation build checks.
 
 In GitHub Actions, these correspond to the `quality`, `tests`, and `docs` jobs in `.github/workflows/ci.yaml`.
+
+The separate `package` job runs `just build-check` on Python 3.12.
 
 If you edit YAML files, also run `just yamllint`. YAML linting is separate from `just ci`.
 
@@ -165,6 +181,7 @@ If you edit YAML files, also run `just yamllint`. YAML linting is separate from 
 
 - Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.
 - Quality checks and documentation build checks run in CI on Python 3.12.
+- Package validation runs in CI on Python 3.12.
 - At least one maintainer approval is required before merging.
 - Branches must be up to date against `main` before merging and have a linear history. Only rebases are allowed for merging.
 
