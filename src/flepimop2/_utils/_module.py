@@ -118,7 +118,7 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
 
 
 def _load_builder(
-    mod_name: str, enforced_type: type[T_co] | ABCMeta | None = None
+    mod_name: str, enforced_type: type[T_co] | ABCMeta
 ) -> Buildable[T_co]:
     """
     Load a Python module from a given file path as a given name.

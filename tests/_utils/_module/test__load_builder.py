@@ -27,7 +27,7 @@ def test_load_builder_attribute_error() -> None:
             match=r"Module 'test_module' does not have a valid 'build' function\.",
         ),
     ):
-        _load_builder("test_module")
+        _load_builder("test_module", mock_module)
 
 
 def test_load_builder_with_existing_build_function(tmp_path: Path) -> None:
