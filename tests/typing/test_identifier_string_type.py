@@ -3,7 +3,7 @@
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from flepimop2.configuration import IdentifierString
+from flepimop2.typing import IdentifierString
 
 
 class Example(BaseModel):

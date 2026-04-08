@@ -6,7 +6,6 @@ __all__ = [
     "CategoricalAxisModel",
     "ConfigurationModel",
     "ContinuousAxisModel",
-    "IdentifierString",
     "ModuleGroupModel",
     "ModuleModel",
     "SimulateSpecificationModel",
@@ -21,4 +20,3 @@ from flepimop2.configuration._axes import (
 from flepimop2.configuration._configuration import ConfigurationModel
 from flepimop2.configuration._module import ModuleGroupModel, ModuleModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
-from flepimop2.configuration._types import IdentifierString

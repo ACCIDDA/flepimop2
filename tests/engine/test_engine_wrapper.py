@@ -10,7 +10,6 @@ from flepimop2.engine.abc import build as engine_build
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as system_build
-from flepimop2.system.wrapper import WrapperSystem
 from flepimop2.typing import StateChangeEnum
 
 TEST_ENGINE_SCRIPT: Final = (
@@ -64,14 +63,16 @@ def test_wrapper_engine_validate_system_properties(config: dict[str, Any]) -> No
     """Test `WrapperEngine` validates system properties compatibility."""
     engine = engine_build(config)
 
-    compatible_system = WrapperSystem(
-        script=TEST_SYSTEM_SCRIPT, state_change=StateChangeEnum.FLOW
-    )
+    compatible_system = system_build({
+        "script": TEST_SYSTEM_SCRIPT,
+        "state_change": StateChangeEnum.FLOW,
+    })
     assert engine.validate_system(compatible_system) is None
 
-    incompatible_system = WrapperSystem(
-        script=TEST_SYSTEM_SCRIPT, state_change=StateChangeEnum.DELTA
-    )
+    incompatible_system = system_build({
+        "script": TEST_SYSTEM_SCRIPT,
+        "state_change": StateChangeEnum.DELTA,
+    })
     issues = engine.validate_system(incompatible_system)
     assert issues is not None
     assert all(isinstance(issue, ValidationIssue) for issue in issues)

@@ -9,7 +9,7 @@ import pytest
 
 from flepimop2._utils._module import _load_module
 
-FIXTURE_DIR: Final = Path(__file__).with_suffix("")
+FIXTURE_DIR: Final = Path(__file__).parent / "_load_module_assets"
 
 
 def test_load_module_file_not_found(tmp_path: Path) -> None:

@@ -3,31 +3,33 @@
 from pathlib import Path
 from shutil import copy
 from types import ModuleType
-from typing import Final
-from unittest.mock import MagicMock, patch
+from typing import Any, Final
+from unittest.mock import patch
 
 import pytest
+from pydantic import BaseModel
 
 from flepimop2._utils._module import _load_builder, _load_module
+from flepimop2.module import ModuleABC
 
-FIXTURE_DIR: Final = Path(__file__).with_suffix("")
+FIXTURE_DIR: Final = Path(__file__).parent / "_load_builder_assets"
 
 
 def test_load_builder_attribute_error() -> None:
     """Test AttributeError is raised with no build function or target class."""
-    # Mock import_module to return a module without build function
-    mock_module = MagicMock(spec=[])
+    mock_module = ModuleType("test_module")
 
     with (
         patch("flepimop2._utils._module.import_module", return_value=mock_module),
-        patch("flepimop2._utils._module._validate_function", return_value=False),
-        patch("flepimop2._utils._module._find_target_class", return_value=None),
         pytest.raises(
             AttributeError,
-            match=r"Module 'test_module' does not have a valid 'build' function\.",
+            match=(
+                r"Module 'test_module' does not have a ModuleABC class "
+                r"which is also a pydantic BaseModel\."
+            ),
         ),
     ):
-        _load_builder("test_module")
+        _load_builder("test_module", ModuleABC)
 
 
 def test_load_builder_with_existing_build_function(tmp_path: Path) -> None:
@@ -41,7 +43,7 @@ def test_load_builder_with_existing_build_function(tmp_path: Path) -> None:
         return _load_module(fixture_file, mod_name)
 
     with patch("flepimop2._utils._module.import_module", side_effect=mock_import):
-        mod = _load_builder("module_with_build")
+        mod: Any = _load_builder("module_with_build", ModuleABC)
 
     # Verify the module has the build function
     assert hasattr(mod, "build")
@@ -62,12 +64,14 @@ def test_load_builder_creates_default_build_for_basemodel(tmp_path: Path) -> Non
         return _load_module(fixture_file, mod_name)
 
     with patch("flepimop2._utils._module.import_module", side_effect=mock_import):
-        mod = _load_builder("module_with_basemodel")
+        mod: Any = _load_builder("module_with_basemodel", ModuleABC)
 
     # Verify the module now has a build function
     assert hasattr(mod, "build")
     assert callable(mod.build)
     # Test that the auto-generated build function works
-    result = mod.build({"name": "test", "value": 42})
-    assert result.name == "test"
-    assert result.value == 42
+    result: Any = mod.build({"name": "test", "value": 42})
+    assert isinstance(result, BaseModel)
+    result_model: Any = result
+    assert result_model.name == "test"
+    assert result_model.value == 42
