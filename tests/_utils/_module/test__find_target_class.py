@@ -2,13 +2,15 @@
 
 from pathlib import Path
 from shutil import copy
-from typing import Final
+from typing import Any, Final
 
 import pytest
+from pydantic import BaseModel
 
 from flepimop2._utils._module import _find_target_class, _load_module
+from flepimop2.module import ModuleABC
 
-FIXTURE_DIR: Final = Path(__file__).with_suffix("")
+FIXTURE_DIR: Final = Path(__file__).parent / "_find_target_class_assets"
 
 
 @pytest.mark.parametrize(
@@ -27,13 +29,19 @@ def test_find_target_class(tmp_path: Path, fixture: str, expected: str | None) -
     copy(FIXTURE_DIR / fixture, test_file)
     # Load module and find target class
     mod = _load_module(test_file, module_name)
-    target_class = _find_target_class(mod, module_name)
     # Verify results
     if expected is None:
-        # No expected class found
-        assert target_class is None
+        with pytest.raises(
+            AttributeError,
+            match=(
+                rf"Module '{module_name}' does not have a ModuleABC class "
+                r"which is also a pydantic BaseModel\."
+            ),
+        ):
+            _find_target_class(mod, module_name, ModuleABC)
     else:
-        # Expected class found
-        assert target_class is not None
+        target_class: Any = _find_target_class(mod, module_name, ModuleABC)
+        assert issubclass(target_class, BaseModel)
+        assert issubclass(target_class, ModuleABC)
         assert target_class.__name__ == expected
         assert hasattr(target_class, "model_validate")
