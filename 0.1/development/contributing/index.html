@@ -640,6 +640,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Packaging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pull-request-process" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -847,6 +858,34 @@
     
   
     Adding A New CLI Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating-a-release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating A Release
   
 
     
@@ -1654,6 +1693,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Packaging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pull-request-process" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1868,6 +1918,18 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/flepimop2/</code>. To only build the documentation you can run <code>just docs</code> which will generate the documentation site in the <code>site/</code> directory.</p>
 <h3 id="documentation-testing">Documentation Testing<a class="headerlink" href="#documentation-testing" title="Permanent link">&para;</a></h3>
 <p>In addition to unit tests and doctests, code contained in the documentation is also tested. This is run as a part of pytest-based commands (<code>just test</code>, <code>just cov</code>, <code>just pytest</code>). Each documentation page is treated as if it were one script so code blocks can reference previously created variables. To support this type of testing we use <a href="https://sybil.readthedocs.io/en/latest/"><code>Sybil</code></a>.</p>
+<h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
+<p>Packaging checks are available through the <code>build</code> recipe group:</p>
+<ul>
+<li><code>just build-check</code> - Build the source distribution and wheel, then run
+  <code>twine check --strict</code> on the generated artifacts.</li>
+<li><code>just build-test</code> - Build the wheel, install it into a clean-room virtual
+  environment, export the current development dependencies, and run the
+  non-integration test suite against the installed wheel.</li>
+<li><code>just build-all</code> - Run both <code>build-check</code> and <code>build-test</code>.</li>
+</ul>
+<p>These commands are useful when preparing a release or when making changes that
+could affect packaging metadata, installability, or build artifacts.</p>
 <h2 id="pull-request-process">Pull Request Process<a class="headerlink" href="#pull-request-process" title="Permanent link">&para;</a></h2>
 <h3 id="before-submitting">Before Submitting<a class="headerlink" href="#before-submitting" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1881,6 +1943,7 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <li><code>just docs</code> - Documentation build checks.</li>
 </ol>
 <p>In GitHub Actions, these correspond to the <code>quality</code>, <code>tests</code>, and <code>docs</code> jobs in <code>.github/workflows/ci.yaml</code>.</p>
+<p>The separate <code>package</code> job runs <code>just build-check</code> on Python 3.12.</p>
 <p>If you edit YAML files, also run <code>just yamllint</code>. YAML linting is separate from <code>just ci</code>.</p>
 <ol>
 <li>
@@ -1908,6 +1971,7 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <ul>
 <li>Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.</li>
 <li>Quality checks and documentation build checks run in CI on Python 3.12.</li>
+<li>Package validation runs in CI on Python 3.12.</li>
 <li>At least one maintainer approval is required before merging.</li>
 <li>Branches must be up to date against <code>main</code> before merging and have a linear history. Only rebases are allowed for merging.</li>
 </ul>

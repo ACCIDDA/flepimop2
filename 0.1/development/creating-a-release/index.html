@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/implementing-custom-engines-and-systems/">
+        <link rel="canonical" href="https://accidda.github.io/flepimop2/0.1/development/creating-a-release/">
       
       
-        <link rel="prev" href="../creating-an-external-provider-package/">
+        <link rel="prev" href="../adding-a-new-cli-command/">
       
       
-        <link rel="next" href="../integration-testing/">
+        <link rel="next" href="../../reference/api/abcs/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Implementing Custom Engines and Systems - flepimop2 Documentation</title>
+        <title>Creating A Release - flepimop2 Documentation</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#implementing-custom-engines-and-systems" class="md-skip">
+        <a href="#creating-a-release" class="md-skip">
           Skip to content
         </a>
       
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Implementing Custom Engines and Systems
+              Creating A Release
             
           </span>
         </div>
@@ -455,37 +455,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Implementing Custom Engines and Systems
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../implementing-custom-engines-and-systems/" class="md-nav__link">
         
   
   
@@ -501,70 +474,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-are-systems-and-engines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What are systems and engines?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-system-implementation-sirsystem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example System Implementation (SirSystem)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#engine-implementation-eulerengine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Engine Implementation (EulerEngine)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -630,10 +539,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../creating-a-release/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating A Release
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -649,6 +585,120 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-format-the-changelog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Format The Changelog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-run-the-local-release-preflight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Run The Local Release Preflight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-run-the-release-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Run The Release Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Run The Release Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testpypi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestPyPI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pypi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyPI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-trusted-publishing-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Trusted Publishing Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1270,10 +1320,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-are-systems-and-engines" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What are systems and engines?
+        Prerequisites
       
     </span>
   </a>
@@ -1281,10 +1331,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-system-implementation-sirsystem" class="md-nav__link">
+  <a href="#1-format-the-changelog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example System Implementation (SirSystem)
+        1. Format The Changelog
       
     </span>
   </a>
@@ -1292,10 +1342,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#engine-implementation-eulerengine" class="md-nav__link">
+  <a href="#2-run-the-local-release-preflight" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Engine Implementation (EulerEngine)
+        2. Run The Local Release Preflight
       
     </span>
   </a>
@@ -1303,10 +1353,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
+  <a href="#3-run-the-release-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Summary
+        3. Run The Release Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Run The Release Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testpypi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestPyPI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pypi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyPI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-trusted-publishing-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Trusted Publishing Setup
       
     </span>
   </a>
@@ -1330,160 +1430,74 @@
 
 
 
-<h1 id="implementing-custom-engines-and-systems">Implementing Custom Engines and Systems<a class="headerlink" href="#implementing-custom-engines-and-systems" title="Permanent link">&para;</a></h1>
-<p>This guide shows how to implement <code>EngineABC</code> and <code>SystemABC</code> modules so they can be used in <code>flepimop2</code> for simulation. This guide mirrors the external provider guide, but focuses only on the engine/system interfaces.</p>
-<p>Below is a minimal example creating new <code>EulerEngine</code> and <code>SirSystem</code>. You can copy these into your own module(s) under the <code>flepimop2.engine</code> and <code>flepimop2.system</code> namespaces.</p>
-<h2 id="what-are-systems-and-engines">What are systems and engines?<a class="headerlink" href="#what-are-systems-and-engines" title="Permanent link">&para;</a></h2>
-<p>To answer this question, let's start from a more general picture of doing modeling. There's are lots elements to that task, but they generally build upon the foundation of "having a model". We think about creating that foundation in three steps: defining <strong>model worlds</strong>, translating those worlds into <strong>model representations</strong>, and using those representations to create <strong>model implementations</strong>.</p>
-<p>A <strong>model world</strong> defines the interesting processes and states, and generally what is "in" the model (endogenous dynamics) versus "out" (exogenous effects). For the classic SIR model, the model world is roughly "There are Susceptible, Infectious, and Recovered populations. Those populations interact at a constant rate, and when S and I interact some constant fraction of interactions convert S to I. The I population converts at a constant rate into R population." Note that this world definition only concerns the states (S, I, R) and processes (infection of S into I; recovery of I into R), not any formal mathematics.</p>
-<p>A <strong>model representation</strong> translates the world into a particular mathematical framework. Taking again the classic SIR model, ordinary differential equations for the states would be a representation. As would Gillespie-style stochastic equations, update rules for individuals on a network, and so on.</p>
-<p>A <strong>model implementation</strong> creates a computationally-useful version of those representations.</p>
-<p>The <code>flepimop2</code> tool captures these three steps using the configuration files, <strong>System</strong>s, and <strong>Engine</strong>s. This enables users to focus as much as possible in the <strong>model world</strong> step, while developers automate as much as possible with modules for the other steps. Put another way: people should think of what they write in <code>flepimop2</code> configuration files as expressing their <strong>model worlds</strong>. Then, a <strong>System</strong> module translates that expression into <strong>model representations</strong>. Finally, an <strong>Engine</strong> module converts <strong>System</strong>s into fully-usable calculators. With reliable calculators in hand, researchers can then rapidly conduct their scientific or public health analyses.</p>
-<p>To make all that work, <code>flepimop2</code> provides standard object definitions so that these parts can work together.</p>
-<h2 id="example-system-implementation-sirsystem">Example System Implementation (<code>SirSystem</code>)<a class="headerlink" href="#example-system-implementation-sirsystem" title="Permanent link">&para;</a></h2>
-<p>While any given <strong>System</strong> object represents a particular model world, a <strong>System</strong> <em>module</em> should be a way to build <em>many</em> model worlds. Thus, a module that only builds SIR is really only building one world: while that can be run with different parameters and different initial conditions and so on, there's really only one structure.</p>
-<p>For now, however, we'll stick with a module that only contains this single world. Since there's only the single world, we can implement all the pieces directly:</p>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Stepper function for SIR model integration tests.&quot;&quot;&quot;</span>
+<h1 id="creating-a-release">Creating A Release<a class="headerlink" href="#creating-a-release" title="Permanent link">&para;</a></h1>
+<p>This guide covers the <code>flepimop2</code> release process, from preparing the changelog to running the manual GitHub Actions release workflow.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>You have write access to the <a href="https://github.com/ACCIDDA/flepimop2"><code>ACCIDDA/flepimop2</code></a> repository.</li>
+<li>The version has already been updated in <code>pyproject.toml</code>.</li>
+<li>The release notes for that version have already been added to <code>CHANGELOG.md</code>.</li>
+<li>Your local environment is synced with a supported Python version via <code>uv sync --python 3.12 --group dev</code>.</li>
+<li>You have <a href="https://cli.github.com/">GitHub's <code>gh</code> CLI</a> installed and authenticated.</li>
+</ul>
+<h2 id="1-format-the-changelog">1. Format The Changelog<a class="headerlink" href="#1-format-the-changelog" title="Permanent link">&para;</a></h2>
+<p>The release workflow validates <code>CHANGELOG.md</code> using <code>scripts/release.py</code>, so the changelog format must match what that script expects.</p>
+<p>For a release, the top section of <code>CHANGELOG.md</code> must:</p>
+<ul>
+<li>Not contain a <code>## [Unreleased]</code> heading.</li>
+<li>Start with a heading in the form <code>## [X.Y.Z] - YYYY-MM-DD</code>.</li>
+<li>Use the current release version and the current date.</li>
+<li>Contain at least one non-empty bullet point.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## [0.1.0] - 2026-04-07</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="gu">### Added</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemABC</span><span class="p">,</span> <span class="n">SystemProtocol</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">StateChangeEnum</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">global_sir</span><span class="p">(</span>
-    <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-    <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
-    <span class="n">beta</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-    <span class="n">gamma</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    SIR model stepper function.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        time: Current time point (unused in this autonomous system).</span>
-<span class="sd">        state: Array of [S, I, R] populations.</span>
-<span class="sd">        beta: Transmission rate.</span>
-<span class="sd">        gamma: Recovery rate.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Array of state derivatives [dS/dt, dI/dt, dR/dt].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="o">-</span><span class="n">beta</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">beta</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">gamma</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="p">])</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">SirSystem</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">SystemABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model system.&quot;&quot;&quot;</span>
-
-    <span class="n">module</span> <span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flepimop2.system.sir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.system.sir&quot;</span>
-    <span class="n">state_change</span> <span class="p">:</span> <span class="n">StateChangeEnum</span> <span class="o">=</span> <span class="n">StateChangeEnum</span><span class="o">.</span><span class="n">FLOW</span>
-    <span class="n">_stepper</span> <span class="p">:</span> <span class="n">SystemProtocol</span> <span class="o">=</span> <span class="n">global_sir</span>
+<span class="k">-</span><span class="w"> </span>Added packaging validation and release workflow infrastructure.
 </code></pre></div>
-<p>Key elements in the system implementation:</p>
+<p>If the top heading, date, or bullet formatting is wrong, <code>just release-check</code> and the release workflow will fail before anything is published.</p>
+<h2 id="2-run-the-local-release-preflight">2. Run The Local Release Preflight<a class="headerlink" href="#2-run-the-local-release-preflight" title="Permanent link">&para;</a></h2>
+<p>Use the <code>just release-validate</code> recipe to run the following checks locally:</p>
 <ul>
-<li><strong>SirSystem</strong> inherits from <strong>ModuleModel</strong> and <strong>SystemABC</strong>. <strong>SystemABC</strong> adds the generic capabilities for all system objects. <strong>ModuleModel</strong> simplifies building the system from the configuration file (by making <strong>SirSystem</strong> into a Pydantic model). This simplification means you don't have to implement the standard entry point <code>build(...)</code>; for more details, see <a href="../creating-an-external-provider-package/">Creating An External Provider Package</a>.</li>
-<li>As required by the inherited classes, <strong>SirSystem</strong> defines the module namespace, the state change type (i.e. flow vs delta vs next), and the <code>_stepper</code> method.</li>
-<li>Here we're setting <code>_stepper</code> to the <code>global_sir</code> definition, since <strong>SirSystem</strong> only builds one model world: SIR.</li>
+<li><code>build-check</code>: Build the source distribution and wheel, then run <code>twine check --strict</code> on the generated artifacts.</li>
+<li><code>build-test</code>: Build the wheel, install it into a clean virtual environment, install the current development dependency set exported from <code>uv</code>, and run the non-integration test suite against the installed wheel.</li>
+<li><code>release-check</code>: Run <code>uv run python scripts/release.py</code> without <code>--create</code> to ensure the <code>CHANGELOG.md</code> is formatted correctly and the version is releasable.</li>
 </ul>
-<h2 id="engine-implementation-eulerengine">Engine Implementation (<code>EulerEngine</code>)<a class="headerlink" href="#engine-implementation-eulerengine" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Runner function for SIR model integration tests.&quot;&quot;&quot;</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.engine.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">EngineABC</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationIssue</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.system.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemABC</span><span class="p">,</span> <span class="n">SystemProtocol</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span><span class="p">,</span> <span class="n">IdentifierString</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">runner</span><span class="p">(</span>
-    <span class="n">stepper</span><span class="p">:</span> <span class="n">SystemProtocol</span><span class="p">,</span>
-    <span class="n">times</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
-    <span class="n">state</span><span class="p">:</span> <span class="n">Float64NDArray</span><span class="p">,</span>
-    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># noqa: ARG001</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Float64NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Simple Euler runner for the SIR model.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        stepper: The system stepper function.</span>
-<span class="sd">        times: Array of time points.</span>
-<span class="sd">        state: The current state array.</span>
-<span class="sd">        params: Additional parameters for the stepper.</span>
-<span class="sd">        **kwargs: Additional keyword arguments for the engine. Unused by this runner.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The evolved time x state array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Implementors add their own logic here</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">EulerEngine</span><span class="p">(</span><span class="n">EngineABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model runner.&quot;&quot;&quot;</span>
-
-    <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.engine.euler&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SIR runner with the SIR runner function.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">runner</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">SystemABC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validation hook for system properties.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            system: The system to validate.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A list of validation issues, or `None` if not implemented.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">system</span><span class="o">.</span><span class="n">state_change</span> <span class="o">!=</span> <span class="n">StateChangeEnum</span><span class="o">.</span><span class="n">FLOW</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span>
-                <span class="n">ValidationIssue</span><span class="p">(</span>
-                    <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
-                        <span class="s2">&quot;Engine state change type, &#39;flow&#39;, is not &quot;</span>
-                        <span class="s2">&quot;compatible with system state change type &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">state_change</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-                    <span class="p">),</span>
-                    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;incompatible_system&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ModuleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EulerEngine</span><span class="p">:</span>  <span class="c1"># noqa: ARG001</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build an SIR engine.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        An instance of the SIR engine.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">EulerEngine</span><span class="p">()</span>
+<h2 id="3-run-the-release-workflow">3. Run The Release Workflow<a class="headerlink" href="#3-run-the-release-workflow" title="Permanent link">&para;</a></h2>
+<p>Releases are created through the manual GitHub Actions workflow in <code>.github/workflows/release.yaml</code>.</p>
+<p>If you are testing the workflow before the pull request is merged, add <code>--ref &lt;branch-name&gt;</code> to the <code>gh workflow run</code> command. Without <code>--ref</code>, GitHub dispatches the workflow definition from the repository's default branch. Using <code>--ref &lt;branch-name&gt;</code> means the workflow validates, builds, and publishes artifacts from that branch rather than from <code>main</code>.</p>
+<h3 id="dry-run">Dry Run<a class="headerlink" href="#dry-run" title="Permanent link">&para;</a></h3>
+<p>Use this to validate the release end to end without publishing to TestPyPI, creating a GitHub release, or deploying docs:</p>
+<div class="highlight"><pre><span></span><code>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>none<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
 </code></pre></div>
-<p>Key elements in the engine implementation:</p>
+<p>This runs the <code>validate</code> job only. It still enforces the changelog and release metadata checks through <code>just release-validate</code>.</p>
+<h3 id="testpypi">TestPyPI<a class="headerlink" href="#testpypi" title="Permanent link">&para;</a></h3>
+<p>Use this to publish the built artifacts to TestPyPI without creating the GitHub release or deploying docs:</p>
+<div class="highlight"><pre><span></span><code>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>testpypi<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>
+<p>This is the safest way to test the release workflow against a real package index before publishing to PyPI.</p>
+<p>When testing from a branch, keep <code>create-github-release=false</code> and <code>deploy-docs=false</code>. The documentation deployment workflow checks out <code>main</code>, so it is not intended for pre-merge branch testing.</p>
+<h3 id="pypi">PyPI<a class="headerlink" href="#pypi" title="Permanent link">&para;</a></h3>
+<p>If <code>publish-target=pypi</code> is selected, the workflow intentionally fails early. That option is present to preserve the future workflow shape, but real PyPI publication is not enabled for <code>flepimop2</code> yet.</p>
+<h2 id="4-trusted-publishing-setup">4. Trusted Publishing Setup<a class="headerlink" href="#4-trusted-publishing-setup" title="Permanent link">&para;</a></h2>
+<p>The TestPyPI publish job uses PyPI Trusted Publishing rather than a stored API token. To enable publishing to TestPyPI, configure the trusted publisher entry for:</p>
 <ul>
-<li><code>runner</code> drives the simulation by applying the stepper across time points.</li>
-<li><code>EulerEngine</code> inherits <code>EngineABC</code> and assigns <code>_runner</code> in <code>__init__</code> as well as has a <code>module</code> attribute that gives it an importable name.</li>
-<li><code>EulerEngine</code> implements the optional <code>validate_system</code> hook to ensure that the system is compatible.</li>
-<li><code>build(...)</code> lets <code>flepimop2</code> construct the engine from configuration data.</li>
+<li>Owner: <code>ACCIDDA</code>.</li>
+<li>Repository: <code>flepimop2</code>.</li>
+<li>Workflow file: <code>release.yaml</code>.</li>
 </ul>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let <code>flepimop2</code> handle construction and validation.</p>
-<ul>
-<li>Systems must supply a stepper function as well as required attributes <code>module</code> and <code>state_change</code>.</li>
-<li>Engines must supply a runner function compatible with <code>SystemProtocol</code> as well as required attributes <code>module</code> and optional system validation hook <code>validate_system</code>.</li>
-<li><code>build(...)</code> provides the standard entry point for configuration-driven construction.</li>
-</ul>
+<p>If that configuration is missing, the TestPyPI publish job will fail even if validation passes.</p>
 
 
 
