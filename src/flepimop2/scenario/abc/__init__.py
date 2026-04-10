@@ -9,14 +9,14 @@ from typing import Any
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
 from flepimop2.module import ModuleABC
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, IdentifierString
 
 
 class ScenarioABC(ModuleABC):
     """Abstract base class for scenarios."""
 
     @abstractmethod
-    def scenarios(self) -> Iterable[tuple]:
+    def scenarios(self) -> Iterable[tuple[Any, ...]]:
         """Expose the scenarios.
 
         Returns:
@@ -36,4 +36,4 @@ def build(config: dict[IdentifierString, Any] | ModuleModel) -> ScenarioABC:
         The constructed scenario instance.
 
     """
-    return _build(config, "scenario", "flepimop2.scenario.grid", ScenarioABC)  # type: ignore[type-abstract]
+    return _build(config, "scenario", "flepimop2.scenario.grid", ScenarioABC)
