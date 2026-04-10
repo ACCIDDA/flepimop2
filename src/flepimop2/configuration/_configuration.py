@@ -30,13 +30,7 @@ class ConfigurationModel(
     """
 
     name: str | None = None
-    axes: AxesGroupModel = Field(
-        default_factory=dict,
-        deprecated=(
-            "'axes' is currently under development and has "
-            "no effect on the configuration right now."
-        ),
-    )
+    axes: AxesGroupModel = Field(default_factory=dict)
     engines: ModuleGroupModel = Field(default_factory=dict)
     systems: ModuleGroupModel = Field(default_factory=dict)
     backends: ModuleGroupModel = Field(default_factory=dict)

@@ -5,6 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from flepimop2.axis import ResolvedShape
+from flepimop2.parameter.abc import ParameterValue
 from flepimop2.system.abc import SystemABC, build
 from flepimop2.typing import StateChangeEnum
 
@@ -17,13 +19,14 @@ par = pytest.mark.parametrize("test_system", [system])
 @par
 def test_set_valid_static_parameters(test_system: SystemABC) -> None:
     """Confirm no errors when setting all valid parameters."""
-    offset = 5.0
+    offset = ParameterValue(np.array(5.0), ResolvedShape())
     time = np.float64(1.0)
     initial_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
     newproto = test_system.bind(offset=offset)
-    assert all(newproto(time, initial_state) == (initial_state + offset))
-    newproto = test_system.bind(params={"offset": offset * 2})
-    assert all(newproto(time, initial_state) == (initial_state + offset * 2))
+    assert all(newproto(time, initial_state) == (initial_state + offset.item()))
+    doubled = ParameterValue(np.array(offset.item() * 2), ResolvedShape())
+    newproto = test_system.bind(params={"offset": doubled})
+    assert all(newproto(time, initial_state) == (initial_state + doubled.item()))
 
 
 @par

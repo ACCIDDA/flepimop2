@@ -3,6 +3,7 @@
 import re
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from flepimop2.testing import external_provider_package, flepimop2_run
@@ -39,6 +40,9 @@ def test_external_provider(
             repo_root / "tests/integration/external_provider/sir.py": Path(
                 "external_provider/src/flepimop2/system/sir.py"
             ),
+            repo_root / "tests/integration/external_provider/linear.py": Path(
+                "external_provider/src/flepimop2/parameter/linear.py"
+            ),
         },
     )
     monkeypatch.chdir(tmp_path)
@@ -57,3 +61,8 @@ def test_external_provider(
     csv = model_output[0]
     assert re.match(r"^simulate_\d{8}_\d{6}\.csv$", csv.name)
     assert csv.stat().st_size > 0
+    data = np.loadtxt(csv, delimiter=",")
+    assert data.shape == (101, 10)
+    np.testing.assert_allclose(data[0, 1:4], np.array([999.0, 899.0, 799.0]))
+    np.testing.assert_allclose(data[0, 4:7], np.array([1.0, 1.0, 1.0]))
+    np.testing.assert_allclose(data[0, 7:10], np.array([0.0, 0.0, 0.0]))
