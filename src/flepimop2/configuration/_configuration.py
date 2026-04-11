@@ -57,6 +57,7 @@ class ConfigurationModel(
     backends: ModuleGroupModel = Field(default_factory=dict)
     process: ModuleGroupModel = Field(default_factory=dict)
     parameters: ModuleGroupModel = Field(default_factory=dict)
+    scenarios: ModuleGroupModel = Field(default_factory=dict)
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )

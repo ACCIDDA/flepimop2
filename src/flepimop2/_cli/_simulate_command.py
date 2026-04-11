@@ -24,6 +24,7 @@ import numpy as np
 from flepimop2._cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.parameter.abc import build as build_parameter
+from flepimop2.scenario.abc import build as build_scenario
 from flepimop2.simulator import Simulator
 
 
@@ -89,4 +90,11 @@ class SimulateCommand(CliCommand):
         if dry_run:
             return
 
-        simulator.run(initial_state, params)
+        if scenario_name := simulator.simulate_config.scenario:
+            # extract scenario parameters from the configuration
+            scenario_config = build_scenario(config_model.scenarios[scenario_name])
+            for scenario_tuple in scenario_config.scenarios():
+                self.info(f"Running scenario: {scenario_tuple}")
+                simulator.run(initial_state, (params | scenario_tuple._asdict()))
+        else:
+            simulator.run(initial_state, params)

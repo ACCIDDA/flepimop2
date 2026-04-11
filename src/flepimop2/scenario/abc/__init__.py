@@ -4,7 +4,7 @@ __all__ = ["Float64NDArray", "ScenarioABC", "build"]
 
 from abc import abstractmethod
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, NamedTuple
 
 from flepimop2._utils._module import _build
 from flepimop2.configuration import ModuleModel
@@ -15,8 +15,18 @@ from flepimop2.typing import Float64NDArray, IdentifierString
 class ScenarioABC(ModuleABC):
     """Abstract base class for scenarios."""
 
+    @property
     @abstractmethod
-    def scenarios(self) -> Iterable[tuple[Any, ...]]:
+    def scenario_type(self) -> type[NamedTuple]:
+        """Return the type of the scenario tuples for introspection purposes.
+
+        Returns:
+            The type of the scenario tuples.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def scenarios(self) -> Iterable[NamedTuple]:
         """Expose the scenarios.
 
         Returns:

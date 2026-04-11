@@ -4,7 +4,7 @@ __all__ = ["Float64NDArray", "GridScenario"]
 
 import itertools
 from collections.abc import Iterable
-from typing import Any, Literal
+from typing import Any, Literal, NamedTuple, cast
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.scenario.abc import ScenarioABC
@@ -27,7 +27,22 @@ class GridScenario(ModuleModel, ScenarioABC):
     module: Literal["flepimop2.scenario.grid"] = "flepimop2.scenario.grid"
     parameters: dict[IdentifierString, list[Any]]
 
-    def scenarios(self) -> Iterable[tuple[Any, ...]]:
+    @property
+    def scenario_type(self) -> type[NamedTuple]:
+        """
+        Return the type of the scenario tuples for introspection purposes.
+
+        Returns:
+            The type of the scenario tuples.
+        """
+        return cast(
+            "type[NamedTuple]",
+            NamedTuple(
+                "ScenarioTuple", [(k, type(v[0])) for k, v in self.parameters.items()]
+            ),
+        )
+
+    def scenarios(self) -> Iterable[NamedTuple]:
         """
         Expose the scenarios.
 
