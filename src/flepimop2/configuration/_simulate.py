@@ -14,6 +14,7 @@ class SimulateSpecificationModel(BaseModel):
         backend: The name of the backend to use for the simulation.
         times: A list of time points at which to perform the simulation.
         params: Optional dictionary of parameters for the simulation.
+        scenario: Optional name of the scenario to use for the simulation.
     """
 
     model_config = ConfigDict(extra="allow")
@@ -23,6 +24,7 @@ class SimulateSpecificationModel(BaseModel):
     backend: IdentifierString = "default"
     times: RangeSpec
     params: dict[str, float] | None = Field(default_factory=dict)
+    scenario: IdentifierString | None = None
 
     @property
     def t_eval(self) -> Float64NDArray:
