@@ -19,6 +19,7 @@ __all__ = []
 
 from pathlib import Path
 
+from flepimop2.meta import RunMeta
 import numpy as np
 
 from flepimop2._cli._cli_command import CliCommand
@@ -93,8 +94,10 @@ class SimulateCommand(CliCommand):
         if scenario_name := simulator.simulate_config.scenario:
             # extract scenario parameters from the configuration
             scenario_config = build_scenario(config_model.scenarios[scenario_name])
+            counter = 0
             for scenario_tuple in scenario_config.scenarios():
                 self.info(f"Running scenario: {scenario_tuple}")
-                simulator.run(initial_state, (params | scenario_tuple._asdict()))
+                simulator.run(initial_state, (params | scenario_tuple._asdict()), meta = RunMeta(name = f"scenario_{counter}"))
+                counter += 1
         else:
             simulator.run(initial_state, params)

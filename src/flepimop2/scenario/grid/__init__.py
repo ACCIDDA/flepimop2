@@ -50,4 +50,5 @@ class GridScenario(ModuleModel, ScenarioABC):
             Scenario tuples from parameters.
         """
         param_lists = self.parameters.values()
-        yield from itertools.product(*param_lists)
+        for p in itertools.product(*param_lists):
+            yield self.scenario_type(*p)
