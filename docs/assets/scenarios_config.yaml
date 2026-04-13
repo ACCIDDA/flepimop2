@@ -37,3 +37,7 @@ scenarios:
     parameters:
       beta: [0.1, 0.3, 0.5]
       gamma: [0.05, 0.1, 0.2]
+process:
+  - module: shell
+    command: Rscript scripts/plot_scenarios.R
+    args: ["configs/scenarios_config.yaml", "model_output", "figures/scenarios_plot.png"]
