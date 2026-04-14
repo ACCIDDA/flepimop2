@@ -43,7 +43,7 @@ def _no_run_func(
     raise NotImplementedError(msg)
 
 
-class EngineABC(ModuleABC):
+class EngineABC(ModuleABC, module_namespace="engine"):
     """Abstract class for Engines to evolve Dynamic Systems."""
 
     _runner: EngineProtocol

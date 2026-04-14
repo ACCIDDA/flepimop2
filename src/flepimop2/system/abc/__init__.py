@@ -26,7 +26,7 @@ __all__ = [
 import inspect
 import sys
 from abc import abstractmethod
-from typing import Any, Literal
+from typing import Any
 
 import numpy as np
 
@@ -48,12 +48,12 @@ else:
     from typing_extensions import override
 
 
-class SystemABC(ModuleABC):
+class SystemABC(ModuleABC, module_namespace="system"):
     """
     Abstract class for Dynamic Systems.
 
     Attributes:
-        module: The module name for the system.
+        module: The fully-qualified module name for the system.
         state_change: The type of state change.
         options: Optional dictionary of additional options the system exposes for
             `flepimop2` to take advantage of.
@@ -163,10 +163,9 @@ class SystemABC(ModuleABC):
         return self.bind()(time, state, **params)
 
 
-class _AdapterSystem(SystemABC):
+class _AdapterSystem(SystemABC, module="wrapper"):
     """A `SystemABC` which wraps a user-defined function."""
 
-    module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     state_change: StateChangeEnum
     stepper: SystemProtocol
     options: dict[IdentifierString, Any]

@@ -127,7 +127,6 @@ When you inherit from [`ModuleModel`][flepimop2.configuration.ModuleModel], your
 
 import os
 from pathlib import Path
-from typing import Literal
 
 import numpy as np
 from flepimop2.typing import Float64NDArray
@@ -138,10 +137,9 @@ from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
 
-class NpzBackend(ModuleModel, BackendABC):
+class NpzBackend(ModuleModel, BackendABC, module="npz"):
     """NPZ backend for saving numpy arrays to .npz files."""
 
-    module: Literal["flepimop2.backend.npz"] = "flepimop2.backend.npz"
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
     compressed: bool = Field(default=True, description="Use compression when saving")
 
@@ -211,10 +209,21 @@ class NpzBackend(ModuleModel, BackendABC):
             return npz_file["data"]
 ```
 
+The `module="npz"` class argument is the preferred API. It resolves to the fully qualified module path `"flepimop2.backend.npz"` and also configures the matching Pydantic field for the model. The explicit form is still supported if you prefer to spell it out:
+
+```python
+from typing import Literal
+
+
+class NpzBackend(ModuleModel, BackendABC):
+    module: Literal["flepimop2.backend.npz"] = "flepimop2.backend.npz"
+    ...
+```
+
 The key points of this approach are:
 
 - The class inherits from both [`ModuleModel`][flepimop2.configuration.ModuleModel] and [`BackendABC`][flepimop2.abcs.BackendABC].
-- The `module` field uses a `Literal` type hint to specify the exact module path.
+- The preferred `module="npz"` class argument resolves the exact module path while keeping the corresponding Pydantic field constrained to that value.
 - Pydantic's `Field` is used to define configuration options with defaults and descriptions.
 - Field validators can be used for custom validation logic.
 - No separate `build` function is needed, `flepimop2` is able to inspect that this class inherits [`ModuleModel`][flepimop2.configuration.ModuleModel] and creates a default `build` function.
