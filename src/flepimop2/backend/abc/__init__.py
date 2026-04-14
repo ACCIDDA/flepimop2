@@ -27,7 +27,7 @@ from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray
 
 
-class BackendABC(ModuleABC):
+class BackendABC(ModuleABC, module_namespace="backend"):
     """Abstract base class for flepimop2 file IO backends."""
 
     def save(self, data: Float64NDArray, run_meta: RunMeta) -> None:

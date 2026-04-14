@@ -26,7 +26,7 @@ from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray
 
 
-class ParameterABC(ModuleABC):
+class ParameterABC(ModuleABC, module_namespace="parameter"):
     """Abstract base class for parameters."""
 
     @abstractmethod

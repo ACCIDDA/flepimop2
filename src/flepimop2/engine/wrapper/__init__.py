@@ -18,7 +18,7 @@
 __all__ = ["WrapperEngine"]
 
 from pathlib import Path
-from typing import Literal, Self
+from typing import Self
 
 from pydantic import model_validator
 
@@ -30,10 +30,9 @@ from flepimop2.system.abc import SystemABC
 from flepimop2.typing import StateChangeEnum
 
 
-class WrapperEngine(ModuleModel, EngineABC):
+class WrapperEngine(ModuleModel, EngineABC, module="wrapper"):
     """A `EngineABC` which wraps a user-defined script file."""
 
-    module: Literal["flepimop2.engine.wrapper"] = "flepimop2.engine.wrapper"
     state_change: StateChangeEnum
     script: Path
 

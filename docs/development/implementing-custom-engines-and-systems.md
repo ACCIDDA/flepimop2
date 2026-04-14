@@ -27,7 +27,7 @@ For now, however, we'll stick with a module that only contains this single world
 ```python
 """Stepper function for SIR model integration tests."""
 
-from typing import Any, Literal
+from typing import Any
 
 import numpy as np
 
@@ -59,10 +59,9 @@ def global_sir(
         gamma * state[1]
     ])
 
-class SirSystem(ModuleModel, SystemABC):
+class SirSystem(ModuleModel, SystemABC, module="sir"):
     """SIR model system."""
 
-    module : Literal["flepimop2.system.sir"] = "flepimop2.system.sir"
     state_change : StateChangeEnum = StateChangeEnum.FLOW
     _stepper : SystemProtocol = global_sir
 
@@ -114,10 +113,8 @@ def runner(
     pass
 
 
-class EulerEngine(EngineABC):
+class EulerEngine(EngineABC, module="euler"):
     """SIR model runner."""
-
-    module = "flepimop2.engine.euler"
 
     def __init__(self) -> None:
         """Initialize the SIR runner with the SIR runner function."""
