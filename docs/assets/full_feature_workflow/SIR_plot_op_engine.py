@@ -34,12 +34,14 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
     Args:
         config_model: The validated configuration model.
 
+    Returns:
+        Path to the results directory.
+
     Raises:
         ValueError: If the simulate block is empty.
         KeyError: If the backend name is not found in the backends block.
 
-    Returns:
-        Path to the results directory.
+
 
     """
     simulate_block = config_model.simulate
@@ -77,7 +79,12 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
 
 
 def main() -> None:
-    """Generate SIR plot from op_engine simulation results."""
+    """Generate SIR plot from op_engine simulation results.
+
+    Raises:
+        SystemExit: If len(args) != ARG_LEN
+        ValueError: If df.shape[1] is less than the minimum 4 columns required
+    """
     args = sys.argv[1:]
     if len(args) != ARG_LEN:
         msg = "python postprocessing/SIR_plot_op_engine.py <config.yml> <output.png>"
