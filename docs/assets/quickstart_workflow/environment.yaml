@@ -1,0 +1,9 @@
+---
+channels:
+    - conda-forge
+    - defaults
+dependencies:
+    - pip
+    - scipy
+    - pip:
+          - 'git+https://git@github.com/ACCIDDA/flepimop2.git@main'
