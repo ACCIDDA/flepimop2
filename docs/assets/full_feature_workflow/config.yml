@@ -1,0 +1,68 @@
+---
+name: SIR_Script
+
+system:
+  - module: op_system
+    spec:
+      kind: expr
+      state: [S, I, R]
+      equations:
+        S: -beta * S * I / sum_state()
+        I: beta * S * I / sum_state() - gamma * I
+        R: gamma * I
+
+engine:
+  - module: op_engine
+    state_change: flow
+    config:
+      method: heun
+      adaptive: false
+      strict: true
+      rtol: 1.0e-6
+      atol: 1.0e-9
+
+simulate:
+  demo:
+    times: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  hires:
+    times: 0.0:0.1:100.0
+
+backend:
+  - module: csv
+
+process:
+  plot_demo:
+    module: shell
+    command: python postprocessing/SIR_plot_op_engine.py
+    args:
+      - configs/config.yml
+      - model_output/SIR_plot_op_engine.png
+
+  r_plot:
+    module: shell
+    command: Rscript postprocessing/SIR_plot.R
+    args:
+      - configs/config.yml
+      - model_output/SIR_plot.png
+
+  notebook:
+    module: ipynbrender
+    file: postprocessing/SirPlot.ipynb
+    output: model_output/SirPlot.html
+
+parameter:
+  beta:
+    module: fixed
+    value: 0.3
+  gamma:
+    module: fixed
+    value: 0.1
+  s0:
+    module: fixed
+    value: 999
+  i0:
+    module: fixed
+    value: 1
+  r0:
+    module: fixed
+    value: 0
