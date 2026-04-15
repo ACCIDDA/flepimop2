@@ -1,4 +1,6 @@
 ---
+name: Base_Sample_Model
+
 system:
   - module: wrapper
     state_change: flow
