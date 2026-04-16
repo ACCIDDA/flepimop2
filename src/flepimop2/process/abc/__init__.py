@@ -26,7 +26,7 @@ from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleABC
 
 
-class ProcessABC(ModuleABC):
+class ProcessABC(ModuleABC, module_namespace="process"):
     """Abstract base class for flepimop2 processing steps."""
 
     def execute(self, *, dry_run: bool = False) -> None:

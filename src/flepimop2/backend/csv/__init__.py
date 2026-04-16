@@ -19,7 +19,6 @@ __all__ = ["CsvBackend"]
 
 import os
 from pathlib import Path
-from typing import Literal
 
 import numpy as np
 from pydantic import Field, field_validator
@@ -30,10 +29,9 @@ from flepimop2.meta import RunMeta
 from flepimop2.typing import Float64NDArray
 
 
-class CsvBackend(ModuleModel, BackendABC):
+class CsvBackend(ModuleModel, BackendABC, module="csv"):
     """CSV backend for saving numpy arrays to CSV files."""
 
-    module: Literal["flepimop2.backend.csv"] = "flepimop2.backend.csv"
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
 
     @field_validator("root", mode="after")

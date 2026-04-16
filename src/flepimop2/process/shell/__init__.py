@@ -18,7 +18,6 @@
 __all__ = ["ShellProcess"]
 
 from subprocess import run  # noqa: S404
-from typing import Literal
 
 from pydantic import Field
 
@@ -26,18 +25,18 @@ from flepimop2.configuration import ModuleModel
 from flepimop2.process.abc import ProcessABC
 
 
-class ShellProcess(ModuleModel, ProcessABC):
+class ShellProcess(ModuleModel, ProcessABC, module="shell"):
     """
     Shell process for executing commands.
 
     Attributes:
-        module: The module type, fixed to "flepimop2.process.shell".
+        module: The fully-qualified module name, resolved from `module="shell"` to
+            `"flepimop2.process.shell"`.
         command: The shell command to execute.
         args: Arguments to pass to the shell command.
 
     """
 
-    module: Literal["flepimop2.process.shell"] = "flepimop2.process.shell"
     command: str = Field(min_length=1)
     args: list[str] = Field(default_factory=list)
 
