@@ -78,6 +78,7 @@ nav:
   - Reference:
       - API:
           - Abcs: reference/api/abcs.md
+          - Axis: reference/api/axis.md
           - Backend: reference/api/backend.md
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
