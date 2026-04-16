@@ -26,15 +26,22 @@ __all__ = [
 import inspect
 import sys
 from abc import abstractmethod
+from collections.abc import Callable
 from typing import Any, Literal
 
 import numpy as np
 
 from flepimop2._utils._checked_partial import _checked_partial, _consolidate_args
 from flepimop2._utils._module import _build
+from flepimop2.axis import AxisCollection
 from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleABC
+from flepimop2.parameter.abc import (
+    ModelStateSpecification,
+    ParameterRequest,
+    ParameterValue,
+)
 from flepimop2.typing import (
     Float64NDArray,
     IdentifierString,
@@ -142,7 +149,7 @@ class SystemABC(ModuleABC):
         raise NotImplementedError(msg)
 
     def step(
-        self, time: np.float64, state: Float64NDArray, **params: Any
+        self, time: np.float64, state: Float64NDArray, **params: ParameterValue
     ) -> Float64NDArray:
         """
         Perform a single step of the system's dynamics.
@@ -162,6 +169,64 @@ class SystemABC(ModuleABC):
         """
         return self.bind()(time, state, **params)
 
+    def requested_parameters(
+        self,
+        axes: AxisCollection,  # noqa: ARG002
+    ) -> dict[IdentifierString, ParameterRequest]:
+        """
+        Infer parameter requests from the unbound stepper signature by default.
+
+        Args:
+            axes: Resolved runtime axes for the active simulation.
+
+        Returns:
+            A mapping of parameter names to runtime parameter requests.
+
+        Notes:
+            Parameters with default values are treated as optional scalar inputs.
+            Subclasses are encouraged to override this method when they need
+            broadcasting behavior or named-axis shapes that cannot be recovered
+            from plain Python annotations.
+        """
+        requests: dict[IdentifierString, ParameterRequest] = {}
+        signature = inspect.signature(self.bind())
+        for name, parameter in signature.parameters.items():
+            if name in {"time", "state"}:
+                continue
+            if parameter.kind in {
+                inspect.Parameter.VAR_KEYWORD,
+                inspect.Parameter.VAR_POSITIONAL,
+            }:
+                continue
+            requests[name] = ParameterRequest(
+                name=name,
+                optional=parameter.default is not inspect.Parameter.empty,
+            )
+        return requests
+
+    def model_state(  # noqa: PLR6301
+        self,
+        axes: AxisCollection,  # noqa: ARG002
+    ) -> ModelStateSpecification | None:
+        """
+        Return metadata describing how parameters assemble the model state.
+
+        Args:
+            axes: Resolved runtime axes for the active simulation.
+
+        Returns:
+            The runtime model-state specification, if defined.
+
+        Notes:
+            Override this in systems whose evolving state is assembled from configured
+            parameter entries. For an age-by-region SEIR system, this could return
+            `parameter_names=("S0", "E0", "I0", "R0")` with
+            `axes=("region", "age")`, allowing an engine to stack those entries into
+            an array shaped `(4, n_region, n_age)` or to keep them in dictionary form
+            if that is more natural for the engine.
+        """
+        return None
+
 
 class _AdapterSystem(SystemABC):
     """A `SystemABC` which wraps a user-defined function."""
@@ -170,12 +235,22 @@ class _AdapterSystem(SystemABC):
     state_change: StateChangeEnum
     stepper: SystemProtocol
     options: dict[IdentifierString, Any]
+    _requested_parameters_func: (
+        Callable[[AxisCollection], dict[IdentifierString, ParameterRequest]] | None
+    )
+    _model_state_func: Callable[[AxisCollection], ModelStateSpecification | None] | None
 
     def __init__(
         self,
         state_change: StateChangeEnum,
         stepper: SystemProtocol,
         options: dict[IdentifierString, Any] | None = None,
+        requested_parameters: (
+            Callable[[AxisCollection], dict[IdentifierString, ParameterRequest]] | None
+        ) = None,
+        model_state: (
+            Callable[[AxisCollection], ModelStateSpecification | None] | None
+        ) = None,
     ) -> None:
         """
         Initialize the AdapterSystem with a state change and a stepper.
@@ -184,11 +259,17 @@ class _AdapterSystem(SystemABC):
             state_change: The type of state change for the system.
             stepper: A user-defined function that implements the system's dynamics.
             options: Optional dictionary of additional information about the system.
+            requested_parameters: Optional callback declaring runtime parameter
+                requests for the system.
+            model_state: Optional callback declaring how parameters assemble the
+                evolving model state.
 
         """
         self.state_change = state_change
         self.stepper = stepper
         self.options = options or {}
+        self._requested_parameters_func = requested_parameters
+        self._model_state_func = model_state
 
     @override
     def _bind_impl(
@@ -198,6 +279,23 @@ class _AdapterSystem(SystemABC):
             func=self.stepper,
             params=params,
         )
+
+    @override
+    def requested_parameters(
+        self,
+        axes: AxisCollection,
+    ) -> dict[IdentifierString, ParameterRequest]:
+        """Return adapter parameter requests from an explicit callback when provided."""
+        if self._requested_parameters_func is not None:
+            return self._requested_parameters_func(axes)
+        return super().requested_parameters(axes)
+
+    @override
+    def model_state(self, axes: AxisCollection) -> ModelStateSpecification | None:
+        """Return adapter model-state metadata from an explicit callback."""
+        if self._model_state_func is not None:
+            return self._model_state_func(axes)
+        return super().model_state(axes)
 
 
 def build(config: dict[IdentifierString, Any] | ModuleModel) -> SystemABC:
@@ -223,6 +321,13 @@ def wrap(
     stepper: SystemProtocol,
     state_change: StateChangeEnum,
     options: dict[IdentifierString, Any] | None = None,
+    *,
+    requested_parameters: (
+        Callable[[AxisCollection], dict[IdentifierString, ParameterRequest]] | None
+    ) = None,
+    model_state: (
+        Callable[[AxisCollection], ModelStateSpecification | None] | None
+    ) = None,
 ) -> SystemABC:
     """
     Adapt a user-defined function into a `SystemABC`.
@@ -231,6 +336,10 @@ def wrap(
         stepper: A user-defined function that implements the system's dynamics.
         state_change: The type of state change for the system.
         options: Optional dictionary of additional information about the system.
+        requested_parameters: Optional callback declaring runtime parameter requests
+            for the system.
+        model_state: Optional callback declaring how parameters assemble the evolving
+            model state.
 
     Returns:
         A `SystemABC` instance that wraps the provided stepper function.
@@ -253,4 +362,6 @@ def wrap(
         state_change=state_change,
         stepper=stepper,
         options=options,
+        requested_parameters=requested_parameters,
+        model_state=model_state,
     )
