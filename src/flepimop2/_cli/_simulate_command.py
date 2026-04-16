@@ -19,11 +19,8 @@ __all__ = []
 
 from pathlib import Path
 
-import numpy as np
-
 from flepimop2._cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
-from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.simulator import Simulator
 
 
@@ -55,24 +52,8 @@ class SimulateCommand(CliCommand):
         """
         config_model = ConfigurationModel.from_yaml(config)
 
-        s0 = build_parameter(config_model.parameters["s0"])
-        i0 = build_parameter(config_model.parameters["i0"])
-        r0 = build_parameter(config_model.parameters["r0"])
-        initial_state = np.array(
-            [
-                s0.sample().item(),
-                i0.sample().item(),
-                r0.sample().item(),
-            ],
-            dtype=np.float64,
-        )
-        params = {
-            k: build_parameter(v).sample().item()
-            for k, v in config_model.parameters.items()
-            if k not in {"s0", "i0", "r0"}
-        }
-
         simulator = Simulator.from_configuration_model(config_model, target=target)
+        initial_state, params = simulator.resolve_inputs()
 
         if simulator.simulate_config is None:
             msg = "simulate_config must be set before running the simulator."
