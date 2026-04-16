@@ -634,6 +634,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licensing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1334,6 +1345,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../authors/" class="md-nav__link">
         
   
@@ -1552,6 +1590,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licensing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1587,6 +1636,7 @@
 <li>Structure the package as a PEP 420 implicit namespace package.</li>
 <li>Implement a custom backend module class.</li>
 <li>Use the external provider package in a <code>flepimop2</code> configuration file.</li>
+<li>Appropriately license external provider packages.</li>
 </ul>
 <p>In this tutorial, we will create a new backend package called <code>flepimop2-npz-backend</code> that provides an <code>NpzBackend</code> class for saving and loading NumPy arrays using the <code>.npz</code> format.</p>
 <h2 id="what-is-an-external-provider-package">What is an External Provider Package?<a class="headerlink" href="#what-is-an-external-provider-package" title="Permanent link">&para;</a></h2>
@@ -1931,6 +1981,9 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
     <span class="n">loaded_data</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">run_meta</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">loaded_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="licensing">Licensing<a class="headerlink" href="#licensing" title="Permanent link">&para;</a></h2>
+<p>Since <code>flepimop2</code> is <a href="../../license/">licensed under GPLv3</a> external provider packages must also be licensed under GPLv3. However, since external provider packages are a secondary python package that both depend on <code>flepimop2</code> and depend on your core python package your core python package does not need to be licensed under GPLv3.</p>
+<p>For more detailed questions around licensing please feel free to reach out for guidance.</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>This tutorial covered:</p>
 <ul>
