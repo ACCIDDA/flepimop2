@@ -7,6 +7,7 @@ This tutorial will show how to:
 - Structure the package as a PEP 420 implicit namespace package.
 - Implement a custom backend module class.
 - Use the external provider package in a `flepimop2` configuration file.
+- Appropriately license external provider packages.
 
 In this tutorial, we will create a new backend package called `flepimop2-npz-backend` that provides an `NpzBackend` class for saving and loading NumPy arrays using the `.npz` format.
 
@@ -400,6 +401,12 @@ def test_npz_backend_save_and_load(tmp_path: Path) -> None:
     loaded_data = backend.read(run_meta)
     np.testing.assert_array_equal(loaded_data, test_data)
 ```
+
+## Licensing
+
+Since `flepimop2` is [licensed under GPLv3](../license.md) external provider packages must also be licensed under GPLv3. However, since external provider packages are a secondary python package that both depend on `flepimop2` and depend on your core python package your core python package does not need to be licensed under GPLv3.
+
+For more detailed questions around licensing please feel free to reach out for guidance.
 
 ## Summary
 
