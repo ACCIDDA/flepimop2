@@ -68,6 +68,7 @@ reference:
     uv run scripts/api-reference.py
     cp CHANGELOG.md docs/changelog.md
     cp CONTRIBUTING.md docs/development/contributing.md
+    printf '# License\n\n```\n' > docs/license.md && cat LICENSE >> docs/license.md && printf '```\n' >> docs/license.md
 
 # Build the documentation using `mkdocs`
 [group('docs')]
