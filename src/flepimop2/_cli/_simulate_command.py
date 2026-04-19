@@ -55,21 +55,31 @@ class SimulateCommand(CliCommand):
         """
         config_model = ConfigurationModel.from_yaml(config)
 
-        s0 = build_parameter(config_model.parameters["s0"])
-        i0 = build_parameter(config_model.parameters["i0"])
-        r0 = build_parameter(config_model.parameters["r0"])
-        initial_state = np.array(
-            [
-                s0.sample().item(),
-                i0.sample().item(),
-                r0.sample().item(),
-            ],
-            dtype=np.float64,
-        )
+        target_name = target or next(iter(config_model.simulate))
+        sim_spec = config_model.simulate[target_name]
+        raw_initial: dict[str, float] | None = getattr(sim_spec, "initial_state", None)
+
+        if raw_initial is not None:
+            initial_state = np.array(list(raw_initial.values()), dtype=np.float64)
+            state_param_names = set(raw_initial.keys())
+        else:
+            s0 = build_parameter(config_model.parameters["s0"])
+            i0 = build_parameter(config_model.parameters["i0"])
+            r0 = build_parameter(config_model.parameters["r0"])
+            initial_state = np.array(
+                [
+                    s0.sample().item(),
+                    i0.sample().item(),
+                    r0.sample().item(),
+                ],
+                dtype=np.float64,
+            )
+            state_param_names = {"s0", "i0", "r0"}
+
         params = {
             k: build_parameter(v).sample().item()
             for k, v in config_model.parameters.items()
-            if k not in {"s0", "i0", "r0"}
+            if k not in state_param_names
         }
 
         simulator = Simulator.from_configuration_model(config_model, target=target)
