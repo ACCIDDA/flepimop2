@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Generalized `SimulateCommand` to support an `initial_state` dict in simulate specs, allowing models with arbitrary state vectors (e.g., SIRHD, vaccination-structured). Falls back to the legacy `s0`/`i0`/`r0` convention when `initial_state` is absent. See [#220](https://github.com/ACCIDDA/flepimop2/pull/220).
 - Updated the documentation quick start integration test to use the same configuration file as the documentation homepage to ensure the two stay in sync. See [#185](https://github.com/ACCIDDA/flepimop2/issues/185).
 
 ### Deprecated
