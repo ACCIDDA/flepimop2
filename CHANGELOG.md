@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor `SystemABC` type approach to binding (and fix knock on mypy typing issues, circular dependency issues). Briefly, a `SystemABC` implementation now only needs to provide `_bind_impl` which fixes (or not) parameters in the system. This update adds another internal implementation (`AdapterSystem`) for directly creating a system from locally `def`d function (vs `WrapperSystem` which reads from a file).
 - Added infrastructure for submitting package to PyPI. See [#123](https://github.com/ACCIDDA/flepimop2/issues/123), [#142](https://github.com/ACCIDDA/flepimop2/issues/142), [#195](https://github.com/ACCIDDA/flepimop2/issues/195), [#196](https://github.com/ACCIDDA/flepimop2/issues/196).
 - Modules can now declare their name via the `module` keyword argument to class declaration to simplify naming for developers. See [#88](https://github.com/ACCIDDA/flepimop2/issues/88).
+- Introduce `ScenarioABC` type to capture parameter scenarios.
 
 ### Changed
 

@@ -141,9 +141,15 @@ class Simulator:
         self,
         initial_state: Float64NDArray,
         params: dict[str, float],
+        meta: RunMeta | None = None,
     ) -> Float64NDArray:
         """
         Run the simulation and persist results via the backend.
+
+        Args:
+            initial_state: The initial state array for the simulation.
+            params: The parameter dict for the simulation.
+            meta: Metadata about the simulation run.
 
         Returns:
             The simulation result array.
@@ -161,5 +167,6 @@ class Simulator:
             initial_state,
             params,
         )
-        self.backend.save(res, RunMeta())
+        meta = meta or RunMeta()
+        self.backend.save(res, meta)
         return res

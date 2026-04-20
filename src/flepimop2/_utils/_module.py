@@ -30,7 +30,7 @@ from flepimop2.configuration import ModuleModel
 from flepimop2.module import ModuleABC
 from flepimop2.typing import IdentifierString
 
-Namespace = Literal["backend", "engine", "parameter", "process", "system"]
+Namespace = Literal["backend", "engine", "parameter", "process", "scenario", "system"]
 
 T_co = TypeVar("T_co", bound=ModuleABC, covariant=True)
 
