@@ -75,6 +75,7 @@ orcid = "0000-0002-3643-6266"
 [[tool.flepimop2.people]]
 email = "twillard@unc.edu"
 github = "TimothyWillard"
+orcid = "0009-0001-2486-7931"
 
 [tool.pytest.ini_options]
 testpaths = [
