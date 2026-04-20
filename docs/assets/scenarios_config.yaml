@@ -40,4 +40,7 @@ scenarios:
 process:
   - module: shell
     command: Rscript scripts/plot_scenarios.R
-    args: ["configs/scenarios_config.yaml", "model_output", "figures/scenarios_plot.png"]
+    args:
+      - configs/scenarios_config.yaml
+      - model_output
+      - figures/scenarios_plot.png
