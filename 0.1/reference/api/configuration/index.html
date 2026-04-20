@@ -875,6 +875,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="ModuleModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __pydantic_init_subclass__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1490,6 +1507,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="ModuleModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __pydantic_init_subclass__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2062,7 +2096,9 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The type of the module.</p>
+                <p>The module identifier for the configuration. Concrete subclasses
+may leave this as a general string field or specialize it to a fixed
+<code>Literal[...]</code> module path.</p>
               </div>
             </td>
           </tr>
@@ -2089,6 +2125,108 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__pydantic_init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Finalize the <code>module</code> field for <code>ModuleABC</code> subclasses after model creation.</p>
+<p>This keeps the explicit declaration API working while also allowing the
+shared <code>module="..."</code> class-definition shortcut implemented in <code>ModuleABC</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments passed to parent classes.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/flepimop2/configuration/_module.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__pydantic_init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLW3201</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finalize the `module` field for `ModuleABC` subclasses after model creation.</span>
+
+<span class="sd">    This keeps the explicit declaration API working while also allowing the</span>
+<span class="sd">    shared `module=&quot;...&quot;` class-definition shortcut implemented in `ModuleABC`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **kwargs: Additional keyword arguments passed to parent classes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__pydantic_init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ModuleABC</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="n">module</span><span class="p">])</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">module</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">model_rebuild</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 

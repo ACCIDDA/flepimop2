@@ -1726,7 +1726,6 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float64NDArray</span>
@@ -1737,10 +1736,9 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
 <span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunMeta</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">NpzBackend</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NpzBackend</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;NPZ backend for saving numpy arrays to .npz files.&quot;&quot;&quot;</span>
 
-    <span class="n">module</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flepimop2.backend.npz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.backend.npz&quot;</span>
     <span class="n">root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;model_output&quot;</span><span class="p">)</span>
     <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use compression when saving&quot;</span><span class="p">)</span>
 
@@ -1809,10 +1807,18 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>src/flepimop2/backend/npz
         <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">npz_file</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">npz_file</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 </code></pre></div>
+<p>The <code>module="npz"</code> class argument is the preferred API. It resolves to the fully qualified module path <code>"flepimop2.backend.npz"</code> and also configures the matching Pydantic field for the model. The explicit form is still supported if you prefer to spell it out:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NpzBackend</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">BackendABC</span><span class="p">):</span>
+    <span class="n">module</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flepimop2.backend.npz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.backend.npz&quot;</span>
+    <span class="o">...</span>
+</code></pre></div>
 <p>The key points of this approach are:</p>
 <ul>
 <li>The class inherits from both <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> and <a class="autorefs autorefs-internal" href="../../reference/api/abcs/#flepimop2.abcs.BackendABC"><code>BackendABC</code></a>.</li>
-<li>The <code>module</code> field uses a <code>Literal</code> type hint to specify the exact module path.</li>
+<li>The preferred <code>module="npz"</code> class argument resolves the exact module path while keeping the corresponding Pydantic field constrained to that value.</li>
 <li>Pydantic's <code>Field</code> is used to define configuration options with defaults and descriptions.</li>
 <li>Field validators can be used for custom validation logic.</li>
 <li>No separate <code>build</code> function is needed, <code>flepimop2</code> is able to inspect that this class inherits <a class="autorefs autorefs-internal" href="../../reference/api/configuration/#flepimop2.configuration.ModuleModel"><code>ModuleModel</code></a> and creates a default <code>build</code> function.</li>

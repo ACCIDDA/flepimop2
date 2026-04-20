@@ -1399,7 +1399,7 @@
 <p>For now, however, we'll stick with a module that only contains this single world. Since there's only the single world, we can implement all the pieces directly:</p>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Stepper function for SIR model integration tests.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -1431,10 +1431,9 @@
         <span class="n">gamma</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="p">])</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">SirSystem</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">SystemABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SirSystem</span><span class="p">(</span><span class="n">ModuleModel</span><span class="p">,</span> <span class="n">SystemABC</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;sir&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model system.&quot;&quot;&quot;</span>
 
-    <span class="n">module</span> <span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flepimop2.system.sir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.system.sir&quot;</span>
     <span class="n">state_change</span> <span class="p">:</span> <span class="n">StateChangeEnum</span> <span class="o">=</span> <span class="n">StateChangeEnum</span><span class="o">.</span><span class="n">FLOW</span>
     <span class="n">_stepper</span> <span class="p">:</span> <span class="n">SystemProtocol</span> <span class="o">=</span> <span class="n">global_sir</span>
 </code></pre></div>
@@ -1482,10 +1481,8 @@
     <span class="k">pass</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">EulerEngine</span><span class="p">(</span><span class="n">EngineABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EulerEngine</span><span class="p">(</span><span class="n">EngineABC</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;euler&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SIR model runner.&quot;&quot;&quot;</span>
-
-    <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;flepimop2.engine.euler&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SIR runner with the SIR runner function.&quot;&quot;&quot;</span>
