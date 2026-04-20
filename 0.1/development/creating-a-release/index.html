@@ -1571,7 +1571,13 @@
 <p>This is the safest way to test the release workflow against a real package index before publishing to PyPI.</p>
 <p>When testing from a branch, keep <code>create-github-release=false</code> and <code>deploy-docs=false</code>. The documentation deployment workflow checks out <code>main</code>, so it is not intended for pre-merge branch testing.</p>
 <h3 id="pypi">PyPI<a class="headerlink" href="#pypi" title="Permanent link">&para;</a></h3>
-<p>If <code>publish-target=pypi</code> is selected, the workflow intentionally fails early. That option is present to preserve the future workflow shape, but real PyPI publication is not enabled for <code>flepimop2</code> yet.</p>
+<p>Use this to publish <code>flepimop2</code> to PyPI, create a GitHub release, and deploy the documentation:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>pypi<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
+</span></code></pre></div>
 <h2 id="4-trusted-publishing-setup">4. Trusted Publishing Setup<a class="headerlink" href="#4-trusted-publishing-setup" title="Permanent link">&para;</a></h2>
 <p>The TestPyPI publish job uses PyPI Trusted Publishing rather than a stored API token. To enable publishing to TestPyPI, configure the trusted publisher entry for:</p>
 <ul>
