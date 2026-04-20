@@ -81,7 +81,15 @@ When testing from a branch, keep `create-github-release=false` and `deploy-docs=
 
 ### PyPI
 
-If `publish-target=pypi` is selected, the workflow intentionally fails early. That option is present to preserve the future workflow shape, but real PyPI publication is not enabled for `flepimop2` yet.
+Use this to publish `flepimop2` to PyPI, create a GitHub release, and deploy the documentation:
+
+```shell
+gh workflow run release.yaml \
+  --repo ACCIDDA/flepimop2 \
+  --field publish-target=pypi \
+  --field create-github-release=false \
+  --field deploy-docs=false
+```
 
 ## 4. Trusted Publishing Setup
 

@@ -32,13 +32,6 @@ jobs:
     name: 'validate release'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'fail if PyPI publish is requested'
-        if: "${{ github.event.inputs.publish-target == 'pypi' }}"
-        run: |
-          # `flepimop2` is not ready for submission to PyPI yet.
-          echo "Publishing to PyPI is intentionally disabled for this"
-          echo "repository."
-          exit 1
       - name: 'checkout repository'
         uses: 'actions/checkout@v6'
         with:
