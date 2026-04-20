@@ -1579,13 +1579,15 @@
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">true</span>
 </span></code></pre></div>
 <h2 id="4-trusted-publishing-setup">4. Trusted Publishing Setup<a class="headerlink" href="#4-trusted-publishing-setup" title="Permanent link">&para;</a></h2>
-<p>The TestPyPI publish job uses PyPI Trusted Publishing rather than a stored API token. To enable publishing to TestPyPI, configure the trusted publisher entry for:</p>
+<p>The publish job uses PyPI Trusted Publishing rather than a stored API token.</p>
+<p>For <code>publish-target=testpypi</code>, configure the TestPyPI trusted publisher entry for:</p>
 <ul>
 <li>Owner: <code>ACCIDDA</code>.</li>
 <li>Repository: <code>flepimop2</code>.</li>
 <li>Workflow file: <code>release.yaml</code>.</li>
 </ul>
-<p>If that configuration is missing, the TestPyPI publish job will fail even if validation passes.</p>
+<p>For <code>publish-target=pypi</code>, configure the PyPI trusted publisher entry for the same repository and workflow file.</p>
+<p>If the matching trusted publisher configuration is missing on the selected package index, the publish job will fail even if validation passes.</p>
 
 
 
