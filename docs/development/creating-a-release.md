@@ -87,8 +87,8 @@ Use this to publish `flepimop2` to PyPI, create a GitHub release, and deploy the
 gh workflow run release.yaml \
   --repo ACCIDDA/flepimop2 \
   --field publish-target=pypi \
-  --field create-github-release=false \
-  --field deploy-docs=false
+  --field create-github-release=true \
+  --field deploy-docs=true
 ```
 
 ## 4. Trusted Publishing Setup
