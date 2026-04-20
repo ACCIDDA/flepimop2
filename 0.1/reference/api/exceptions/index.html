@@ -1022,6 +1022,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../scenario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../simulator/" class="md-nav__link">
         
   
@@ -1519,42 +1547,42 @@ errors.</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-<span class="gp">... </span>    <span class="n">Flepimop2ValidationError</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">issues</span> <span class="o">=</span> <span class="p">[</span>
-<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;missing_parameter&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parameter&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma * (S / N)&quot;</span><span class="p">},</span>
-<span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Compartment &#39;E&#39; is unreachable.&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;unreachable_compartment&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compartment&quot;</span><span class="p">:</span> <span class="s2">&quot;E&quot;</span><span class="p">},</span>
-<span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exception</span> <span class="o">=</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="n">issues</span><span class="p">)</span>
-<span class="go">[ValidationIssue(msg=&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;,</span>
-<span class="go">                 kind=&#39;missing_parameter&#39;,</span>
-<span class="go">                 ctx={&#39;parameter&#39;: &#39;gamma&#39;, &#39;transition&#39;: &#39;gamma * (S / N)&#39;}),</span>
-<span class="go"> ValidationIssue(msg=&quot;Compartment &#39;E&#39; is unreachable.&quot;,</span>
-<span class="go">                 kind=&#39;unreachable_compartment&#39;,</span>
-<span class="go">                 ctx={&#39;compartment&#39;: &#39;E&#39;})]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
-<span class="go">2 validation issues encountered:</span>
-<span class="go">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
-<span class="go">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
-<span class="gt">Traceback (most recent call last):</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="gr">flepimop2.exceptions._flepimop2_validation_error.Flepimop2ValidationError</span>: <span class="n">2 validation issues encountered:</span>
-<span class="x">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
-<span class="x">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
-</code></pre></div>
+    <div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>    <span class="n">Flepimop2ValidationError</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span><span class="p">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">issues</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;missing_parameter&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parameter&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">:</span> <span class="s2">&quot;gamma * (S / N)&quot;</span><span class="p">},</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">... </span>    <span class="p">),</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="gp">... </span>    <span class="n">ValidationIssue</span><span class="p">(</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">... </span>        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Compartment &#39;E&#39; is unreachable.&quot;</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="gp">... </span>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;unreachable_compartment&quot;</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="gp">... </span>        <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compartment&quot;</span><span class="p">:</span> <span class="s2">&quot;E&quot;</span><span class="p">},</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="gp">... </span>    <span class="p">),</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="gp">... </span><span class="p">]</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">exception</span> <span class="o">=</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="n">issues</span><span class="p">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="go">[ValidationIssue(msg=&quot;Model requires undefined parameter &#39;gamma&#39;.&quot;,</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="go">                 kind=&#39;missing_parameter&#39;,</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="go">                 ctx={&#39;parameter&#39;: &#39;gamma&#39;, &#39;transition&#39;: &#39;gamma * (S / N)&#39;}),</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="go"> ValidationIssue(msg=&quot;Compartment &#39;E&#39; is unreachable.&quot;,</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="go">                 kind=&#39;unreachable_compartment&#39;,</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="go">                 ctx={&#39;compartment&#39;: &#39;E&#39;})]</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="go">2 validation issues encountered:</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="go">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="go">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">Flepimop2ValidationError</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="gt">Traceback (most recent call last):</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="o">...</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="gr">flepimop2.exceptions._flepimop2_validation_error.Flepimop2ValidationError</span>: <span class="n">2 validation issues encountered:</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="x">- [missing_parameter] Model requires undefined parameter &#39;gamma&#39;. (parameter=gamma, transition=gamma * (S / N))</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="x">- [unreachable_compartment] Compartment &#39;E&#39; is unreachable. (compartment=E)</span>
+</span></code></pre></div>
 
         <p>Initialize the Flepimop2ValidationError.</p>
 
@@ -1603,28 +1631,28 @@ errors.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>src/flepimop2/exceptions/_flepimop2_validation_error.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initialize the Flepimop2ValidationError.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        issues: A list of `ValidationIssue` instances representing the validation</span>
-<span class="sd">            errors.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">issues</span> <span class="o">=</span> <span class="n">issues</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_issues</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-108">108</a></span>
+<span class="normal"><a href="#__codelineno-0-109">109</a></span>
+<span class="normal"><a href="#__codelineno-0-110">110</a></span>
+<span class="normal"><a href="#__codelineno-0-111">111</a></span>
+<span class="normal"><a href="#__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#__codelineno-0-113">113</a></span>
+<span class="normal"><a href="#__codelineno-0-114">114</a></span>
+<span class="normal"><a href="#__codelineno-0-115">115</a></span>
+<span class="normal"><a href="#__codelineno-0-116">116</a></span>
+<span class="normal"><a href="#__codelineno-0-117">117</a></span>
+<span class="normal"><a href="#__codelineno-0-118">118</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a><span class="sd">    Initialize the Flepimop2ValidationError.</span>
+</span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>
+</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">    Args:</span>
+</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">        issues: A list of `ValidationIssue` instances representing the validation</span>
+</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">            errors.</span>
+</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">issues</span> <span class="o">=</span> <span class="n">issues</span>
+</span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a>    <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_issues</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+</span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
                   </details>
 
 
@@ -1717,18 +1745,18 @@ errors.</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationIssue</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">issue</span> <span class="o">=</span> <span class="n">ValidationIssue</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Invalid wrapper data format.&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;invalid_format&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;expected_format&quot;</span><span class="p">:</span> <span class="s2">&quot;JSON&quot;</span><span class="p">,</span> <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
-<span class="go">ValidationIssue(msg=&#39;Invalid wrapper data format.&#39;,</span>
-<span class="go">                kind=&#39;invalid_format&#39;,</span>
-<span class="go">                ctx={&#39;expected_format&#39;: &#39;JSON&#39;, &#39;line&#39;: 42})</span>
-</code></pre></div>
+    <div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationIssue</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">issue</span> <span class="o">=</span> <span class="n">ValidationIssue</span><span class="p">(</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Invalid wrapper data format.&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span>    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;invalid_format&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">... </span>    <span class="n">ctx</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;expected_format&quot;</span><span class="p">:</span> <span class="s2">&quot;JSON&quot;</span><span class="p">,</span> <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">... </span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">ValidationIssue(msg=&#39;Invalid wrapper data format.&#39;,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">                kind=&#39;invalid_format&#39;,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">                ctx={&#39;expected_format&#39;: &#39;JSON&#39;, &#39;line&#39;: 42})</span>
+</span></code></pre></div>
 
 
 

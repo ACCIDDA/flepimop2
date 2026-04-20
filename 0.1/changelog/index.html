@@ -921,6 +921,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/api/scenario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/api/simulator/" class="md-nav__link">
         
   
@@ -1484,6 +1512,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Refactor <code>SystemABC</code> type approach to binding (and fix knock on mypy typing issues, circular dependency issues). Briefly, a <code>SystemABC</code> implementation now only needs to provide <code>_bind_impl</code> which fixes (or not) parameters in the system. This update adds another internal implementation (<code>AdapterSystem</code>) for directly creating a system from locally <code>def</code>d function (vs <code>WrapperSystem</code> which reads from a file).</li>
 <li>Added infrastructure for submitting package to PyPI. See <a href="https://github.com/ACCIDDA/flepimop2/issues/123">#123</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/142">#142</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/195">#195</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/196">#196</a>.</li>
 <li>Modules can now declare their name via the <code>module</code> keyword argument to class declaration to simplify naming for developers. See <a href="https://github.com/ACCIDDA/flepimop2/issues/88">#88</a>.</li>
+<li>Introduce <code>ScenarioABC</code> type to capture parameter scenarios.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>

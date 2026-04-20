@@ -1064,6 +1064,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/api/scenario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/api/simulator/" class="md-nav__link">
         
   
@@ -1504,12 +1532,12 @@
 <li>Contain at least one non-empty bullet point.</li>
 </ul>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="gu">## [0.1.0] - 2026-04-07</span>
-
-<span class="gu">### Added</span>
-
-<span class="k">-</span><span class="w"> </span>Added packaging validation and release workflow infrastructure.
-</code></pre></div>
+<div class="language-md highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gu">## [0.1.0] - 2026-04-07</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gu">### Added</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">-</span><span class="w"> </span>Added packaging validation and release workflow infrastructure.
+</span></code></pre></div>
 <p>If the top heading, date, or bullet formatting is wrong, <code>just release-check</code> and the release workflow will fail before anything is published.</p>
 <h2 id="2-run-the-local-release-preflight">2. Run The Local Release Preflight<a class="headerlink" href="#2-run-the-local-release-preflight" title="Permanent link">&para;</a></h2>
 <p>Use the <code>just release-validate</code> recipe to run the following checks locally:</p>
@@ -1523,23 +1551,23 @@
 <p>If you are testing the workflow before the pull request is merged, add <code>--ref &lt;branch-name&gt;</code> to the <code>gh workflow run</code> command. Without <code>--ref</code>, GitHub dispatches the workflow definition from the repository's default branch. Using <code>--ref &lt;branch-name&gt;</code> means the workflow validates, builds, and publishes artifacts from that branch rather than from <code>main</code>.</p>
 <h3 id="dry-run">Dry Run<a class="headerlink" href="#dry-run" title="Permanent link">&para;</a></h3>
 <p>Use this to validate the release end to end without publishing to TestPyPI, creating a GitHub release, or deploying docs:</p>
-<div class="highlight"><pre><span></span><code>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>none<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>none<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
+</span></code></pre></div>
 <p>This runs the <code>validate</code> job only. It still enforces the changelog and release metadata checks through <code>just release-validate</code>.</p>
 <h3 id="testpypi">TestPyPI<a class="headerlink" href="#testpypi" title="Permanent link">&para;</a></h3>
 <p>Use this to publish the built artifacts to TestPyPI without creating the GitHub release or deploying docs:</p>
-<div class="highlight"><pre><span></span><code>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>testpypi<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--repo<span class="w"> </span>ACCIDDA/flepimop2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--ref<span class="w"> </span>&lt;branch-name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--field<span class="w"> </span>publish-target<span class="o">=</span>testpypi<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>--field<span class="w"> </span>create-github-release<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>--field<span class="w"> </span>deploy-docs<span class="o">=</span><span class="nb">false</span>
+</span></code></pre></div>
 <p>This is the safest way to test the release workflow against a real package index before publishing to PyPI.</p>
 <p>When testing from a branch, keep <code>create-github-release=false</code> and <code>deploy-docs=false</code>. The documentation deployment workflow checks out <code>main</code>, so it is not intended for pre-merge branch testing.</p>
 <h3 id="pypi">PyPI<a class="headerlink" href="#pypi" title="Permanent link">&para;</a></h3>

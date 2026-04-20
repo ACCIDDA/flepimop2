@@ -1259,6 +1259,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/api/scenario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/api/simulator/" class="md-nav__link">
         
   
@@ -1887,22 +1915,22 @@
 <ol>
 <li>Clone the repository:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ACCIDDA/flepimop2.git
-<span class="nb">cd</span><span class="w"> </span>flepimop2
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ACCIDDA/flepimop2.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>flepimop2
+</span></code></pre></div>
 <ol>
 <li>Create a virtual environment and install dependencies:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--dev
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--dev
+</span></code></pre></div>
 <p>This creates a <code>.venv</code> virtual environment and installs the package along with all development dependencies (mypy, pytest, ruff, mkdocs). If you need to create an environment with a specific python version you can also run:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--dev<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--dev<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+</span></code></pre></div>
 <ol>
 <li>Verify your setup</li>
 </ol>
-<div class="highlight"><pre><span></span><code>just
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>just
+</span></code></pre></div>
 <p>This runs the default development checks:</p>
 <ul>
 <li><code>just ruff</code> - Format code and run lint checks with auto-fixes.</li>
@@ -1922,13 +1950,13 @@
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="organization">Organization<a class="headerlink" href="#organization" title="Permanent link">&para;</a></h3>
 <p>Tests are organized to mirror the source code structure:</p>
-<div class="highlight"><pre><span></span><code>tests/
-|-- {module}/
-|   |-- {submodule}/
-|   |   |-- test_{function}.py     # Tests for individual functions
-|   |   |-- test_{class}_class.py  # Tests for classes
-|   |-- test_{function}.py
-</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>tests/
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>|-- {module}/
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>|   |-- {submodule}/
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>|   |   |-- test_{function}.py     # Tests for individual functions
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>|   |   |-- test_{class}_class.py  # Tests for classes
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>|   |-- test_{function}.py
+</span></code></pre></div>
 <p><strong>Examples:</strong></p>
 <ul>
 <li><code>tests/logging/test_get_script_logger.py</code> - Tests for the <code>get_script_logger</code> function.</li>
@@ -1945,9 +1973,9 @@
 <li><code>just pytest</code> - Run the full pytest suite (including integration tests) without coverage reporting.</li>
 </ul>
 <p>For more advanced test runs, use <code>pytest</code> directly:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/<span class="w"> </span>-v<span class="w">                    </span><span class="c1"># Run all tests in a module</span>
-uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/test_<span class="o">{</span><span class="k">function</span><span class="o">}</span>.py<span class="w"> </span>-v<span class="w">  </span><span class="c1"># Run specific test file</span>
-</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/<span class="w"> </span>-v<span class="w">                    </span><span class="c1"># Run all tests in a module</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/test_<span class="o">{</span><span class="k">function</span><span class="o">}</span>.py<span class="w"> </span>-v<span class="w">  </span><span class="c1"># Run specific test file</span>
+</span></code></pre></div>
 <p>For more information on how to invoke pytest please refer to the <a href="https://docs.pytest.org/en/stable/how-to/usage.html">How to invoke pytest</a> documentation.</p>
 <h3 id="writing-tests">Writing Tests<a class="headerlink" href="#writing-tests" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1962,11 +1990,11 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <p>We use <a href="https://www.mkdocs.org/">MkDocs</a> for documentation.</p>
 <h3 id="editing-documentation">Editing Documentation<a class="headerlink" href="#editing-documentation" title="Permanent link">&para;</a></h3>
 <p>Documentation files are located in the <code>docs/</code> directory:</p>
-<div class="highlight"><pre><span></span><code>docs/
-|-- index.md                # Home page
-|-- guides/
-    |-- getting-started.md  # Getting started guide
-</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docs/
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>|-- index.md                # Home page
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>|-- guides/
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    |-- getting-started.md  # Getting started guide
+</span></code></pre></div>
 <p>The documentation structure is defined in <code>mkdocs.yml</code>.</p>
 <h3 id="viewing-documentation-locally">Viewing Documentation Locally<a class="headerlink" href="#viewing-documentation-locally" title="Permanent link">&para;</a></h3>
 <p>To preview documentation changes locally you can run <code>just serve</code> which will build the documentation and start a local server at <code>http://127.0.0.1:8000/flepimop2/</code>. To only build the documentation you can run <code>just docs</code> which will generate the documentation site in the <code>site/</code> directory.</p>
