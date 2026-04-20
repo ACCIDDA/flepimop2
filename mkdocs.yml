@@ -90,6 +90,7 @@ nav:
           - Module: reference/api/module.md
           - Parameter: reference/api/parameter.md
           - Process: reference/api/process.md
+          - Scenario: reference/api/scenario.md
           - Simulator: reference/api/simulator.md
           - System: reference/api/system.md
           - Testing: reference/api/testing.md

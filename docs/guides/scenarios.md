@@ -16,7 +16,6 @@ flepimop2 process scenarios_config.yaml
 The processing step uses the outputs to create a plot.
 
 ??? example "Processing Script - `model_input/plot_scenarios.R`"
-    ```python
+    ```r
     --8<-- "assets/plot_scenarios.R"
     ```
-
