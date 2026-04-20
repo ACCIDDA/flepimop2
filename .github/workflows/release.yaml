@@ -56,7 +56,6 @@ jobs:
     needs:
       - 'validate'
     runs-on: 'ubuntu-latest'
-    if: "${{ github.event.inputs.publish-target == 'testpypi' }}"
     permissions:
       id-token: 'write'
     steps:
