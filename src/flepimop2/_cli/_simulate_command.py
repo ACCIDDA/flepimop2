@@ -57,28 +57,48 @@ class SimulateCommand(CliCommand):
         """
         config_model = ConfigurationModel.from_yaml(config)
 
-        s0 = build_parameter(config_model.parameters["s0"])
-        i0 = build_parameter(config_model.parameters["i0"])
-        r0 = build_parameter(config_model.parameters["r0"])
-        initial_state = np.array(
-            [
-                s0.sample().item(),
-                i0.sample().item(),
-                r0.sample().item(),
-            ],
-            dtype=np.float64,
-        )
-        params = {
-            k: build_parameter(v).sample().item()
-            for k, v in config_model.parameters.items()
-            if k not in {"s0", "i0", "r0"}
-        }
-
         simulator = Simulator.from_configuration_model(config_model, target=target)
 
         if simulator.simulate_config is None:
             msg = "simulate_config must be set before running the simulator."
             raise ValueError(msg)
+
+        ic_map: dict[str, str] | None = simulator.system.option(
+            "initial_state",
+            default=None,
+        )
+        if ic_map is not None:
+            state_names: tuple[str, ...] = simulator.system.option("state_names")
+            ic_param_names = set(ic_map.values())
+            initial_state = np.array(
+                [
+                    build_parameter(config_model.parameters[ic_map[s]]).sample().item()
+                    for s in state_names
+                ],
+                dtype=np.float64,
+            )
+            params = {
+                k: build_parameter(v).sample().item()
+                for k, v in config_model.parameters.items()
+                if k not in ic_param_names
+            }
+        else:
+            s0 = build_parameter(config_model.parameters["s0"])
+            i0 = build_parameter(config_model.parameters["i0"])
+            r0 = build_parameter(config_model.parameters["r0"])
+            initial_state = np.array(
+                [
+                    s0.sample().item(),
+                    i0.sample().item(),
+                    r0.sample().item(),
+                ],
+                dtype=np.float64,
+            )
+            params = {
+                k: build_parameter(v).sample().item()
+                for k, v in config_model.parameters.items()
+                if k not in {"s0", "i0", "r0"}
+            }
 
         for component in ["system", "engine", "backend"]:
             name = getattr(simulator.simulate_config, component)
