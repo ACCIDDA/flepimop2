@@ -115,6 +115,21 @@ def test_module_shortcut_sets_fully_qualified_module_for_plain_subclass() -> Non
     assert mod.module == "flepimop2.process.test_process"
 
 
+def test_module_shortcut_sets_fully_qualified_module_for_plain_backend_subclass() -> (
+    None
+):
+    """The class-definition shortcut should resolve namespaced plain backends."""
+
+    class PlainBackend(BackendABC, module="test_backend"):
+        def _save(self, data: Float64NDArray, run_meta: object) -> None: ...
+
+        def _read(self, _run_meta: object) -> Float64NDArray:
+            return np.array([], dtype=np.float64)
+
+    mod = PlainBackend()
+    assert mod.module == "flepimop2.backend.test_backend"
+
+
 def test_module_namespace_keyword_sets_public_classvar() -> None:
     """The class-definition namespace shortcut should set `module_namespace`."""
 
@@ -166,6 +181,22 @@ def test_module_shortcut_sets_literal_module_field_for_pydantic_subclass() -> No
     assert PydanticBackend.model_validate({"root": "."}).module == expected
     with pytest.raises(ValidationError, match="Input should be"):
         PydanticBackend.model_validate({"module": "wrong", "root": "."})
+
+
+def test_module_shortcut_allows_pydantic_instantiation_without_module_argument() -> (
+    None
+):
+    """Shortcut-backed Pydantic subclasses should not require `module` at init time."""
+
+    class PydanticBackend(ModuleModel, BackendABC, module="test_backend"):
+        root: str = "."
+
+        def _save(self, data: object, run_meta: object) -> None: ...
+
+        def _read(self, _run_meta: object) -> Float64NDArray:
+            return np.array([], dtype=np.float64)
+
+    assert PydanticBackend(root=".").module == "flepimop2.backend.test_backend"
 
 
 def test_module_shortcut_and_explicit_attribute_conflict_raises() -> None:

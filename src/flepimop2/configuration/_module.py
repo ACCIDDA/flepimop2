@@ -34,7 +34,7 @@ class ModuleModel(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    module: str = Field(min_length=1)
+    module: str = Field(default="", min_length=1)
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:  # noqa: PLW3201
