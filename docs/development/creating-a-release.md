@@ -93,10 +93,14 @@ gh workflow run release.yaml \
 
 ## 4. Trusted Publishing Setup
 
-The TestPyPI publish job uses PyPI Trusted Publishing rather than a stored API token. To enable publishing to TestPyPI, configure the trusted publisher entry for:
+The publish job uses PyPI Trusted Publishing rather than a stored API token.
+
+For `publish-target=testpypi`, configure the TestPyPI trusted publisher entry for:
 
 - Owner: `ACCIDDA`.
 - Repository: `flepimop2`.
 - Workflow file: `release.yaml`.
 
-If that configuration is missing, the TestPyPI publish job will fail even if validation passes.
+For `publish-target=pypi`, configure the PyPI trusted publisher entry for the same repository and workflow file.
+
+If the matching trusted publisher configuration is missing on the selected package index, the publish job will fail even if validation passes.

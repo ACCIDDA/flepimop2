@@ -52,7 +52,7 @@ jobs:
           path: 'dist/*'
           if-no-files-found: 'error'
   publish-pypi:
-    name: 'publish to PyPI'
+    name: 'publish package'
     needs:
       - 'validate'
     runs-on: 'ubuntu-latest'
@@ -65,9 +65,13 @@ jobs:
           name: 'dist'
           path: 'dist'
       - name: 'publish package to TestPyPI'
+        if: "${{ github.event.inputs.publish-target == 'testpypi' }}"
         uses: 'pypa/gh-action-pypi-publish@release/v1'
         with:
           repository-url: 'https://test.pypi.org/legacy/'
+      - name: 'publish package to PyPI'
+        if: "${{ github.event.inputs.publish-target == 'pypi' }}"
+        uses: 'pypa/gh-action-pypi-publish@release/v1'
   create-github-release:
     name: 'create GitHub release'
     needs:
