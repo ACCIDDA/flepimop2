@@ -6,15 +6,13 @@ The next generation of the flexible epidemic modeling pipeline.
 
 ### Installation
 
-You'll need [git](https://git-scm.com/install/) and [pipx](https://pipx.pypa.io/latest/installation/) on your system.
+`flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with `pip`:
 
 ```bash
-git clone git@github.com:ACCIDDA/flepimop2.git
-cd flepimop2
-pipx install .
+pip install flepimop2
 ```
 
-This clones the source of the library, then uses it to install the application.
+If you want to work from a local clone instead, see the [installation guide](guides/install.md) for a source install and dependency setup.
 
 ### Create a Project
 
