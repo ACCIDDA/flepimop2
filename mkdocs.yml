@@ -98,6 +98,7 @@ nav:
       - CLI: reference/cli.md
   - Connectors: connectors.md
   - Changelog: changelog.md
+  - Citation: citation.md
   - License: license.md
   - Authors: authors.md
   - Funding Acknowledgement: funding-acknowledgement.md

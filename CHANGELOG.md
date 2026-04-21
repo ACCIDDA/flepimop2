@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Added repository citation metadata via `CITATION.cff` and generated documentation for citing `flepimop2`. See [#136](https://github.com/ACCIDDA/flepimop2/issues/136).
 
 ### Changed
 
