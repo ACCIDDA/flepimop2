@@ -54,10 +54,12 @@ uv init --package --build-backend hatchling
 
 # Add dependencies
 uv add numpy
-uv add "git+https://github.com/ACCIDDA/flepimop2"
+uv add "flepimop2~=0.0"
 ```
 
 This creates a basic package structure with a `pyproject.toml` file configured to use the Hatch build backend.
+
+`flepimop2` is still in its pre-1.0 release line, so provider packages should pin to the current major version series. That means a constraint like `flepimop2~=0.0` today, and `flepimop2~=1.0` once the project reaches v1.
 
 ### Step 2: Configure `pyproject.toml`
 
@@ -71,7 +73,7 @@ description = "An external provider for flepimop2 for saving and reading npz fil
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "flepimop2",
+    "flepimop2~=0.0",
     "numpy>=2.3.5",
 ]
 
@@ -81,9 +83,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/flepimop2"]
-
-[tool.uv.sources]
-flepimop2 = { git = "https://github.com/ACCIDDA/flepimop2" }
 ```
 
 The critical configuration here is `[tool.hatch.build.targets.wheel]`, which tells Hatch to package everything under `src/flepimop2` as part of the `flepimop2` namespace.

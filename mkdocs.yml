@@ -71,6 +71,7 @@ extra_css:
 nav:
   - Home: index.md
   - Guides:
+      - Installation: guides/install.md
       - Getting Started: guides/getting-started.md
   - Development:
       - Contributing: development/contributing.md
