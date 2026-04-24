@@ -1,0 +1,244 @@
+name: SIRHD_vax_scenario_grid
+
+system:
+  - module: op_system
+    state_change: flow
+    spec:
+      kind: transitions
+
+      axes:
+        - name: vax
+          coords: [u, v, w]
+
+      state:
+        - S[vax]
+        - I[vax]
+        - H[vax]
+        - R[vax]
+        - D
+
+      aliases:
+        # yamllint disable-line rule:line-length
+        N: "sum_over(vax=j, S[vax=j] + I[vax=j] + H[vax=j] + R[vax=j])"
+        lam: "(r0 / t_inf) * sum_over(vax=j, I[vax=j]) / N"
+        rho_eff[vax]: "q[vax] * rho"
+        delta_eff[vax]: "q[vax] * delta"
+        pop[vax]: "S[vax] + I[vax] + H[vax] + R[vax]"
+        coverage: "sum_over(vax=j IN [v, w], pop[vax=j]) / n0"
+        rollout: "1.0 - np.exp(-ramp * np.maximum(0.0, t - t_start))"
+        # yamllint disable-line rule:line-length
+        u: "np.maximum(0.0, k * (cap_l - coverage)) * rollout"
+
+      transitions:
+        - from: S[vax]
+          to: I[vax]
+          rate: lam
+
+        - from: I[vax]
+          to: H[vax]
+          rate: rho_eff[vax] / t_inf
+        - from: I[vax]
+          to: R[vax]
+          rate: (1 - rho_eff[vax]) / t_inf
+
+        - from: H[vax]
+          to: D
+          rate: delta_eff[vax] / t_hosp
+        - from: H[vax]
+          to: R[vax]
+          rate: (1 - delta_eff[vax]) / t_hosp
+
+        - from: R[vax]
+          to: S[vax]
+          rate: alpha
+
+        - coord_shift:
+            vax: "u -> v"
+          apply_to: [S, R]
+          rate: u
+
+        - coord_shift:
+            vax: "v -> w"
+          apply_to: [S, R]
+          rate: omega
+
+      initial_state:
+        S[vax]: s0[vax]
+        H[vax]: h0[vax]
+        I[vax]: i0[vax]
+        R[vax]: r0[vax]
+        D: d0
+
+engine:
+  - module: op_engine
+    state_change: flow
+    config:
+      method: heun
+      adaptive: true
+      rtol: 1.0e-3
+      atol: 1.0e-5
+      dt_min: 1.0e-10
+      dt_max: 2.0
+      safety: 0.9
+
+scenarios:
+  vax_campaign:
+    module: grid
+    parameters:
+      t_start: [0, 7, 14, 21, 28, 35, 42, 49, 56, 63, 70]
+      cap_l: [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
+
+  panel_grid:
+    module: grid
+    parameters:
+      r0: [1.1, 2.0, 4.0]
+      # susceptible-compartment share at t=0 (S only, not S+I+R)
+      s_frac: [0.3, 0.5, 0.7]
+
+simulate:
+  demo:
+    times: "0.0:1.0:364.0"
+
+  scenario_sweep:
+    times: "0.0:1.0:364.0"
+    scenario: vax_campaign
+
+backend:
+  - module: csv
+    root: model_output/SIRHD_vax
+
+process:
+  plot:
+    module: shell
+    command: python postprocessing/SIRHD_incidence_plot.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_plot.png
+
+  scenario_heatmap:
+    module: shell
+    command: python postprocessing/scenario_heatmap.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap.png
+
+  scenario_heatmap_3x3_plot_latest_batch:
+    module: shell
+    command: python postprocessing/scenario_heatmap_3x3.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap_3x3.png
+      - --burden-only
+
+  scenario_heatmap_3x3_run_batch_and_plot:
+    module: shell
+    command: python postprocessing/scenario_heatmap_3x3.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap_3x3.png
+      - --run
+      - --burden-only
+
+  scenario_spaghetti_incidence:
+    module: shell
+    command: python postprocessing/scenario_spaghetti_incidence.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_spaghetti_incidence.png
+
+  scenario_peak_bed_summary:
+    module: shell
+    command: python postprocessing/scenario_peak_bed_summary.py
+    args:
+      - configs/SIRHD_vax_scenario_grid.yml
+      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_peak_bed_summary.png
+
+parameter:
+  r0:
+    module: fixed
+    value: 2.0
+  t_inf:
+    module: fixed
+    value: 7.0
+
+  rho:
+    module: fixed
+    value: 0.001
+  delta:
+    module: fixed
+    value: 0.1
+  t_hosp:
+    module: fixed
+    value: 10.0
+  alpha:
+    module: fixed
+    value: 0.005
+
+  k:
+    module: fixed
+    value: 0.05
+  cap_l:
+    module: fixed
+    value: 0.5
+  t_start:
+    module: fixed
+    value: 35.0
+  ramp:
+    module: fixed
+    value: 0.5
+  n0:
+    module: fixed
+    value: 10000000.0
+
+  omega:
+    module: fixed
+    value: 0.005
+  q__vax_u:
+    module: fixed
+    value: 1.0
+  q__vax_v:
+    module: fixed
+    value: 0.3
+  q__vax_w:
+    module: fixed
+    value: 1.0
+
+  s0__vax_u:
+    module: fixed
+    value: 5000000
+  s0__vax_v:
+    module: fixed
+    value: 0
+  s0__vax_w:
+    module: fixed
+    value: 0
+  i0__vax_u:
+    module: fixed
+    value: 1000
+  i0__vax_v:
+    module: fixed
+    value: 0
+  i0__vax_w:
+    module: fixed
+    value: 0
+  h0__vax_u:
+    module: fixed
+    value: 0
+  h0__vax_v:
+    module: fixed
+    value: 0
+  h0__vax_w:
+    module: fixed
+    value: 0
+  r0__vax_u:
+    module: fixed
+    value: 4999000
+  r0__vax_v:
+    module: fixed
+    value: 0
+  r0__vax_w:
+    module: fixed
+    value: 0
+  d0:
+    module: fixed
+    value: 0
