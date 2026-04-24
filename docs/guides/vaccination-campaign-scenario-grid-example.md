@@ -2,7 +2,7 @@
 
 This guide walks through a policy-sweep SIRHD model with vaccination strata, and shows how to set up the configuration and figure-generation workflow in `flepimop2`.
 
-The model is implemented with [`op_system`](https://github.com/NAU-CCL/op_system), using a vaccination axis with compartments `u` (unvaccinated), `v` (vaccinated/protected), and `w` (vaccinated but waned).
+This example uses [`op_system`](https://github.com/NAU-CCL/op_system) for transition-based model specification and [`op_engine`](https://github.com/NAU-CCL/op_engine) for numerical integration, using a vaccination axis with compartments `u` (unvaccinated), `v` (vaccinated/protected), and `w` (vaccinated but waned). This pairing keeps the disease dynamics readable in configuration while delegating solver behavior to the engine layer.
 
 ## 1. Start from a New Repository
 
@@ -55,7 +55,7 @@ Suggested placement in your new project:
 
 ## 3. Model Structure in `system`
 
-At a high level, this model uses `op_system` transitions and state vectors per vaccination stratum for `S`, `I`, `H`, `R`, plus global `D`.
+At a high level, this model uses `op_system` transitions to define disease flows and `op_engine` to advance those transitions over time, with state vectors per vaccination stratum for `S`, `I`, `H`, `R`, plus global `D`.
 
 ```yaml
 system:
@@ -80,7 +80,7 @@ For additional context on module wiring (`module`, `state_change`, and transitio
 
 ## 4. Aliases: Derived Terms and Rates
 
-Aliases define reusable expressions and are often where model intent is most explicit. Expression syntax here is evaluated by `op_system`; see the [op_system repository](https://github.com/NAU-CCL/op_system) and [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md) for broader context.
+Aliases define reusable expressions and are often where model intent is most explicit. Expression syntax here is evaluated by `op_system`; for allowed expression forms and semantics, see the [op_system repository](https://github.com/NAU-CCL/op_system). For broader module-wiring context, see [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md).
 
 ```yaml
 aliases:
