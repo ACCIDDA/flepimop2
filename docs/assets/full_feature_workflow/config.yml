@@ -10,6 +10,10 @@ system:
         S: -beta * S * I / sum_state()
         I: beta * S * I / sum_state() - gamma * I
         R: gamma * I
+      initial_state:
+        S: s0
+        I: i0
+        R: r0
 
 engine:
   - module: op_engine

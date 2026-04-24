@@ -3,7 +3,7 @@ library(ggplot2)
 library(yaml)
 
 .args <- if (interactive()) {
-  c("configs/SIR_script.yml", "model_output/SIR_plot.png")
+  c("configs/config.yml", "model_output/SIR_plot.png")
 } else {
   commandArgs(trailingOnly = TRUE)
 }
@@ -26,13 +26,20 @@ results_path <- if (!is.null(backend$root)) {
   "model_output"
 }
 
+# resolve state names from the first system's spec
+state_names <- unlist(config$system[[1]]$spec$state)
+if (is.null(state_names) || length(state_names) == 0) {
+  stop("system spec must define a non-empty 'state' list")
+}
+col_names <- c("time", state_names)
+
 # get the most recently recorded result
 results_dt <- tail(
   list.files(results_path, pattern = backend$module, full.names = TRUE),
   1
 ) |>
   fread() |>
-  setnames(c("time", "S", "I", "R")) |>
+  setnames(col_names) |>
   melt(id.vars = "time", variable.name = "compartment")
 
 p <- ggplot(results_dt) +

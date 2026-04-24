@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide walks through flepimop2's more advanced features: the system-engine architecture, solver configuration, model specification options, simulation targeting, and the full range of post-processing capabilities. It is intended for users who have already worked through the [quickstart guide](../index.md) and are ready to explore the framework in more depth.
+This guide walks through flepimop2's more advanced features. We describe the system-engine architecture, then show how to use that for model specification and solver configuration. We show those elements flow into simulation setup and then post-processing. It is intended for users who have already worked through the [quickstart guide](../index.md) and are ready to explore the framework in more depth.
 
 ## Prerequisites
 
@@ -21,12 +21,14 @@ pipx install .
 
 ## Create a Project
 
+Switch from the flepimop2 clone repository to the directory you want to conduct your analysis in. Once there, run the following command:
+
 ```bash
 flepimop2 skeleton full_start_project
 cd full_start_project
 ```
 
-Replace the default `environment.yaml` with the one from [assets/full_feature_workflow/environment.yaml](../assets/full_feature_workflow/environment.yaml), which includes the additional dependencies required for this guide. Then create and activate the environment:
+Within the project you have created, replace the default `environment.yaml` with the one from [assets/full_feature_workflow/environment.yaml](../assets/full_feature_workflow/environment.yaml), which includes the additional dependencies required for this guide. Then create and activate the environment:
 
 ```bash
 just venv
@@ -110,9 +112,30 @@ system:
         S: -beta * S * I / sum_state()
         I: beta * S * I / sum_state() - gamma * I
         R: gamma * I
+      initial_state:
+        S: s0
+        I: i0
+        R: r0
 ```
 
-The example above specifies a basic SIR model. `kind: expr` indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the `state` field, and their corresponding dY/dt expressions are defined in `equations`. The `sum_state()` helper evaluates to the total population at each time step — equivalent to `S + I + R` — and is provided to make density-dependent transmission terms concise and readable.
+The example above specifies a basic SIR model. `kind: expr` indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the `state` field, and their corresponding dY/dt expressions are defined in `equations`. The `sum_state()` helper evaluates to the total population at each time step — equivalent to `S + I + R` — and is provided to make density-dependent transmission terms concise and readable. Symbolic representations for the initial states of each of these compartments are defined in `initial_state`; each of these symbolic representations are then assigned a numeric value in `parameters` later in the file.
+
+If a user wants to defines disease system by specifying the transitions between states instead of the expression for each state, they can do so as follows:
+
+```yaml
+system:
+  - module: op_system
+    spec:
+      kind: transitions
+      state: [S, I, R]
+      transitions:
+        - from: S
+          to: I
+          rate: beta * I / sum_state()
+        - from: I
+          to: R
+          rate: gamma
+```
 
 When using `op_system`, no `state_change` field is required; the module infers it from the symbolic specification. `op_system` requires `op_engine` — the symbolic expression compiler and solver are designed to work together.
 
