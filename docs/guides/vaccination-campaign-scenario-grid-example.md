@@ -36,21 +36,21 @@ Suggested placement in your new project:
 [`scenario_heatmap_3x3.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py)
 
 ??? example "Plot Script - `postprocessing/scenario_heatmap_3x3.py`"
-    ```python
+  ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py"
     ```
 
 [`scenario_spaghetti_incidence.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py)
 
 ??? example "Plot Script - `postprocessing/scenario_spaghetti_incidence.py`"
-    ```python
+  ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py"
     ```
 
 [`scenario_peak_bed_summary.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py)
 
 ??? example "Plot Script - `postprocessing/scenario_peak_bed_summary.py`"
-    ```python
+  ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py"
     ```
 
