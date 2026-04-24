@@ -17,14 +17,7 @@ You will now have the standard `flepimop2` folder structure (`configs`, `model_i
 
 ## 2. Get the Example Config and Plot Scripts
 
-Use the copies included with this guide in `docs/examples/vaccination-campaign-scenario-grid`:
-
-- Config source:
-  - `docs/examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml`
-- Script sources:
-  - `docs/examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py`
-  - `docs/examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py`
-  - `docs/examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py`
+Copy the files below into your project. Each block can be expanded to view and copy the full source, or downloaded directly via the filename link.
 
 Suggested placement in your new project:
 
@@ -32,6 +25,34 @@ Suggested placement in your new project:
 - `postprocessing/scenario_heatmap_3x3.py`
 - `postprocessing/scenario_spaghetti_incidence.py`
 - `postprocessing/scenario_peak_bed_summary.py`
+
+[`SIRHD_vax_scenario_grid.yml`](../examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml)
+
+??? example "Configuration - `configs/SIRHD_vax_scenario_grid.yml`"
+    ```yaml
+    --8<-- "examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml"
+    ```
+
+[`scenario_heatmap_3x3.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py)
+
+??? example "Plot Script - `postprocessing/scenario_heatmap_3x3.py`"
+    ```python
+    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py"
+    ```
+
+[`scenario_spaghetti_incidence.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py)
+
+??? example "Plot Script - `postprocessing/scenario_spaghetti_incidence.py`"
+    ```python
+    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py"
+    ```
+
+[`scenario_peak_bed_summary.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py)
+
+??? example "Plot Script - `postprocessing/scenario_peak_bed_summary.py`"
+    ```python
+    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py"
+    ```
 
 ## 3. Model Structure in `system`
 
@@ -245,6 +266,9 @@ This summary makes the dominant driver explicit: moving from `R0=1.1` to `R0=4.0
 
 ## 11. Complete Config Example
 
-A complete copy of the example configuration used for this walkthrough is available at:
+[`SIRHD_vax_scenario_grid.yml`](../examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml)
 
-- `docs/examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml`
+??? example "Complete Configuration - `configs/SIRHD_vax_scenario_grid.yml`"
+    ```yaml
+    --8<-- "examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml"
+    ```
