@@ -108,15 +108,13 @@ def _build_peak_dataframe(batch_root: Path, meta: PlotMeta) -> pd.DataFrame:
                 peak_h = float(h_totals.max())
                 peak_bed_pct = 100.0 * peak_h / meta.available_beds
 
-                rows.append(
-                    {
-                        "s_frac": s_frac,
-                        "r0": r0_val,
-                        "t_start": meta.t_start_vals[t_start_idx],
-                        "cap_l": meta.cap_l_vals[cap_l_idx],
-                        "peak_bed_pct": peak_bed_pct,
-                    }
-                )
+                rows.append({
+                    "s_frac": s_frac,
+                    "r0": r0_val,
+                    "t_start": meta.t_start_vals[t_start_idx],
+                    "cap_l": meta.cap_l_vals[cap_l_idx],
+                    "peak_bed_pct": peak_bed_pct,
+                })
 
     return pd.DataFrame(rows)
 

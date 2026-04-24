@@ -197,12 +197,14 @@ def _extract_panel_metrics(
 
     h_col_indices = [7, 8, 9]
     burden = np.zeros((len(metric_meta.cap_l_vals), len(metric_meta.t_start_vals)))
-    peak_day_relative = np.zeros(
-        (len(metric_meta.cap_l_vals), len(metric_meta.t_start_vals))
-    )
-    peak_bed_pct = np.zeros(
-        (len(metric_meta.cap_l_vals), len(metric_meta.t_start_vals))
-    )
+    peak_day_relative = np.zeros((
+        len(metric_meta.cap_l_vals),
+        len(metric_meta.t_start_vals),
+    ))
+    peak_bed_pct = np.zeros((
+        len(metric_meta.cap_l_vals),
+        len(metric_meta.t_start_vals),
+    ))
 
     for scenario_idx, csv_file in enumerate(csv_files):
         df = pd.read_csv(csv_file, header=None)
@@ -665,32 +667,30 @@ def main() -> None:
     ]
 
     if not burden_only and peak_day_out is not None and peak_bed_pct_out is not None:
-        figure_specs.extend(
-            [
-                FigureSpec(
-                    metric="peak_day",
-                    title=(
-                        "Peak Hospitalization Day (from Simulation Start) by R0 and "
-                        "Initial Susceptible Share"
-                    ),
-                    cbar_label="Day of Peak Hospitalization (from Simulation Start)",
-                    cmap="YlOrRd",
-                    symmetric_about_zero=False,
-                    output_path=peak_day_out,
+        figure_specs.extend([
+            FigureSpec(
+                metric="peak_day",
+                title=(
+                    "Peak Hospitalization Day (from Simulation Start) by R0 and "
+                    "Initial Susceptible Share"
                 ),
-                FigureSpec(
-                    metric="peak_bed_pct",
-                    title=(
-                        "Peak Hospital Occupancy as % of Available Beds by R0 and "
-                        "Initial Susceptible Share"
-                    ),
-                    cbar_label="Peak Hospital Occupancy (% of Available Beds)",
-                    cmap="YlOrRd",
-                    symmetric_about_zero=False,
-                    output_path=peak_bed_pct_out,
+                cbar_label="Day of Peak Hospitalization (from Simulation Start)",
+                cmap="YlOrRd",
+                symmetric_about_zero=False,
+                output_path=peak_day_out,
+            ),
+            FigureSpec(
+                metric="peak_bed_pct",
+                title=(
+                    "Peak Hospital Occupancy as % of Available Beds by R0 and "
+                    "Initial Susceptible Share"
                 ),
-            ]
-        )
+                cbar_label="Peak Hospital Occupancy (% of Available Beds)",
+                cmap="YlOrRd",
+                symmetric_about_zero=False,
+                output_path=peak_bed_pct_out,
+            ),
+        ])
 
     for spec in figure_specs:
         _make_panel_figure(panel_data, plot_meta, spec)

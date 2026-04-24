@@ -143,9 +143,9 @@ def _weekly_incidence_pct(
     full_week_starts = unique_starts[counts == FULL_WEEK_DAYS]
     week_mids = full_week_starts + 3.5
 
-    weekly = np.array(
-        [daily_inflow[week_starts == ws].sum() for ws in full_week_starts]
-    )
+    weekly = np.array([
+        daily_inflow[week_starts == ws].sum() for ws in full_week_starts
+    ])
     # Clip to non-negative (numerical noise can produce tiny negatives)
     weekly = np.maximum(weekly, 0.0)
 

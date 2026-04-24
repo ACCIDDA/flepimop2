@@ -229,23 +229,19 @@ flepimop2 process configs/SIRHD_vax_scenario_grid.yml -t scenario_peak_bed_summa
 
 ![3x3 burden heatmap](../examples/vaccination-campaign-scenario-grid/figures/SIRHD_vax_scenario_heatmap_3x3.png)
 
-Use this to compare percent change in hospitalization burden across:
-- rows/columns: epidemiologic context (`S0`, `R0`),
-- heatmap axes: campaign start day vs coverage cap.
+The burden surface changes meaningfully across epidemiologic context. In the lower-transmission column (`R0=1.1`), most cells stay near zero change, indicating limited room for campaign timing/cap policy to improve outcomes once transmission is already constrained. In the moderate/high-transmission columns (`R0=2.0` and `R0=4.0`), the gradient is strong: earlier starts and higher caps (upper-left of each panel) are consistently greener (lower burden), while delayed starts and lower caps trend orange/red (higher burden), with the largest penalties in higher-susceptibility settings. The black baseline box (`t_start=35`, `cap_l=0.5`) is a useful anchor: policy improvements are most pronounced where epidemic pressure is highest, and comparatively muted where pressure is low.
 
 ### 3x3 Weekly Incidence Trajectories
 
 ![3x3 weekly incidence spaghetti](../examples/vaccination-campaign-scenario-grid/figures/SIRHD_vax_spaghetti_incidence.png)
 
-This emphasizes timing and shape of weekly admissions, with:
-- color: campaign start day,
-- linestyle: coverage cap.
+These trajectories show not just peak size but peak timing and rebound structure. At `R0=1.1`, admissions rapidly decay toward near-zero regardless of policy, matching the weak burden sensitivity in the heatmap. At `R0=2.0`, policies mainly reshape a dominant first-wave peak and a later tail/rebound: earlier starts and larger caps visibly compress and lower the main hump. At `R0=4.0`, a sharp early peak appears across all rows, but policy still separates trajectories afterward, especially in the post-peak shoulder and secondary wave where high-cap/early-start strategies suppress sustained admission pressure. The color ordering (campaign start day) is particularly informative: later starts cluster toward higher curves around wave maxima.
 
 ### Peak Occupancy Summary (R0 Dominance)
 
 ![Peak occupancy summary](../examples/vaccination-campaign-scenario-grid/figures/SIRHD_vax_peak_bed_summary.png)
 
-This view collapses policy combinations and highlights that changes in `R0` dominate variation in peak bed occupancy across the explored policy settings.
+This summary makes the dominant driver explicit: moving from `R0=1.1` to `R0=4.0` shifts peak occupancy far more than any within-column policy tweak. The black median line rises steeply with `R0` in each `S0` facet, while colored/shape-coded policy points spread around that line with smaller horizontal-group variance. Policy still matters in the high-pressure regime (the `R0=4.0` clusters show visible vertical spread by start day and cap), but the scale of that spread is secondary to transmission intensity itself. Operationally, this suggests campaign optimization is valuable, yet controlling effective transmission has first-order impact on peak bed risk.
 
 ## 11. Complete Config Example
 
