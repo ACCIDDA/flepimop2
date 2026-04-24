@@ -48,6 +48,7 @@ def _scenario_param_values(
     scenario_name: str,
     param_name: str,
 ) -> list[float]:
+    """Read scenario parameter values from raw YAML config."""
     scenarios = cfg.get("scenarios")
     if not isinstance(scenarios, dict):
         msg = "No scenarios mapping found in config"
@@ -67,12 +68,14 @@ def _scenario_param_values(
 
 
 def _slug_float(value: float) -> str:
+    """Convert a float to a filesystem-safe token."""
     return f"{value:.3f}".rstrip("0").rstrip(".").replace(".", "p")
 
 
 def _latest_csv_by_index(
     results_dir: Path, pattern: str = "scenario_*.csv"
 ) -> list[Path]:
+    """Get one CSV per scenario index (latest file by name), sorted numerically."""
     by_index: dict[int, Path] = {}
     for f in results_dir.glob(pattern):
         match = re.search(r"scenario_(\d+)", f.name)
@@ -224,7 +227,7 @@ def main() -> None:
     cfg_path = Path(args[0])
     output_path = Path(args[1])
 
-    with cfg_path.open() as f:
+    with cfg_path.open(encoding="utf-8") as f:
         raw_cfg = yaml.safe_load(f)
 
     config_model = ConfigurationModel.from_yaml(cfg_path)
@@ -251,7 +254,7 @@ def main() -> None:
             "No batch marker found. Run scenario_heatmap_3x3_run_batch_and_plot first."
         )
         raise FileNotFoundError(msg)
-    batch_root = base_root / latest_txt.read_text().strip()
+    batch_root = base_root / latest_txt.read_text(encoding="utf-8").strip()
 
     df = _build_peak_dataframe(batch_root, meta)
     _make_summary_figure(df, meta, output_path)

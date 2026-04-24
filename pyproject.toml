@@ -86,7 +86,6 @@ testpaths = [
 addopts = [
     "--import-mode=importlib",
     "--doctest-modules",
-    "--ignore=docs/examples/vaccination-campaign-scenario-grid/scripts",
 ]
 markers = [
     "integration: marks integration tests in tests/integration/",
@@ -120,14 +119,8 @@ allow-star-arg-any = true
     "CPY001",   # Missing copyright notice at top of file
 ]
 "docs/examples/vaccination-campaign-scenario-grid/scripts/*.py" = [
-    "I001",     # Import block formatting for copied example scripts
     "DOC201",   # Require return documentation in docstrings
     "DOC501",   # Require raised exceptions listed in docstrings
-    "PLR0914",  # Too many local variables
-    "PLW1514",  # Require explicit encoding on text-mode file open/tempfile
-    "RUF031",   # Tuple parentheses in subscripts
-    "RUF069",   # Float equality check in formatter helper
-    "S404",     # subprocess import in example batch-run script
 ]
 "tests/**/*" = [
     "PLR6301",  # Method could be a function, class method, or static method
@@ -147,7 +140,6 @@ files = "."
 exclude = [
     "^build/",
     "^site/",
-    "^docs/examples/vaccination-campaign-scenario-grid/scripts/",
 ]
 namespace_packages = true
 explicit_package_bases = true

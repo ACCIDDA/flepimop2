@@ -17,7 +17,7 @@ import logging
 import math
 import re
 import shutil
-import subprocess
+import subprocess  # noqa: S404
 import sys
 import tempfile
 from dataclasses import dataclass
@@ -127,6 +127,7 @@ def _latest_csv_by_index(
 def _find_value_index(
     values: list[float], target: float, tol: float = 1e-9
 ) -> int | None:
+    """Return the index of `target` within tolerance, else `None`."""
     for i, value in enumerate(values):
         if abs(float(value) - target) <= tol:
             return i
@@ -134,10 +135,12 @@ def _find_value_index(
 
 
 def _slug_float(value: float) -> str:
+    """Convert a float to a filesystem-safe token."""
     return f"{value:.3f}".rstrip("0").rstrip(".").replace(".", "p")
 
 
 def _set_param(cfg: dict, name: str, value: float) -> None:
+    """Set a scalar parameter value in raw YAML config."""
     params = cfg.setdefault("parameter", {})
     if name not in params:
         msg = f"Missing parameter '{name}' in config"
@@ -146,6 +149,7 @@ def _set_param(cfg: dict, name: str, value: float) -> None:
 
 
 def _set_backend_root(cfg: dict, root: str) -> None:
+    """Set backend output root in raw YAML config."""
     backend = cfg.get("backend", [])
     if not backend:
         msg = "Config has no backend section"
@@ -254,7 +258,7 @@ def _run_panel_simulation(
     out_dir: Path,
     r0_value: float,
     s_frac: float,
-) -> None:
+) -> None:  # noqa: PLR0914
     """Run one t_start x cap_l panel into an isolated output directory."""
     cfg = copy.deepcopy(base_cfg)
 
@@ -299,7 +303,9 @@ def _run_panel_simulation(
     out_dir.mkdir(parents=True, exist_ok=True)
     _set_backend_root(cfg, str(out_dir))
 
-    with tempfile.NamedTemporaryFile("w", suffix=".yml", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(
+        "w", suffix=".yml", delete=False, encoding="utf-8"
+    ) as tmp:
         yaml.safe_dump(cfg, tmp, sort_keys=False)
         tmp_cfg_path = Path(tmp.name)
 
@@ -339,6 +345,7 @@ def _normalize_axes(
 
 
 def _metric_matrix(panel_metrics: PanelMetrics, metric: MetricName) -> np.ndarray:
+    """Select the metric matrix for plotting."""
     if metric == "burden":
         return panel_metrics.burden_pct_change
     if metric == "peak_day":
@@ -347,6 +354,7 @@ def _metric_matrix(panel_metrics: PanelMetrics, metric: MetricName) -> np.ndarra
 
 
 def _annotation_text(metric: MetricName, value: float) -> str:
+    """Format per-cell annotation text for each metric."""
     if metric == "burden":
         return f"{round(value):+d}%"
     if metric == "peak_day":
@@ -571,7 +579,7 @@ def main() -> None:
         burden_only,
     ) = _parse_cli_args(sys.argv[1:])
 
-    with cfg_path.open() as f:
+    with cfg_path.open(encoding="utf-8") as f:
         raw_cfg = yaml.safe_load(f)
 
     config_model = ConfigurationModel.from_yaml(cfg_path)
@@ -596,7 +604,7 @@ def main() -> None:
     )
 
     if run_simulations:
-        with cfg_path.open() as f:
+        with cfg_path.open(encoding="utf-8") as f:
             base_cfg = yaml.safe_load(f)
 
         stamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
@@ -621,7 +629,7 @@ def main() -> None:
                 )
 
         latest_txt = base_root / "LATEST"
-        latest_txt.write_text(stamp)
+        latest_txt.write_text(stamp, encoding="utf-8")
     else:
         latest_txt = base_root / "LATEST"
         if not latest_txt.exists():

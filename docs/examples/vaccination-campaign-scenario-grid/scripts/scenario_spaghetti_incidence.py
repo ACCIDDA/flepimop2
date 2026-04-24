@@ -15,6 +15,7 @@ Uses the latest batch from model_output/legacy_r0_s0_batches.
 
 from __future__ import annotations
 
+import math
 import re
 import sys
 from dataclasses import dataclass
@@ -44,7 +45,7 @@ _PCT_THRESHOLD_MID = 0.1
 
 def _pct_label(v: float, _: object) -> str:
     """Adaptive percentage formatter that switches precision based on magnitude."""
-    if v == 0.0:
+    if math.isclose(v, 0.0, abs_tol=1e-12):
         return "0%"
     abs_v = abs(v)
     if abs_v < _PCT_THRESHOLD_LOW:
@@ -82,6 +83,7 @@ def _scenario_param_values(
     scenario_name: str,
     param_name: str,
 ) -> list[float]:
+    """Read scenario parameter values from raw YAML config."""
     scenarios = cfg.get("scenarios")
     if not isinstance(scenarios, dict):
         msg = "No scenarios mapping found in config"
@@ -101,12 +103,14 @@ def _scenario_param_values(
 
 
 def _slug_float(value: float) -> str:
+    """Convert a float to a filesystem-safe token."""
     return f"{value:.3f}".rstrip("0").rstrip(".").replace(".", "p")
 
 
 def _latest_csv_by_index(
     results_dir: Path, pattern: str = "scenario_*.csv"
 ) -> list[Path]:
+    """Get one CSV per scenario index (latest file by name), sorted numerically."""
     by_index: dict[int, Path] = {}
     for f in results_dir.glob(pattern):
         match = re.search(r"scenario_(\d+)", f.name)
@@ -314,7 +318,7 @@ def main() -> None:
     cfg_path = Path(args[0])
     output_path = Path(args[1])
 
-    with cfg_path.open() as f:
+    with cfg_path.open(encoding="utf-8") as f:
         raw_cfg = yaml.safe_load(f)
 
     config_model = ConfigurationModel.from_yaml(cfg_path)
@@ -341,7 +345,7 @@ def main() -> None:
             "No batch marker found. Run scenario_heatmap_3x3_run_batch_and_plot first."
         )
         raise FileNotFoundError(msg)
-    batch_root = base_root / latest_txt.read_text().strip()
+    batch_root = base_root / latest_txt.read_text(encoding="utf-8").strip()
 
     _make_incidence_figure(batch_root, meta, output_path)
     sys.stdout.write(f"Saved weekly incidence spaghetti to {output_path}\n")

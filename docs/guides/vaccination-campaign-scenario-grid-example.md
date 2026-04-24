@@ -2,6 +2,8 @@
 
 This guide walks through a policy-sweep SIRHD model with vaccination strata, and shows how to set up the configuration and figure-generation workflow in `flepimop2`.
 
+The model is implemented with [`op_system`](https://github.com/NAU-CCL/op_system), using a vaccination axis with compartments `u` (unvaccinated), `v` (vaccinated/protected), and `w` (vaccinated but waned).
+
 ## 1. Start from a New Repository
 
 Create a fresh repo and scaffold the project skeleton:
@@ -9,11 +11,8 @@ Create a fresh repo and scaffold the project skeleton:
 ```bash
 mkdir vaccination-campaign-scenario-grid
 cd vaccination-campaign-scenario-grid
-git init
 flepimop2 skeleton .
 ```
-
-You will now have the standard `flepimop2` folder structure (`configs`, `model_input`, `postprocessing`, `model_output`, etc.) and can start adding your model-specific files.
 
 ## 2. Get the Example Config and Plot Scripts
 
@@ -36,27 +35,27 @@ Suggested placement in your new project:
 [`scenario_heatmap_3x3.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py)
 
 ??? example "Plot Script - `postprocessing/scenario_heatmap_3x3.py`"
-  ```text
+    ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py"
     ```
 
 [`scenario_spaghetti_incidence.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py)
 
 ??? example "Plot Script - `postprocessing/scenario_spaghetti_incidence.py`"
-  ```text
+    ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py"
     ```
 
 [`scenario_peak_bed_summary.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py)
 
 ??? example "Plot Script - `postprocessing/scenario_peak_bed_summary.py`"
-  ```text
+    ```text
     --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py"
     ```
 
 ## 3. Model Structure in `system`
 
-At a high level, this model uses a vaccination axis (`u`, `v`, `w`) and state vectors per stratum for `S`, `I`, `H`, `R`, plus global `D`.
+At a high level, this model uses `op_system` transitions and state vectors per vaccination stratum for `S`, `I`, `H`, `R`, plus global `D`.
 
 ```yaml
 system:
@@ -77,14 +76,11 @@ system:
         - D
 ```
 
-Interpretation:
-- `u`: unvaccinated
-- `v`: vaccinated/protected
-- `w`: vaccinated but waned protection
+For additional context on module wiring (`module`, `state_change`, and transition specs), see [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md).
 
 ## 4. Aliases: Derived Terms and Rates
 
-Aliases define reusable expressions and are often where model intent is most explicit.
+Aliases define reusable expressions and are often where model intent is most explicit. Expression syntax here is evaluated by `op_system`; see the [op_system repository](https://github.com/NAU-CCL/op_system) and [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md) for broader context.
 
 ```yaml
 aliases:
@@ -238,10 +234,10 @@ process:
 From a working environment with `flepimop2` available:
 
 ```bash
-flepimop2 simulate configs/SIRHD_vax_scenario_grid.yml -t scenario_sweep
-flepimop2 process configs/SIRHD_vax_scenario_grid.yml -t scenario_heatmap_3x3_run_batch_and_plot
-flepimop2 process configs/SIRHD_vax_scenario_grid.yml -t scenario_spaghetti_incidence
-flepimop2 process configs/SIRHD_vax_scenario_grid.yml -t scenario_peak_bed_summary
+flepimop2 simulate configs/SIRHD_vax_scenario_grid.yml --target scenario_sweep
+flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_heatmap_3x3_run_batch_and_plot
+flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_spaghetti_incidence
+flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_peak_bed_summary
 ```
 
 ## 10. Figure Interpretation
