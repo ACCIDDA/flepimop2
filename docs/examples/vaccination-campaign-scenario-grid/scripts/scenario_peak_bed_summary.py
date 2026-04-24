@@ -16,12 +16,18 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import yaml
+
+try:
+    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+    import pandas as pd  # type: ignore[import-untyped]
+except ModuleNotFoundError:
+    plt = cast("Any", None)
+    pd = cast("Any", None)
+
 from flepimop2.configuration import ConfigurationModel
 
 ARG_LEN_MIN = 2
@@ -122,7 +128,9 @@ def _build_peak_dataframe(batch_root: Path, meta: PlotMeta) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _make_summary_figure(df: pd.DataFrame, meta: PlotMeta, output_path: Path) -> None:
+def _make_summary_figure(  # noqa: PLR0914
+    df: pd.DataFrame, meta: PlotMeta, output_path: Path
+) -> None:
     """Render faceted scatter summary with median trend by R0."""
     n_cols = len(meta.s_frac_values)
     fig, axes = plt.subplots(1, n_cols, figsize=(17, 5.8), sharey=True)
@@ -214,7 +222,7 @@ def _make_summary_figure(df: pd.DataFrame, meta: PlotMeta, output_path: Path) ->
     plt.close(fig)
 
 
-def main() -> None:
+def main() -> None:  # noqa: PLR0914
     """Load latest batch and render simplified peak occupancy summary."""
     args = sys.argv[1:]
     if len(args) < ARG_LEN_MIN:
@@ -236,7 +244,7 @@ def main() -> None:
     r0_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "r0")
     s_frac_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "s_frac")
 
-    n0 = float(config_model.parameters["n0"].value)
+    n0 = float(cast("Any", config_model.parameters["n0"]).value)
     available_beds = (BEDS_PER_1000 / 1000.0) * n0
 
     meta = PlotMeta(

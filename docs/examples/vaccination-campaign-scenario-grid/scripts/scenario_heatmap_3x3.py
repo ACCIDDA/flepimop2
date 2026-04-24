@@ -23,17 +23,24 @@ import tempfile
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import yaml
+
+try:
+    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+    import pandas as pd  # type: ignore[import-untyped]
+    from matplotlib.patches import Rectangle  # type: ignore[import-not-found]
+except ModuleNotFoundError:
+    plt = cast("Any", None)
+    pd = cast("Any", None)
+    Rectangle = cast("Any", None)
+
 from flepimop2.configuration import ConfigurationModel
-from matplotlib.patches import Rectangle
 
 if TYPE_CHECKING:
-    from matplotlib.axes import Axes
+    from matplotlib.axes import Axes  # type: ignore[import-not-found]
 
 ARG_LEN_MIN = 2
 EXPECTED_POSITIONAL_BURDEN_ONLY = 2
@@ -139,7 +146,7 @@ def _slug_float(value: float) -> str:
     return f"{value:.3f}".rstrip("0").rstrip(".").replace(".", "p")
 
 
-def _set_param(cfg: dict, name: str, value: float) -> None:
+def _set_param(cfg: dict[str, Any], name: str, value: float) -> None:
     """Set a scalar parameter value in raw YAML config."""
     params = cfg.setdefault("parameter", {})
     if name not in params:
@@ -148,7 +155,7 @@ def _set_param(cfg: dict, name: str, value: float) -> None:
     params[name]["value"] = float(value)
 
 
-def _set_backend_root(cfg: dict, root: str) -> None:
+def _set_backend_root(cfg: dict[str, Any], root: str) -> None:
     """Set backend output root in raw YAML config."""
     backend = cfg.get("backend", [])
     if not backend:
@@ -184,7 +191,7 @@ def _scenario_param_values(
     return [float(v) for v in params[param_name]]
 
 
-def _extract_panel_metrics(
+def _extract_panel_metrics(  # noqa: PLR0914
     results_dir: Path,
     metric_meta: PanelMetricMeta,
 ) -> PanelMetrics:
@@ -253,12 +260,12 @@ def _extract_panel_metrics(
 
 
 def _run_panel_simulation(
-    base_cfg: dict,
+    base_cfg: dict[str, Any],
     cfg_path: Path,
     out_dir: Path,
     r0_value: float,
     s_frac: float,
-) -> None:  # noqa: PLR0914
+) -> None:
     """Run one t_start x cap_l panel into an isolated output directory."""
     cfg = copy.deepcopy(base_cfg)
 
@@ -488,7 +495,7 @@ def _make_panel_figure(
 
     for row, s_frac in enumerate(plot_meta.s_frac_values):
         for col, r0_val in enumerate(plot_meta.r0_values):
-            panel_metrics = panel_data[(r0_val, s_frac)]
+            panel_metrics = panel_data[r0_val, s_frac]
             values = _metric_matrix(panel_metrics, spec.metric)
             panel_meta = PanelDrawMeta(
                 r0_val=r0_val,
@@ -568,7 +575,7 @@ def _parse_cli_args(
     )
 
 
-def main() -> None:
+def main() -> None:  # noqa: PLR0914
     """Run panel simulations (optional) and render legacy panel figures."""
     (
         cfg_path,
@@ -588,9 +595,9 @@ def main() -> None:
     r0_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "r0")
     s_frac_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "s_frac")
 
-    default_t_start = float(config_model.parameters["t_start"].value)
-    default_cap_l = float(config_model.parameters["cap_l"].value)
-    n0 = float(config_model.parameters["n0"].value)
+    default_t_start = float(cast("Any", config_model.parameters["t_start"]).value)
+    default_cap_l = float(cast("Any", config_model.parameters["cap_l"]).value)
+    n0 = float(cast("Any", config_model.parameters["n0"]).value)
     available_beds = (BEDS_PER_1000 / 1000.0) * n0
 
     base_root = Path("model_output") / "legacy_r0_s0_batches"
@@ -623,7 +630,7 @@ def main() -> None:
                     panel_dir,
                 )
                 _run_panel_simulation(base_cfg, cfg_path, panel_dir, r0_val, s_frac)
-                panel_data[(r0_val, s_frac)] = _extract_panel_metrics(
+                panel_data[r0_val, s_frac] = _extract_panel_metrics(
                     panel_dir,
                     panel_metric_meta,
                 )
@@ -645,7 +652,7 @@ def main() -> None:
                 panel_dir = batch_root / (
                     f"r0_{_slug_float(r0_val)}__sfrac_{_slug_float(s_frac)}"
                 )
-                panel_data[(r0_val, s_frac)] = _extract_panel_metrics(
+                panel_data[r0_val, s_frac] = _extract_panel_metrics(
                     panel_dir,
                     panel_metric_meta,
                 )

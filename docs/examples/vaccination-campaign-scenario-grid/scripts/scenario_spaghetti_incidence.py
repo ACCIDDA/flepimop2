@@ -20,17 +20,24 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import numpy as np
-import pandas as pd
 import yaml
+
+try:
+    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+    import matplotlib.ticker as mticker  # type: ignore[import-not-found]
+    import pandas as pd  # type: ignore[import-untyped]
+except ModuleNotFoundError:
+    plt = cast("Any", None)
+    mticker = cast("Any", None)
+    pd = cast("Any", None)
+
 from flepimop2.configuration import ConfigurationModel
 
 if TYPE_CHECKING:
-    from matplotlib.axes import Axes
+    from matplotlib.axes import Axes  # type: ignore[import-not-found]
 
 ARG_LEN_MIN = 2
 SWEEP_SCENARIO_NAME = "vax_campaign"
@@ -305,7 +312,7 @@ def _make_incidence_figure(
     plt.close(fig)
 
 
-def main() -> None:
+def main() -> None:  # noqa: PLR0914
     """Load latest batch and render weekly hospitalization incidence spaghetti."""
     args = sys.argv[1:]
     if len(args) < ARG_LEN_MIN:
@@ -326,8 +333,8 @@ def main() -> None:
     cap_l_vals = _scenario_param_values(raw_cfg, SWEEP_SCENARIO_NAME, "cap_l")
     r0_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "r0")
     s_frac_values = _scenario_param_values(raw_cfg, PANEL_SCENARIO_NAME, "s_frac")
-    n0 = float(config_model.parameters["n0"].value)
-    t_hosp = float(config_model.parameters["t_hosp"].value)
+    n0 = float(cast("Any", config_model.parameters["n0"]).value)
+    t_hosp = float(cast("Any", config_model.parameters["t_hosp"]).value)
 
     meta = IncidenceMeta(
         t_start_vals=t_start_vals,
