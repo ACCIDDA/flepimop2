@@ -2,42 +2,27 @@
 
 The next generation of the flexible epidemic modeling pipeline.
 
-## Quick Start
-
-### Installation
-
-`flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with `pip`:
 ## What is `flepimop2`?
 
-`flepimop2` is a Python package and command-line tool for running epidemic simulations. It works with configuration files to define and execute analysis pipelines. Because it is also a library, you can write custom analyses that read and write data in a way that works seamlessly with the rest of the pipeline, and advanced users can develop shareable modules that plug directly into it.
+`flepimop2` is a Python package and command-line tool for running dynamic system simulations. It works with configuration files to define and execute analysis pipelines. Because it is also a library, you can write custom analyses that read and write data in a way that works seamlessly with the rest of the pipeline, and advanced users can develop shareable modules that plug directly into it.
 
 At the core of flepimop2 is a modular design that separates three concerns:
 
-- **System**: the mathematical model describing how disease spreads (e.g., a compartmental SIR model)
+- **System**: the mathematical model describing how the dynamical system evolves (e.g., disease spreads with a compartmental SIR model)
 - **Engine**: the numerical solver that runs the model forward in time
 - **Backend**: the output format for saving results
 
 Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline — model, solver, parameters, time grid, and post-processing — lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.
 
-## Prerequisites
-
-Make sure the following are available on your system before getting started:
-
-- [git](https://git-scm.com/install/) — for cloning the repository
-- [pipx](https://pipx.pypa.io/latest/installation/) — for installing the CLI
-- [just](https://just.systems/man/en/packages.html) — task runner used to set up project environments
-- [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) (or [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)) — for managing project virtual environments
-
 ## Installation
-
-Clone the flepimop2 repository and install the CLI with pipx:
+`flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with `pip`:
 
 ```bash
 pip install flepimop2
 ```
 
-If you want to work from a local clone instead, see the [installation guide](guides/install.md) for a source install and dependency setup.
 This makes the `flepimop2` command available globally so you can use it from any project directory.
+If you want to work from a local clone instead, see the [installation guide](guides/install.md) for a source install and dependency setup.
 
 ## Create a Project
 
