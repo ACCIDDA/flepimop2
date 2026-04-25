@@ -2,6 +2,16 @@
 
 The next generation of the flexible epidemic modeling pipeline.
 
+## Installation
+
+`flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with:
+
+```bash
+pip install flepimop2
+```
+
+If you are adding `flepimop2` as a dependency in another project, see the [installation guide](docs/guides/install.md).
+
 ## Local Development
 
 1. Clone the repository
@@ -47,3 +57,7 @@ just ci
 ```
 
 There is a separate CI check which will run `just yamllint` and `just docs` to check YAML file formatting and that the documentation builds successfully.
+
+## Funding Acknowledgement
+
+This project was made possible by the Insight Net cooperative agreement CDC-RFA-FT-23-0069 from the CDC’s Center for Forecasting and Outbreak Analytics. Its contents are solely the responsibility of the authors and do not necessarily represent the official views of the Centers for Disease Control and Prevention.

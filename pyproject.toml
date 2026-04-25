@@ -1,8 +1,9 @@
 [project]
 name = "flepimop2"
-version = "0.1.0"
+version = "0.2.0"
 description = "The flexible epidemic modeling pipeline"
 readme = "README.md"
+license = { file = "LICENSE" }
 authors = [
     { name = "Carl Pearson", email = "cap1024@unc.edu" },
     { name = "Joshua Macdonald", email = "jmacdo16@jh.edu" },
@@ -74,6 +75,7 @@ orcid = "0000-0002-3643-6266"
 [[tool.flepimop2.people]]
 email = "twillard@unc.edu"
 github = "TimothyWillard"
+orcid = "0009-0001-2486-7931"
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -98,7 +100,6 @@ select = [
 ]
 ignore = [
     "COM812",   # Missing trailing comma, not needed when used with the formatter
-    "CPY001",   # Missing copyright notice at top of file
     "D203",     # 1 blank line required before class docstring
     "D212",     # Multi-line docstring summary should start at the first line
     "INP001",   # Implicit namespace package
@@ -111,6 +112,9 @@ ignore = [
 allow-star-arg-any = true
 
 [tool.ruff.lint.per-file-ignores]
+"docs/**/*" = [
+    "CPY001",   # Missing copyright notice at top of file
+]
 "tests/**/*" = [
     "PLR6301",  # Method could be a function, class method, or static method
     "S101",     # Use of `assert` detected
@@ -138,6 +142,7 @@ include = ["src/flepimop2/templates"]
 [tool.hatch.build.targets.sdist]
 include = [
     "src/flepimop2",
+    "AUTHORS",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "LICENSE",

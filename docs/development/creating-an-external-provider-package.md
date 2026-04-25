@@ -7,6 +7,7 @@ This tutorial will show how to:
 - Structure the package as a PEP 420 implicit namespace package.
 - Implement a custom backend module class.
 - Use the external provider package in a `flepimop2` configuration file.
+- Appropriately license external provider packages.
 
 In this tutorial, we will create a new backend package called `flepimop2-npz-backend` that provides an `NpzBackend` class for saving and loading NumPy arrays using the `.npz` format.
 
@@ -53,10 +54,12 @@ uv init --package --build-backend hatchling
 
 # Add dependencies
 uv add numpy
-uv add "git+https://github.com/ACCIDDA/flepimop2"
+uv add "flepimop2~=0.0"
 ```
 
 This creates a basic package structure with a `pyproject.toml` file configured to use the Hatch build backend.
+
+`flepimop2` is still in its pre-1.0 release line, so provider packages should pin to the current major version series. That means a constraint like `flepimop2~=0.0` today, and `flepimop2~=1.0` once the project reaches v1.
 
 ### Step 2: Configure `pyproject.toml`
 
@@ -70,7 +73,7 @@ description = "An external provider for flepimop2 for saving and reading npz fil
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "flepimop2",
+    "flepimop2~=0.0",
     "numpy>=2.3.5",
 ]
 
@@ -80,9 +83,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/flepimop2"]
-
-[tool.uv.sources]
-flepimop2 = { git = "https://github.com/ACCIDDA/flepimop2" }
 ```
 
 The critical configuration here is `[tool.hatch.build.targets.wheel]`, which tells Hatch to package everything under `src/flepimop2` as part of the `flepimop2` namespace.
@@ -126,7 +126,6 @@ When you inherit from [`ModuleModel`][flepimop2.configuration.ModuleModel], your
 
 import os
 from pathlib import Path
-from typing import Literal
 
 import numpy as np
 from flepimop2.typing import Float64NDArray
@@ -137,10 +136,9 @@ from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 
 
-class NpzBackend(ModuleModel, BackendABC):
+class NpzBackend(ModuleModel, BackendABC, module="npz"):
     """NPZ backend for saving numpy arrays to .npz files."""
 
-    module: Literal["flepimop2.backend.npz"] = "flepimop2.backend.npz"
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
     compressed: bool = Field(default=True, description="Use compression when saving")
 
@@ -210,10 +208,21 @@ class NpzBackend(ModuleModel, BackendABC):
             return npz_file["data"]
 ```
 
+The `module="npz"` class argument is the preferred API. It resolves to the fully qualified module path `"flepimop2.backend.npz"` and also configures the matching Pydantic field for the model. The explicit form is still supported if you prefer to spell it out:
+
+```python
+from typing import Literal
+
+
+class NpzBackend(ModuleModel, BackendABC):
+    module: Literal["flepimop2.backend.npz"] = "flepimop2.backend.npz"
+    ...
+```
+
 The key points of this approach are:
 
 - The class inherits from both [`ModuleModel`][flepimop2.configuration.ModuleModel] and [`BackendABC`][flepimop2.abcs.BackendABC].
-- The `module` field uses a `Literal` type hint to specify the exact module path.
+- The preferred `module="npz"` class argument resolves the exact module path while keeping the corresponding Pydantic field constrained to that value.
 - Pydantic's `Field` is used to define configuration options with defaults and descriptions.
 - Field validators can be used for custom validation logic.
 - No separate `build` function is needed, `flepimop2` is able to inspect that this class inherits [`ModuleModel`][flepimop2.configuration.ModuleModel] and creates a default `build` function.
@@ -400,6 +409,12 @@ def test_npz_backend_save_and_load(tmp_path: Path) -> None:
     loaded_data = backend.read(run_meta)
     np.testing.assert_array_equal(loaded_data, test_data)
 ```
+
+## Licensing
+
+Since `flepimop2` is [licensed under GPLv3](../license.md) external provider packages must also be licensed under GPLv3. However, since external provider packages are a secondary python package that both depend on `flepimop2` and depend on your core python package your core python package does not need to be licensed under GPLv3.
+
+For more detailed questions around licensing please feel free to reach out for guidance.
 
 ## Summary
 

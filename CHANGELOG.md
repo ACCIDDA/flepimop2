@@ -9,26 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initialized `flepimop2`.
-- Added documentation using `mkdocs` that includes API/CLI reference as well as reusing `CHANGELOG.md` and `CONTRIBUTING.md` where appropriate.
-- Added basic configuration models to parse and serialize configuration files. These are contained in the `flepimop2.configuration` module.
-- Added core simulation infrastructure including engines (machinery to evolve a model) and systems (descriptions of model changes). These are contained in the `flepimop2.engine/system/backend` modules.
-- Added the ability to execute auxiliary commands in the context of `flepimop2` with the `flepimop2 process` CLI backed by the `flepimop.process` module.
-- Converted `flepimop2` to a PEP420 implicit namespace package so external providers can inject themselves into the `flepimop2` namespace. This allows users to reference modules by name only and then `flepimop2` will resolve the kind of module based on its location in a configuration file. See [#45](https://github.com/ACCIDDA/flepimop2/issues/45).
-- Added `flepimop2.abcs` as a convenient re-export of ABCs/protocols for developer use. See [#85](https://github.com/ACCIDDA/flepimop2/issues/85).
-- Made parameters modular, similar to backends/engines/processes/systems, to allow external packages to provide their own parameter types. See [#75](https://github.com/ACCIDDA/flepimop2/issues/75).
-- Restricted the name of user defined backends/engines/parameters/processes/systems to comply with the custom `IdentifierString` type.
-- Added a new `flepimop2 skeleton` CLI command for scaffolding a project repository. See [#84](https://github.com/ACCIDDA/flepimop2/issues/84).
-- Added `flepimop.testing` with functionality for integration testing, both for `flepimop2` itself and for external provider packages. See [#107](https://github.com/ACCIDDA/flepimop2/issues/107).
-- Added a parent class, `ModuleABC`, for all customizable modules that sets a required `module` attribute and provides infrastructure for non-standardized properties information. Also extended said infrastructure to allow for standardized property information for `SystemABC`. See [#113](https://github.com/ACCIDDA/flepimop2/issues/113), [#126](https://github.com/ACCIDDA/flepimop2/issues/126), [#129](https://github.com/ACCIDDA/flepimop2/discussions/129).
-- Add "binding" to `SystemABC` objects to convert fully generic signature to a simulation needs-specific signature.
-- Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration, but setting this currently results in a warning since it has no effect. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
-- Refactor `SystemABC` type approach to binding (and fix knock on mypy typing issues, circular dependency issues). Briefly, a `SystemABC` implementation now only needs to provide `_bind_impl` which fixes (or not) parameters in the system. This update adds another internal implementation (`AdapterSystem`) for directly creating a system from locally `def`d function (vs `WrapperSystem` which reads from a file).
-- Added infrastructure for submitting package to PyPI. See [#123](https://github.com/ACCIDDA/flepimop2/issues/123), [#142](https://github.com/ACCIDDA/flepimop2/issues/142), [#195](https://github.com/ACCIDDA/flepimop2/issues/195), [#196](https://github.com/ACCIDDA/flepimop2/issues/196).
+- Added repository citation metadata via `CITATION.cff` and generated documentation for citing `flepimop2`. See [#136](https://github.com/ACCIDDA/flepimop2/issues/136).
+- Added a dedicated installation guide that documents `pip install flepimop2`, `uv add flepimop2`, and how to declare `flepimop2` as a dependency in another project. See [#89](https://github.com/ACCIDDA/flepimop2/issues/89), [#144](https://github.com/ACCIDDA/flepimop2/issues/144).
 
 ### Changed
-
-- Updated the documentation quick start integration test to use the same configuration file as the documentation homepage to ensure the two stay in sync. See [#185](https://github.com/ACCIDDA/flepimop2/issues/185).
 - Updated documentation quick start and getting-started guides; updated assets to align with new guides.
 
 ### Deprecated
@@ -46,3 +30,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - ...
+
+## [0.1.0] - 2026-04-20
+
+### Added
+
+- Initialized `flepimop2`.
+- Added documentation using `mkdocs` that includes API/CLI reference as well as reusing `CHANGELOG.md` and `CONTRIBUTING.md` where appropriate.
+- Added basic configuration models to parse and serialize configuration files. These are contained in the `flepimop2.configuration` module.
+- Added core simulation infrastructure including engines (machinery to evolve a model) and systems (descriptions of model changes). These are contained in the `flepimop2.engine/system/backend` modules.
+- Added the ability to execute auxiliary commands in the context of `flepimop2` with the `flepimop2 process` CLI backed by the `flepimop.process` module.
+- Converted `flepimop2` to a PEP420 implicit namespace package so external providers can inject themselves into the `flepimop2` namespace. This allows users to reference modules by name only and then `flepimop2` will resolve the kind of module based on its location in a configuration file. See [#45](https://github.com/ACCIDDA/flepimop2/issues/45).
+- Added `flepimop2.abcs` as a convenient re-export of ABCs/protocols for developer use. See [#85](https://github.com/ACCIDDA/flepimop2/issues/85).
+- Made parameters modular, similar to backends/engines/processes/systems, to allow external packages to provide their own parameter types. See [#75](https://github.com/ACCIDDA/flepimop2/issues/75).
+- Restricted the name of user defined backends/engines/parameters/processes/systems to comply with the custom `IdentifierString` type.
+- Added a new `flepimop2 skeleton` CLI command for scaffolding a project repository. See [#84](https://github.com/ACCIDDA/flepimop2/issues/84).
+- Added `flepimop.testing` with functionality for integration testing, both for `flepimop2` itself and for external provider packages. See [#107](https://github.com/ACCIDDA/flepimop2/issues/107).
+- Added a parent class, `ModuleABC`, for all customizable modules that sets a required `module` attribute and provides infrastructure for non-standardized properties information. Also extended said infrastructure to allow for standardized property information for `SystemABC`. See [#113](https://github.com/ACCIDDA/flepimop2/issues/113), [#126](https://github.com/ACCIDDA/flepimop2/issues/126), [#129](https://github.com/ACCIDDA/flepimop2/discussions/129).
+- Add "binding" to `SystemABC` objects to convert fully generic signature to a simulation needs-specific signature.
+- Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration, but setting this currently results in a warning since it has no effect. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
+- Refactor `SystemABC` type approach to binding (and fix knock on mypy typing issues, circular dependency issues). Briefly, a `SystemABC` implementation now only needs to provide `_bind_impl` which fixes (or not) parameters in the system. This update adds another internal implementation (`AdapterSystem`) for directly creating a system from locally `def`d function (vs `WrapperSystem` which reads from a file).
+- Added infrastructure for submitting package to PyPI. See [#123](https://github.com/ACCIDDA/flepimop2/issues/123), [#142](https://github.com/ACCIDDA/flepimop2/issues/142), [#195](https://github.com/ACCIDDA/flepimop2/issues/195), [#196](https://github.com/ACCIDDA/flepimop2/issues/196).
+- Modules can now declare their name via the `module` keyword argument to class declaration to simplify naming for developers. See [#88](https://github.com/ACCIDDA/flepimop2/issues/88).
+- Introduce `ScenarioABC` type to capture parameter scenarios.
+
+### Changed
+
+- The simulate command now resolves initial conditions from the system's `initial_state` option (a symbolic state→parameter mapping) when available, falling back to the legacy `s0`/`i0`/`r0` convention. See [#225](https://github.com/ACCIDDA/flepimop2/issues/225).
+- Updated the documentation quick start integration test to use the same configuration file as the documentation homepage to ensure the two stay in sync. See [#185](https://github.com/ACCIDDA/flepimop2/issues/185).
+

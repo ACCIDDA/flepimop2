@@ -32,13 +32,6 @@ jobs:
     name: 'validate release'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'fail if PyPI publish is requested'
-        if: "${{ github.event.inputs.publish-target == 'pypi' }}"
-        run: |
-          # `flepimop2` is not ready for submission to PyPI yet.
-          echo "Publishing to PyPI is intentionally disabled for this"
-          echo "repository."
-          exit 1
       - name: 'checkout repository'
         uses: 'actions/checkout@v6'
         with:
@@ -53,17 +46,16 @@ jobs:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           UV_PYTHON_VERSION: '3.12'
       - name: 'upload package artifacts'
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           name: 'dist'
           path: 'dist/*'
           if-no-files-found: 'error'
   publish-pypi:
-    name: 'publish to PyPI'
+    name: 'publish package'
     needs:
       - 'validate'
     runs-on: 'ubuntu-latest'
-    if: "${{ github.event.inputs.publish-target == 'testpypi' }}"
     permissions:
       id-token: 'write'
     steps:
@@ -73,9 +65,13 @@ jobs:
           name: 'dist'
           path: 'dist'
       - name: 'publish package to TestPyPI'
+        if: "${{ github.event.inputs.publish-target == 'testpypi' }}"
         uses: 'pypa/gh-action-pypi-publish@release/v1'
         with:
           repository-url: 'https://test.pypi.org/legacy/'
+      - name: 'publish package to PyPI'
+        if: "${{ github.event.inputs.publish-target == 'pypi' }}"
+        uses: 'pypa/gh-action-pypi-publish@release/v1'
   create-github-release:
     name: 'create GitHub release'
     needs:

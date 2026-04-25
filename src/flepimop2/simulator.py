@@ -1,3 +1,18 @@
+# flepimop2: The FLExible Pipeline for Interchangeable MOdel Processing
+# Copyright (C) 2026  Carl Pearson, Joshua Macdonald, Timothy Willard
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Simulation orchestration for flepimop2."""
 
 __all__ = ["Simulator"]
@@ -126,9 +141,15 @@ class Simulator:
         self,
         initial_state: Float64NDArray,
         params: dict[str, float],
+        meta: RunMeta | None = None,
     ) -> Float64NDArray:
         """
         Run the simulation and persist results via the backend.
+
+        Args:
+            initial_state: The initial state array for the simulation.
+            params: The parameter dict for the simulation.
+            meta: Metadata about the simulation run.
 
         Returns:
             The simulation result array.
@@ -146,5 +167,6 @@ class Simulator:
             initial_state,
             params,
         )
-        self.backend.save(res, RunMeta())
+        meta = meta or RunMeta()
+        self.backend.save(res, meta)
         return res

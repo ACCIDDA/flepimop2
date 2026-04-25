@@ -51,6 +51,10 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
       base_path: docs/.
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.arithmatex:
       generic: true
 
@@ -67,6 +71,7 @@ extra_css:
 nav:
   - Home: index.md
   - Guides:
+      - Installation: guides/install.md
       - Getting Started: guides/getting-started.md
   - Development:
       - Contributing: development/contributing.md
@@ -86,6 +91,7 @@ nav:
           - Module: reference/api/module.md
           - Parameter: reference/api/parameter.md
           - Process: reference/api/process.md
+          - Scenario: reference/api/scenario.md
           - Simulator: reference/api/simulator.md
           - System: reference/api/system.md
           - Testing: reference/api/testing.md
@@ -93,4 +99,7 @@ nav:
       - CLI: reference/cli.md
   - Connectors: connectors.md
   - Changelog: changelog.md
+  - Citation: citation.md
+  - License: license.md
   - Authors: authors.md
+  - Funding Acknowledgement: funding-acknowledgement.md

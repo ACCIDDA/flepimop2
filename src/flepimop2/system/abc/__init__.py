@@ -1,3 +1,18 @@
+# flepimop2: The FLExible Pipeline for Interchangeable MOdel Processing
+# Copyright (C) 2026  Carl Pearson, Joshua Macdonald, Timothy Willard
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Abstract class for Dynamic Systems."""
 
 __all__ = [
@@ -11,7 +26,7 @@ __all__ = [
 import inspect
 import sys
 from abc import abstractmethod
-from typing import Any, Literal
+from typing import Any
 
 import numpy as np
 
@@ -33,12 +48,12 @@ else:
     from typing_extensions import override
 
 
-class SystemABC(ModuleABC):
+class SystemABC(ModuleABC, module_namespace="system"):
     """
     Abstract class for Dynamic Systems.
 
     Attributes:
-        module: The module name for the system.
+        module: The fully-qualified module name for the system.
         state_change: The type of state change.
         options: Optional dictionary of additional options the system exposes for
             `flepimop2` to take advantage of.
@@ -148,10 +163,9 @@ class SystemABC(ModuleABC):
         return self.bind()(time, state, **params)
 
 
-class _AdapterSystem(SystemABC):
+class _AdapterSystem(SystemABC, module="wrapper"):
     """A `SystemABC` which wraps a user-defined function."""
 
-    module: Literal["flepimop2.system.wrapper"] = "flepimop2.system.wrapper"
     state_change: StateChangeEnum
     stepper: SystemProtocol
     options: dict[IdentifierString, Any]
