@@ -13,8 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a dedicated installation guide that documents `pip install flepimop2`, `uv add flepimop2`, and how to declare `flepimop2` as a dependency in another project. See [#89](https://github.com/ACCIDDA/flepimop2/issues/89), [#144](https://github.com/ACCIDDA/flepimop2/issues/144).
 
 ### Changed
-
-- ...
+- Updated documentation quick start and getting-started guides; updated assets to align with new guides.
 
 ### Deprecated
 
@@ -59,3 +58,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The simulate command now resolves initial conditions from the system's `initial_state` option (a symbolic state→parameter mapping) when available, falling back to the legacy `s0`/`i0`/`r0` convention. See [#225](https://github.com/ACCIDDA/flepimop2/issues/225).
 - Updated the documentation quick start integration test to use the same configuration file as the documentation homepage to ensure the two stay in sync. See [#185](https://github.com/ACCIDDA/flepimop2/issues/185).
+
