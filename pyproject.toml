@@ -83,7 +83,10 @@ testpaths = [
     "src",
     "tests/",
 ]
-addopts = ["--import-mode=importlib", "--doctest-modules"]
+addopts = [
+    "--import-mode=importlib",
+    "--doctest-modules",
+]
 markers = [
     "integration: marks integration tests in tests/integration/",
 ]
@@ -115,6 +118,10 @@ allow-star-arg-any = true
 "docs/**/*" = [
     "CPY001",   # Missing copyright notice at top of file
 ]
+"docs/examples/vaccination-campaign-scenario-grid/scripts/*.py" = [
+    "DOC201",   # Require return documentation in docstrings
+    "DOC501",   # Require raised exceptions listed in docstrings
+]
 "tests/**/*" = [
     "PLR6301",  # Method could be a function, class method, or static method
     "S101",     # Use of `assert` detected
@@ -130,7 +137,10 @@ convention = "google"
 [tool.mypy]
 mypy_path = ["src"]
 files = "."
-exclude = ["^build/", "^site/"]
+exclude = [
+    "^build/",
+    "^site/",
+]
 namespace_packages = true
 explicit_package_bases = true
 strict = true
