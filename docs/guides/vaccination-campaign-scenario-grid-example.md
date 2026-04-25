@@ -2,7 +2,7 @@
 
 This guide walks through a policy-sweep SIRHD model with vaccination strata, and shows how to set up the configuration and figure-generation workflow in `flepimop2`.
 
-This example uses [`op_system`](https://github.com/NAU-CCL/op_system) for transition-based model specification and [`op_engine`](https://github.com/NAU-CCL/op_engine) for numerical integration, using a vaccination axis with compartments `u` (unvaccinated), `v` (vaccinated/protected), and `w` (vaccinated but waned). This pairing keeps the disease dynamics readable in configuration while delegating solver behavior to the engine layer.
+This example uses [`op_system`](https://github.com/ACCIDDA/op_system) for transition-based model specification and [`op_engine`](https://github.com/ACCIDDA/op_engine) for numerical integration, using a vaccination axis with compartments `u` (unvaccinated), `v` (vaccinated/protected), and `w` (vaccinated but waned). This pairing keeps the disease dynamics readable in configuration while delegating solver behavior to the engine layer.
 
 ## 1. Start from a New Repository
 
@@ -80,7 +80,7 @@ For additional context on module wiring (`module`, `state_change`, and transitio
 
 ## 4. Aliases: Derived Terms and Rates
 
-Aliases define reusable expressions and are often where model intent is most explicit. Expression syntax here is evaluated by `op_system`; for allowed expression forms and semantics, see the [op_system repository](https://github.com/NAU-CCL/op_system). For broader module-wiring context, see [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md).
+Aliases define reusable expressions and are often where model intent is most explicit. Expression syntax here is evaluated by `op_system`; for allowed expression forms and semantics, see the [op_system repository](https://github.com/ACCIDDA/op_system). For broader module-wiring context, see [Implementing Custom Engines and Systems](../development/implementing-custom-engines-and-systems.md).
 
 ```yaml
 aliases:
