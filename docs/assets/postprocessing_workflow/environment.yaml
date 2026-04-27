@@ -1,0 +1,28 @@
+---
+channels:
+  - "conda-forge"
+  - "defaults"
+  - "r"
+  - "dnachun"
+
+dependencies:
+  - "python>=3.11"
+  - "pip"
+
+  - pip:
+      - "git+https://git@github.com/ACCIDDA/flepimop2.git@main"
+      - "git+https://git@github.com/ACCIDDA/flepimop2-ipynbrender.git@main"
+
+  - "yamllint"
+  - "pyyaml"
+  - "ruff"
+  - "scipy"
+  - "plotnine"
+  - "matplotlib"
+  - "pandas"
+  - "r-base>=4.3"
+  - "pyarrow==18.0.0"
+  - "r-arrow==18.0.0"
+  - "r-data.table>=1.17"
+  - "r-ggplot2>=3.4"
+  - "r-yaml>=2.3"

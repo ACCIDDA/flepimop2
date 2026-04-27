@@ -29,18 +29,21 @@ import numpy as np
 import yaml
 
 try:
-    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
-    import pandas as pd  # type: ignore[import-untyped]
-    from matplotlib.patches import Rectangle  # type: ignore[import-not-found]
+    import matplotlib.patches as mpatches
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    from matplotlib import cm, colors
 except ModuleNotFoundError:
+    mpatches = cast("Any", None)
     plt = cast("Any", None)
     pd = cast("Any", None)
-    Rectangle = cast("Any", None)
+    cm = cast("Any", None)
+    colors = cast("Any", None)
 
 from flepimop2.configuration import ConfigurationModel
 
 if TYPE_CHECKING:
-    from matplotlib.axes import Axes  # type: ignore[import-not-found]
+    from matplotlib.axes import Axes
 
 ARG_LEN_MIN = 2
 EXPECTED_POSITIONAL_BURDEN_ONLY = 2
@@ -416,7 +419,7 @@ def _draw_panel(
 
     if panel_meta.default_x is not None and panel_meta.default_y is not None:
         ax.add_patch(
-            Rectangle(
+            mpatches.Rectangle(
                 (panel_meta.default_x - 0.5, panel_meta.default_y - 0.5),
                 1.0,
                 1.0,
@@ -430,7 +433,7 @@ def _draw_panel(
         ax.set_title(f"R0={panel_meta.r0_val:.1f}", fontsize=12, fontweight="bold")
 
     ax.set_xticks(range(len(panel_meta.t_start_vals)))
-    ax.set_xticklabels([int(v) for v in panel_meta.t_start_vals], fontsize=8)
+    ax.set_xticklabels([str(int(v)) for v in panel_meta.t_start_vals], fontsize=8)
     ax.set_yticks(range(len(panel_meta.cap_l_vals)))
     ax.set_yticklabels([f"{v:.2f}" for v in panel_meta.cap_l_vals], fontsize=8)
 
@@ -521,8 +524,8 @@ def _make_panel_figure(
 
     fig.suptitle(spec.title, fontsize=14, fontweight="bold")
 
-    norm = plt.Normalize(vmin=spec.vmin, vmax=spec.vmax)
-    sm = plt.cm.ScalarMappable(cmap=spec.cmap, norm=norm)
+    norm = colors.Normalize(vmin=spec.vmin, vmax=spec.vmax)
+    sm = cm.ScalarMappable(cmap=spec.cmap, norm=norm)
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=axes.ravel().tolist(), shrink=0.8, pad=0.02)
     cbar.set_label(spec.cbar_label, fontsize=11, fontweight="bold")

@@ -26,24 +26,36 @@ import numpy as np
 import yaml
 
 try:
-    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
-    import matplotlib.ticker as mticker  # type: ignore[import-not-found]
-    import pandas as pd  # type: ignore[import-untyped]
+    import matplotlib.lines as mlines
+    import matplotlib.pyplot as plt
+    import matplotlib.ticker as mticker
+    import pandas as pd
+    from matplotlib import cm, colors
 except ModuleNotFoundError:
     plt = cast("Any", None)
     mticker = cast("Any", None)
+    mlines = cast("Any", None)
     pd = cast("Any", None)
+    cm = cast("Any", None)
+    colors = cast("Any", None)
 
 from flepimop2.configuration import ConfigurationModel
 
 if TYPE_CHECKING:
-    from matplotlib.axes import Axes  # type: ignore[import-not-found]
+    from matplotlib.axes import Axes
 
 ARG_LEN_MIN = 2
 SWEEP_SCENARIO_NAME = "vax_campaign"
 PANEL_SCENARIO_NAME = "panel_grid"
 H_COL_INDICES = [7, 8, 9]
-LINESTYLES = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 2))]
+LINESTYLES: list[str | tuple[float, tuple[float, ...]]] = [
+    "-",
+    "--",
+    "-.",
+    ":",
+    (0.0, (3.0, 1.0, 1.0, 1.0)),
+    (0.0, (5.0, 2.0)),
+]
 
 FULL_WEEK_DAYS = 7
 _PCT_THRESHOLD_LOW = 0.01
@@ -176,8 +188,8 @@ def _draw_incidence_panel(
         msg = f"Expected {expected} CSVs in {panel_dir}, found {len(csv_files)}"
         raise ValueError(msg)
 
-    t_cmap = plt.cm.plasma_r
-    t_norm = plt.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
+    t_cmap = plt.get_cmap("plasma_r")
+    t_norm = colors.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
 
     for scenario_idx, csv_file in enumerate(csv_files):
         t_start_idx = scenario_idx // len(meta.cap_l_vals)
@@ -261,17 +273,17 @@ def _make_incidence_figure(
             _draw_incidence_panel(axes_2d[row, col], panel_dir, meta, panel)
 
     # Colourbar for t_start (dedicated external axis, avoids covering panel data)
-    t_cmap = plt.cm.plasma_r
-    t_norm = plt.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
-    sm = plt.cm.ScalarMappable(cmap=t_cmap, norm=t_norm)
+    t_cmap = plt.get_cmap("plasma_r")
+    t_norm = colors.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
+    sm = cm.ScalarMappable(cmap=t_cmap, norm=t_norm)
     sm.set_array([])
-    cax = fig.add_axes([0.90, 0.20, 0.02, 0.60])
+    cax = fig.add_axes((0.90, 0.20, 0.02, 0.60))
     cbar = fig.colorbar(sm, cax=cax)
     cbar.set_label("Campaign Start Day", fontsize=11, fontweight="bold")
 
     # Legend for cap_l (linestyles)
     handles = [
-        plt.Line2D(
+        mlines.Line2D(
             [0],
             [0],
             color="grey",

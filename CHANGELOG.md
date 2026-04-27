@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added repository citation metadata via `CITATION.cff` and generated documentation for citing `flepimop2`. See [#136](https://github.com/ACCIDDA/flepimop2/issues/136).
 - Added a dedicated installation guide that documents `pip install flepimop2`, `uv add flepimop2`, and how to declare `flepimop2` as a dependency in another project. See [#89](https://github.com/ACCIDDA/flepimop2/issues/89), [#144](https://github.com/ACCIDDA/flepimop2/issues/144).
 - Added a new vaccination campaign scenario-grid guide with linked reproducible assets (`SIRHD_vax_scenario_grid.yml`, three postprocessing scripts, and corresponding rendered figures) under `docs/examples/vaccination-campaign-scenario-grid/`. See [#198](https://github.com/ACCIDDA/flepimop2/issues/198).
+- Updated documentation quick start and getting-started guides; updated assets to align with new guides.
 
 ### Changed
 
