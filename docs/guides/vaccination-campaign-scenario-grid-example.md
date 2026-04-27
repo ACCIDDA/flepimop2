@@ -13,6 +13,7 @@ mkdir vaccination-campaign-scenario-grid
 cd vaccination-campaign-scenario-grid
 flepimop2 skeleton .
 ```
+Then type `just`.  You are now be reqdy to use `flepimop2`.
 
 ## 2. Get the Example Config and Plot Scripts
 
@@ -231,12 +232,29 @@ process:
 
 ## 9. Running the Example
 
-From a working environment with `flepimop2` available:
+Before running these commands add `SIHRD_vax` and `plots` subdirectories to the `model_output` folder created by the `flepimop2 skeleton` command.
+
+From a working environment with `flepimop2` available.
+
+First run:
 
 ```bash
 flepimop2 simulate configs/SIRHD_vax_scenario_grid.yml --target scenario_sweep
+```
+This generates all of the simulations that will act as the source for the rest of our analysis.  Then run:
+
+```bash
 flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_heatmap_3x3_run_batch_and_plot
+```
+This gives you a 3x3 heatmap for baseline vaccination scenarios.  Next we can examine weekly time-varying incidence "spaghetti" plots:
+
+```bash
 flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_spaghetti_incidence
+```
+
+Finally, we can examine the amount of beds expected to be occupied during peak hospitalizaion prevelance assuming ~3 beds per 1000 individuals in the population:
+
+```bash
 flepimop2 process configs/SIRHD_vax_scenario_grid.yml --target scenario_peak_bed_summary
 ```
 
