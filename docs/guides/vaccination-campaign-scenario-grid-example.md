@@ -13,7 +13,8 @@ mkdir vaccination-campaign-scenario-grid
 cd vaccination-campaign-scenario-grid
 flepimop2 skeleton .
 ```
-Then type `just`.  You are now be reqdy to use `flepimop2`.
+Then type `just`.  Followed by `conda activate ./venv`.  
+You are now ready to use flepimop2. 
 
 ## 2. Get the Example Config and Plot Scripts
 
