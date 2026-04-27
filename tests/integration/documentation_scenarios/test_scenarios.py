@@ -32,8 +32,10 @@ def test_quick_start_simulate(repo_root: Path, tmp_path: Path) -> None:
             repo_root / "docs/assets/scenarios_config.yaml": Path(
                 "configs/scenarios_config.yaml"
             ),
-            repo_root / "docs/assets/SIR.py": Path("model_input/plugins/SIR.py"),
-            repo_root / "docs/assets/solve_ivp.py": Path(
+            repo_root / "docs/assets/quickstart_workflow/SIR.py": Path(
+                "model_input/plugins/SIR.py"
+            ),
+            repo_root / "docs/assets/quickstart_workflow/solve_ivp.py": Path(
                 "model_input/plugins/solve_ivp.py"
             ),
         },

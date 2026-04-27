@@ -267,6 +267,7 @@ flepimop2 process --target notebook configs/config.yml
 
 Python post-processing scripts can use flepimop2's public configuration API to locate output files without hardcoding paths. `ConfigurationModel.from_yaml()` returns a fully validated, typed representation of the config, from which the backend's output directory can be resolved:
 
+<!-- skip: next -->
 ```python
 from flepimop2.configuration import ConfigurationModel
 from pathlib import Path
