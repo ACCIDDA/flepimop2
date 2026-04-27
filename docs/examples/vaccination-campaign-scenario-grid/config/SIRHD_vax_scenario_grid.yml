@@ -114,21 +114,21 @@ process:
     command: python postprocessing/SIRHD_incidence_plot.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_plot.png
+      - model_output/plots/SIRHD_vax_plot.png
 
   scenario_heatmap:
     module: shell
     command: python postprocessing/scenario_heatmap.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap.png
+      - model_output/plots/SIRHD_vax_scenario_heatmap.png
 
   scenario_heatmap_3x3_plot_latest_batch:
     module: shell
     command: python postprocessing/scenario_heatmap_3x3.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap_3x3.png
+      - model_output/plots/SIRHD_vax_scenario_heatmap_3x3.png
       - --burden-only
 
   scenario_heatmap_3x3_run_batch_and_plot:
@@ -136,7 +136,7 @@ process:
     command: python postprocessing/scenario_heatmap_3x3.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_scenario_heatmap_3x3.png
+      - model_output/plots/SIRHD_vax_scenario_heatmap_3x3.png
       - --run
       - --burden-only
 
@@ -145,14 +145,14 @@ process:
     command: python postprocessing/scenario_spaghetti_incidence.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_spaghetti_incidence.png
+      - model_output/plots/SIRHD_vax_spaghetti_incidence.png
 
   scenario_peak_bed_summary:
     module: shell
     command: python postprocessing/scenario_peak_bed_summary.py
     args:
       - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_legacy/SIRHD_vax_peak_bed_summary.png
+      - model_output/plots/SIRHD_vax_peak_bed_summary.png
 
 parameter:
   r0:
