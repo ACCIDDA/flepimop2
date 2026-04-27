@@ -356,28 +356,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#site-development" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Site Development
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1518,28 +1496,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#site-development" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Site Development
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1590,7 +1546,8 @@ If you want to work from a local clone instead, see the <a href="guides/install/
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   ├── data/
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│   └── plugins/
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>├── model_output/
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>└── README.md
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>├── postprocessing/
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>└── README.md
 </span></code></pre></div>
 <p>Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The <strong>configuration file</strong> (saved in <code>configs</code>) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The <strong>system</strong> and <strong>engine</strong> are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in <code>model_input/plugins</code>) for both the system and the engine.</p>
 <p>For this quickstart, download the following files and add them to your project:</p>
@@ -1741,79 +1698,69 @@ If you want to work from a local clone instead, see the <a href="guides/install/
 <summary>Environment YAML file</summary>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nn">---</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">channels</span><span class="p">:</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">conda-forge</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">defaults</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;conda-forge&#39;</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;defaults&#39;</span>
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nt">dependencies</span><span class="p">:</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scipy</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pip</span><span class="p">:</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;git+https://git@github.com/ACCIDDA/flepimop2.git@main&#39;</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;python==3.13&#39;</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;pip&#39;</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;scipy&#39;</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pip</span><span class="p">:</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;flepimop2&#39;</span>
 </span></code></pre></div>
 </details>
 <p>Then create the environment:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>just<span class="w"> </span>venv
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>./venv
 </span></code></pre></div>
+<p>As flepimop2 will only work when it is run in an appropriate environment, you will need to run <code>conda activate ./venv</code> each time you open a new terminal session before using <code>flepimop2</code>.</p>
 <h2 id="simulate-an-outbreak">Simulate an Outbreak<a class="headerlink" href="#simulate-an-outbreak" title="Permanent link">&para;</a></h2>
 <p>Activate the project environment and run the simulation:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>conda<span class="w"> </span>activate<span class="w"> </span>./venv
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
 </span></code></pre></div>
-<p>Results are saved automatically to the <code>model_output</code> directory as a CSV file. As flepimop2 will only work when it is run in an appripriate environment, you will need to run <code>conda activate ./venv</code> each time you open a new terminal session before using <code>flepimop2</code>.</p>
+<p>Results are saved automatically to the <code>model_output</code> directory as a CSV file. </p>
 <h2 id="adding-post-processing">Adding Post-Processing<a class="headerlink" href="#adding-post-processing" title="Permanent link">&para;</a></h2>
 <p>flepimop2 supports post-processing steps that run after a simulation — useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the <code>process</code> block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.</p>
-<p>You will need to create a <code>postprocessing</code> directory within your project:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>mkdir<span class="w"> </span>postprocessing
-</span></code></pre></div>
 <p>The resources for the example post-processing pipeline are in the <code>assets/postprocessing_workflow</code> folder of the repository. You will need to copy them into your project as follows:</p>
 <ul>
 <li><a href="assets/postprocessing_workflow/config.yaml">config.yaml</a> → <code>configs/config.yaml</code> (replaces the quickstart config)</li>
 <li><a href="assets/postprocessing_workflow/SIR_plot.R">SIR_plot.R</a> → <code>postprocessing/SIR_plot.R</code></li>
-<li><a href="assets/postprocessing_workflow/SirPlot.ipynb">SirPlot.ipynb</a> → <code>postprocessing/SirPlot.ipynb</code></li>
 </ul>
 <p>After copying the files, your project structure should look like this:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>quick_start_project/
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>├── configs/
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>│   ├── built/
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>│   ├── config.yaml
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>│   └── EDITME.yaml
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>├── environment.yaml
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>├── justfile
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>├── model_input/
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>│   ├── data/
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>│   └── plugins/
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>│       ├── SIR.py
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>│       └── solve_ivp.py
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>├── model_output/
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>├── postprocessing/
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>│   ├── SIR_plot.R
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>│   └── SirPlot.ipynb
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>└── README.md
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>quick_start_project/
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── configs/
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>│   ├── built/
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│   ├── config.yaml
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│   └── EDITME.yaml
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>├── environment.yaml
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>├── justfile
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>├── model_input/
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>│   ├── data/
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>│   └── plugins/
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>│       ├── SIR.py
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>│       └── solve_ivp.py
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>├── model_output/
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>├── postprocessing/
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>│   └── SIR_plot.R
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>└── README.md
 </span></code></pre></div>
 <p>The post-processing workflow requires additional R and Python dependencies. Replace your <code>environment.yaml</code> with the one from <a href="assets/postprocessing_workflow/environment.yaml">assets/postprocessing_workflow/environment.yaml</a>, then recreate the environment (this can be done by restarting your terminal and removing the existing venv folder, then running the following):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>just<span class="w"> </span>venv
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>./venv
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>just<span class="w"> </span>venv
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>./venv
 </span></code></pre></div>
 <p>Take a look at the updated <code>configs/config.yaml</code>. It defines two simulation targets — <code>demo</code> and <code>hires</code> — that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the <code>process</code> block. flepimop2 defaults to the first defined target, but you can select a specific one with <code>--target</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Run the default (demo) target</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Run the high-resolution target instead</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Run the default (demo) target</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Run the high-resolution target instead</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
 </span></code></pre></div>
 <p>To run post-processing after a simulation, call <code>process</code> with the same config:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>flepimop2<span class="w"> </span>process<span class="w"> </span>configs/config.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>flepimop2<span class="w"> </span>process<span class="w"> </span>configs/config.yaml
 </span></code></pre></div>
 <p>This runs the post-processing steps defined for the <code>demo</code> target, producing a plot. You can call post-processing for a specific plot with the same --target argument as you use for simulations.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>flepimop2<span class="w"> </span>process<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
-</span></code></pre></div>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>To contribute to the main <code>flepimop2</code> pipeline, visit us <a href="https://github.com/ACCIDDA/flepimop2">on GitHub</a>.</p>
-<h2 id="site-development">Site Development<a class="headerlink" href="#site-development" title="Permanent link">&para;</a></h2>
-<p>This site uses <a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a>, a theme for <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-<p>To launch the site in developer mode, navigate to the <code>flepimop2</code> repo and run:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>just<span class="w"> </span>serve
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>flepimop2<span class="w"> </span>process<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
 </span></code></pre></div>
 
 
