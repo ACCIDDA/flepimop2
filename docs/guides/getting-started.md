@@ -13,9 +13,7 @@ Make sure the following are available on your system:
 
 ## Installation
 
-```bash
-pipx install flepimop2
-```
+For details on installation please refer to the [installation guide](../guides/install.md).
 
 ## Create a Project
 
@@ -292,12 +290,6 @@ The files for this walkthrough are in `assets/full_feature_workflow/` in the fle
 
 ### File Layout
 
-Create a `postprocessing/` directory in your project.
-
-```bash
-mkdir postprocessing
-```
-
 Copy the following:
 
 - [config.yml](../assets/full_feature_workflow/config.yml) → `configs/config.yml`
@@ -349,6 +341,9 @@ flepimop2 process configs/config.yml
 
 # Run post-processing for the r_plot target
 flepimop2 process --target r_plot configs/config.yml
+
+# Run post-processing for the notebook target using `flepimop2-ipynbrender`
+flepimop2 process --target notebook configs/config.yml
 ```
 
 Simulation outputs are written to `model_output` as CSV files. Post-processing outputs (plots, rendered notebooks) are also written there, with filenames as specified in the `process` block.

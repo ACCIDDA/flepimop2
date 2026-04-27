@@ -46,6 +46,7 @@ quick_start_project/
 │   ├── data/
 │   └── plugins/
 ├── model_output/
+├── postprocessing/
 └── README.md
 ```
 
@@ -83,34 +84,29 @@ Then create the environment:
 
 ```bash
 just venv
+conda activate ./venv
 ```
+
+As flepimop2 will only work when it is run in an appropriate environment, you will need to run `conda activate ./venv` each time you open a new terminal session before using `flepimop2`.
 
 ## Simulate an Outbreak
 
 Activate the project environment and run the simulation:
 
 ```bash
-conda activate ./venv
 flepimop2 simulate configs/config.yaml
 ```
 
-Results are saved automatically to the `model_output` directory as a CSV file. As flepimop2 will only work when it is run in an appripriate environment, you will need to run `conda activate ./venv` each time you open a new terminal session before using `flepimop2`.
+Results are saved automatically to the `model_output` directory as a CSV file. 
 
 ## Adding Post-Processing
 
 flepimop2 supports post-processing steps that run after a simulation — useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the `process` block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.
 
-You will need to create a `postprocessing` directory within your project:
-
-```bash
-mkdir postprocessing
-```
-
 The resources for the example post-processing pipeline are in the `assets/postprocessing_workflow` folder of the repository. You will need to copy them into your project as follows:
 
 - [config.yaml](assets/postprocessing_workflow/config.yaml) → `configs/config.yaml` (replaces the quickstart config)
 - [SIR_plot.R](assets/postprocessing_workflow/SIR_plot.R) → `postprocessing/SIR_plot.R`
-- [SirPlot.ipynb](assets/postprocessing_workflow/SirPlot.ipynb) → `postprocessing/SirPlot.ipynb`
 
 After copying the files, your project structure should look like this:
 
@@ -129,8 +125,7 @@ quick_start_project/
 │       └── solve_ivp.py
 ├── model_output/
 ├── postprocessing/
-│   ├── SIR_plot.R
-│   └── SirPlot.ipynb
+│   └── SIR_plot.R
 └── README.md
 ```
 
@@ -163,18 +158,4 @@ This runs the post-processing steps defined for the `demo` target, producing a p
 ```bash
 flepimop2 simulate --target hires configs/config.yaml
 flepimop2 process --target hires configs/config.yaml
-```
-
-## Contributing
-
-To contribute to the main `flepimop2` pipeline, visit us [on GitHub](https://github.com/ACCIDDA/flepimop2).
-
-## Site Development
-
-This site uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), a theme for [MkDocs](https://www.mkdocs.org/).
-
-To launch the site in developer mode, navigate to the `flepimop2` repo and run:
-
-```bash
-just serve
 ```
