@@ -22,11 +22,15 @@ import numpy as np
 import yaml
 
 try:
-    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
-    import pandas as pd  # type: ignore[import-untyped]
+    import matplotlib.lines as mlines
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    from matplotlib import colors
 except ModuleNotFoundError:
+    mlines = cast("Any", None)
     plt = cast("Any", None)
     pd = cast("Any", None)
+    colors = cast("Any", None)
 
 from flepimop2.configuration import ConfigurationModel
 
@@ -136,8 +140,8 @@ def _make_summary_figure(  # noqa: PLR0914
     fig, axes = plt.subplots(1, n_cols, figsize=(17, 5.8), sharey=True)
     axes_arr = [axes] if n_cols == 1 else list(axes)
 
-    t_norm = plt.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
-    cmap = plt.cm.plasma_r
+    t_norm = colors.Normalize(vmin=min(meta.t_start_vals), vmax=max(meta.t_start_vals))
+    cmap = plt.get_cmap("plasma_r")
 
     cap_offsets = np.linspace(-0.16, 0.16, len(meta.cap_l_vals))
     marker_map = {
@@ -192,7 +196,7 @@ def _make_summary_figure(  # noqa: PLR0914
 
     # Marker legend for coverage cap
     marker_handles = [
-        plt.Line2D(
+        mlines.Line2D(
             [0],
             [0],
             marker=marker_map[cap_l],
@@ -211,7 +215,7 @@ def _make_summary_figure(  # noqa: PLR0914
         loc="upper left",
     )
 
-    cax = fig.add_axes([0.90, 0.20, 0.02, 0.60])
+    cax = fig.add_axes((0.90, 0.20, 0.02, 0.60))
     cbar = fig.colorbar(sc, cax=cax)
     cbar.set_label("Campaign Start Day", fontsize=11, fontweight="bold")
 
