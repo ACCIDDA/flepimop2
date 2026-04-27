@@ -33,12 +33,12 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
     Args:
         config_model: The validated configuration model.
 
+    Returns:
+        Path to the results directory.
+
     Raises:
         ValueError: If the simulate block is empty.
         KeyError: If the backend name is not found in the backends block.
-
-    Returns:
-        Path to the results directory.
     """
     simulate_block = config_model.simulate
     if not simulate_block:
@@ -73,17 +73,19 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
 
     return Path(root)
 
+
 def _resolve_state_names(config_model: ConfigurationModel) -> list[str]:
     """Resolve compartment state names from the first system in the configuration.
 
     Args:
         config_model: The validated configuration model
 
+    Returns:
+        List of state variable names in spec order.
+
     Raises:
         ValueError: If no systems are defined or the spec does not declare a state list.
 
-    Returns:
-        List of state variable names in spec order.
     """
     if not config_model.systems:
         msg = "config.system must define at least one system"
@@ -117,7 +119,7 @@ def main() -> None:
     config_model = ConfigurationModel.from_yaml(cfg_path)
 
     state_names = _resolve_state_names(config_model)
-    n_expected_cols = 1 + len(state_names) # time-column plus one per compartment
+    n_expected_cols = 1 + len(state_names)  # time-column plus one per compartment
 
     results_path = _resolve_results_dir(config_model)
     latest = _latest_csv(results_path)
@@ -133,7 +135,7 @@ def main() -> None:
         raise ValueError(msg)
 
     df = df.iloc[:, :n_expected_cols]
-    df.columns = ["time"] + state_names
+    df.columns = ["time", *state_names]
 
     plt.figure(figsize=(6, 4))
     for state in state_names:
