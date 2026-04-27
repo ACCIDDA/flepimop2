@@ -1,25 +1,20 @@
 ---
 name: Postprocessing_Sample_Model
-
 system:
   - module: wrapper
     state_change: flow
     script: model_input/plugins/SIR.py
-
 engine:
   - module: wrapper
     state_change: flow
     script: model_input/plugins/solve_ivp.py
-
 simulate:
   demo:
     times: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
   hires:
     times: 0.0:0.1:100.0
-
 backend:
   - module: csv
-
 process:
   demo:
     module: shell
@@ -33,11 +28,6 @@ process:
     args:
       - configs/config.yaml
       - model_output/SIR_plot_hires.png
-  jupyter_render:
-    module: ipynbrender
-    file: postprocessing/SirPlot.ipynb
-    output: model_output/SirPlot.html
-
 parameter:
   beta:
     module: fixed

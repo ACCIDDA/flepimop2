@@ -1,34 +1,22 @@
 ---
 channels:
-  - "conda-forge"
-  - "defaults"
-  - "r"
-  - "dnachun"
-
+  - 'conda-forge'
+  - 'defaults'
+  - 'r'
+  - 'dnachun'
 dependencies:
-  - "python>=3.11"
-  - "pip"
-
+  - 'python==3.13'
+  - 'pip'
   - pip:
-      - "git+https://git@github.com/ACCIDDA/flepimop2.git@main"
-      - "git+https://git@github.com/ACCIDDA/flepimop2-ipynbrender.git@main"
-      - "op_engine @ git+https://github.com/ACCIDDA/op_engine.git@main"
-      - "op_system @ git+https://github.com/ACCIDDA/op_system.git@main"
-      # yamllint disable-line rule:line-length
-      - "flepimop2-op-engine @ git+https://github.com/ACCIDDA/op_engine.git@main#subdirectory=flepimop2-op_engine"
-      # yamllint disable-line rule:line-length
-      - "flepimop2-op-system @ git+https://github.com/ACCIDDA/op_system.git@main#subdirectory=flepimop2-op_system"
-
-  - "yamllint"
-  - "pyyaml"
-  - "ruff"
-  - "scipy"
-  - "plotnine"
-  - "matplotlib"
-  - "pandas"
-  - "r-base>=4.3"
-  - "pyarrow==18.0.0"
-  - "r-arrow==18.0.0"
-  - "r-data.table>=1.17"
-  - "r-ggplot2>=3.4"
-  - "r-yaml>=2.3"
+      - 'flepimop2'
+      - 'flepimop2-op-engine'
+      - 'flepimop2-op-system'
+      - 'git+https://git@github.com/ACCIDDA/flepimop2-ipynbrender.git@main'
+  - 'scipy'
+  - 'plotnine'
+  - 'matplotlib'
+  - 'pandas'
+  - 'r-base>=4.3'
+  - 'r-data.table>=1.17'
+  - 'r-ggplot2>=3.4'
+  - 'r-yaml>=2.3'
