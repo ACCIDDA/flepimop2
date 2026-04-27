@@ -3,5 +3,11 @@ channels:
     - conda-forge
     - defaults
 dependencies:
+    - python=3.13
+    - pip
     - pip:
-          - 'git+https://git@github.com/ACCIDDA/flepimop2.git@main'
+          - flepimop2
+          - flepimop2-op-system
+          - flepimop2-op-engine
+          - matplotlib
+          - pandas

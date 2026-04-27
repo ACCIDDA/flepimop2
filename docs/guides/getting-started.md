@@ -14,9 +14,7 @@ Make sure the following are available on your system:
 ## Installation
 
 ```bash
-git clone git@github.com:ACCIDDA/flepimop2.git
-cd flepimop2
-pipx install .
+pipx install flepimop2
 ```
 
 ## Create a Project
