@@ -138,22 +138,24 @@ def _checked_partial(
 
     # Validate parameter value types against signature annotations
     for key, value in signature.parameters.items():
-        if key in offered_keys:
-            expected_type = value.annotation
-            if (
-                expected_type is not inspect.Parameter.empty
-                and expected_type is not Any
+        if key not in offered_keys:
+            continue
+        expected_type = value.annotation
+        if expected_type is inspect.Parameter.empty or expected_type is Any:
+            continue
+        try:
+            if isinstance(expected_type, type) and isinstance(
+                params[key], expected_type
             ):
-                try:
-                    casted_value = expected_type(params[key])
-                    params[key] = casted_value
-                except (ValueError, TypeError) as e:
-                    offered_type = type(params[key])
-                    msg = (
-                        f"Parameter '{key}' (type {offered_type.__name__}) "
-                        f"could not be cast to {expected_type.__name__}. Error: {e!s}"
-                    )
-                    validation_errors.append(msg)
+                continue
+            params[key] = expected_type(params[key])
+        except (ValueError, TypeError) as e:
+            offered_type = type(params[key])
+            msg = (
+                f"Parameter '{key}' (type {offered_type.__name__}) "
+                f"could not be cast to {expected_type.__name__}. Error: {e!s}"
+            )
+            validation_errors.append(msg)
 
     if validation_errors:
         validation_errors = [

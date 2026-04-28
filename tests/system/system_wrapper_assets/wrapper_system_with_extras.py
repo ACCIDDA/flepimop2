@@ -13,25 +13,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""A dummy stepper function for testing `WrapperSystem`."""
+"""A wrapper-system asset with a stepper only."""
 
 from flepimop2.typing import Float64NDArray
 
 
 def stepper(
-    time: float,
+    time: float,  # noqa: ARG001
     state: Float64NDArray,
-    offset: float,
+    beta: float,
+    gamma: Float64NDArray,
 ) -> Float64NDArray:
     """
-    A dummy stepper function for testing purposes: (state + offset) * time.
-
-    Args:
-        time: The current time.
-        state: The current state array.
-        offset: An offset value to be added to the state.
+    A dummy stepper using both scalar and age-indexed parameters.
 
     Returns:
-        The updated state array after applying the stepper logic.
+        The updated state.
     """
-    return (state + offset) * time
+    return state + beta + gamma
