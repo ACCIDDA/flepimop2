@@ -1,0 +1,46 @@
+---
+name: Postprocessing_Sample_Model
+system:
+  - module: wrapper
+    state_change: flow
+    script: model_input/plugins/SIR.py
+engine:
+  - module: wrapper
+    state_change: flow
+    script: model_input/plugins/solve_ivp.py
+simulate:
+  demo:
+    times: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  hires:
+    times: 0.0:0.1:100.0
+backend:
+  - module: csv
+process:
+  demo:
+    module: shell
+    command: Rscript postprocessing/SIR_plot.R
+    args:
+      - configs/config.yaml
+      - model_output/SIR_plot.png
+  hires:
+    module: shell
+    command: Rscript postprocessing/SIR_plot.R
+    args:
+      - configs/config.yaml
+      - model_output/SIR_plot_hires.png
+parameter:
+  beta:
+    module: fixed
+    value: 0.3
+  gamma:
+    module: fixed
+    value: 0.1
+  s0:
+    module: fixed
+    value: 999
+  i0:
+    module: fixed
+    value: 1
+  r0:
+    module: fixed
+    value: 0

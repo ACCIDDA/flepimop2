@@ -1,0 +1,10 @@
+---
+channels:
+    - 'conda-forge'
+    - 'defaults'
+dependencies:
+    - 'python==3.13'
+    - 'pip'
+    - 'scipy'
+    - pip:
+          - 'flepimop2'

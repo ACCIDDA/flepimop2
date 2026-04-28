@@ -1,0 +1,16 @@
+---
+channels:
+  - 'conda-forge'
+  - 'defaults'
+  - 'r'
+  - 'dnachun'
+dependencies:
+  - 'python==3.13'
+  - 'pip'
+  - pip:
+      - 'flepimop2'
+  - 'scipy'
+  - 'r-base>=4.3'
+  - 'r-data.table>=1.17'
+  - 'r-ggplot2>=3.4'
+  - 'r-yaml>=2.3'
