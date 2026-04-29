@@ -30,6 +30,7 @@ Examples:
 
 __all__ = [
     "EngineProtocol",
+    "ExitCode",
     "Float64NDArray",
     "IdentifierString",
     "RaiseOnMissing",
@@ -39,7 +40,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable
-from enum import StrEnum
+from enum import IntEnum, StrEnum
 from keyword import iskeyword
 from typing import (
     Annotated,
@@ -59,6 +60,21 @@ from pydantic import AfterValidator, Field
 
 Float64NDArray = npt.NDArray[np.float64]
 """Alias for a NumPy ndarray with float64 data type."""
+
+
+class ExitCode(IntEnum):
+    """
+    Standard process exit codes used by CLI commands.
+
+    Attributes:
+        OKAY: Exit code 0, indicating successful execution.
+        GENERAL: Exit code 1, indicating a general error.
+        CONFIGURATION: Exit code 3, indicating a configuration related error.
+    """
+
+    OKAY = 0
+    GENERAL = 1
+    CONFIGURATION = 3
 
 
 def _identifier_string(value: str) -> str:

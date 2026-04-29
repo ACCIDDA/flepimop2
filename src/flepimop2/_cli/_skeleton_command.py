@@ -21,6 +21,7 @@ import os
 from pathlib import Path
 
 from flepimop2._cli._cli_command import CliCommand
+from flepimop2.typing import ExitCode
 
 
 class SkeletonCommand(CliCommand):
@@ -49,7 +50,7 @@ class SkeletonCommand(CliCommand):
         *,
         path: Path | None,
         dry_run: bool,
-    ) -> None:
+    ) -> ExitCode:
         """
         Create a project skeleton.
 
@@ -57,6 +58,8 @@ class SkeletonCommand(CliCommand):
             path: Path to the new project.
             dry_run: Whether to perform a dry run.
 
+        Returns:
+            An exit code indicating success or failure.
         """
         path = path or Path.cwd()
         if not path.exists():
@@ -65,16 +68,17 @@ class SkeletonCommand(CliCommand):
                 parent_dir = parent_dir.parent
             if os.access(parent_dir, os.W_OK) is False:
                 self.error(f"Cannot write to path: {path}")
-                return
+                return ExitCode.GENERAL
 
         if dry_run:
             self.info(f"Would create skeleton project at: {path}")
-            return
+            return ExitCode.OKAY
         path.mkdir(parents=True, exist_ok=True)
         template_dir = Path(__file__).parent.parent / "templates" / "skeleton"
         self._copy_template_tree(template_dir, path)
         self.info(f"Skeleton project created at: {path}")
         self.info(f"Directory structure:\n{self._generate_tree(path)}")
+        return ExitCode.OKAY
 
     @staticmethod
     def _copy_template_tree(source: Path, destination: Path) -> None:

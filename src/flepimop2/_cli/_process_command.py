@@ -23,6 +23,7 @@ from flepimop2._cli._cli_command import CliCommand
 from flepimop2._utils._click import _get_config_target
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
+from flepimop2.typing import ExitCode
 
 
 class ProcessCommand(CliCommand):
@@ -38,7 +39,7 @@ class ProcessCommand(CliCommand):
         config: Path,
         dry_run: bool,
         target: str | None = None,
-    ) -> None:
+    ) -> ExitCode:
         """
         Execute the processing step.
 
@@ -46,6 +47,9 @@ class ProcessCommand(CliCommand):
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
             target: Optional target process config to use.
+
+        Returns:
+            An exit code indicating success or failure.
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
@@ -57,3 +61,4 @@ class ProcessCommand(CliCommand):
 
         process_instance = build_process(processtarget)
         process_instance.execute(dry_run=dry_run)
+        return ExitCode.OKAY

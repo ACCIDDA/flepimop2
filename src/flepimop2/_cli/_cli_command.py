@@ -20,11 +20,13 @@ __all__ = []
 import inspect
 import logging
 import re
+import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
 from flepimop2._cli._logging import get_script_logger
+from flepimop2.typing import ExitCode
 
 _COMMAND_NAME_REGEX = re.compile(r"(?<!^)(?=[A-Z])")
 
@@ -50,7 +52,8 @@ class CliCommand(ABC):
 
         The 'verbosity' option is consumed here for logger setup. If 'verbosity'
         was auto-appended (not in _literal_options), it's removed from kwargs
-        before passing to run().
+        before passing to run(). The return value from run() is passed to
+        `sys.exit()`.
 
         Args:
             **kwargs: Command-specific arguments passed from Click options/arguments.
@@ -63,10 +66,10 @@ class CliCommand(ABC):
             self.debug("%s = %s", key.ljust(longest_key, " "), self.format(value))
         if "verbosity" in self._literal_options():
             kwargs |= {"verbosity": verbosity}
-        self.run(**kwargs)
+        sys.exit(self.run(**kwargs))
 
     @abstractmethod
-    def run(self, **kwargs: Any) -> None:
+    def run(self, **kwargs: Any) -> ExitCode:
         """
         Execute the command.
 
@@ -112,17 +115,18 @@ class CliCommand(ABC):
             List of option names to request from `COMMON_OPTIONS`.
 
         Examples:
+            >>> from flepimop2.typing import ExitCode
             >>> class MyCommand(CliCommand):
-            ...     def run(self, *, config: Path, dry_run: bool) -> None:
-            ...         pass
+            ...     def run(self, *, config: Path, dry_run: bool) -> ExitCode:
+            ...         return ExitCode.OKAY
             >>> MyCommand.options()
             ['config', 'dry_run', 'verbosity']
 
             >>> class MyCommandWithVerbosity(CliCommand):
             ...     def run(
             ...         self, *, config: Path, verbosity: int, dry_run: bool
-            ...     ) -> None:
-            ...         pass
+            ...     ) -> ExitCode:
+            ...         return ExitCode.OKAY
             >>> MyCommandWithVerbosity.options()
             ['config', 'verbosity', 'dry_run']
         """
@@ -202,7 +206,7 @@ class CliCommand(ABC):
         self.logger.critical(*args, **kwargs)
 
     @staticmethod
-    def format(value: Any) -> Any:  # noqa: ANN401
+    def format(value: object) -> str:
         """
         Format a value for logging output.
 
@@ -230,4 +234,4 @@ class CliCommand(ABC):
             return str(value.absolute())
         if isinstance(value, int | float):
             return f"{value:,}"
-        return value
+        return str(value)

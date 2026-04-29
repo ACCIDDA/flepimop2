@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ...
+- Updated CLI commands to return consistent exit codes based on the kind of failure. See [#17](https://github.com/ACCIDDA/flepimop2/issues/17).
 
 ### Deprecated
 

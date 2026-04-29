@@ -27,6 +27,7 @@ from flepimop2.meta import RunMeta
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.scenario.abc import build as build_scenario
 from flepimop2.simulator import Simulator
+from flepimop2.typing import ExitCode
 
 
 class SimulateCommand(CliCommand):
@@ -43,7 +44,7 @@ class SimulateCommand(CliCommand):
         config: Path,
         dry_run: bool,
         target: str | None = None,
-    ) -> None:
+    ) -> ExitCode:
         """
         Execute the simulation.
 
@@ -52,8 +53,8 @@ class SimulateCommand(CliCommand):
             dry_run: Whether dry run mode is enabled.
             target: Optional target simulate config to use.
 
-        Raises:
-            ValueError: If the simulator is missing a simulation configuration.
+        Returns:
+            An exit code indicating success or failure.
         """
         config_model = ConfigurationModel.from_yaml(config)
 
@@ -61,7 +62,8 @@ class SimulateCommand(CliCommand):
 
         if simulator.simulate_config is None:
             msg = "simulate_config must be set before running the simulator."
-            raise ValueError(msg)
+            self.error(msg)
+            return ExitCode.CONFIGURATION
 
         ic_map: dict[str, str] | None = simulator.system.option(
             "initial_state",
@@ -109,7 +111,7 @@ class SimulateCommand(CliCommand):
         self.info(f"  T: {simulator.simulate_config.times}")
 
         if dry_run:
-            return
+            return ExitCode.OKAY
 
         if scenario_name := simulator.simulate_config.scenario:
             # extract scenario parameters from the configuration
@@ -123,3 +125,4 @@ class SimulateCommand(CliCommand):
                 )
         else:
             simulator.run(initial_state, params)
+        return ExitCode.OKAY
