@@ -17,14 +17,14 @@
 
 __all__ = []
 
-
 from flepimop2._cli._cli_command import CliCommand
+from flepimop2.typing import ExitCode
 
 
 class BuildCommand(CliCommand):
     """Compile and build a model defined in a configuration file."""
 
-    def run(self, *, config: str, dry_run: bool) -> None:  # type: ignore[override]
+    def run(self, *, config: str, dry_run: bool) -> ExitCode:  # type: ignore[override]
         """
         Execute the build.
 
