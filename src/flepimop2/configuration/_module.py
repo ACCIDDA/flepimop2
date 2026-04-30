@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Annotated, Any, Literal, cast
+from typing import Annotated, Any, Literal, TypeAlias, cast
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
@@ -60,7 +60,11 @@ class ModuleModel(BaseModel):
         cls.model_rebuild(force=True)
 
 
+ModuleConfigurationValue: TypeAlias = ModuleModel | str
+"""A module configuration value, either expanded config or shorthand text."""
+
+
 ModuleGroupModel = Annotated[
-    dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)
+    dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)
 ]
 """Module group configuration model for flepimop2."""

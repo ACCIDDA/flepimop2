@@ -297,23 +297,19 @@ class _AdapterSystem(SystemABC, module="wrapper"):
         return super().model_state(axes)
 
 
-def build(config: dict[IdentifierString, Any] | ModuleModel) -> SystemABC:
+def build(config: dict[IdentifierString, Any] | ModuleModel | str) -> SystemABC:
     """
     Build a `SystemABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a `ModuleModel` instance.
+        config: Configuration dictionary or a `ModuleModel` instance. The
+            configuration must define a `module`.
 
     Returns:
         The constructed system instance.
 
     """
-    return _build(
-        config,
-        "system",
-        "flepimop2.system.wrapper",
-        SystemABC,
-    )
+    return _build(config, "system", SystemABC)
 
 
 def wrap(
