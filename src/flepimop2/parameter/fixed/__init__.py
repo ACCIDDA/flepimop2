@@ -18,7 +18,7 @@
 __all__ = ["FixedParameter"]
 
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 
@@ -41,6 +41,47 @@ class FixedParameter(ModuleModel, ParameterABC, module="fixed"):
 
     value: float | int | list[Any]
     shape: tuple[IdentifierString, ...] = ()
+
+    @classmethod
+    def from_shorthand(cls, shorthand: str) -> Self:
+        r"""
+        Build a fixed parameter from shorthand argument text.
+
+        Args:
+            shorthand: The text inside the shorthand parentheses.
+
+        Returns:
+            A fixed parameter with the parsed numeric value.
+
+        Raises:
+            ValueError: If the shorthand cannot be parsed as a float.
+
+        Examples:
+            >>> from flepimop2.parameter.fixed import FixedParameter
+            >>> FixedParameter.from_shorthand("3").value
+            3.0
+            >>> FixedParameter.from_shorthand("0.25").value
+            0.25
+            >>> FixedParameter.from_shorthand("-7").value
+            -7.0
+            >>> FixedParameter.from_shorthand('''
+            ...   3.1415
+            ... ''').value
+            3.1415
+            >>> try:
+            ...     FixedParameter.from_shorthand("'x'")
+            ... except ValueError as exc:
+            ...     print(exc)
+            FixedParameter shorthand must contain exactly one numeric value, got "'x'".
+        """
+        try:
+            return cls(value=float(shorthand.strip()))
+        except ValueError as exc:
+            msg = (
+                "FixedParameter shorthand must contain exactly one numeric value, "
+                f"got {shorthand!r}."
+            )
+            raise ValueError(msg) from exc
 
     def sample(
         self,

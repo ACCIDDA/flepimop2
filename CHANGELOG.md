@@ -12,11 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an `axes` top level key to the `ConfigurationModel` so users can provide these axes via configuration and `flepimop2.axis` module for realizing & manipulating axes from configuration. See [#147](https://github.com/ACCIDDA/flepimop2/issues/147).
 - Added ways to specify shape for parameters based on `axes` by changing `ParameterABC.sample` to return a `ParameterValue` that contains both the underlying value as a numpy array as well as shape metadata, and is easily extensible to other metadata and underlying value types in the future. Also added `ModelStateSpecification`, `ParameterRequest` types for systems to advertise their underlying state and request parameters to comply with said state specification. See [#115](https://github.com/ACCIDDA/flepimop2/issues/115), [#133](https://github.com/ACCIDDA/flepimop2/issues/133).
 - Added help text for CLI arguments that are formatted similarly to click's default formatting for options.
+- Added optional shorthand module configuration support across all module namespaces, allowing config values such as `fixed(0.3)` for modules that implement `from_shorthand`. See [#14](https://github.com/ACCIDDA/flepimop2/issues/14).
 
 ### Changed
 
 - Updated CLI commands to return consistent exit codes based on the kind of failure. See [#17](https://github.com/ACCIDDA/flepimop2/issues/17).
 - Added a default search order for CLI commands with the `CONFIG` argument making providing a file manually not required for typical/small project usage. See [#245](https://github.com/ACCIDDA/flepimop2/issues/245).
+- Removed implicit default module selection from module builders. Backend, engine, parameter, process, scenario, and system configs must now declare their module explicitly or use shorthand syntax.
+- Simplified `ScenarioABC` to use `module_namespace="scenario"` so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to [#216](https://github.com/ACCIDDA/flepimop2/pull/216).
 
 ### Deprecated
 

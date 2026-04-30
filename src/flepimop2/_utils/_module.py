@@ -16,15 +16,25 @@
 """Private utilities for dynamic module loading and validation."""
 
 import inspect
+import re
 from abc import ABCMeta
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Literal, Protocol, TypeVar, cast, runtime_checkable
+from typing import (
+    Any,
+    Literal,
+    NamedTuple,
+    Protocol,
+    Self,
+    TypeVar,
+    cast,
+    runtime_checkable,
+)
 
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.module import ModuleABC
@@ -33,6 +43,87 @@ from flepimop2.typing import IdentifierString
 Namespace = Literal["backend", "engine", "parameter", "process", "scenario", "system"]
 
 T_co = TypeVar("T_co", bound=ModuleABC, covariant=True)
+SHORTHAND_PATTERN = re.compile(
+    r"^\s*(?P<module>[A-Za-z_][A-Za-z0-9_\.]*)\((?P<args>.*)\)\s*$",
+    re.DOTALL,
+)
+IDENTIFIER_STRING_ADAPTER = TypeAdapter(IdentifierString)
+
+
+class ParsedShorthand(NamedTuple):
+    """
+    Parsed representation of shorthand module configuration text.
+
+    This class represents the result of parsing a shorthand configuration string, i.e.
+    `from: ...`. It contains the extracted module token and the argument payload as
+    separate attributes. For example, parsing the string `fixed(0.3)` would yield a
+    `ParsedShorthand` with `module='fixed'` and `args='0.3'`.
+
+    Attributes:
+        module: The module token extracted from the shorthand text.
+        args: The argument payload extracted from the shorthand text.
+    """
+
+    module: IdentifierString
+    args: str
+
+    @classmethod
+    def from_string(cls, value: str) -> Self:
+        r"""
+        Parse shorthand config text into a module token and argument payload.
+
+        Args:
+            value: Shorthand configuration text such as `fixed(0.3)`.
+
+        Returns:
+            A parsed shorthand object containing the module token and argument
+            payload.
+
+        Raises:
+            ValueError: If the text does not match shorthand syntax.
+
+        Examples:
+            >>> from flepimop2._utils._module import ParsedShorthand
+            >>> ParsedShorthand.from_string("fixed(0.3)")
+            ParsedShorthand(module='fixed', args='0.3')
+            >>> ParsedShorthand.from_string(" normal(-1, 2.5) ")
+            ParsedShorthand(module='normal', args='-1, 2.5')
+            >>> parsed = ParsedShorthand.from_string('''fixed(
+            ...   3.1415
+            ... )''')
+            >>> parsed.module
+            'fixed'
+            >>> parsed.args == '''
+            ...   3.1415
+            ... '''
+            True
+            >>> try:
+            ...     ParsedShorthand.from_string("Normal(1)")
+            ... except ValueError as exc:
+            ...     print(exc)
+            Shorthand module name 'Normal' must satisfy IdentifierString.
+            >>> try:
+            ...     ParsedShorthand.from_string("fixed")
+            ... except ValueError as exc:
+            ...     print(exc)
+            Shorthand module configuration must match the form 'module_name(...)'.
+        """
+        match = SHORTHAND_PATTERN.fullmatch(value)
+        if match is None:
+            msg = (
+                "Shorthand module configuration must match the form 'module_name(...)'."
+            )
+            raise ValueError(msg)
+        raw_module = match.group("module")
+        try:
+            module = IDENTIFIER_STRING_ADAPTER.validate_python(raw_module)
+        except ValidationError as exc:
+            msg = f"Shorthand module name {raw_module!r} must satisfy IdentifierString."
+            raise ValueError(msg) from exc
+        return cls(
+            module=module,
+            args=match.group("args"),
+        )
 
 
 @runtime_checkable
@@ -253,9 +344,8 @@ def _resolve_module_name(module: str, namespace: Namespace) -> str:
 
 
 def _build(
-    config: dict[str, Any] | ModuleModel,
+    config: dict[str, Any] | ModuleModel | str,
     namespace: Namespace,
-    default_module: str,
     enforced_type: type[T_co] | ABCMeta,
 ) -> T_co:
     """
@@ -265,9 +355,8 @@ def _build(
     system ABC build functions to reduce code duplication.
 
     Args:
-        config: Configuration dictionary or `ModuleModel` instance.
+        config: Configuration dictionary, `ModuleModel` instance, or shorthand text.
         namespace: The namespace for module resolution.
-        default_module: The default module to use if not specified in config.
         enforced_type: The expected type of the built instance. Can be an abstract
             class since it's only used for isinstance checks, not instantiation.
 
@@ -275,19 +364,39 @@ def _build(
         The constructed instance.
 
     Raises:
+        ValueError: If the configuration does not define a module.
         TypeError: If the built instance does not match the enforced type.
 
     """
-    config_dict = _as_dict(config)
-    if "module" not in config_dict:
-        config_dict["module"] = default_module
-    module_path = _resolve_module_name(config_dict["module"], namespace)
-    config_dict["module"] = module_path
+    if isinstance(config, str):
+        parsed = ParsedShorthand.from_string(config)
+        module_path = _resolve_module_name(parsed.module, namespace)
+        mod = import_module(module_path)
+        target_class = cast(
+            "type[T_co]",
+            _find_target_class(mod, module_path, enforced_type),
+        )
+        try:
+            instance = target_class.from_shorthand(parsed.args)
+        except NotImplementedError as exc:
+            msg = f"Module '{module_path}' does not support shorthand configuration."
+            raise ValueError(msg) from exc
+    else:
+        config_dict = _as_dict(config)
+        configured_module = config_dict.get("module")
+        if not isinstance(configured_module, str) or not configured_module:
+            msg = (
+                f"Configuration for namespace '{namespace}' must define a non-empty "
+                "'module' string."
+            )
+            raise ValueError(msg)
+        module_path = _resolve_module_name(configured_module, namespace)
+        config_dict["module"] = module_path
 
-    # Anchor T_co by passing enforced_type
-    builder: Buildable[T_co] = _load_builder(module_path, enforced_type)
+        # Anchor T_co by passing enforced_type
+        builder: Buildable[T_co] = _load_builder(module_path, enforced_type)
 
-    instance = builder.build(config_dict)
+        instance = builder.build(config_dict)
 
     # Final runtime safety check since we've done a lot of casting
     if not isinstance(instance, enforced_type):

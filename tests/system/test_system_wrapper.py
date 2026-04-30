@@ -35,7 +35,10 @@ WRAPPER_SCRIPT_WITH_EXTRAS: Final = (
 )
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_SCRIPT, "state_change": "flow"}])
+@pytest.mark.parametrize(
+    "config",
+    [{"module": "wrapper", "script": TEST_SCRIPT, "state_change": "flow"}],
+)
 def test_wrapper_system(config: dict[str, Any]) -> None:
     """Test `WrapperSystem` loads a script and uses its `stepper` function."""
     system = build(config)
@@ -55,6 +58,7 @@ def test_wrapper_system(config: dict[str, Any]) -> None:
 def test_wrapper_system_options_available_via_option_method() -> None:
     """Test `WrapperSystem` exposes configured options through `ModuleABC.option`."""
     system = build({
+        "module": "wrapper",
         "script": TEST_SCRIPT,
         "state_change": "flow",
         "options": {"offset": 1.5},
@@ -67,6 +71,7 @@ def test_wrapper_system_loads_requested_parameters_and_model_state_from_config()
 ):
     """Wrapper systems should expose parameter and state metadata from config."""
     system = build({
+        "module": "wrapper",
         "script": WRAPPER_SCRIPT_WITH_EXTRAS,
         "state_change": "flow",
         "requested_parameters": {

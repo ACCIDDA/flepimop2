@@ -30,6 +30,6 @@ from flepimop2.typing import IdentifierString
 )
 def test_set_valid_static_parameters(params: dict[IdentifierString, Any]) -> None:
     """Confirm generation of all combinations of parameters."""
-    scenario = scenario_build({"parameters": params})
+    scenario = scenario_build({"module": "grid", "parameters": params})
     expected_scenarios = list(itertools.product(*params.values()))
     assert list(scenario.scenarios()) == expected_scenarios

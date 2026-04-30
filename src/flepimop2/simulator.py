@@ -23,7 +23,7 @@ from flepimop2.backend.abc import BackendABC
 from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import (
     ConfigurationModel,
-    ModuleModel,
+    ModuleConfigurationValue,
     SimulateSpecificationModel,
 )
 from flepimop2.engine.abc import EngineABC
@@ -61,10 +61,10 @@ class Simulator:
     backend: BackendABC
     target: str | None = None
     simulate_config: SimulateSpecificationModel | None = None
-    system_config: ModuleModel | None = None
-    engine_config: ModuleModel | None = None
-    backend_config: ModuleModel | None = None
-    parameter_configs: dict[IdentifierString, ModuleModel] | None = None
+    system_config: ModuleConfigurationValue | None = None
+    engine_config: ModuleConfigurationValue | None = None
+    backend_config: ModuleConfigurationValue | None = None
+    parameter_configs: dict[IdentifierString, ModuleConfigurationValue] | None = None
     axes: AxisCollection
 
     def __init__(  # noqa: PLR0913
@@ -75,10 +75,11 @@ class Simulator:
         *,
         target: str | None = None,
         simulate_config: SimulateSpecificationModel | None = None,
-        system_config: ModuleModel | None = None,
-        engine_config: ModuleModel | None = None,
-        backend_config: ModuleModel | None = None,
-        parameter_configs: dict[IdentifierString, ModuleModel] | None = None,
+        system_config: ModuleConfigurationValue | None = None,
+        engine_config: ModuleConfigurationValue | None = None,
+        backend_config: ModuleConfigurationValue | None = None,
+        parameter_configs: dict[IdentifierString, ModuleConfigurationValue]
+        | None = None,
         axes: AxisCollection | None = None,
     ) -> None:
         """
@@ -93,7 +94,7 @@ class Simulator:
             system_config: The resolved system configuration model, if available.
             engine_config: The resolved engine configuration model, if available.
             backend_config: The resolved backend configuration model, if available.
-            parameter_configs: The resolved parameter configuration models, if
+            parameter_configs: The resolved parameter configuration values, if
                 available.
             axes: The resolved runtime axis collection for the simulation.
 
