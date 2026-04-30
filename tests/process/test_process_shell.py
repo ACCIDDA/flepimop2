@@ -22,8 +22,23 @@ import pytest
 from flepimop2.process.abc import build as build_process
 
 
-@pytest.mark.parametrize("config", [{"command": "echo", "args": ["Hello, World!"]}])
+@pytest.mark.parametrize(
+    "config",
+    [{"module": "shell", "command": "echo", "args": ["Hello, World!"]}],
+)
 def test_shell_system(config: dict[str, Any]) -> None:
     """Test `ShellProcess` makes a command and executes it."""
     process = build_process(config)
     process.execute()
+
+
+def test_shell_process_shorthand_not_supported() -> None:
+    """Shell process should reject shorthand until it opts in."""
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"Module 'flepimop2\.process\.shell' does not support shorthand "
+            r"configuration\."
+        ),
+    ):
+        build_process("shell(echo, hello)")

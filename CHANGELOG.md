@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Added optional shorthand module configuration support across all module namespaces, allowing config values such as `fixed(0.3)` for modules that implement `from_shorthand`. See [#14](https://github.com/ACCIDDA/flepimop2/issues/14), [#100](https://github.com/ACCIDDA/flepimop2/issues/100).
 
 ### Changed
 
-- ...
+- Removed implicit default module selection from module builders. Backend, engine, parameter, process, scenario, and system configs must now declare their module explicitly or use shorthand syntax.
+- Simplified `ScenarioABC` to use `module_namespace="scenario"` so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to [#216](https://github.com/ACCIDDA/flepimop2/pull/216).
 
 ### Deprecated
 

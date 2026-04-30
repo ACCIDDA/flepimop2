@@ -63,16 +63,16 @@ class BackendABC(ModuleABC, module_namespace="backend"):
         ...
 
 
-def build(config: dict[str, Any] | ModuleModel) -> BackendABC:
+def build(config: dict[str, Any] | ModuleModel | str) -> BackendABC:
     """Build a `BackendABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary. The dict must contains a 'module' key, which
-            will be used to lookup the Backend module path. The module will have
+        config: Configuration dictionary. The dict must contain a 'module' key, which
+            will be used to lookup the backend module path. The module will have
             "flepimop2.backend." prepended.
 
     Returns:
         The constructed backend instance.
 
     """
-    return _build(config, "backend", "flepimop2.backend.csv", BackendABC)
+    return _build(config, "backend", BackendABC)

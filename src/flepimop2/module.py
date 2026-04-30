@@ -19,7 +19,7 @@ __all__ = ["ModuleABC"]
 
 import inspect
 from abc import ABC
-from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar, Literal, Self
 
 from flepimop2.typing import RaiseOnMissing, RaiseOnMissingType
 
@@ -170,6 +170,41 @@ class ModuleABC(ABC):
                 "'module' as a non-empty string."
             )
             raise TypeError(msg)
+
+    @classmethod
+    def from_shorthand(cls, shorthand: str) -> Self:
+        """
+        Build an instance from shorthand configuration text.
+
+        Concrete modules may override this optional hook to support configuration
+        values shaped like `module_name(...)`. The provided `shorthand` is the text
+        inside the parentheses.
+
+        Args:
+            shorthand: The text contained within the shorthand parentheses.
+
+        Notes:
+            This hook is primarily intended for external module providers that want
+            to offer a concise string syntax for simple configurations.
+
+            Before implementing shorthand, consider whether the module actually
+            benefits from it. Modules that require many settings, nested structure,
+            or richer validation are often better served by full YAML mappings than
+            by a single string.
+
+            Implementations should parse `shorthand` robustly. In particular,
+            callers may supply multiline values from YAML block scalars, so parsing
+            should tolerate embedded newlines and surrounding whitespace where that
+            makes sense for the module's syntax.
+
+            Implementations should raise `ValueError` for invalid shorthand input so
+            users receive a clear configuration error rather than a generic failure.
+
+        Raises:
+            NotImplementedError: If the module does not support shorthand syntax.
+        """
+        msg = "Shorthand syntax is not supported by this module."
+        raise NotImplementedError(msg)
 
     def option(self, name: str, default: Any = RaiseOnMissing) -> Any:  # noqa: ANN401
         """

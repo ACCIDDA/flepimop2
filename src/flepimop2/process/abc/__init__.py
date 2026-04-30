@@ -62,7 +62,7 @@ class ProcessABC(ModuleABC, module_namespace="process"):
         return None
 
 
-def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
+def build(config: dict[str, Any] | ModuleModel | str) -> ProcessABC:
     """Build a `ProcessABC` from a configuration dictionary.
 
     Args:
@@ -74,4 +74,4 @@ def build(config: dict[str, Any] | ModuleModel) -> ProcessABC:
         ProcessABC: The constructed process object.
 
     """
-    return _build(config, "process", "flepimop2.process.shell", ProcessABC)
+    return _build(config, "process", ProcessABC)

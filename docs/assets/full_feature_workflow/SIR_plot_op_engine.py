@@ -39,6 +39,7 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
     Raises:
         ValueError: If the simulate block is empty.
         KeyError: If the backend name is not found in the backends block.
+        TypeError: If the backend config uses shorthand syntax.
     """
     simulate_block = config_model.simulate
     if not simulate_block:
@@ -58,6 +59,12 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
     if backend_model is None:
         msg = f"simulate backend {backend_name!r} not found in config.backends"
         raise KeyError(msg)
+    if isinstance(backend_model, str):
+        msg = (
+            f"config.backends[{backend_name!r}] uses shorthand syntax, but this "
+            "workflow requires an expanded module mapping."
+        )
+        raise TypeError(msg)
 
     backend_cfg = backend_model.model_dump()
 
@@ -85,13 +92,20 @@ def _resolve_state_names(config_model: ConfigurationModel) -> list[str]:
 
     Raises:
         ValueError: If no systems are defined or the spec does not declare a state list.
+        TypeError: If the system config uses shorthand syntax.
 
     """
     if not config_model.systems:
         msg = "config.system must define at least one system"
         raise ValueError(msg)
 
-    first_system = next(iter(config_model.systems.values()))
+    system_name, first_system = next(iter(config_model.systems.items()))
+    if isinstance(first_system, str):
+        msg = (
+            f"config.systems[{system_name!r}] uses shorthand syntax, but this "
+            "workflow requires an expanded module mapping."
+        )
+        raise TypeError(msg)
     state_names = first_system.model_dump().get("spec", {}).get("state", [])
 
     if not state_names:
