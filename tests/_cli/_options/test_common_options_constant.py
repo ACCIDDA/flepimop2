@@ -16,8 +16,32 @@
 """Tests for the `COMMON_OPTIONS` constant in `flepimop2._cli._options`."""
 
 from collections import Counter
+from collections.abc import Callable
+
+import click
 
 from flepimop2._cli._options import COMMON_OPTIONS
+
+
+def _click_param_from_decorator(
+    decorator: Callable[[Callable[[], None]], Callable[[], None]],
+) -> click.Parameter:
+    """
+    Materialize a Click parameter from a common option decorator.
+
+    Returns:
+        The single Click parameter attached by the decorator.
+    """
+
+    def callback() -> None:
+        return None
+
+    decorated = decorator(callback)
+    click_params = getattr(decorated, "__click_params__", None)
+    assert click_params is not None
+    assert len(click_params) == 1
+    assert isinstance(click_params[0], click.Parameter)
+    return click_params[0]
 
 
 def test_common_options_keys_are_sorted() -> None:
@@ -34,7 +58,7 @@ def test_no_duplicate_option_names() -> None:
     # Collect all option names from the decorators
     # Click decorators store the option names in their closure (3rd element)
     all_opts: list[str] = []
-    for decorator in COMMON_OPTIONS.values():
+    for decorator, _help_text in COMMON_OPTIONS.values():
         if hasattr(decorator, "__closure__") and decorator.__closure__:
             # The option names are typically in the 3rd closure cell (index 2)
             # This contains a tuple like ('-v', '--verbosity') or ('config',)
@@ -54,3 +78,15 @@ def test_no_duplicate_option_names() -> None:
         f"Found duplicate option names in COMMON_OPTIONS: "
         f"{', '.join(f'{opt} ({count})' for opt, count in duplicates.items())}"
     )
+
+
+def test_argument_help_is_only_defined_for_arguments() -> None:
+    """Only positional arguments should define additional argument help text."""
+    for name, (decorator, help_text) in COMMON_OPTIONS.items():
+        if help_text is None:
+            continue
+        click_param = _click_param_from_decorator(decorator)
+        assert isinstance(click_param, click.Argument), (
+            f"{name} defines shared argument help but is not backed by "
+            "click.argument; use click.option(..., help=...) directly for options."
+        )

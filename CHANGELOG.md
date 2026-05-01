@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Added help text for CLI arguments that are formatted similarly to click's default formatting for options.
 
 ### Changed
 
-- ...
+- Added a default search order for CLI commands with the `CONFIG` argument making providing a file manually not required for typical/small project usage. See [#245](https://github.com/ACCIDDA/flepimop2/issues/245).
 
 ### Deprecated
 

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for the `register_command` function in `flepimop2._cli._cli`."""
 
+import inspect
 from unittest.mock import MagicMock
 
 import click
@@ -108,6 +109,16 @@ class MockCommandNoAutoVerbosity(CliCommand):
         click.echo(f"Command ran with config: {config}")
 
 
+class MockCommandWithCommonArguments(CliCommand):
+    """Mock command with shared positional arguments."""
+
+    auto_append_verbosity = False
+
+    def run(self, *, config: str, path: str) -> None:  # type: ignore[override]
+        """Mock run method."""
+        click.echo(f"Command ran with config: {config} and path: {path}")
+
+
 class MockCommandWithNonExistentOption(CliCommand):
     """Mock command that requests a non-existent option."""
 
@@ -172,7 +183,10 @@ def test_register_command_sets_help_text() -> None:
     command = test_cli.commands["mock"]
 
     # Help text should come from the class docstring
-    assert command.help == (MockCommand.__doc__ or "No description available.").strip()
+    assert command.help == inspect.cleandoc(
+        MockCommand.__doc__ or "No description available."
+    )
+    assert "Arguments:" not in command.help
 
 
 def test_register_command_uses_custom_help_text() -> None:
@@ -184,6 +198,22 @@ def test_register_command_uses_custom_help_text() -> None:
 
     # Should use the custom help text
     assert command.help == "Custom help text for this command."
+
+
+def test_register_command_appends_shared_argument_help() -> None:
+    """Shared common argument help should render as its own help section."""
+    test_cli = click.Group()
+    register_command(MockCommandWithCommonArguments, test_cli)
+
+    command = test_cli.commands["mock-command-with-common-arguments"]
+    runner = CliRunner()
+    result = runner.invoke(command, ["--help"])
+
+    assert result.exit_code == 0
+    assert "\nArguments:\n" in result.output
+    assert "CONFIG" in result.output
+    assert "PATH" in result.output
+    assert "`config.yaml`" in result.output
 
 
 def test_register_command_wrapper_instantiates_and_runs() -> None:
