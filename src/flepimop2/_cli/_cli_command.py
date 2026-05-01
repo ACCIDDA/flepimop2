@@ -161,9 +161,7 @@ class CliCommand(ABC):
         Returns:
             The help text for the command.
         """
-        if cls.__doc__:
-            return cls.__doc__.strip()
-        return "No description available."
+        return inspect.cleandoc(cls.__doc__ or "No description available.")
 
     def log(self, level: int, *args: Any, **kwargs: Any) -> None:
         """Log a message at the specified level."""

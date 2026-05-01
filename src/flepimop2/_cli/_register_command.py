@@ -15,10 +15,27 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Any
 
+import click
 from click import Group
 
 from flepimop2._cli._cli_command import CliCommand
-from flepimop2._cli._options import get_option
+from flepimop2._cli._options import _argument_help_records, get_option
+
+
+class _ArgumentHelpCommand(click.Command):
+    """Click command that renders shared positional argument help."""
+
+    def format_options(
+        self,
+        ctx: click.Context,
+        formatter: click.HelpFormatter,
+    ) -> None:
+        """Write shared argument help before the normal options section."""
+        argument_help = _argument_help_records(self.get_params(ctx))
+        if argument_help:
+            with formatter.section("Arguments"):
+                formatter.write_dl(argument_help)
+        super().format_options(ctx, formatter)
 
 
 def register_command(command_cls: type[CliCommand], group: Group) -> None:
@@ -52,4 +69,4 @@ def register_command(command_cls: type[CliCommand], group: Group) -> None:
         command_wrapper = option_decorator(command_wrapper)
 
     # Register the command with the CLI group
-    group.command(name=command_name)(command_wrapper)
+    group.command(name=command_name, cls=_ArgumentHelpCommand)(command_wrapper)
