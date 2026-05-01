@@ -19,14 +19,14 @@ __all__ = ["Float64NDArray", "GridScenario"]
 
 import itertools
 from collections.abc import Iterable
-from typing import Any, Literal, NamedTuple, cast
+from typing import Any, NamedTuple, cast
 
 from flepimop2.configuration import ModuleModel
 from flepimop2.scenario.abc import ScenarioABC
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
-class GridScenario(ModuleModel, ScenarioABC):
+class GridScenario(ModuleModel, ScenarioABC, module="grid"):
     """
     Grid scenario implementation.
 
@@ -39,7 +39,6 @@ class GridScenario(ModuleModel, ScenarioABC):
             parameter values to be combined into scenarios.
     """
 
-    module: Literal["flepimop2.scenario.grid"] = "flepimop2.scenario.grid"
     parameters: dict[IdentifierString, list[Any]]
 
     @property

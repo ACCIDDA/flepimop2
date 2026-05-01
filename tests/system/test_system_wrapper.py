@@ -26,7 +26,10 @@ from flepimop2.system.abc import build
 TEST_SCRIPT = Path(__file__).parent / "system_wrapper_assets" / "dummy_system.py"
 
 
-@pytest.mark.parametrize("config", [{"script": TEST_SCRIPT, "state_change": "flow"}])
+@pytest.mark.parametrize(
+    "config",
+    [{"module": "wrapper", "script": TEST_SCRIPT, "state_change": "flow"}],
+)
 def test_wrapper_system(config: dict[str, Any]) -> None:
     """Test `WrapperSystem` loads a script and uses its `stepper` function."""
     system = build(config)
@@ -41,6 +44,7 @@ def test_wrapper_system(config: dict[str, Any]) -> None:
 def test_wrapper_system_options_available_via_option_method() -> None:
     """Test `WrapperSystem` exposes configured options through `ModuleABC.option`."""
     system = build({
+        "module": "wrapper",
         "script": TEST_SCRIPT,
         "state_change": "flow",
         "options": {"offset": 1.5},

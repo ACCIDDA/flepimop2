@@ -39,7 +39,8 @@ TEST_SYSTEM_SCRIPT: Final = (
 
 
 @pytest.mark.parametrize(
-    "config", [{"script": TEST_ENGINE_SCRIPT, "state_change": "flow"}]
+    "config",
+    [{"module": "wrapper", "script": TEST_ENGINE_SCRIPT, "state_change": "flow"}],
 )
 @pytest.mark.parametrize(
     "system",
@@ -72,19 +73,22 @@ def test_wrapper_system(
 
 
 @pytest.mark.parametrize(
-    "config", [{"script": TEST_ENGINE_SCRIPT, "state_change": "flow"}]
+    "config",
+    [{"module": "wrapper", "script": TEST_ENGINE_SCRIPT, "state_change": "flow"}],
 )
 def test_wrapper_engine_validate_system_properties(config: dict[str, Any]) -> None:
     """Test `WrapperEngine` validates system properties compatibility."""
     engine = engine_build(config)
 
     compatible_system = system_build({
+        "module": "wrapper",
         "script": TEST_SYSTEM_SCRIPT,
         "state_change": StateChangeEnum.FLOW,
     })
     assert engine.validate_system(compatible_system) is None
 
     incompatible_system = system_build({
+        "module": "wrapper",
         "script": TEST_SYSTEM_SCRIPT,
         "state_change": StateChangeEnum.DELTA,
     })

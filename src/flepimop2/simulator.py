@@ -21,7 +21,7 @@ from flepimop2.backend.abc import BackendABC
 from flepimop2.backend.abc import build as build_backend
 from flepimop2.configuration import (
     ConfigurationModel,
-    ModuleModel,
+    ModuleConfigurationValue,
     SimulateSpecificationModel,
 )
 from flepimop2.engine.abc import EngineABC
@@ -54,9 +54,9 @@ class Simulator:
     backend: BackendABC
     target: str | None = None
     simulate_config: SimulateSpecificationModel | None = None
-    system_config: ModuleModel | None = None
-    engine_config: ModuleModel | None = None
-    backend_config: ModuleModel | None = None
+    system_config: ModuleConfigurationValue | None = None
+    engine_config: ModuleConfigurationValue | None = None
+    backend_config: ModuleConfigurationValue | None = None
 
     def __init__(  # noqa: PLR0913
         self,
@@ -66,9 +66,9 @@ class Simulator:
         *,
         target: str | None = None,
         simulate_config: SimulateSpecificationModel | None = None,
-        system_config: ModuleModel | None = None,
-        engine_config: ModuleModel | None = None,
-        backend_config: ModuleModel | None = None,
+        system_config: ModuleConfigurationValue | None = None,
+        engine_config: ModuleConfigurationValue | None = None,
+        backend_config: ModuleConfigurationValue | None = None,
     ) -> None:
         """
         Initialize the simulator with resolved components.

@@ -106,15 +106,15 @@ class EngineABC(ModuleABC, module_namespace="engine"):
         return None
 
 
-def build(config: dict[str, Any] | ModuleModel) -> EngineABC:
+def build(config: dict[str, Any] | ModuleModel | str) -> EngineABC:
     """Build a `EngineABC` from a configuration dictionary.
 
     Args:
         config: Configuration dictionary or a `ModuleModel` instance to construct the
-            engine from.
+            engine from. The configuration must define a `module`.
 
     Returns:
         The constructed engine instance.
 
     """
-    return _build(config, "engine", "flepimop2.engine.wrapper", EngineABC)
+    return _build(config, "engine", EngineABC)

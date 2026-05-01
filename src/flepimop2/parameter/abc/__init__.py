@@ -39,15 +39,15 @@ class ParameterABC(ModuleABC, module_namespace="parameter"):
         raise NotImplementedError
 
 
-def build(config: dict[str, Any] | ModuleModel) -> ParameterABC:
+def build(config: dict[str, Any] | ModuleModel | str) -> ParameterABC:
     """Build a `ParameterABC` from a configuration dictionary.
 
     Args:
         config: Configuration dictionary or a `ModuleModel` instance to construct the
-            parameter from.
+            parameter from. The configuration must define a `module`.
 
     Returns:
         The constructed parameter instance.
 
     """
-    return _build(config, "parameter", "flepimop2.parameter.wrapper", ParameterABC)
+    return _build(config, "parameter", ParameterABC)

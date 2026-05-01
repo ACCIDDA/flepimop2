@@ -27,7 +27,7 @@ from flepimop2.module import ModuleABC
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
-class ScenarioABC(ModuleABC):
+class ScenarioABC(ModuleABC, module_namespace="scenario"):
     """Abstract base class for scenarios."""
 
     @property
@@ -50,15 +50,15 @@ class ScenarioABC(ModuleABC):
         raise NotImplementedError
 
 
-def build(config: dict[IdentifierString, Any] | ModuleModel) -> ScenarioABC:
+def build(config: dict[IdentifierString, Any] | ModuleModel | str) -> ScenarioABC:
     """Build a `ScenarioABC` from a configuration dictionary.
 
     Args:
         config: Configuration dictionary or a `ModuleModel` instance to construct the
-            scenarios from.
+            scenarios from. The configuration must define a `module`.
 
     Returns:
         The constructed scenario instance.
 
     """
-    return _build(config, "scenario", "flepimop2.scenario.grid", ScenarioABC)
+    return _build(config, "scenario", ScenarioABC)
