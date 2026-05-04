@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- ...
+- Restored `parameter: value` syntax (i.e. `pi: 3.14`) for specifying scalar parameters directly as floats/ints in the configuration file. See [#100](https://github.com/ACCIDDA/flepimop2/issues/100).
 
 ### Security
 

@@ -68,3 +68,46 @@ ModuleGroupModel = Annotated[
     dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)
 ]
 """Module group configuration model for flepimop2."""
+
+
+def _coerce_parameter_configuration_value(value: Any) -> Any:  # noqa: ANN401
+    """
+    Rewrite bare numeric parameter config values to fixed-parameter shorthand.
+
+    Args:
+        value: The raw parameter configuration value.
+
+    Returns:
+        The original value, or a `fixed(...)` shorthand string for numeric inputs.
+
+    Examples:
+        >>> _coerce_parameter_configuration_value(0.3)
+        'fixed(0.3)'
+        >>> _coerce_parameter_configuration_value(2)
+        'fixed(2)'
+        >>> _coerce_parameter_configuration_value("fixed(0.3)")
+        'fixed(0.3)'
+        >>> _coerce_parameter_configuration_value("some-other-string")
+        'some-other-string'
+        >>> _coerce_parameter_configuration_value(True)
+        True
+        >>> _coerce_parameter_configuration_value(None) is None
+        True
+    """
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return f"fixed({value!r})"
+    return value
+
+
+ParameterConfigurationValue: TypeAlias = Annotated[
+    ModuleConfigurationValue,
+    BeforeValidator(_coerce_parameter_configuration_value),
+]
+"""A parameter value, including bare numeric shorthand for fixed parameters."""
+
+
+ParameterGroupModel = Annotated[
+    dict[IdentifierString, ParameterConfigurationValue],
+    BeforeValidator(_to_default_dict),
+]
+"""Parameter group configuration model for flepimop2."""
