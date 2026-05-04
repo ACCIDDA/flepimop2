@@ -164,5 +164,10 @@ include = [
 ]
 
 [tool.coverage.report]
-fail_under = 75
+fail_under = 80
 precision = 1
+
+[tool.coverage.run]
+omit = [
+    "src/flepimop2/testing.py",
+]
