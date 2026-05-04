@@ -18,7 +18,7 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from flepimop2.configuration._axes import AxesGroupModel
-from flepimop2.configuration._module import ModuleGroupModel
+from flepimop2.configuration._module import ModuleGroupModel, ParameterGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
 from flepimop2.typing import IdentifierString
@@ -50,7 +50,7 @@ class ConfigurationModel(
     systems: ModuleGroupModel = Field(default_factory=dict)
     backends: ModuleGroupModel = Field(default_factory=dict)
     process: ModuleGroupModel = Field(default_factory=dict)
-    parameters: ModuleGroupModel = Field(default_factory=dict)
+    parameters: ParameterGroupModel = Field(default_factory=dict)
     scenarios: ModuleGroupModel = Field(default_factory=dict)
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
