@@ -907,6 +907,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleConfigurationValue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModuleConfigurationValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1594,6 +1605,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ModuleConfigurationValue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModuleConfigurationValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.ModuleGroupModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1797,8 +1819,30 @@
 
 
 
+<h3 id="flepimop2.configuration.ModuleConfigurationValue" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ModuleConfigurationValue</span> <span class="o">=</span> <span class="n">ModuleModel</span> <span class="o">|</span> <span class="nb">str</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ModuleConfigurationValue" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A module configuration value, either expanded config or shorthand text.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h3 id="flepimop2.configuration.ModuleGroupModel" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ModuleGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ModuleModel</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
+            <code class="highlight language-python"><span class="n">ModuleGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ModuleConfigurationValue</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -1966,7 +2010,7 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.engines">engines</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1981,7 +2025,7 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.systems">systems</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -1996,7 +2040,7 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.backends">backends</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -2011,7 +2055,7 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.process">process</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
@@ -2026,7 +2070,7 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.parameters">parameters</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleModel], BeforeValidator(_to_default_dict)]
+                  <code><a class="autorefs autorefs-internal" title="ModuleGroupModel = Annotated[dict[IdentifierString, ModuleConfigurationValue], BeforeValidator(_to_default_dict)]
 
   
       module-attribute
