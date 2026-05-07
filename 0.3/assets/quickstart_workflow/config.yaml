@@ -8,31 +8,25 @@ system:
     model_state:
       parameter_names: [s0, i0, r0]
       labels: [S, I, R]
+
 engine:
   - module: wrapper
     state_change: flow
     script: model_input/plugins/solve_ivp.py
+
 backend:
   - module: csv
+
 simulate:
   quick_start:
     system: default
     engine: default
     backend: default
     times: "0.0:0.1:10"
+
 parameter:
-  beta:
-    module: fixed
-    value: 0.3
-  gamma:
-    module: fixed
-    value: 0.1
-  s0:
-    module: fixed
-    value: 999
-  i0:
-    module: fixed
-    value: 1
-  r0:
-    module: fixed
-    value: 0
+  beta: 0.3
+  gamma: 0.1
+  s0: 999
+  i0: 1
+  r0: 0
