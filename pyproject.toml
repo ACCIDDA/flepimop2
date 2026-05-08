@@ -121,7 +121,7 @@ allow-star-arg-any = true
 "docs/**/*" = [
     "CPY001",   # Missing copyright notice at top of file
 ]
-"docs/examples/vaccination-campaign-scenario-grid/scripts/*.py" = [
+"docs/assets/vaccination-campaign-scenario-grid/postprocessing/*.py" = [
     "DOC201",   # Require return documentation in docstrings
     "DOC501",   # Require raised exceptions listed in docstrings
 ]
@@ -142,6 +142,7 @@ mypy_path = ["src"]
 files = "."
 exclude = [
     "^build/",
+    "^docs/assets/",
     "^site/",
 ]
 namespace_packages = true

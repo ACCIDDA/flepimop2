@@ -45,9 +45,11 @@ mypy:
 [unix]
 clean:
     rm -rf .*cache
+    find . -type d -name __pycache__ -prune -exec rm -rf {} +
     rm -rf .venv
     rm -rf dist
     rm -rf site
+    rm -f docs/downloads/*.zip
     rm -f uv.lock
 
 # Run CI `ruff` formatting/linting checks
@@ -67,6 +69,7 @@ reference:
     uv run scripts/authors.py
     uv run scripts/citation.py
     uv run scripts/api-reference.py
+    uv run scripts/generate_docs_downloads.py
     cp CHANGELOG.md docs/changelog.md
     cp CONTRIBUTING.md docs/development/contributing.md
     printf '# License\n\n```\n' > docs/license.md && cat LICENSE >> docs/license.md && printf '```\n' >> docs/license.md

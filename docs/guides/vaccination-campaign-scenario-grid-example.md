@@ -6,53 +6,45 @@ This example uses [`op_system`](https://github.com/ACCIDDA/op_system) for transi
 
 ## 1. Start from a New Repository
 
-Create a fresh repo and scaffold the project skeleton:
+Download [vaccination-campaign-scenario-grid.zip](../downloads/vaccination-campaign-scenario-grid.zip), unzip it, and enter the project:
 
 ```bash
-mkdir vaccination-campaign-scenario-grid
+unzip vaccination-campaign-scenario-grid.zip
 cd vaccination-campaign-scenario-grid
-flepimop2 skeleton .
 ```
-Then type `just`.  Followed by `conda activate ./venv`.  
+Then run `just venv`, followed by `conda activate ./venv`.  
 You are now ready to use flepimop2. 
 
 ## 2. Get the Example Config and Plot Scripts
 
-Copy the files below into your project. Each block can be expanded to view and copy the full source, or downloaded directly via the filename link.
+The ZIP bundle already places the config, plotting scripts, required output directories, and environment file in the correct locations. The source for the bundled config and scripts is shown below for reference.
 
-Suggested placement in your new project:
-
-- `configs/SIRHD_vax_scenario_grid.yml`
-- `postprocessing/scenario_heatmap_3x3.py`
-- `postprocessing/scenario_spaghetti_incidence.py`
-- `postprocessing/scenario_peak_bed_summary.py`
-
-[`SIRHD_vax_scenario_grid.yml`](../examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml)
+[`SIRHD_vax_scenario_grid.yml`](../assets/vaccination-campaign-scenario-grid/configs/SIRHD_vax_scenario_grid.yml)
 
 ??? example "Configuration - `configs/SIRHD_vax_scenario_grid.yml`"
     ```yaml
-    --8<-- "examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml"
+    --8<-- "assets/vaccination-campaign-scenario-grid/configs/SIRHD_vax_scenario_grid.yml"
     ```
 
-[`scenario_heatmap_3x3.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py)
+[`scenario_heatmap_3x3.py`](../assets/vaccination-campaign-scenario-grid/postprocessing/scenario_heatmap_3x3.py)
 
 ??? example "Plot Script - `postprocessing/scenario_heatmap_3x3.py`"
     ```text
-    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_heatmap_3x3.py"
+    --8<-- "assets/vaccination-campaign-scenario-grid/postprocessing/scenario_heatmap_3x3.py"
     ```
 
-[`scenario_spaghetti_incidence.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py)
+[`scenario_spaghetti_incidence.py`](../assets/vaccination-campaign-scenario-grid/postprocessing/scenario_spaghetti_incidence.py)
 
 ??? example "Plot Script - `postprocessing/scenario_spaghetti_incidence.py`"
     ```text
-    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_spaghetti_incidence.py"
+    --8<-- "assets/vaccination-campaign-scenario-grid/postprocessing/scenario_spaghetti_incidence.py"
     ```
 
-[`scenario_peak_bed_summary.py`](../examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py)
+[`scenario_peak_bed_summary.py`](../assets/vaccination-campaign-scenario-grid/postprocessing/scenario_peak_bed_summary.py)
 
 ??? example "Plot Script - `postprocessing/scenario_peak_bed_summary.py`"
     ```text
-    --8<-- "examples/vaccination-campaign-scenario-grid/scripts/scenario_peak_bed_summary.py"
+    --8<-- "assets/vaccination-campaign-scenario-grid/postprocessing/scenario_peak_bed_summary.py"
     ```
 
 ## 3. Model Structure in `system`
@@ -233,8 +225,6 @@ process:
 
 ## 9. Running the Example
 
-Before running these commands add `SIHRD_vax` and `plots` subdirectories to the `model_output` folder created by the `flepimop2 skeleton` command.
-
 From a working environment with `flepimop2` available.
 
 First run:
@@ -281,9 +271,9 @@ This summary makes the dominant driver explicit: moving from `R0=1.1` to `R0=4.0
 
 ## 11. Complete Config Example
 
-[`SIRHD_vax_scenario_grid.yml`](../examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml)
+[`SIRHD_vax_scenario_grid.yml`](../assets/vaccination-campaign-scenario-grid/configs/SIRHD_vax_scenario_grid.yml)
 
 ??? example "Complete Configuration - `configs/SIRHD_vax_scenario_grid.yml`"
     ```yaml
-    --8<-- "examples/vaccination-campaign-scenario-grid/config/SIRHD_vax_scenario_grid.yml"
+    --8<-- "assets/vaccination-campaign-scenario-grid/configs/SIRHD_vax_scenario_grid.yml"
     ```

@@ -109,20 +109,6 @@ backend:
     root: model_output/SIRHD_vax
 
 process:
-  plot:
-    module: shell
-    command: python postprocessing/SIRHD_incidence_plot.py
-    args:
-      - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_plot.png
-
-  scenario_heatmap:
-    module: shell
-    command: python postprocessing/scenario_heatmap.py
-    args:
-      - configs/SIRHD_vax_scenario_grid.yml
-      - model_output/plots/SIRHD_vax_scenario_heatmap.png
-
   scenario_heatmap_3x3_plot_latest_batch:
     module: shell
     command: python postprocessing/scenario_heatmap_3x3.py
@@ -155,91 +141,35 @@ process:
       - model_output/plots/SIRHD_vax_peak_bed_summary.png
 
 parameter:
-  r0:
-    module: fixed
-    value: 2.0
-  t_inf:
-    module: fixed
-    value: 7.0
+  r0: 2.0
+  t_inf: 7.0
 
-  rho:
-    module: fixed
-    value: 0.001
-  delta:
-    module: fixed
-    value: 0.1
-  t_hosp:
-    module: fixed
-    value: 10.0
-  alpha:
-    module: fixed
-    value: 0.005
+  rho: 0.001
+  delta: 0.1
+  t_hosp: 10.0
+  alpha: 0.005
 
-  k:
-    module: fixed
-    value: 0.05
-  cap_l:
-    module: fixed
-    value: 0.5
-  t_start:
-    module: fixed
-    value: 35.0
-  ramp:
-    module: fixed
-    value: 0.5
-  n0:
-    module: fixed
-    value: 10000000.0
+  k: 0.05
+  cap_l: 0.5
+  t_start: 35.0
+  ramp: 0.5
+  n0: 10000000.0
 
-  omega:
-    module: fixed
-    value: 0.005
-  q__vax_u:
-    module: fixed
-    value: 1.0
-  q__vax_v:
-    module: fixed
-    value: 0.3
-  q__vax_w:
-    module: fixed
-    value: 1.0
+  omega: 0.005
+  q__vax_u: 1.0
+  q__vax_v: 0.3
+  q__vax_w: 1.0
 
-  s0__vax_u:
-    module: fixed
-    value: 5000000
-  s0__vax_v:
-    module: fixed
-    value: 0
-  s0__vax_w:
-    module: fixed
-    value: 0
-  i0__vax_u:
-    module: fixed
-    value: 1000
-  i0__vax_v:
-    module: fixed
-    value: 0
-  i0__vax_w:
-    module: fixed
-    value: 0
-  h0__vax_u:
-    module: fixed
-    value: 0
-  h0__vax_v:
-    module: fixed
-    value: 0
-  h0__vax_w:
-    module: fixed
-    value: 0
-  r0__vax_u:
-    module: fixed
-    value: 4999000
-  r0__vax_v:
-    module: fixed
-    value: 0
-  r0__vax_w:
-    module: fixed
-    value: 0
-  d0:
-    module: fixed
-    value: 0
+  s0__vax_u: 5000000
+  s0__vax_v: 0
+  s0__vax_w: 0
+  i0__vax_u: 1000
+  i0__vax_v: 0
+  i0__vax_w: 0
+  h0__vax_u: 0
+  h0__vax_v: 0
+  h0__vax_w: 0
+  r0__vax_u: 4999000
+  r0__vax_v: 0
+  r0__vax_w: 0
+  d0: 0
