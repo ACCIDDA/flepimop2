@@ -1942,11 +1942,11 @@
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>For details on installation please refer to the <a href="../install/">installation guide</a>.</p>
 <h2 id="create-a-project">Create a Project<a class="headerlink" href="#create-a-project" title="Permanent link">&para;</a></h2>
-<p>Switch from the flepimop2 clone repository to the directory you want to conduct your analysis in. Once there, run the following command:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>flepimop2<span class="w"> </span>skeleton<span class="w"> </span>full_start_project
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>full_start_project
+<p>Download <a href="../../downloads/full-feature-project.zip">full-feature-project.zip</a>, unzip it in the directory you want to conduct your analysis in, then enter the project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>unzip<span class="w"> </span>full-feature-project.zip
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>full-feature-project
 </span></code></pre></div>
-<p>Within the project you have created, replace the default <code>environment.yaml</code> with the one from <a href="../../assets/full_feature_workflow/environment.yaml">assets/full_feature_workflow/environment.yaml</a>, which includes the additional dependencies required for this guide. Then create and activate the environment:</p>
+<p>The bundle already includes the walkthrough config, post-processing files, and an <code>environment.yaml</code> with the additional dependencies required for this guide. Then create and activate the environment:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>just<span class="w"> </span>venv
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>./venv
 </span></code></pre></div>
@@ -2129,17 +2129,17 @@
 <p>This pattern means post-processing scripts adapt automatically when the backend or output directory changes in the config — no manual path updates required.</p>
 <hr />
 <h2 id="full-project-setup">Full Project Setup<a class="headerlink" href="#full-project-setup" title="Permanent link">&para;</a></h2>
-<p>The files for this walkthrough are in <code>assets/full_feature_workflow/</code> in the flepimop2 repository.</p>
+<p>The files for this walkthrough are bundled in <a href="../../downloads/full-feature-project.zip">full-feature-project.zip</a> and are also available individually in <code>assets/full-feature-project/</code> in the flepimop2 repository.</p>
 <h3 id="file-layout">File Layout<a class="headerlink" href="#file-layout" title="Permanent link">&para;</a></h3>
-<p>Copy the following:</p>
+<p>The bundle includes the following project files:</p>
 <ul>
-<li><a href="../../assets/full_feature_workflow/config.yml">config.yml</a> → <code>configs/config.yml</code></li>
-<li><a href="../../assets/full_feature_workflow/SIR_plot.R">SIR_plot.R</a> → <code>postprocessing/SIR_plot.R</code></li>
-<li><a href="../../assets/full_feature_workflow/SirPlot.ipynb">SirPlot.ipynb</a> → <code>postprocessing/SirPlot.ipynb</code></li>
-<li><a href="../../assets/full_feature_workflow/SIR_plot_op_engine.py">SIR_plot_op_engine.py</a> → <code>postprocessing/SIR_plot_op_engine.py</code></li>
+<li><a href="../../assets/full-feature-project/configs/config.yml">config.yml</a> → <code>configs/config.yml</code></li>
+<li><a href="../../assets/full-feature-project/postprocessing/SIR_plot.R">SIR_plot.R</a> → <code>postprocessing/SIR_plot.R</code></li>
+<li><a href="../../assets/full-feature-project/postprocessing/SirPlot.ipynb">SirPlot.ipynb</a> → <code>postprocessing/SirPlot.ipynb</code></li>
+<li><a href="../../assets/full-feature-project/postprocessing/SIR_plot_op_engine.py">SIR_plot_op_engine.py</a> → <code>postprocessing/SIR_plot_op_engine.py</code></li>
 </ul>
 <p>Your project layout should look like this:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>full_start_project/
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>full-feature-project/
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>├── configs/
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>│   ├── built/
 </span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>│   ├── config.yml
