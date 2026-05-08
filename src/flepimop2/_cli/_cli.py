@@ -16,6 +16,9 @@
 __all__ = []
 
 
+from importlib.metadata import version
+from typing import Final
+
 import click
 
 from flepimop2._cli._build_command import BuildCommand
@@ -24,10 +27,12 @@ from flepimop2._cli._register_command import register_command
 from flepimop2._cli._simulate_command import SimulateCommand
 from flepimop2._cli._skeleton_command import SkeletonCommand
 
+_FLEPIMOP2_VERSION: Final[str] = version("flepimop2")
+
 
 @click.group()
 @click.version_option(
-    version="0.1.0",
+    version=_FLEPIMOP2_VERSION,
     message="%(prog)s %(version)s\nLicense: GNU GPL v3 <https://www.gnu.org/licenses/>",
 )
 def cli() -> None:
