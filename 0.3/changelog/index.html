@@ -395,6 +395,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generating Scenario Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1763,10 +1791,14 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an <code>axes</code> top level key to the <code>ConfigurationModel</code> so users can provide these axes via configuration and <code>flepimop2.axis</code> module for realizing &amp; manipulating axes from configuration. See <a href="https://github.com/ACCIDDA/flepimop2/issues/147">#147</a>.</li>
+<li>Added ways to specify shape for parameters based on <code>axes</code> by changing <code>ParameterABC.sample</code> to return a <code>ParameterValue</code> that contains both the underlying value as a numpy array as well as shape metadata, and is easily extensible to other metadata and underlying value types in the future. Also added <code>ModelStateSpecification</code>, <code>ParameterRequest</code> types for systems to advertise their underlying state and request parameters to comply with said state specification. See <a href="https://github.com/ACCIDDA/flepimop2/issues/115">#115</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/133">#133</a>.</li>
+<li>Added help text for CLI arguments that are formatted similarly to click's default formatting for options.</li>
 <li>Added optional shorthand module configuration support across all module namespaces, allowing config values such as <code>fixed(0.3)</code> for modules that implement <code>from_shorthand</code>. See <a href="https://github.com/ACCIDDA/flepimop2/issues/14">#14</a>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
+<li>Updated CLI commands to return consistent exit codes based on the kind of failure. See <a href="https://github.com/ACCIDDA/flepimop2/issues/17">#17</a>.</li>
+<li>Added a default search order for CLI commands with the <code>CONFIG</code> argument making providing a file manually not required for typical/small project usage. See <a href="https://github.com/ACCIDDA/flepimop2/issues/245">#245</a>.</li>
 <li>Removed implicit default module selection from module builders. Backend, engine, parameter, process, scenario, and system configs must now declare their module explicitly or use shorthand syntax.</li>
 <li>Simplified <code>ScenarioABC</code> to use <code>module_namespace="scenario"</code> so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to <a href="https://github.com/ACCIDDA/flepimop2/pull/216">#216</a>.</li>
 </ul>
