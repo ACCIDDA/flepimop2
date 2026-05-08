@@ -74,6 +74,7 @@ nav:
       - Installation: guides/install.md
       - Getting Started: guides/getting-started.md
       - Vaccination Campaign Scenario Grid: guides/vaccination-campaign-scenario-grid-example.md
+      - Generating Scenario Results: guides/scenarios.md
   - Development:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md

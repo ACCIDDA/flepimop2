@@ -80,7 +80,7 @@ jobs:
       - name: 'deploy to github pages'
         run: |
           uv run mike set-default latest
-          if [ "${DEPLOY_MODE}" = "release" ] || [[ $VERSION == 0* ]]; then
+          if [ "${DEPLOY_MODE}" = "release" ]; then
             ALIAS=latest
           else
             ALIAS=dev
