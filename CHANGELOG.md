@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a default search order for CLI commands with the `CONFIG` argument making providing a file manually not required for typical/small project usage. See [#245](https://github.com/ACCIDDA/flepimop2/issues/245).
 - Removed implicit default module selection from module builders. Backend, engine, parameter, process, scenario, and system configs must now declare their module explicitly or use shorthand syntax.
 - Simplified `ScenarioABC` to use `module_namespace="scenario"` so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to [#216](https://github.com/ACCIDDA/flepimop2/pull/216).
+- Updated documentation guides to provide `.zip` bundles of their files overlaid on the project skeleton template making demos easier to run. See [#246](https://github.com/ACCIDDA/flepimop2/issues/246).
 
 ### Deprecated
 

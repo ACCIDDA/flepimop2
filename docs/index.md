@@ -26,19 +26,20 @@ If you want to work from a local clone instead, see the [installation guide](gui
 
 ## Create a Project
 
-Navigate to wherever you want your projects to live, then run:
+Download [quickstart-project.zip](downloads/quickstart-project.zip), unzip it wherever you want your project to live, then run:
 
 ```bash
-flepimop2 skeleton quick_start_project
-cd quick_start_project
+unzip quickstart-project.zip
+cd quickstart-project
 ```
 
-This creates a new directory and populates it with the standard project structure:
+The bundle already contains the standard project structure created by `flepimop2 skeleton`:
 
 ```
-quick_start_project/
+quickstart-project/
 ├── configs/
 │   ├── built/
+│   ├── config.yaml
 │   └── EDITME.yaml
 ├── environment.yaml
 ├── justfile
@@ -47,37 +48,32 @@ quick_start_project/
 │   └── plugins/
 ├── model_output/
 ├── postprocessing/
+│   └── SIR_plot.R
 └── README.md
 ```
 
-Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The **configuration file** (saved in `configs`) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The **system** and **engine** are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in `model_input/plugins`) for both the system and the engine.
-
-For this quickstart, download the following files and add them to your project:
-
-- [config.yaml](assets/quickstart_workflow/config.yaml) → save to `configs`
-- [SIR.py](assets/quickstart_workflow/SIR.py) → save to `model_input/plugins`.
-- [solve_ivp.py](assets/quickstart_workflow/solve_ivp.py) → save to `model_input/plugins`
+Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The **configuration file** (saved in `configs`) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The **system** and **engine** are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in `model_input/plugins`) for both the system and the engine. The ZIP bundle above already places those files in the correct locations, includes the dependencies required for this page, and includes the post-processing script used later in the guide.
 
 ??? example "Configuration File"
     ```yaml
-    --8<-- "assets/quickstart_workflow/config.yaml"
+    --8<-- "assets/quickstart-project/configs/config.yaml"
     ```
 
 ??? example "SIR System"
     ```python
-    --8<-- "assets/quickstart_workflow/SIR.py"
+    --8<-- "assets/quickstart-project/model_input/plugins/SIR.py"
     ```
 
 ??? example "scipy ODE Engine"
     ```python
-    --8<-- "assets/quickstart_workflow/solve_ivp.py"
+    --8<-- "assets/quickstart-project/model_input/plugins/solve_ivp.py"
     ```
 
-Next, set up the project's virtual environment. The `environment.yaml` file in your project specifies its dependencies. The default skeleton includes flepimop2, but you will need to add `pip` and `scipy` to the dependency list before creating the environment. Copy the [environment.yaml](assets/quickstart_workflow/environment.yaml) file to your project, replacing the existing file. 
+Next, set up the project's virtual environment. The bundled `environment.yaml` already includes the dependencies required for this guide.
 
 ??? example "Environment YAML file"
     ```yaml
-    --8<-- "assets/quickstart_workflow/environment.yaml"
+    --8<-- "assets/quickstart-project/environment.yaml"
     ```
 
 Then create the environment:
@@ -103,15 +99,12 @@ Results are saved automatically to the `model_output` directory as a CSV file.
 
 flepimop2 supports post-processing steps that run after a simulation — useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the `process` block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.
 
-The resources for the example post-processing pipeline are in the `assets/postprocessing_workflow` folder of the repository. You will need to copy them into your project as follows:
+The same `quickstart-project.zip` bundle already includes the post-processing config, script, and dependencies needed for this section.
 
-- [config.yaml](assets/postprocessing_workflow/config.yaml) → `configs/config.yaml` (replaces the quickstart config)
-- [SIR_plot.R](assets/postprocessing_workflow/SIR_plot.R) → `postprocessing/SIR_plot.R`
-
-After copying the files, your project structure should look like this:
+The bundled project includes this post-processing file layout:
 
 ```
-quick_start_project/
+quickstart-project/
 ├── configs/
 │   ├── built/
 │   ├── config.yaml
@@ -129,14 +122,7 @@ quick_start_project/
 └── README.md
 ```
 
-The post-processing workflow requires additional R and Python dependencies. Replace your `environment.yaml` with the one from [assets/postprocessing_workflow/environment.yaml](assets/postprocessing_workflow/environment.yaml), then recreate the environment (this can be done by restarting your terminal and removing the existing venv folder, then running the following):
-
-```bash
-just venv
-conda activate ./venv
-```
-
-Take a look at the updated `configs/config.yaml`. It defines two simulation targets — `demo` and `hires` — that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the `process` block. flepimop2 defaults to the first defined target, but you can select a specific one with `--target`:
+Take a look at `configs/config.yaml`. It defines two simulation targets — `demo` and `hires` — that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the `process` block. flepimop2 defaults to the first defined target, but you can select a specific one with `--target`:
 
 ```bash
 # Run the default (demo) target

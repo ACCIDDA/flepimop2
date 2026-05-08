@@ -17,14 +17,14 @@ For details on installation please refer to the [installation guide](../guides/i
 
 ## Create a Project
 
-Switch from the flepimop2 clone repository to the directory you want to conduct your analysis in. Once there, run the following command:
+Download [full-feature-project.zip](../downloads/full-feature-project.zip), unzip it in the directory you want to conduct your analysis in, then enter the project:
 
 ```bash
-flepimop2 skeleton full_start_project
-cd full_start_project
+unzip full-feature-project.zip
+cd full-feature-project
 ```
 
-Within the project you have created, replace the default `environment.yaml` with the one from [assets/full_feature_workflow/environment.yaml](../assets/full_feature_workflow/environment.yaml), which includes the additional dependencies required for this guide. Then create and activate the environment:
+The bundle already includes the walkthrough config, post-processing files, and an `environment.yaml` with the additional dependencies required for this guide. Then create and activate the environment:
 
 ```bash
 just venv
@@ -286,21 +286,21 @@ This pattern means post-processing scripts adapt automatically when the backend 
 
 ## Full Project Setup
 
-The files for this walkthrough are in `assets/full_feature_workflow/` in the flepimop2 repository.
+The files for this walkthrough are bundled in [full-feature-project.zip](../downloads/full-feature-project.zip) and are also available individually in `assets/full-feature-project/` in the flepimop2 repository.
 
 ### File Layout
 
-Copy the following:
+The bundle includes the following project files:
 
-- [config.yml](../assets/full_feature_workflow/config.yml) → `configs/config.yml`
-- [SIR_plot.R](../assets/full_feature_workflow/SIR_plot.R) → `postprocessing/SIR_plot.R`
-- [SirPlot.ipynb](../assets/full_feature_workflow/SirPlot.ipynb) → `postprocessing/SirPlot.ipynb`
-- [SIR_plot_op_engine.py](../assets/full_feature_workflow/SIR_plot_op_engine.py) → `postprocessing/SIR_plot_op_engine.py`
+- [config.yml](../assets/full-feature-project/configs/config.yml) → `configs/config.yml`
+- [SIR_plot.R](../assets/full-feature-project/postprocessing/SIR_plot.R) → `postprocessing/SIR_plot.R`
+- [SirPlot.ipynb](../assets/full-feature-project/postprocessing/SirPlot.ipynb) → `postprocessing/SirPlot.ipynb`
+- [SIR_plot_op_engine.py](../assets/full-feature-project/postprocessing/SIR_plot_op_engine.py) → `postprocessing/SIR_plot_op_engine.py`
 
 Your project layout should look like this:
 
 ```
-full_start_project/
+full-feature-project/
 ├── configs/
 │   ├── built/
 │   ├── config.yml
@@ -322,7 +322,7 @@ full_start_project/
 
 ??? example "config.yml"
     ```yaml
-    --8<-- "assets/full_feature_workflow/config.yml"
+    --8<-- "assets/full-feature-project/configs/config.yml"
     ```
 
 Note that this config uses `op_system` and `op_engine` — no Python plugin scripts are needed for the model or solver. The `model_input/plugins` directory can remain empty.
