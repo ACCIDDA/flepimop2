@@ -55,7 +55,7 @@ def runner(  # noqa: PLR0913
         msg = "model_state must be provided to assemble the initial state."
         raise ValueError(msg)
     state = np.stack([
-        initial_state[name].value for name in model_state.parameter_names
+        np.asarray(initial_state[name].value) for name in model_state.parameter_names
     ]).astype(np.float64)
     flat_state = state.reshape(-1)
     res = np.zeros((len(times), flat_state.size + 1), dtype=np.float64)

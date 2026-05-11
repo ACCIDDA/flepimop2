@@ -57,7 +57,7 @@ def runner(
         raise ValueError(msg)
 
     y0 = np.stack([
-        initial_state[name].value for name in model_state.parameter_names
+        np.asarray(initial_state[name].value) for name in model_state.parameter_names
     ]).astype(np.float64)
     args = tuple(val.item() for val in params.values()) if params is not None else None
     result = solve_ivp(

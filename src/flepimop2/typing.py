@@ -29,6 +29,7 @@ Examples:
 """
 
 __all__ = [
+    "Array",
     "ExitCode",
     "Float64NDArray",
     "IdentifierString",
@@ -59,6 +60,45 @@ from pydantic import AfterValidator, Field
 
 Float64NDArray = npt.NDArray[np.float64]
 """Alias for a NumPy ndarray with float64 data type."""
+
+
+@runtime_checkable
+class Array(Protocol):
+    """
+    Minimal Array-API duck type.
+
+    Captures only the surface that `flepimop2` itself touches at
+    cross-plugin boundaries: a ``shape`` tuple, a ``dtype``, and the
+    ``__array_namespace__`` marker that identifies a value as belonging to
+    an `Array-API-compliant <https://data-apis.org/array-api/latest/>`_
+    backend (NumPy >= 2.0, JAX >= 0.4.32, PyTorch >= 2.1, CuPy, dask,
+    ...).
+
+    Concrete consumers (e.g. an ODE engine) remain free to require a
+    specific backend internally; using `Array` at module boundaries lets
+    producers and consumers agree on shape without forcing dtype coercion
+    or NumPy-only payloads.
+
+    Examples:
+        >>> import numpy as np
+        >>> from flepimop2.typing import Array
+        >>> isinstance(np.zeros((2, 3)), Array)
+        True
+    """
+
+    @property
+    def shape(self) -> tuple[int, ...]:
+        """The array's shape."""
+
+    @property
+    def dtype(self) -> object:
+        """The array's dtype (backend-defined)."""
+
+    def __array_namespace__(self, *, api_version: Any = None) -> object:  # noqa: PLW3201, ANN401
+        """Return the Array-API namespace for this array."""
+
+    def item(self) -> Any:  # noqa: ANN401
+        """Return a 0-d array as a Python scalar."""
 
 
 class ExitCode(IntEnum):

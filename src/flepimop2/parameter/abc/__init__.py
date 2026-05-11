@@ -27,13 +27,11 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-import numpy as np
-
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.configuration import ModuleModel
 from flepimop2.module import ModuleABC
-from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.typing import Array, IdentifierString
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,7 +181,14 @@ class ParameterValue:
     Sampled parameter value plus resolved runtime shape metadata.
 
     Attributes:
-        value: The realized numeric value for this parameter.
+        value: The realized array-API value for this parameter.  Any
+            object satisfying the `Array` protocol is accepted -- NumPy
+            arrays, JAX arrays, PyTorch tensors, etc. -- which lets
+            backend-specific drivers (e.g. a ``jax.vmap``-wrapped engine)
+            keep their tracers without an unwanted host round-trip.
+            Producers remain responsible for handing in the dtype the
+            downstream engine expects; ``ParameterValue`` does **not**
+            coerce.
         shape: Named runtime shape resolved against a concrete axis collection.
 
     Notes:
@@ -205,15 +210,35 @@ class ParameterValue:
                        shape=ResolvedShape(axis_names=('age',), sizes=(2,)))
     """
 
-    value: Float64NDArray
+    value: Array
     shape: ResolvedShape
 
     def __post_init__(self) -> None:
         """
-        Normalize to a float64 array and validate its resolved shape.
+        Validate the value's shape and that its dtype is numeric.
+
+        ``ParameterValue`` no longer coerces the underlying ``value``.
+        Producers (`ParameterABC` subclasses) hand in an Array-API value
+        of the correct dtype; the static ``Array`` annotation expresses
+        the contract and ``mypy`` enforces it.  This leaves the value's
+        array backend (NumPy, JAX, PyTorch, ...) untouched so consumers
+        wrapped in ``jax.jit`` / ``jax.vmap`` see a tracer rather than a
+        ``TracerArrayConversionError`` from an implicit ``np.asarray``.
+
+        The `Array` `Protocol` is intentionally broad enough to cover
+        every Array-API-compliant backend, which means it also nominally
+        admits non-numeric NumPy arrays (e.g. string or object dtypes).
+        Those have no meaningful place in a `ParameterValue`, so this
+        check rejects them at construction time without forcing a host
+        round-trip on tracer-bearing backends: it asks the value's own
+        Array-API namespace via ``__array_namespace__().isdtype(...,
+        "numeric")``, falling back to ``dtype.kind`` for backends that
+        predate the Array-API ``isdtype`` helper.
 
         Raises:
             ValueError: If the array shape does not match the resolved named shape.
+            TypeError: If the array dtype is not numeric (boolean, integer,
+                unsigned integer, floating, or complex floating).
 
         Examples:
             >>> import numpy as np
@@ -229,15 +254,26 @@ class ParameterValue:
                 ...
             ValueError: ParameterValue shape mismatch: array has shape ...
         """
-        value = np.asarray(self.value, dtype=np.float64)
-        if value.shape != self.shape.sizes:
+        actual = tuple(self.value.shape)
+        if actual != self.shape.sizes:
             msg = (
                 "ParameterValue shape mismatch: array has shape "
-                f"{value.shape}, but resolved shape is {self.shape.sizes} "
+                f"{actual}, but resolved shape is {self.shape.sizes} "
                 f"for axes {self.shape.axis_names}."
             )
             raise ValueError(msg)
-        object.__setattr__(self, "value", value)
+        try:
+            xp: Any = self.value.__array_namespace__()
+            is_numeric = bool(xp.isdtype(self.value.dtype, "numeric"))
+        except (AttributeError, TypeError):
+            kind = getattr(self.value.dtype, "kind", None)
+            is_numeric = kind in {"b", "i", "u", "f", "c"}
+        if not is_numeric:
+            msg = (
+                f"ParameterValue.value has non-numeric dtype {self.value.dtype!r}; "
+                "expected a numeric Array-API array."
+            )
+            raise TypeError(msg)
 
     def item(self) -> float:
         """
