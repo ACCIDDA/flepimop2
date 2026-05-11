@@ -263,7 +263,7 @@ class ParameterValue:
             )
             raise ValueError(msg)
         try:
-            xp = self.value.__array_namespace__()
+            xp: Any = self.value.__array_namespace__()
             is_numeric = bool(xp.isdtype(self.value.dtype, "numeric"))
         except (AttributeError, TypeError):
             kind = getattr(self.value.dtype, "kind", None)

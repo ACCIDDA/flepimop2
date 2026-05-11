@@ -69,7 +69,7 @@ def test_parameter_value_under_jax_vmap() -> None:
 
 
 def test_parameter_value_rejects_string_dtype() -> None:
-    """NumPy string arrays satisfy the `Array` protocol nominally but are not numeric."""
+    """NumPy string arrays nominally satisfy `Array` but are not numeric."""
     arr = np.array(["a", "b", "c"])
     with pytest.raises(TypeError, match="non-numeric dtype"):
         ParameterValue(
