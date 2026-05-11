@@ -215,7 +215,7 @@ class ParameterValue:
 
     def __post_init__(self) -> None:
         """
-        Validate the value's shape against the resolved named shape.
+        Validate the value's shape and that its dtype is numeric.
 
         ``ParameterValue`` no longer coerces the underlying ``value``.
         Producers (`ParameterABC` subclasses) hand in an Array-API value
@@ -225,8 +225,20 @@ class ParameterValue:
         wrapped in ``jax.jit`` / ``jax.vmap`` see a tracer rather than a
         ``TracerArrayConversionError`` from an implicit ``np.asarray``.
 
+        The `Array` `Protocol` is intentionally broad enough to cover
+        every Array-API-compliant backend, which means it also nominally
+        admits non-numeric NumPy arrays (e.g. string or object dtypes).
+        Those have no meaningful place in a `ParameterValue`, so this
+        check rejects them at construction time without forcing a host
+        round-trip on tracer-bearing backends: it asks the value's own
+        Array-API namespace via ``__array_namespace__().isdtype(...,
+        "numeric")``, falling back to ``dtype.kind`` for backends that
+        predate the Array-API ``isdtype`` helper.
+
         Raises:
             ValueError: If the array shape does not match the resolved named shape.
+            TypeError: If the array dtype is not numeric (boolean, integer,
+                unsigned integer, floating, or complex floating).
 
         Examples:
             >>> import numpy as np
@@ -250,6 +262,18 @@ class ParameterValue:
                 f"for axes {self.shape.axis_names}."
             )
             raise ValueError(msg)
+        try:
+            xp = self.value.__array_namespace__()
+            is_numeric = bool(xp.isdtype(self.value.dtype, "numeric"))
+        except (AttributeError, TypeError):
+            kind = getattr(self.value.dtype, "kind", None)
+            is_numeric = kind in {"b", "i", "u", "f", "c"}
+        if not is_numeric:
+            msg = (
+                f"ParameterValue.value has non-numeric dtype {self.value.dtype!r}; "
+                "expected a numeric Array-API array."
+            )
+            raise TypeError(msg)
 
     def item(self) -> float:
         """

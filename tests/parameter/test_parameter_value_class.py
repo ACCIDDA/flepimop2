@@ -66,3 +66,23 @@ def test_parameter_value_under_jax_vmap() -> None:
     batched = jnp.stack([jnp.array([1.0, 2.0, 3.0]), jnp.array([4.0, 5.0, 6.0])])
     out = jax.vmap(make)(batched)
     np.testing.assert_array_equal(np.asarray(out), np.asarray(batched))
+
+
+def test_parameter_value_rejects_string_dtype() -> None:
+    """NumPy string arrays satisfy the `Array` protocol nominally but are not numeric."""
+    arr = np.array(["a", "b", "c"])
+    with pytest.raises(TypeError, match="non-numeric dtype"):
+        ParameterValue(
+            value=arr,
+            shape=ResolvedShape(axis_names=("x",), sizes=(3,)),
+        )
+
+
+def test_parameter_value_rejects_object_dtype() -> None:
+    """NumPy object arrays should also be rejected at construction time."""
+    arr = np.array([1, 2, 3], dtype=object)
+    with pytest.raises(TypeError, match="non-numeric dtype"):
+        ParameterValue(
+            value=arr,
+            shape=ResolvedShape(axis_names=("x",), sizes=(3,)),
+        )
