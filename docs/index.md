@@ -12,7 +12,7 @@ At the core of flepimop2 is a modular design that separates three concerns:
 - **Engine**: the numerical solver that runs the model forward in time
 - **Backend**: the output format for saving results
 
-Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline — model, solver, parameters, time grid, and post-processing — lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.
+Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline - model, solver, parameters, time grid, and post-processing - lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.
 
 ## Installation
 `flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with `pip`:
@@ -97,7 +97,7 @@ Results are saved automatically to the `model_output` directory as a CSV file.
 
 ## Adding Post-Processing
 
-flepimop2 supports post-processing steps that run after a simulation — useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the `process` block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.
+flepimop2 supports post-processing steps that run after a simulation - useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the `process` block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.
 
 The same `quickstart-project.zip` bundle already includes the post-processing config, script, and dependencies needed for this section.
 
@@ -122,7 +122,7 @@ quickstart-project/
 └── README.md
 ```
 
-Take a look at `configs/config.yaml`. It defines two simulation targets — `demo` and `hires` — that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the `process` block. flepimop2 defaults to the first defined target, but you can select a specific one with `--target`:
+Take a look at `configs/config.yaml`. It defines two simulation targets - `demo` and `hires` - that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the `process` block. flepimop2 defaults to the first defined target, but you can select a specific one with `--target`:
 
 ```bash
 # Run the default (demo) target

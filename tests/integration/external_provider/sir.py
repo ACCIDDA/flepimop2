@@ -22,7 +22,6 @@ from typing import Any
 import numpy as np
 
 from flepimop2.axis import AxisCollection
-from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import (
     ModelStateSpecification,
     ParameterRequest,
@@ -71,11 +70,10 @@ def stepper(
     return np.vstack((-infection, infection - recovery, recovery)).astype(np.float64)
 
 
-class SirSystem(SystemABC):
+class SirSystem(SystemABC, module="flepimop2.system.sir"):
     """The SIR model system."""
 
-    module = "flepimop2.system.sir"
-    state_change = StateChangeEnum.FLOW
+    state_change: StateChangeEnum = StateChangeEnum.FLOW
 
     @override
     def _bind_impl(
@@ -113,13 +111,3 @@ class SirSystem(SystemABC):
             axes=("age",),
             labels=("S", "I", "R"),
         )
-
-
-def build(config: dict[str, Any] | ModuleModel) -> SirSystem:  # noqa: ARG001
-    """
-    Build an SIR system.
-
-    Returns:
-        An instance of the SIR system.
-    """
-    return SirSystem()

@@ -50,10 +50,8 @@ def sample_step(
 DummySystem = system_wrap(sample_step, StateChangeEnum.STATE)
 
 
-class DummyEngine(EngineABC):
+class DummyEngine(EngineABC, module="flepimop2.engine.dummy"):
     """A dummy engine for testing purposes."""
-
-    module = "dummy"
 
 
 @pytest.mark.parametrize("engine", [DummyEngine()])

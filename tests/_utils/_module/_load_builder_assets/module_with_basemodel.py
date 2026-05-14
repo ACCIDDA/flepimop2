@@ -13,16 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""A test module with a BaseModel class but no build function."""
+"""A test module with a ModuleBase subclass for testing _find_module_class."""
 
-from pydantic import BaseModel
-
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 
 
-class TestModel(ModuleABC, BaseModel):
-    """A test model for testing auto-generated build function."""
+class TestModel(ModuleBase, module="flepimop2.test.model"):
+    """A test model for testing _find_module_class."""
 
-    module: str = "test_model"
     name: str
     value: int

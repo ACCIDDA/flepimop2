@@ -35,9 +35,9 @@ conda activate ./venv
 
 ## The System-Engine Architecture
 
-flepimop2 separates the specification of a model from the computation that runs it. A **system** defines what happens — the equations governing state transitions. An **engine** defines how those equations are solved — the numerical method and its configuration. These two components are independently specified in the config file and can be swapped in any combination.
+flepimop2 separates the specification of a model from the computation that runs it. A **system** defines what happens - the equations governing state transitions. An **engine** defines how those equations are solved - the numerical method and its configuration. These two components are independently specified in the config file and can be swapped in any combination.
 
-This separation matters in practice. A disease modeler can publish a system — the compartmental structure and transmission logic — without prescribing a solver. Collaborators can then run that same system with a different engine suited to their performance requirements or numerical preferences, without ever touching the model code.
+This separation matters in practice. A disease modeler can publish a system - the compartmental structure and transmission logic - without prescribing a solver. Collaborators can then run that same system with a different engine suited to their performance requirements or numerical preferences, without ever touching the model code.
 
 ### The Wrapper Pattern
 
@@ -55,7 +55,7 @@ engine:
     script: model_input/plugins/solve_ivp.py
 ```
 
-The `wrapper` module dynamically imports the script (path defined in the `script` argument) and looks for a required entry point function: `stepper()` for systems, `runner()` for engines. The `state_change` field tells flepimop2 what the stepper returns — `flow` means dY/dt (derivatives suitable for ODE integration), `delta` means ΔY (increments), and `state` means the full new state vector.
+The `wrapper` module dynamically imports the script (path defined in the `script` argument) and looks for a required entry point function: `stepper()` for systems, `runner()` for engines. The `state_change` field tells flepimop2 what the stepper returns - `flow` means dY/dt (derivatives suitable for ODE integration), `delta` means ΔY (increments), and `state` means the full new state vector.
 
 ### Swapping Solvers Without Changing the Model
 
@@ -114,7 +114,7 @@ system:
         R: r0
 ```
 
-The example above specifies a basic SIR model. `kind: expr` indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the `state` field, and their corresponding dY/dt expressions are defined in `equations`. The `sum_state()` helper evaluates to the total population at each time step — equivalent to `S + I + R` — and is provided to make density-dependent transmission terms concise and readable. Symbolic representations for the initial states of each of these compartments are defined in `initial_state`; each of these symbolic representations are then assigned a numeric value in `parameters` later in the file.
+The example above specifies a basic SIR model. `kind: expr` indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the `state` field, and their corresponding dY/dt expressions are defined in `equations`. The `sum_state()` helper evaluates to the total population at each time step - equivalent to `S + I + R` - and is provided to make density-dependent transmission terms concise and readable. Symbolic representations for the initial states of each of these compartments are defined in `initial_state`; each of these symbolic representations are then assigned a numeric value in `parameters` later in the file.
 
 If a user wants to defines disease system by specifying the transitions between states instead of the expression for each state, they can do so as follows:
 
@@ -133,7 +133,7 @@ system:
           rate: gamma
 ```
 
-When using `op_system`, no `state_change` field is required; the module infers it from the symbolic specification. `op_system` requires `op_engine` — the symbolic expression compiler and solver are designed to work together.
+When using `op_system`, no `state_change` field is required; the module infers it from the symbolic specification. `op_system` requires `op_engine` - the symbolic expression compiler and solver are designed to work together.
 
 ---
 
@@ -213,7 +213,7 @@ process:
       - model_output/SIR_plot.png
 ```
 
-Any shell command is valid here — the module imposes no restrictions on what runs. Exit codes are checked; a non-zero exit will raise an error and halt the pipeline.
+Any shell command is valid here - the module imposes no restrictions on what runs. Exit codes are checked; a non-zero exit will raise an error and halt the pipeline.
 
 ### Jupyter Notebook Rendering (ipynbrender)
 
@@ -280,7 +280,7 @@ results_dir = Path(backend_cfg.get("root") or "model_output")
 latest_csv = sorted(results_dir.glob("*.csv"), key=lambda p: p.stat().st_mtime)[-1]
 ```
 
-This pattern means post-processing scripts adapt automatically when the backend or output directory changes in the config — no manual path updates required.
+This pattern means post-processing scripts adapt automatically when the backend or output directory changes in the config - no manual path updates required.
 
 ---
 
@@ -325,7 +325,7 @@ full-feature-project/
     --8<-- "assets/full-feature-project/configs/config.yml"
     ```
 
-Note that this config uses `op_system` and `op_engine` — no Python plugin scripts are needed for the model or solver. The `model_input/plugins` directory can remain empty.
+Note that this config uses `op_system` and `op_engine` - no Python plugin scripts are needed for the model or solver. The `model_input/plugins` directory can remain empty.
 
 ### Running the Pipeline
 

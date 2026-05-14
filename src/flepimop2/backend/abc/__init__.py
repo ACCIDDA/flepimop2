@@ -21,13 +21,12 @@ from abc import abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.typing import Float64NDArray
 
 
-class BackendABC(ModuleABC, module_namespace="backend"):
+class BackendABC(ModuleBase, module_namespace="backend"):
     """Abstract base class for flepimop2 file IO backends."""
 
     def save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
@@ -63,7 +62,7 @@ class BackendABC(ModuleABC, module_namespace="backend"):
         ...
 
 
-def build(config: dict[str, Any] | ModuleModel | str) -> BackendABC:
+def build(config: dict[str, Any] | ModuleBase | str) -> BackendABC:
     """Build a `BackendABC` from a configuration dictionary.
 
     Args:
@@ -75,4 +74,4 @@ def build(config: dict[str, Any] | ModuleModel | str) -> BackendABC:
         The constructed backend instance.
 
     """
-    return _build(config, "backend", BackendABC)
+    return _build(config, "backend", BackendABC)  # type: ignore[type-abstract]

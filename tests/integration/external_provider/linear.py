@@ -18,11 +18,10 @@
 import numpy as np
 
 from flepimop2.axis import AxisCollection
-from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import ParameterABC, ParameterRequest, ParameterValue
 
 
-class LinearParameter(ModuleModel, ParameterABC, module="linear"):
+class LinearParameter(ParameterABC, module="linear"):
     """Parameter that scales one continuous axis by a configured slope."""
 
     slope: float

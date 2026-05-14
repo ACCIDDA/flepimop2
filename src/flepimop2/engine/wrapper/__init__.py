@@ -23,14 +23,13 @@ from typing import Self
 from pydantic import model_validator
 
 from flepimop2._utils._module import _load_module, _validate_function
-from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.system.abc import SystemABC
 from flepimop2.typing import StateChangeEnum
 
 
-class WrapperEngine(ModuleModel, EngineABC, module="wrapper"):
+class WrapperEngine(EngineABC, module="wrapper"):
     """A `EngineABC` which wraps a user-defined script file."""
 
     state_change: StateChangeEnum

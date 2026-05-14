@@ -24,12 +24,11 @@ import numpy as np
 from pydantic import Field, field_validator
 
 from flepimop2.backend.abc import BackendABC
-from flepimop2.configuration import ModuleModel
 from flepimop2.meta import RunMeta
 from flepimop2.typing import Float64NDArray
 
 
-class CsvBackend(ModuleModel, BackendABC, module="csv"):
+class CsvBackend(BackendABC, module="csv"):
     """CSV backend for saving numpy arrays to CSV files."""
 
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")

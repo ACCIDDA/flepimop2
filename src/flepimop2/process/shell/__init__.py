@@ -21,11 +21,10 @@ from subprocess import run  # noqa: S404
 
 from pydantic import Field
 
-from flepimop2.configuration import ModuleModel
 from flepimop2.process.abc import ProcessABC
 
 
-class ShellProcess(ModuleModel, ProcessABC, module="shell"):
+class ShellProcess(ProcessABC, module="shell"):
     """
     Shell process for executing commands.
 

@@ -22,12 +22,11 @@ from collections.abc import Iterable
 from typing import Any, NamedTuple
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
-class ScenarioABC(ModuleABC, module_namespace="scenario"):
+class ScenarioABC(ModuleBase, module_namespace="scenario"):
     """Abstract base class for scenarios."""
 
     @property
@@ -50,15 +49,15 @@ class ScenarioABC(ModuleABC, module_namespace="scenario"):
         raise NotImplementedError
 
 
-def build(config: dict[IdentifierString, Any] | ModuleModel | str) -> ScenarioABC:
+def build(config: dict[IdentifierString, Any] | ModuleBase | str) -> ScenarioABC:
     """Build a `ScenarioABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a `ModuleModel` instance to construct the
+        config: Configuration dictionary or a `ModuleBase` instance to construct the
             scenarios from. The configuration must define a `module`.
 
     Returns:
         The constructed scenario instance.
 
     """
-    return _build(config, "scenario", ScenarioABC)
+    return _build(config, "scenario", ScenarioABC)  # type: ignore[type-abstract]
