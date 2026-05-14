@@ -17,7 +17,6 @@
 
 import inspect
 import re
-from abc import ABCMeta
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
@@ -27,22 +26,18 @@ from typing import (
     Any,
     Literal,
     NamedTuple,
-    Protocol,
     Self,
     TypeVar,
-    cast,
-    runtime_checkable,
 )
 
-from pydantic import BaseModel, TypeAdapter, ValidationError
+from pydantic import TypeAdapter, ValidationError
 
-from flepimop2.configuration import ModuleModel
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.typing import IdentifierString
 
 Namespace = Literal["backend", "engine", "parameter", "process", "scenario", "system"]
 
-T_co = TypeVar("T_co", bound=ModuleABC, covariant=True)
+T = TypeVar("T", bound=ModuleBase)
 SHORTHAND_PATTERN = re.compile(
     r"^\s*(?P<module>[A-Za-z_][A-Za-z0-9_\.]*)\((?P<args>.*)\)\s*$",
     re.DOTALL,
@@ -126,46 +121,8 @@ class ParsedShorthand(NamedTuple):
         )
 
 
-@runtime_checkable
-class Buildable(Protocol[T_co]):
-    """
-    Protocol for modules that can be built from a configuration.
-
-    This protocol defines the expected interface for modules that can be built using
-    the `_build` function. It requires a `build` method that takes a configuration
-    dictionary or a `ModuleModel` instance and returns an instance of type `T`.
-
-    Attributes:
-        build: A callable that constructs an instance of type `T` from a
-        configuration.
-
-    """
-
-    def build(self, config: dict[IdentifierString, Any] | ModuleModel) -> T_co: ...
-
-
-class PydanticBuildable(Protocol[T_co]):
-    """
-    Protocol for modules that can be built from a configuration using Pydantic.
-
-    This protocol defines the expected interface for modules that can be built using
-    the `_build` function with a default builder. It requires that the module is a
-    subclass of `pydantic.BaseModel` and has a `model_validate` method that can
-    construct an instance of type `T` from a configuration.
-
-    Attributes:
-        model_validate: A callable that constructs an instance of type `T` from a
-        configuration, per the pydantic BaseModel.model_validate.
-
-    """
-
-    @classmethod
-    def model_validate(cls, obj: Any) -> T_co:  # noqa: ANN401
-        ...
-
-
 def _as_dict(
-    config: dict[IdentifierString, Any] | ModuleModel | None = None,
+    config: dict[IdentifierString, Any] | ModuleBase | None = None,
 ) -> dict[IdentifierString, Any]:
     """
     Ensure a Model can be used as a dictionary.
@@ -177,16 +134,15 @@ def _as_dict(
         A dictionary representation of the configuration.
 
     Raises:
-        TypeError: If the config is not a dictionary, ModuleModel, or None.
+        TypeError: If the config is not a dictionary, ModuleBase, or None.
     """
     if config is None:
         return {}
-    if isinstance(config, ModuleModel):
+    if isinstance(config, ModuleBase):
         return config.model_dump()
     if isinstance(config, dict):
         return config.copy()
-
-    msg = f"Expected config to be a dict or ModuleModel, got {type(config).__name__}"
+    msg = f"Expected config to be a dict or ModuleBase, got {type(config).__name__}"
     raise TypeError(msg)
 
 
@@ -223,43 +179,6 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
     return module
 
 
-def _load_builder(
-    mod_name: str, enforced_type: type[T_co] | ABCMeta
-) -> Buildable[T_co]:
-    """
-    Load a Python module from a given file path as a given name.
-
-    Args:
-        mod_name: The name of the module to load.
-        enforced_type: The type that the loaded module must enforce.
-
-    Returns:
-        The loaded module.
-
-    Raises:
-        AttributeError: If the module does not have a 'build' function or a valid
-            BaseModel for default building.
-
-    """  # noqa: DOC502
-    mod = import_module(mod_name)
-
-    # Check if module already satisfies the protocol
-    if isinstance(mod, Buildable):
-        # We cast because runtime check doesn't guarantee the internal T_co
-        return cast("Buildable[T_co]", mod)
-
-    target_class: PydanticBuildable[T_co] = _find_target_class(
-        mod, mod_name, enforced_type
-    )
-
-    class _BuilderWrapper:
-        def build(self, config: dict[IdentifierString, Any] | ModuleModel) -> T_co:  # noqa: PLR6301
-            # Validate returns an instance of the class; we cast it to the expected T_co
-            return target_class.model_validate(_as_dict(config))
-
-    return _BuilderWrapper()
-
-
 def _validate_function(module: ModuleType, func_name: str) -> bool:
     """
     Check if a module has a callable function with the given name.
@@ -275,43 +194,38 @@ def _validate_function(module: ModuleType, func_name: str) -> bool:
     return hasattr(module, func_name) and callable(getattr(module, func_name))
 
 
-def _find_target_class(
-    mod: ModuleType, mod_name: str, enforced_type: type[T_co] | ABCMeta
-) -> PydanticBuildable[T_co]:
+def _find_module_class(
+    mod: ModuleType,
+    mod_name: str,
+    enforced_type: type[T],
+) -> type[T]:
     """
-    Find a BaseModel subclass defined in a module.
-
-    This function finds a target class in a module that is able to support a default
-    build function. The criteria for the target class is that it must be a subclass
-    of `pydantic.BaseModel` (excluding `BaseModel` itself and `ModuleModel`) and must
-    be defined within the module itself.
+    Find a `ModuleBase` subclass defined directly in a module.
 
     Args:
         mod: The module to search.
-        mod_name: The fully qualified module name.
-        enforced_type: The type that the loaded module must enforce.
+        mod_name: The fully qualified module name (used to filter classes to
+            those defined in this module, not imported ones).
+        enforced_type: The ABC type the class must satisfy.
 
     Returns:
-        The target BaseModel subclass.
+        The matching `ModuleBase` subclass.
 
     Raises:
-        AttributeError: If no valid target class is found in the module.
+        AttributeError: If no valid class is found.
 
     """
-    possible_objs = [
-        obj
-        for _, obj in inspect.getmembers(mod, inspect.isclass)
-        if obj not in {BaseModel, ModuleModel} and obj.__module__ == mod_name
-    ]
-    for obj in possible_objs:
+    for _, obj in inspect.getmembers(mod, inspect.isclass):
+        if obj.__module__ != mod_name:
+            continue
         try:
-            if issubclass(obj, BaseModel) and issubclass(obj, enforced_type):
-                return cast("PydanticBuildable[T_co]", obj)
+            if issubclass(obj, enforced_type) and issubclass(obj, ModuleBase):
+                return obj
         except TypeError:
             continue
     msg = (
-        f"Module '{mod_name}' does not have a {enforced_type.__name__} class "
-        f"which is also a pydantic BaseModel."
+        f"Module '{mod_name}' does not define a {enforced_type.__name__} subclass "
+        "that inherits from ModuleBase."
     )
     raise AttributeError(msg)
 
@@ -344,10 +258,10 @@ def _resolve_module_name(module: str, namespace: Namespace) -> str:
 
 
 def _build(
-    config: dict[str, Any] | ModuleModel | str,
+    config: dict[str, Any] | ModuleBase | str,
     namespace: Namespace,
-    enforced_type: type[T_co] | ABCMeta,
-) -> T_co:
+    enforced_type: type[T],
+) -> T:
     """
     Build an instance from a configuration dictionary.
 
@@ -355,10 +269,9 @@ def _build(
     system ABC build functions to reduce code duplication.
 
     Args:
-        config: Configuration dictionary, `ModuleModel` instance, or shorthand text.
+        config: Configuration dictionary, `ModuleBase` instance, or shorthand text.
         namespace: The namespace for module resolution.
-        enforced_type: The expected type of the built instance. Can be an abstract
-            class since it's only used for isinstance checks, not instantiation.
+        enforced_type: The expected type of the built instance.
 
     Returns:
         The constructed instance.
@@ -372,10 +285,7 @@ def _build(
         parsed = ParsedShorthand.from_string(config)
         module_path = _resolve_module_name(parsed.module, namespace)
         mod = import_module(module_path)
-        target_class = cast(
-            "type[T_co]",
-            _find_target_class(mod, module_path, enforced_type),
-        )
+        target_class = _find_module_class(mod, module_path, enforced_type)
         try:
             instance = target_class.from_shorthand(parsed.args)
         except NotImplementedError as exc:
@@ -393,12 +303,10 @@ def _build(
         module_path = _resolve_module_name(configured_module, namespace)
         config_dict["module"] = module_path
 
-        # Anchor T_co by passing enforced_type
-        builder: Buildable[T_co] = _load_builder(module_path, enforced_type)
+        mod = import_module(module_path)
+        target_class = _find_module_class(mod, module_path, enforced_type)
+        instance = target_class.model_validate(config_dict)
 
-        instance = builder.build(config_dict)
-
-    # Final runtime safety check since we've done a lot of casting
     if not isinstance(instance, enforced_type):
         msg = f"Built {type(instance)}, expected {enforced_type}"
         raise TypeError(msg)

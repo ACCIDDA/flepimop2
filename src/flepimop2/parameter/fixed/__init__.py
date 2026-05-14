@@ -23,12 +23,11 @@ from typing import Any, Self
 import numpy as np
 
 from flepimop2.axis import AxisCollection, ResolvedShape
-from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import ParameterABC, ParameterRequest, ParameterValue
 from flepimop2.typing import IdentifierString
 
 
-class FixedParameter(ModuleModel, ParameterABC, module="fixed"):
+class FixedParameter(ParameterABC, module="fixed"):
     """
     Parameter with a fixed value.
 

@@ -115,11 +115,7 @@ The lack of `__init__.py` files in the intermediate directories (`flepimop2/` an
 
 ### Step 4: Implement the `NpzBackend` Class
 
-Now we'll implement the `NpzBackend` class in `src/flepimop2/backend/npz/__init__.py`. Backends, similar to other modules, must implement the [`BackendABC`][flepimop2.abcs.BackendABC] class which defines the interface. There are two approaches to implementing a module class in `flepimop2`.
-
-#### Approach 1: Inherit from `ModuleModel` (Recommended)
-
-When you inherit from [`ModuleModel`][flepimop2.configuration.ModuleModel], your class becomes a Pydantic model that handles configuration validation automatically. You don't need to write a separate `build` function.
+Now we'll implement the `NpzBackend` class in `src/flepimop2/backend/npz/__init__.py`. Backends must implement the [`BackendABC`][flepimop2.abcs.BackendABC] interface. Since `BackendABC` already inherits from `ModuleBase` (a Pydantic `BaseModel`), your class automatically gains configuration parsing and validation - no separate `build` function is needed.
 
 ```python
 """NPZ backend for flepimop2."""
@@ -128,15 +124,14 @@ import os
 from pathlib import Path
 
 import numpy as np
-from flepimop2.typing import Float64NDArray
 from pydantic import Field, field_validator
 
-from flepimop2.abcs import BackendABC
-from flepimop2.configuration import ModuleModel
+from flepimop2.backend.abc import BackendABC
 from flepimop2.meta import RunMeta
+from flepimop2.typing import Float64NDArray
 
 
-class NpzBackend(ModuleModel, BackendABC, module="npz"):
+class NpzBackend(BackendABC, module="npz"):
     """NPZ backend for saving numpy arrays to .npz files."""
 
     root: Path = Field(default_factory=lambda: Path.cwd() / "model_output")
@@ -208,142 +203,24 @@ class NpzBackend(ModuleModel, BackendABC, module="npz"):
             return npz_file["data"]
 ```
 
-The `module="npz"` class argument is the preferred API. It resolves to the fully qualified module path `"flepimop2.backend.npz"` and also configures the matching Pydantic field for the model. The explicit form is still supported if you prefer to spell it out:
+The `module="npz"` class argument is the required API. It resolves to the fully qualified module path `"flepimop2.backend.npz"` and also constrains the matching Pydantic field to that value. The explicit annotation form is also supported:
 
 ```python
 from typing import Literal
 
 
-class NpzBackend(ModuleModel, BackendABC):
+class NpzBackend(BackendABC):
     module: Literal["flepimop2.backend.npz"] = "flepimop2.backend.npz"
     ...
 ```
 
-The key points of this approach are:
+Key points of this implementation:
 
-- The class inherits from both [`ModuleModel`][flepimop2.configuration.ModuleModel] and [`BackendABC`][flepimop2.abcs.BackendABC].
-- The preferred `module="npz"` class argument resolves the exact module path while keeping the corresponding Pydantic field constrained to that value.
+- The class inherits from [`BackendABC`][flepimop2.abcs.BackendABC], which already provides the Pydantic `BaseModel` foundation via `ModuleBase`.
+- The `module="npz"` class argument resolves the exact module path and constrains the corresponding Pydantic field to that value.
 - Pydantic's `Field` is used to define configuration options with defaults and descriptions.
 - Field validators can be used for custom validation logic.
-- No separate `build` function is needed, `flepimop2` is able to inspect that this class inherits [`ModuleModel`][flepimop2.configuration.ModuleModel] and creates a default `build` function.
-
-This is the generally recommended approach for constructing modules.
-
-#### Approach 2: Custom `build` Function
-
-If you don't inherit from [`ModuleModel`][flepimop2.configuration.ModuleModel], you need to provide a custom `build` function that constructs your class from a configuration dictionary:
-
-```python
-"""NPZ backend for flepimop2."""
-
-import os
-from pathlib import Path
-from typing import Any
-
-import numpy as np
-from flepimop2.typing import Float64NDArray
-
-from flepimop2.abcs import BackendABC
-from flepimop2.configuration import ModuleModel
-from flepimop2.meta import RunMeta
-
-
-class NpzBackend(BackendABC):
-    """NPZ backend for saving numpy arrays to .npz files."""
-
-    def __init__(self, root: Path | None = None, compressed: bool = True) -> None:
-        """
-        Initialize the NPZ backend.
-
-        Args:
-            root: The root directory for saving files. Defaults to ./model_output
-            compressed: Whether to use compression when saving. Defaults to True.
-
-        Raises:
-            TypeError: If root is not a writable directory.
-        """
-        self.root = root if root is not None else Path.cwd() / "model_output"
-        self.compressed = compressed
-
-        if not (self.root.is_dir() and os.access(self.root, os.W_OK)):
-            msg = f"The specified 'root' is not a directory or is not writable: {self.root}"
-            raise TypeError(msg)
-
-    def _get_file_path(self, run_meta: RunMeta) -> Path:
-        """
-        Generate a dynamic file path based on run metadata.
-
-        Args:
-            run_meta: Metadata about the current run.
-
-        Returns:
-            The dynamically generated file path.
-        """
-        timestamp_str = run_meta.timestamp.strftime("%Y%m%d_%H%M%S")
-        name_part = f"{run_meta.name}_" if run_meta.name else ""
-        filename = f"{name_part}{run_meta.action}_{timestamp_str}.npz"
-        return self.root / filename
-
-    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
-        """
-        Save a numpy array to an NPZ file.
-
-        Args:
-            data: The numpy array to save.
-            run_meta: Metadata about the current run.
-        """
-        file_path = self._get_file_path(run_meta)
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if self.compressed:
-            np.savez_compressed(file_path, data=data)
-        else:
-            np.savez(file_path, data=data)
-
-    def _read(self, run_meta: RunMeta) -> Float64NDArray:
-        """
-        Read a numpy array from an NPZ file.
-
-        Args:
-            run_meta: Metadata about the current run.
-
-        Returns:
-            The numpy array read from the NPZ file.
-        """
-        file_path = self._get_file_path(run_meta)
-        with np.load(file_path) as npz_file:
-            return npz_file["data"]
-
-
-def build(config: dict[str, Any] | ModuleModel) -> NpzBackend:
-    """
-    Build an NPZ backend from a configuration.
-
-    Args:
-        config: Configuration dictionary or ModuleModel containing backend settings.
-            Expected keys:
-            - root (optional): Path to the output directory
-            - compressed (optional): Whether to use compression
-
-    Returns:
-        An instance of NpzBackend.
-    """
-    config_dict = config.model_dump() if isinstance(config, ModuleModel) else config
-    config_dict = {k: v for k, v in config.items() if k != "module"}
-    if "root" in config_dict and isinstance(config_dict["root"], str):
-        config_dict["root"] = Path(config_dict["root"])
-    return NpzBackend(**config_dict)
-```
-
-The key points of this approach are:
-
-- The class only inherits from [`BackendABC`][flepimop2.abcs.BackendABC], not [`ModuleModel`][flepimop2.configuration.ModuleModel].
-- Manual validation is performed in `__init__`.
-- A separate `build` function is required to construct instances from configuration.
-- The `build` function must handle both `dict` and [`ModuleModel`][flepimop2.configuration.ModuleModel] inputs.
-- More manual work, but provides complete control over instantiation.
-
-This approach is generally not recommended unless you have very advanced needs that Pydantic based configuration parsing and validating does not support.
+- No separate `build` function is needed - `flepimop2` calls `NpzBackend.model_validate(config)` directly.
 
 ### Step 5: Install the Package
 
@@ -371,8 +248,8 @@ When `flepimop2` processes this configuration:
 1. It sees `module: 'npz'` in the backend section.
 2. It prepends `flepimop2.backend.` to resolve it to `flepimop2.backend.npz`.
 3. It imports the module from your external package.
-4. If using Approach 1, it instantiates `NpzBackend` directly using a default `build` function.
-5. If using Approach 2, it calls the `build` function with the configuration.
+4. It finds the `NpzBackend` class (the `BackendABC` subclass defined in that module).
+5. It calls `NpzBackend.model_validate(config)` to construct the instance.
 
 ## Testing Your External Provider Package
 
@@ -424,9 +301,7 @@ This tutorial covered:
 - How PEP 420 namespace packages enable seamless integration with `flepimop2`.
 - Creating a new external provider package using `uv` and `hatchling`.
 - Proper directory structure for namespace packages (no `__init__.py` in intermediate directories).
-- Two approaches for implementing module classes:
-  1. Inheriting from [`ModuleModel`][flepimop2.configuration.ModuleModel] for automatic Pydantic validation (recommended).
-  2. Using a custom `build` function for complete control.
+- Implementing module classes by inheriting from the appropriate ABC (e.g., `BackendABC`), which provides Pydantic validation automatically.
 - Using your external provider package in `flepimop2` configuration files.
 - Testing your external provider package.
 

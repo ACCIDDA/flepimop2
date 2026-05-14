@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- ...
+- The non-`pydantic` approach to defining custom modules. See [#257](https://github.com/ACCIDDA/flepimop2/issues/257).
 
 ### Fixed
 

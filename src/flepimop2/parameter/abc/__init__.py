@@ -29,8 +29,7 @@ from typing import Any
 
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection, ResolvedShape
-from flepimop2.configuration import ModuleModel
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.typing import Array, IdentifierString
 
 
@@ -292,7 +291,7 @@ class ParameterValue:
         return float(self.value.item())
 
 
-class ParameterABC(ModuleABC, module_namespace="parameter"):
+class ParameterABC(ModuleBase, module_namespace="parameter"):
     """
     Abstract base class for parameter modules.
 
@@ -325,14 +324,14 @@ class ParameterABC(ModuleABC, module_namespace="parameter"):
         raise NotImplementedError
 
 
-def build(config: dict[str, Any] | ModuleModel | str) -> ParameterABC:
+def build(config: dict[str, Any] | ModuleBase | str) -> ParameterABC:
     """Build a `ParameterABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a `ModuleModel` instance to construct the
+        config: Configuration dictionary or a `ModuleBase` instance to construct the
             parameter from. The configuration must define a `module`.
 
     Returns:
         The constructed parameter instance.
     """
-    return _build(config, "parameter", ParameterABC)
+    return _build(config, "parameter", ParameterABC)  # type: ignore[type-abstract]

@@ -23,7 +23,8 @@ __all__ = [
     "ContinuousAxisModel",
     "ModuleConfigurationValue",
     "ModuleGroupModel",
-    "ModuleModel",
+    "ParameterConfigurationValue",
+    "ParameterGroupModel",
     "SimulateSpecificationModel",
 ]
 
@@ -37,6 +38,7 @@ from flepimop2.configuration._configuration import ConfigurationModel
 from flepimop2.configuration._module import (
     ModuleConfigurationValue,
     ModuleGroupModel,
-    ModuleModel,
+    ParameterConfigurationValue,
+    ParameterGroupModel,
 )
 from flepimop2.configuration._simulate import SimulateSpecificationModel

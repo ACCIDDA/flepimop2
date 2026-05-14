@@ -20,7 +20,6 @@ from typing import Any
 
 import numpy as np
 
-from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemProtocol
@@ -72,21 +71,10 @@ def runner(
     return output
 
 
-class EulerEngine(EngineABC):
+class EulerEngine(EngineABC, module="flepimop2.engine.euler"):
     """SIR model runner."""
 
-    module = "flepimop2.engine.euler"
-
-    def __init__(self) -> None:
-        """Initialize the SIR runner with the SIR runner function."""
+    def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
+        """Set the Euler runner function."""
+        super().model_post_init(__context)
         self._runner = runner
-
-
-def build(config: dict[str, Any] | ModuleModel) -> EulerEngine:  # noqa: ARG001
-    """
-    Build an SIR engine.
-
-    Returns:
-        An instance of the SIR engine.
-    """
-    return EulerEngine()

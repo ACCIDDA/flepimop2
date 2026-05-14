@@ -25,16 +25,15 @@ While any given **System** object represents a particular model world, a **Syste
 For now, however, we'll stick with a module that only contains this single world. Since there's only the single world, we can implement all the pieces directly:
 
 ```python
-"""Stepper function for SIR model integration tests."""
-
-from typing import Any
+"""SIR system implementation."""
 
 import numpy as np
+from pydantic import PrivateAttr
 
-from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import Float64NDArray, StateChangeEnum
+
 
 def global_sir(
     time: np.float64,
@@ -60,35 +59,41 @@ def global_sir(
         gamma.item() * state[1]
     ])
 
-class SirSystem(ModuleModel, SystemABC, module="sir"):
+
+class SirSystem(SystemABC, module="sir"):
     """SIR model system."""
 
-    state_change : StateChangeEnum = StateChangeEnum.FLOW
-    _stepper : SystemProtocol = global_sir
+    state_change: StateChangeEnum = StateChangeEnum.FLOW
 
+    _stepper: SystemProtocol = PrivateAttr(default=None)
+
+    def model_post_init(self, __context: object) -> None:
+        super().model_post_init(__context)
+        self.__pydantic_private__["_stepper"] = global_sir
 ```
 
 Key elements in the system implementation:
 
-- **SirSystem** inherits from **ModuleModel** and **SystemABC**. **SystemABC** adds the generic capabilities for all system objects. **ModuleModel** simplifies building the system from the configuration file (by making **SirSystem** into a Pydantic model). This simplification means you don't have to implement the standard entry point `build(...)`; for more details, see [Creating An External Provider Package](./creating-an-external-provider-package.md).
-- As required by the inherited classes, **SirSystem** defines the module namespace, the state change type (i.e. flow vs delta vs next), and the `_stepper` method.
-- Here we're setting `_stepper` to the `global_sir` definition, since **SirSystem** only builds one model world: SIR.
+- **SirSystem** inherits from **SystemABC**, which provides the Pydantic `BaseModel` foundation and all generic system capabilities automatically.
+- `state_change` is a required field on every `SystemABC` subclass. Here it is given a fixed default since this system always uses the `FLOW` convention.
+- `_stepper` is stored as a Pydantic `PrivateAttr` and wired up in `model_post_init`. Callables must be accessed and set through `self.__pydantic_private__["_stepper"]` rather than `self._stepper` to avoid Python's descriptor binding.
+- The `module="sir"` class argument indicates how configuration files will indicate to use this module, i.e. `module: sir`.
 
 ## Engine Implementation (`EulerEngine`)
 
 ```python
-"""Runner function for SIR model integration tests."""
+"""Euler engine implementation."""
 
 from typing import Any
 
 import numpy as np
+from pydantic import PrivateAttr
 
-from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.typing import Float64NDArray, IdentifierString, StateChangeEnum
 
 
 def runner(
@@ -118,12 +123,14 @@ def runner(
 
 
 class EulerEngine(EngineABC, module="euler"):
-    """SIR model runner."""
+    """Euler integration engine."""
 
-    def __init__(self) -> None:
-        """Initialize the SIR runner with the SIR runner function."""
-        self._runner = runner
-    
+    _runner: Any = PrivateAttr(default=None)
+
+    def model_post_init(self, __context: object) -> None:
+        super().model_post_init(__context)
+        self.__pydantic_private__["_runner"] = runner
+
     def validate_system(self, system: SystemABC) -> list[ValidationIssue] | None:
         """
         Validation hook for system properties.
@@ -146,29 +153,21 @@ class EulerEngine(EngineABC, module="euler"):
                 )
             ]
         return None
-
-
-def build(config: dict[str, Any] | ModuleModel) -> EulerEngine:  # noqa: ARG001
-    """
-    Build an SIR engine.
-
-    Returns:
-        An instance of the SIR engine.
-    """
-    return EulerEngine()
 ```
 
 Key elements in the engine implementation:
 
 - `runner` drives the simulation by applying the stepper across time points.
-- `EulerEngine` inherits `EngineABC` and assigns `_runner` in `__init__` as well as has a `module` attribute that gives it an importable name.
+- `EulerEngine` inherits `EngineABC` and stores its runner in `model_post_init` via `self.__pydantic_private__["_runner"]`. This pattern avoids descriptor binding that occurs when storing callables in `PrivateAttr` and accessing them via `self._runner`.
+- The `module="euler"` class argument indicates how configuration files will indicate to use this module, i.e. `module: euler`.
 - `EulerEngine` implements the optional `validate_system` hook to ensure that the system is compatible.
-- `build(...)` lets `flepimop2` construct the engine from configuration data.
+- No `build(...)` function is needed - `flepimop2` calls `EulerEngine.model_validate(config)` directly.
 
 ## Summary
 
 Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let `flepimop2` handle construction and validation.
 
-- Systems must supply a stepper function as well as required attributes `module` and `state_change`.
-- Engines must supply a runner function compatible with `SystemProtocol` as well as required attributes `module` and optional system validation hook `validate_system`.
-- `build(...)` provides the standard entry point for configuration-driven construction.
+- Systems must inherit from `SystemABC` and supply a stepper (via `PrivateAttr` + `model_post_init`) as well as required attributes `module` and `state_change`.
+- Engines must inherit from `EngineABC` and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Both use `model_post_init` for any initialization logic that runs after Pydantic has validated configuration fields.
+- Neither requires a `build(...)` function - Pydantic's `model_validate` handles configuration-driven construction.

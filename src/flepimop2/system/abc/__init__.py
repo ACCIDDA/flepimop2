@@ -30,13 +30,13 @@ from collections.abc import Callable
 from typing import Any
 
 import numpy as np
+from pydantic import PrivateAttr
 
 from flepimop2._utils._checked_partial import _checked_partial, _consolidate_args
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection
-from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import (
     ModelStateSpecification,
     ParameterRequest,
@@ -55,7 +55,7 @@ else:
     from typing_extensions import override
 
 
-class SystemABC(ModuleABC, module_namespace="system"):
+class SystemABC(ModuleBase, module_namespace="system"):
     """
     Abstract class for Dynamic Systems.
 
@@ -68,31 +68,6 @@ class SystemABC(ModuleABC, module_namespace="system"):
     """
 
     state_change: StateChangeEnum
-
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        """
-        Ensure concrete subclasses define a valid state change type.
-
-        Args:
-            **kwargs: Additional keyword arguments passed to parent classes.
-
-        Raises:
-            TypeError: If a concrete subclass does not define `state_change`.
-
-        """
-        super().__init_subclass__(**kwargs)
-        if inspect.isabstract(cls):
-            return
-        annotations = inspect.get_annotations(cls)
-        has_state_change = (
-            "state_change" in cls.__dict__ or "state_change" in annotations
-        )
-        if not has_state_change:
-            msg = (
-                f"Concrete class '{cls.__name__}' must define 'state_change' as "
-                "a class attribute or type annotation."
-            )
-            raise TypeError(msg)
 
     def bind(
         self,
@@ -228,16 +203,18 @@ class SystemABC(ModuleABC, module_namespace="system"):
         return None
 
 
-class _AdapterSystem(SystemABC, module="wrapper"):
+class _AdapterSystem(SystemABC, module="flepimop2.system._adapter"):
     """A `SystemABC` which wraps a user-defined function."""
 
     state_change: StateChangeEnum
-    stepper: SystemProtocol
-    options: dict[IdentifierString, Any]
+
+    _stepper: SystemProtocol = PrivateAttr()
     _requested_parameters_func: (
         Callable[[AxisCollection], dict[IdentifierString, ParameterRequest]] | None
-    )
-    _model_state_func: Callable[[AxisCollection], ModelStateSpecification | None] | None
+    ) = PrivateAttr(default=None)
+    _model_state_func: (
+        Callable[[AxisCollection], ModelStateSpecification | None] | None
+    ) = PrivateAttr(default=None)
 
     def __init__(
         self,
@@ -264,9 +241,11 @@ class _AdapterSystem(SystemABC, module="wrapper"):
                 evolving model state.
 
         """
-        self.state_change = state_change
-        self.stepper = stepper
-        self.options = options or {}
+        super().__init__(
+            state_change=state_change,
+            options=options or {},
+        )
+        self._stepper = stepper
         self._requested_parameters_func = requested_parameters
         self._model_state_func = model_state
 
@@ -275,7 +254,7 @@ class _AdapterSystem(SystemABC, module="wrapper"):
         self, params: dict[IdentifierString, Any] | None = None
     ) -> SystemProtocol:
         return _checked_partial(
-            func=self.stepper,
+            func=self._stepper,
             params=params,
         )
 
@@ -297,19 +276,19 @@ class _AdapterSystem(SystemABC, module="wrapper"):
         return super().model_state(axes)
 
 
-def build(config: dict[IdentifierString, Any] | ModuleModel | str) -> SystemABC:
+def build(config: dict[IdentifierString, Any] | ModuleBase | str) -> SystemABC:
     """
     Build a `SystemABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a `ModuleModel` instance. The
+        config: Configuration dictionary or a `ModuleBase` instance. The
             configuration must define a `module`.
 
     Returns:
         The constructed system instance.
 
     """
-    return _build(config, "system", SystemABC)
+    return _build(config, "system", SystemABC)  # type: ignore[type-abstract]
 
 
 def wrap(

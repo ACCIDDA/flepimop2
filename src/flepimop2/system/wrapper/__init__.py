@@ -20,26 +20,34 @@ import inspect
 import math
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Self
 
 import numpy as np
-from pydantic import BaseModel, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PrivateAttr,
+    field_validator,
+    model_validator,
+)
 
+from flepimop2._utils._checked_partial import _checked_partial
 from flepimop2._utils._inspect import _is_ndarray_annotation, _unwrap_annotation
-from flepimop2._utils._module import _as_dict, _load_module, _validate_function
+from flepimop2._utils._module import _as_dict as _as_dict
+from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.axis import AxisCollection
-from flepimop2.configuration import ModuleModel
 from flepimop2.parameter.abc import (
     ModelStateSpecification,
     ParameterRequest,
     ParameterValue,
 )
 from flepimop2.system.abc import SystemABC
-from flepimop2.system.abc import wrap as system_wrap
 from flepimop2.typing import (
     Float64NDArray,
     IdentifierString,
     StateChangeEnum,
+    SystemProtocol,
     as_system_protocol,
 )
 
@@ -77,29 +85,37 @@ class _ModelStateConfiguration(BaseModel):
     labels: tuple[str, ...] | None = None
 
 
-class _WrapperSystemConfig(ModuleModel):
+class WrapperSystem(SystemABC, module="wrapper"):
     """
-    Validated configuration for `flepimop2.system.wrapper`.
+    A `SystemABC` that wraps a user-defined Python script file.
+
+    The script must define a `stepper` function compatible with
+    `SystemProtocol`.
 
     Attributes:
-        module: Wrapper-system module identifier.
-        script: Path to the wrapped Python script containing `stepper`.
+        script: Path to the Python script containing the `stepper` function.
         state_change: State-change convention declared by the wrapped system.
-        options: Opaque wrapper-system options exposed through `ModuleABC.option`.
+        options: Opaque extra options exposed through `ModuleBase.option`.
         requested_parameters: Optional declarative runtime parameter metadata.
         model_state: Optional declarative model-state metadata.
     """
 
-    module: Literal["flepimop2.system.wrapper", "wrapper"] = "flepimop2.system.wrapper"
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
     script: Path
     state_change: StateChangeEnum
-    options: dict[IdentifierString, Any] = Field(default_factory=dict)
-    requested_parameters: (
+    parameter_requests: (
         dict[IdentifierString, _ParameterRequestConfiguration] | None
-    ) = None
-    model_state: _ModelStateConfiguration | None = None
+    ) = Field(default=None, alias="requested_parameters")
+    model_state_config: _ModelStateConfiguration | None = Field(
+        default=None, alias="model_state"
+    )
 
-    @field_validator("requested_parameters", mode="before")
+    _stepper: Any = PrivateAttr(default=None)
+    _requested_parameters_func: Any = PrivateAttr(default=None)
+    _model_state_func: Any = PrivateAttr(default=None)
+
+    @field_validator("parameter_requests", mode="before")
     @classmethod
     def _normalize_requested_parameters(
         cls,
@@ -116,52 +132,55 @@ class _WrapperSystemConfig(ModuleModel):
             parameter mapping with `None` entries replaced by empty dictionaries.
 
         Examples:
-            >>> config = _WrapperSystemConfig.model_validate({
-            ...     "module": "wrapper",
-            ...     "script": "system.py",
-            ...     "state_change": "flow",
-            ... })
-            >>> config.requested_parameters is None
+            >>> from flepimop2.system.wrapper import WrapperSystem
+            >>> WrapperSystem._normalize_requested_parameters(None) is None
             True
-            >>> config = _WrapperSystemConfig.model_validate({
-            ...     "module": "wrapper",
-            ...     "script": "system.py",
-            ...     "state_change": "flow",
-            ...     "requested_parameters": {"beta": None},
+            >>> WrapperSystem._normalize_requested_parameters({"beta": None})
+            {'beta': {}}
+            >>> WrapperSystem._normalize_requested_parameters({
+            ...     "beta": None,
+            ...     "gamma": {"axes": ["age"], "broadcast": True},
             ... })
-            >>> config.requested_parameters["beta"]
-            _ParameterRequestConfiguration(axes=(), broadcast=False, optional=False)
-            >>> config = _WrapperSystemConfig.model_validate({
-            ...     "module": "wrapper",
-            ...     "script": "system.py",
-            ...     "state_change": "flow",
-            ...     "requested_parameters": {
-            ...         "beta": None,
-            ...         "gamma": {"axes": ["age"], "broadcast": True},
-            ...     },
-            ... })
-            >>> config.requested_parameters["beta"]
-            _ParameterRequestConfiguration(axes=(), broadcast=False, optional=False)
-            >>> config.requested_parameters["gamma"]
-            _ParameterRequestConfiguration(axes=('age',), broadcast=True, optional=False)
-        """  # noqa: E501
+            {'beta': {}, 'gamma': {'axes': ['age'], 'broadcast': True}}
+        """
         if value is None:
             return value
         if not isinstance(value, dict):
             return value
         return {name: {} if spec is None else spec for name, spec in value.items()}
 
-    def requested_parameters_function(
+    @model_validator(mode="after")
+    def _load_and_adapt_stepper(self) -> Self:
+        """
+        Load the script, validate the stepper, and build runtime callbacks.
+
+        Returns:
+            This instance, after wiring up the stepper and callbacks.
+
+        Raises:
+            AttributeError: If the script does not define a valid `stepper` function.
+        """
+        mod = _load_module(self.script, "flepimop2.system.wrapped")
+        if not _validate_function(mod, "stepper"):
+            msg = f"Module at {self.script} does not have a valid 'stepper' function."
+            raise AttributeError(msg)
+        adapted = as_system_protocol(_adapt_wrapper_stepper(mod.stepper))
+        self._stepper = adapted
+        self._requested_parameters_func = self._build_requested_parameters_func()
+        self._model_state_func = self._build_model_state_func()
+        return self
+
+    def _build_requested_parameters_func(
         self,
     ) -> Callable[[AxisCollection], dict[IdentifierString, ParameterRequest]] | None:
         """
         Build a runtime parameter-request callback from config.
 
         Returns:
-            A callback returning configured parameter requests, or `None` when the
-            wrapper configuration omits `requested_parameters`.
+            A callable that returns the parameter requests, or `None` if no
+            `requested_parameters` configuration was provided.
         """
-        if self.requested_parameters is None:
+        if self.parameter_requests is None:
             return None
         requests = {
             name: ParameterRequest(
@@ -170,39 +189,57 @@ class _WrapperSystemConfig(ModuleModel):
                 broadcast=spec.broadcast,
                 optional=spec.optional,
             )
-            for name, spec in self.requested_parameters.items()
+            for name, spec in self.parameter_requests.items()
         }
 
-        def _requested_parameters(
-            _axes: AxisCollection,
-        ) -> dict[IdentifierString, ParameterRequest]:
+        def _fn(_axes: AxisCollection) -> dict[IdentifierString, ParameterRequest]:
             return requests.copy()
 
-        return _requested_parameters
+        return _fn
 
-    def model_state_function(
+    def _build_model_state_func(
         self,
     ) -> Callable[[AxisCollection], ModelStateSpecification] | None:
         """
         Build a runtime model-state callback from config.
 
         Returns:
-            A callback returning configured model-state metadata, or `None` when the
-            wrapper configuration omits `model_state`.
+            A callable that returns the model-state specification, or `None` if no
+            `model_state` configuration was provided.
         """
-        if self.model_state is None:
+        if self.model_state_config is None:
             return None
         specification = ModelStateSpecification(
-            parameter_names=self.model_state.parameter_names,
-            axes=self.model_state.axes,
-            broadcast=self.model_state.broadcast,
-            labels=self.model_state.labels,
+            parameter_names=self.model_state_config.parameter_names,
+            axes=self.model_state_config.axes,
+            broadcast=self.model_state_config.broadcast,
+            labels=self.model_state_config.labels,
         )
 
-        def _model_state(_axes: AxisCollection) -> ModelStateSpecification:
+        def _fn(_axes: AxisCollection) -> ModelStateSpecification:
             return specification
 
-        return _model_state
+        return _fn
+
+    def _bind_impl(
+        self, params: dict[IdentifierString, Any] | None = None
+    ) -> SystemProtocol:
+        return _checked_partial(func=self._stepper, params=params)
+
+    def requested_parameters(
+        self,
+        axes: AxisCollection,
+    ) -> dict[IdentifierString, ParameterRequest]:
+        """Return wrapper parameter requests from an explicit callback when provided."""
+        if self._requested_parameters_func is not None:
+            return self._requested_parameters_func(axes)  # type: ignore[no-any-return]
+        return super().requested_parameters(axes)
+
+    def model_state(self, axes: AxisCollection) -> ModelStateSpecification | None:
+        """Return wrapper model-state metadata from an explicit callback."""
+        if self._model_state_func is not None:
+            return self._model_state_func(axes)  # type: ignore[no-any-return]
+        return super().model_state(axes)
 
 
 def _binding_annotation(annotation: object) -> object:
@@ -308,40 +345,7 @@ def _adapt_wrapper_stepper(stepper: Callable[..., Any]) -> Callable[..., Any]:
                 parameter.annotation,
                 bound.arguments[name],
             )
-        return cast("Float64NDArray", stepper(*bound.args, **bound.kwargs))
+        return stepper(*bound.args, **bound.kwargs)  # type: ignore[no-any-return]
 
     _adapted_stepper.__signature__ = adapted_signature  # type: ignore[attr-defined]
     return _adapted_stepper
-
-
-def build(config: dict[IdentifierString, Any] | ModuleModel) -> SystemABC:
-    """
-    Build a `SystemABC` from a configuration dictionary.
-
-    Args:
-        config: Configuration dictionary or a `ModuleModel` instance.
-
-    Returns:
-        The constructed system instance.
-
-    Raises:
-        AttributeError: If the loaded module does not have a valid 'stepper' function.
-    """
-    wrapper_config = _WrapperSystemConfig.model_validate(_as_dict(config))
-    mod = _load_module(wrapper_config.script, "flepimop2.system.wrapped")
-    if not _validate_function(mod, "stepper"):
-        msg = (
-            f"Module at {wrapper_config.script} does not have a valid "
-            "'stepper' function."
-        )
-        raise AttributeError(msg)
-    stepper = as_system_protocol(_adapt_wrapper_stepper(mod.stepper))
-    options = wrapper_config.options.copy()
-    options["script"] = wrapper_config.script
-    return system_wrap(
-        stepper,
-        wrapper_config.state_change,
-        options,
-        requested_parameters=wrapper_config.requested_parameters_function(),
-        model_state=wrapper_config.model_state_function(),
-    )

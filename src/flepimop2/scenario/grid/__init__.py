@@ -21,12 +21,11 @@ import itertools
 from collections.abc import Iterable
 from typing import Any, NamedTuple, cast
 
-from flepimop2.configuration import ModuleModel
 from flepimop2.scenario.abc import ScenarioABC
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
-class GridScenario(ModuleModel, ScenarioABC, module="grid"):
+class GridScenario(ScenarioABC, module="grid"):
     """
     Grid scenario implementation.
 

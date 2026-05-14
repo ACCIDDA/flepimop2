@@ -21,9 +21,8 @@ from typing import Any
 import pytest
 
 from flepimop2.backend.abc import build as build_backend
-from flepimop2.configuration import ModuleModel
 from flepimop2.engine.abc import build as build_engine
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.process.abc import build as build_process
 from flepimop2.scenario.abc import build as build_scenario
@@ -42,7 +41,7 @@ from flepimop2.system.abc import build as build_system
     ],
 )
 def test_build_requires_explicit_module(
-    builder: Callable[[dict[str, Any] | ModuleModel], ModuleABC],
+    builder: Callable[[dict[str, Any] | ModuleBase], ModuleBase],
     namespace: str,
 ) -> None:
     """Each public builder should require an explicit `module`."""

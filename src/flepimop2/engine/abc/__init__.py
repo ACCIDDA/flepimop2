@@ -20,10 +20,11 @@ __all__ = ["EngineABC", "EngineProtocol", "build"]
 from collections.abc import Mapping
 from typing import Any, Protocol, runtime_checkable
 
+from pydantic import PrivateAttr
+
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import ValidationIssue
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC
 from flepimop2.typing import (
@@ -62,23 +63,25 @@ def _no_run_func(
     raise NotImplementedError(msg)
 
 
-class EngineABC(ModuleABC, module_namespace="engine"):
+class EngineABC(ModuleBase, module_namespace="engine"):
     """Abstract class for Engines to evolve Dynamic Systems."""
 
-    _runner: EngineProtocol
+    _runner: Any = PrivateAttr(default=None)
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ARG002
+    def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
         """
-        Initialize the EngineABC.
+        Set `_runner` to the no-op sentinel if not already overridden.
 
-        The default initialization sets the runner to a no-op function. Concrete
-        implementations should override this with a valid runner function.
+        Concrete subclasses should call `super().model_post_init(__context)`
+        first, then assign `self._runner` to their runner function.
 
         Args:
-            *args: Positional arguments.
-            **kwargs: Keyword arguments.
+            __context: Pydantic model post-init context.
+
         """
-        self._runner = _no_run_func
+        super().model_post_init(__context)
+        if self._runner is None:
+            self._runner = _no_run_func
 
     def run(
         self,
@@ -105,7 +108,7 @@ class EngineABC(ModuleABC, module_namespace="engine"):
         Returns:
             The evolved time x state array.
         """
-        return self._runner(
+        return self._runner(  # type: ignore[no-any-return]
             system.bind(),
             eval_times,
             initial_state,
@@ -130,11 +133,11 @@ class EngineABC(ModuleABC, module_namespace="engine"):
         return None
 
 
-def build(config: dict[str, Any] | ModuleModel | str) -> EngineABC:
+def build(config: dict[str, Any] | ModuleBase | str) -> EngineABC:
     """Build a `EngineABC` from a configuration dictionary.
 
     Args:
-        config: Configuration dictionary or a `ModuleModel` instance to construct the
+        config: Configuration dictionary or a `ModuleBase` instance to construct the
             engine from. The configuration must define a `module`.
 
     Returns:

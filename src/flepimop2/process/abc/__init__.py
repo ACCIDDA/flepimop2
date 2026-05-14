@@ -21,12 +21,11 @@ from abc import abstractmethod
 from typing import Any
 
 from flepimop2._utils._module import _build
-from flepimop2.configuration import ModuleModel
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
-from flepimop2.module import ModuleABC
+from flepimop2.module import ModuleBase
 
 
-class ProcessABC(ModuleABC, module_namespace="process"):
+class ProcessABC(ModuleBase, module_namespace="process"):
     """Abstract base class for flepimop2 processing steps."""
 
     def execute(self, *, dry_run: bool = False) -> None:
@@ -62,7 +61,7 @@ class ProcessABC(ModuleABC, module_namespace="process"):
         return None
 
 
-def build(config: dict[str, Any] | ModuleModel | str) -> ProcessABC:
+def build(config: dict[str, Any] | ModuleBase | str) -> ProcessABC:
     """Build a `ProcessABC` from a configuration dictionary.
 
     Args:
@@ -74,4 +73,4 @@ def build(config: dict[str, Any] | ModuleModel | str) -> ProcessABC:
         ProcessABC: The constructed process object.
 
     """
-    return _build(config, "process", ProcessABC)
+    return _build(config, "process", ProcessABC)  # type: ignore[type-abstract]
