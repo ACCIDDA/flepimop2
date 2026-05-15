@@ -850,6 +850,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../development/pydantic-for-modelers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pydantic for Modelers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../development/integration-testing/" class="md-nav__link">
         
   
@@ -1952,8 +1980,8 @@
 </span></code></pre></div>
 <hr />
 <h2 id="the-system-engine-architecture">The System-Engine Architecture<a class="headerlink" href="#the-system-engine-architecture" title="Permanent link">&para;</a></h2>
-<p>flepimop2 separates the specification of a model from the computation that runs it. A <strong>system</strong> defines what happens — the equations governing state transitions. An <strong>engine</strong> defines how those equations are solved — the numerical method and its configuration. These two components are independently specified in the config file and can be swapped in any combination.</p>
-<p>This separation matters in practice. A disease modeler can publish a system — the compartmental structure and transmission logic — without prescribing a solver. Collaborators can then run that same system with a different engine suited to their performance requirements or numerical preferences, without ever touching the model code.</p>
+<p>flepimop2 separates the specification of a model from the computation that runs it. A <strong>system</strong> defines what happens - the equations governing state transitions. An <strong>engine</strong> defines how those equations are solved - the numerical method and its configuration. These two components are independently specified in the config file and can be swapped in any combination.</p>
+<p>This separation matters in practice. A disease modeler can publish a system - the compartmental structure and transmission logic - without prescribing a solver. Collaborators can then run that same system with a different engine suited to their performance requirements or numerical preferences, without ever touching the model code.</p>
 <h3 id="the-wrapper-pattern">The Wrapper Pattern<a class="headerlink" href="#the-wrapper-pattern" title="Permanent link">&para;</a></h3>
 <p>The quickstart guide demonstrates the simplest case: both the system and engine are user-provided Python scripts loaded at runtime.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">system</span><span class="p">:</span>
@@ -1966,7 +1994,7 @@
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">state_change</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flow</span>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_input/plugins/solve_ivp.py</span>
 </span></code></pre></div>
-<p>The <code>wrapper</code> module dynamically imports the script (path defined in the <code>script</code> argument) and looks for a required entry point function: <code>stepper()</code> for systems, <code>runner()</code> for engines. The <code>state_change</code> field tells flepimop2 what the stepper returns — <code>flow</code> means dY/dt (derivatives suitable for ODE integration), <code>delta</code> means ΔY (increments), and <code>state</code> means the full new state vector.</p>
+<p>The <code>wrapper</code> module dynamically imports the script (path defined in the <code>script</code> argument) and looks for a required entry point function: <code>stepper()</code> for systems, <code>runner()</code> for engines. The <code>state_change</code> field tells flepimop2 what the stepper returns - <code>flow</code> means dY/dt (derivatives suitable for ODE integration), <code>delta</code> means ΔY (increments), and <code>state</code> means the full new state vector.</p>
 <h3 id="swapping-solvers-without-changing-the-model">Swapping Solvers Without Changing the Model<a class="headerlink" href="#swapping-solvers-without-changing-the-model" title="Permanent link">&para;</a></h3>
 <p>Because the system and engine are decoupled, changing the solver requires only a change to the config file. The following two configurations run the same <code>SIR.py</code> model but use different engines:</p>
 <p><strong>With the wrapper engine (scipy)</strong>:
@@ -2012,7 +2040,7 @@
 </span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="nt">I</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">i0</span>
 </span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">        </span><span class="nt">R</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r0</span>
 </span></code></pre></div>
-<p>The example above specifies a basic SIR model. <code>kind: expr</code> indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the <code>state</code> field, and their corresponding dY/dt expressions are defined in <code>equations</code>. The <code>sum_state()</code> helper evaluates to the total population at each time step — equivalent to <code>S + I + R</code> — and is provided to make density-dependent transmission terms concise and readable. Symbolic representations for the initial states of each of these compartments are defined in <code>initial_state</code>; each of these symbolic representations are then assigned a numeric value in <code>parameters</code> later in the file.</p>
+<p>The example above specifies a basic SIR model. <code>kind: expr</code> indicates dY/dt expressions will be provided for each compartment. The compartments are listed in the <code>state</code> field, and their corresponding dY/dt expressions are defined in <code>equations</code>. The <code>sum_state()</code> helper evaluates to the total population at each time step - equivalent to <code>S + I + R</code> - and is provided to make density-dependent transmission terms concise and readable. Symbolic representations for the initial states of each of these compartments are defined in <code>initial_state</code>; each of these symbolic representations are then assigned a numeric value in <code>parameters</code> later in the file.</p>
 <p>If a user wants to defines disease system by specifying the transitions between states instead of the expression for each state, they can do so as follows:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">system</span><span class="p">:</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">op_system</span>
@@ -2027,7 +2055,7 @@
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">          </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">R</span>
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">          </span><span class="nt">rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gamma</span>
 </span></code></pre></div>
-<p>When using <code>op_system</code>, no <code>state_change</code> field is required; the module infers it from the symbolic specification. <code>op_system</code> requires <code>op_engine</code> — the symbolic expression compiler and solver are designed to work together.</p>
+<p>When using <code>op_system</code>, no <code>state_change</code> field is required; the module infers it from the symbolic specification. <code>op_system</code> requires <code>op_engine</code> - the symbolic expression compiler and solver are designed to work together.</p>
 <hr />
 <h2 id="simulation-targets-and-time-specifications">Simulation Targets and Time Specifications<a class="headerlink" href="#simulation-targets-and-time-specifications" title="Permanent link">&para;</a></h2>
 <h3 id="defining-multiple-targets">Defining Multiple Targets<a class="headerlink" href="#defining-multiple-targets" title="Permanent link">&para;</a></h3>
@@ -2076,7 +2104,7 @@
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/config.yml</span>
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_output/SIR_plot.png</span>
 </span></code></pre></div>
-<p>Any shell command is valid here — the module imposes no restrictions on what runs. Exit codes are checked; a non-zero exit will raise an error and halt the pipeline.</p>
+<p>Any shell command is valid here - the module imposes no restrictions on what runs. Exit codes are checked; a non-zero exit will raise an error and halt the pipeline.</p>
 <h3 id="jupyter-notebook-rendering-ipynbrender">Jupyter Notebook Rendering (ipynbrender)<a class="headerlink" href="#jupyter-notebook-rendering-ipynbrender" title="Permanent link">&para;</a></h3>
 <p>The <code>ipynbrender</code> module executes a Jupyter notebook and renders the output to HTML:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">process</span><span class="p">:</span>
@@ -2126,7 +2154,7 @@
 </span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="c1"># Find the most recently modified CSV</span>
 </span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="n">latest_csv</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 </span></code></pre></div>
-<p>This pattern means post-processing scripts adapt automatically when the backend or output directory changes in the config — no manual path updates required.</p>
+<p>This pattern means post-processing scripts adapt automatically when the backend or output directory changes in the config - no manual path updates required.</p>
 <hr />
 <h2 id="full-project-setup">Full Project Setup<a class="headerlink" href="#full-project-setup" title="Permanent link">&para;</a></h2>
 <p>The files for this walkthrough are bundled in <a href="../../downloads/full-feature-project.zip">full-feature-project.zip</a> and are also available individually in <code>assets/full-feature-project/</code> in the flepimop2 repository.</p>
@@ -2223,7 +2251,7 @@
 </span><span id="__span-18-62"><a id="__codelineno-18-62" name="__codelineno-18-62" href="#__codelineno-18-62"></a><span class="w">  </span><span class="nt">r0</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </span></code></pre></div>
 </details>
-<p>Note that this config uses <code>op_system</code> and <code>op_engine</code> — no Python plugin scripts are needed for the model or solver. The <code>model_input/plugins</code> directory can remain empty.</p>
+<p>Note that this config uses <code>op_system</code> and <code>op_engine</code> - no Python plugin scripts are needed for the model or solver. The <code>model_input/plugins</code> directory can remain empty.</p>
 <h3 id="running-the-pipeline">Running the Pipeline<a class="headerlink" href="#running-the-pipeline" title="Permanent link">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Run the default (demo) simulation target</span>
 </span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yml

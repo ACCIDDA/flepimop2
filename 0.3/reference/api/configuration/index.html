@@ -568,6 +568,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../development/pydantic-for-modelers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pydantic for Modelers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../development/integration-testing/" class="md-nav__link">
         
   
@@ -957,6 +985,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ParameterConfigurationValue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParameterConfigurationValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ParameterGroupModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParameterGroupModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.CategoricalAxisModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -986,34 +1036,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ModuleModel
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="ModuleModel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        __pydantic_init_subclass__
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1655,6 +1677,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ParameterConfigurationValue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParameterConfigurationValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flepimop2.configuration.ParameterGroupModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParameterGroupModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2.configuration.CategoricalAxisModel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1684,34 +1728,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ModuleModel
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="ModuleModel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        __pydantic_init_subclass__
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1848,7 +1864,7 @@
 
 
 <h3 id="flepimop2.configuration.ModuleConfigurationValue" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ModuleConfigurationValue</span> <span class="o">=</span> <span class="n">ModuleModel</span> <span class="o">|</span> <span class="nb">str</span></code>
+            <code class="highlight language-python"><span class="n">ModuleConfigurationValue</span> <span class="o">=</span> <span class="n">ModuleBase</span> <span class="o">|</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -1882,6 +1898,50 @@
     <div class="doc doc-contents ">
 
         <p>Module group configuration model for flepimop2.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flepimop2.configuration.ParameterConfigurationValue" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ParameterConfigurationValue</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">ModuleConfigurationValue</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_coerce_parameter_configuration_value</span><span class="p">)]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ParameterConfigurationValue" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A parameter value, including bare numeric shorthand for fixed parameters.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flepimop2.configuration.ParameterGroupModel" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ParameterGroupModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">IdentifierString</span><span class="p">,</span> <span class="n">ParameterConfigurationValue</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">_to_default_dict</span><span class="p">)]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#flepimop2.configuration.ParameterGroupModel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Parameter group configuration model for flepimop2.</p>
 
     </div>
 
@@ -2098,7 +2158,11 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
           <tr class="doc-section-item">
             <td><code><span title="flepimop2.configuration.ConfigurationModel.parameters">parameters</span></code></td>
             <td>
-                  <code><span title="flepimop2.configuration._module.ParameterGroupModel">ParameterGroupModel</span></code>
+                  <code><a class="autorefs autorefs-internal" title="ParameterGroupModel = Annotated[dict[IdentifierString, ParameterConfigurationValue], BeforeValidator(_to_default_dict)]
+
+  
+      module-attribute
+   (flepimop2.configuration._module.ParameterGroupModel)" href="#flepimop2.configuration.ParameterGroupModel">ParameterGroupModel</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2257,183 +2321,6 @@ Defaults to <code>1, 2, ..., N</code> where <code>N</code> is <code>len(labels)<
 
 
 
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="flepimop2.configuration.ModuleModel" class="doc doc-heading">
-            <code>ModuleModel</code>
-
-
-<a href="#flepimop2.configuration.ModuleModel" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
-
-
-
-        <p>Module configuration model for flepimop2.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="flepimop2.configuration.ModuleModel.module">module</span></code></td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The module identifier for the configuration. Concrete subclasses
-may leave this as a general string field or specialize it to a fixed
-<code>Literal[...]</code> module path.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">__pydantic_init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
-
-<a href="#flepimop2.configuration.ModuleModel.__pydantic_init_subclass__" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Finalize the <code>module</code> field for <code>ModuleABC</code> subclasses after model creation.</p>
-<p>This keeps the explicit declaration API working while also allowing the
-shared <code>module="..."</code> class-definition shortcut implemented in <code>ModuleABC</code>.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>**kwargs</code>
-            </td>
-            <td>
-                  <code><span title="typing.Any">Any</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Additional keyword arguments passed to parent classes.</p>
-              </div>
-            </td>
-            <td>
-                  <code>{}</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/flepimop2/configuration/_module.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="k">def</span><span class="w"> </span><span class="nf">__pydantic_init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLW3201</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    Finalize the `module` field for `ModuleABC` subclasses after model creation.</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    This keeps the explicit declaration API working while also allowing the</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    shared `module=&quot;...&quot;` class-definition shortcut implemented in `ModuleABC`.</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        **kwargs: Additional keyword arguments passed to parent classes.</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__pydantic_init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ModuleABC</span><span class="p">):</span>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="k">return</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">field</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="k">return</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="n">field</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="n">module</span><span class="p">])</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="n">field</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">module</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="bp">cls</span><span class="o">.</span><span class="n">model_rebuild</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 
 

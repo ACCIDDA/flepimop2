@@ -668,6 +668,34 @@
   
   
     <li class="md-nav__item">
+      <a href="development/pydantic-for-modelers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pydantic for Modelers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="development/integration-testing/" class="md-nav__link">
         
   
@@ -1579,7 +1607,7 @@
 <li><strong>Engine</strong>: the numerical solver that runs the model forward in time</li>
 <li><strong>Backend</strong>: the output format for saving results</li>
 </ul>
-<p>Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline — model, solver, parameters, time grid, and post-processing — lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.</p>
+<p>Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline - model, solver, parameters, time grid, and post-processing - lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p><code>flepimop2</code> is published on <a href="https://pypi.org/project/flepimop2/">PyPI</a> and can be installed with <code>pip</code>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>flepimop2
@@ -1793,7 +1821,7 @@ If you want to work from a local clone instead, see the <a href="guides/install/
 </span></code></pre></div>
 <p>Results are saved automatically to the <code>model_output</code> directory as a CSV file. </p>
 <h2 id="adding-post-processing">Adding Post-Processing<a class="headerlink" href="#adding-post-processing" title="Permanent link">&para;</a></h2>
-<p>flepimop2 supports post-processing steps that run after a simulation — useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the <code>process</code> block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.</p>
+<p>flepimop2 supports post-processing steps that run after a simulation - useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the <code>process</code> block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.</p>
 <p>The same <code>quickstart-project.zip</code> bundle already includes the post-processing config, script, and dependencies needed for this section.</p>
 <p>The bundled project includes this post-processing file layout:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>quickstart-project/
@@ -1813,7 +1841,7 @@ If you want to work from a local clone instead, see the <a href="guides/install/
 </span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>│   └── SIR_plot.R
 </span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>└── README.md
 </span></code></pre></div>
-<p>Take a look at <code>configs/config.yaml</code>. It defines two simulation targets — <code>demo</code> and <code>hires</code> — that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the <code>process</code> block. flepimop2 defaults to the first defined target, but you can select a specific one with <code>--target</code>:</p>
+<p>Take a look at <code>configs/config.yaml</code>. It defines two simulation targets - <code>demo</code> and <code>hires</code> - that share the same model parameters but use different time resolutions. A separate post-processing pipeline is defined for each target under the <code>process</code> block. flepimop2 defaults to the first defined target, but you can select a specific one with <code>--target</code>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Run the default (demo) target</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/config.yaml
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>

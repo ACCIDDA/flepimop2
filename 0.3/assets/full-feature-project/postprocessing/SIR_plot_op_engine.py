@@ -51,7 +51,7 @@ def _resolve_results_dir(config_model: ConfigurationModel) -> Path:
 
     backend_name = getattr(first_sim, "backend", None) or "default"
 
-    # NOTE: Backends are stored as ModuleModel instances in the config model, and may
+    # NOTE: Backends are stored as ModuleBase instances in the config model, and may
     # not expose backend-specific fields (e.g., CsvBackend.root) directly. We therefore
     # resolve the root path from the serialized config with a sensible default.
     # See issue: Backend outputs cannot be discovered programmatically without RunMeta.
