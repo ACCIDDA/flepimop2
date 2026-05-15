@@ -24,7 +24,7 @@ from pydantic import ValidationError
 from flepimop2.backend.abc import BackendABC
 from flepimop2.module import ModuleBase
 from flepimop2.process.abc import ProcessABC
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Float64NDArray, PatchConflictMode
 
 
 def test_missing_module_attribute_raises() -> None:
@@ -185,6 +185,58 @@ def test_option_uses_default_when_missing() -> None:
     mod = MyModule()
     assert mod.options is None
     assert mod.option("missing", default=0) == 0
+
+
+def test_module_patch_replace_returns_other() -> None:
+    """Replace mode should return the incoming patch model."""
+    mod = ModuleBase.model_validate({
+        "module": "fixed",
+        "value": [1, 2, 3],
+        "shape": "age",
+    })
+    patch = ModuleBase.model_validate({"module": "fixed", "value": [4, 5, 6]})
+
+    replaced = mod.patch(patch, conflict=PatchConflictMode.REPLACE)
+
+    assert replaced is not patch
+    assert replaced.model_dump(exclude_none=True) == {
+        "module": "fixed",
+        "value": [4, 5, 6],
+    }
+
+
+def test_module_patch_merge_deep_merges_model_dumps() -> None:
+    """Merge mode should deep-merge the dumped model dictionaries."""
+    mod = ModuleBase.model_validate({
+        "module": "fixed",
+        "value": [1, 2, 3],
+        "shape": "age",
+    })
+    patch = ModuleBase.model_validate({"module": "fixed", "value": [4, 5, 6]})
+
+    merged = mod.patch(patch, conflict=PatchConflictMode.MERGE)
+
+    assert merged.model_dump(exclude_none=True) == {
+        "module": "fixed",
+        "value": [4, 5, 6],
+        "shape": "age",
+    }
+
+
+def test_module_patch_raises_type_error_for_mismatched_model_types() -> None:
+    """Default module patching should reject different concrete model types."""
+
+    class FirstModule(ModuleBase, module="flepimop2.test.first"):
+        pass
+
+    class SecondModule(ModuleBase, module="flepimop2.test.second"):
+        pass
+
+    mod: ModuleBase = FirstModule()
+    patch = SecondModule()
+
+    with pytest.raises(TypeError, match="requires matching concrete types"):
+        mod.patch(patch, conflict=PatchConflictMode.MERGE)
 
 
 def test_explicit_module_definition_still_works() -> None:

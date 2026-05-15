@@ -13,15 +13,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Mapping
+from copy import deepcopy
 from typing import Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import BaseModel, Field, model_validator
 
+from flepimop2._utils._dict import _deep_merge_dicts
 from flepimop2.configuration._axes import AxesGroupModel
 from flepimop2.configuration._module import ModuleGroupModel, ParameterGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
-from flepimop2.typing import IdentifierString
+from flepimop2.module import ModuleBase
+from flepimop2.typing import IdentifierString, PatchConflictMode
 
 
 class ConfigurationModel(
@@ -55,6 +59,216 @@ class ConfigurationModel(
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )
+
+    @staticmethod
+    def _copy_patch_value(value: object) -> object:
+        """
+        Create a deep copy suitable for a patched configuration value.
+
+        Args:
+            value: The value to copy.
+
+        Returns:
+            A deep copy of `value`.
+        """
+        if isinstance(value, BaseModel):
+            return value.model_copy(deep=True)
+        return deepcopy(value)
+
+    @staticmethod
+    def _collect_patch_conflicts(
+        current: Mapping[IdentifierString, object],
+        patch: Mapping[IdentifierString, object],
+    ) -> list[IdentifierString]:
+        """
+        Collect duplicate keys shared by two configuration sections.
+
+        Args:
+            current: The current section contents.
+            patch: The incoming section patch.
+
+        Returns:
+            The sorted list of conflicting keys.
+        """
+        return sorted(set(current) & set(patch))
+
+    @staticmethod
+    def _patch_section(
+        current: Mapping[IdentifierString, object],
+        patch: Mapping[IdentifierString, object],
+        *,
+        conflict: PatchConflictMode,
+    ) -> dict[IdentifierString, object]:
+        """
+        Patch one top-level dictionary section of the configuration.
+
+        Args:
+            current: The current section contents.
+            patch: The incoming section patch.
+            conflict: How to handle duplicate entry names.
+
+        Returns:
+            The patched section contents.
+
+        Raises:
+            AssertionError: If overlapping entries reach this method under
+                `conflict="error"`.
+        """
+        patched = {
+            key: ConfigurationModel._copy_patch_value(value)
+            for key, value in current.items()
+        }
+        for key, patch_value in patch.items():
+            if key not in patched:
+                patched[key] = ConfigurationModel._copy_patch_value(patch_value)
+                continue
+            if conflict is PatchConflictMode.REPLACE:
+                if isinstance(current_value := patched[key], ModuleBase) and isinstance(
+                    patch_value, ModuleBase
+                ):
+                    patched[key] = current_value.patch(
+                        patch_value,
+                        conflict=conflict,
+                    )
+                else:
+                    patched[key] = ConfigurationModel._copy_patch_value(patch_value)
+                continue
+            if conflict is PatchConflictMode.ERROR:
+                msg = (
+                    "ConfigurationModel.patch should reject duplicate keys before "
+                    "_patch_section processes overlapping entries."
+                )
+                raise AssertionError(msg)
+            current_value = patched[key]
+            if isinstance(current_value, ModuleBase) and isinstance(
+                patch_value, ModuleBase
+            ):
+                patched[key] = current_value.patch(
+                    patch_value,
+                    conflict=PatchConflictMode.MERGE,
+                )
+            elif isinstance(current_value, BaseModel) and isinstance(
+                patch_value, BaseModel
+            ):
+                if type(current_value) is not type(patch_value):
+                    patched[key] = ConfigurationModel._copy_patch_value(patch_value)
+                else:
+                    patched[key] = type(current_value).model_validate(
+                        _deep_merge_dicts(
+                            current_value.model_dump(),
+                            patch_value.model_dump(),
+                        )
+                    )
+            else:
+                patched[key] = ConfigurationModel._copy_patch_value(patch_value)
+        return patched
+
+    def patch(
+        self,
+        other: Self,
+        *,
+        conflict: PatchConflictMode = PatchConflictMode.ERROR,
+    ) -> Self:
+        """
+        Patch this configuration with another configuration.
+
+        This method treats `other` as the incoming patch. Top-level sections are
+        merged entry-by-entry; when both entries are `ModuleBase` instances their
+        `patch()` implementations are used.
+
+        Args:
+            other: The patch to apply to this configuration.
+            conflict: How to handle duplicate top-level entry names.
+
+        Returns:
+            The patched configuration.
+
+        Raises:
+            ValueError: If there are sub-top level key conflicts and `conflict` is
+                `PatchConflictMode.ERROR`.
+        """
+        section_conflicts = {
+            section_name: self._collect_patch_conflicts(
+                getattr(self, section_name),
+                getattr(other, section_name),
+            )
+            for section_name in (
+                "axes",
+                "engines",
+                "systems",
+                "backends",
+                "process",
+                "parameters",
+                "scenarios",
+                "simulate",
+            )
+        }
+        section_conflicts = {
+            section_name: conflicts
+            for section_name, conflicts in section_conflicts.items()
+            if conflicts
+        }
+        if conflict is PatchConflictMode.ERROR and section_conflicts:
+            details = "; ".join(
+                f"{section_name}={conflicts!r}"
+                for section_name, conflicts in section_conflicts.items()
+            )
+            msg = (
+                "Cannot patch configuration under conflict='error'; duplicate "
+                f"section keys: {details}."
+            )
+            raise ValueError(msg)
+
+        sections = {
+            "axes": self._patch_section(
+                self.axes,
+                other.axes,
+                conflict=conflict,
+            ),
+            "engines": self._patch_section(
+                self.engines,
+                other.engines,
+                conflict=conflict,
+            ),
+            "systems": self._patch_section(
+                self.systems,
+                other.systems,
+                conflict=conflict,
+            ),
+            "backends": self._patch_section(
+                self.backends,
+                other.backends,
+                conflict=conflict,
+            ),
+            "process": self._patch_section(
+                self.process,
+                other.process,
+                conflict=conflict,
+            ),
+            "parameters": self._patch_section(
+                self.parameters,
+                other.parameters,
+                conflict=conflict,
+            ),
+            "scenarios": self._patch_section(
+                self.scenarios,
+                other.scenarios,
+                conflict=conflict,
+            ),
+            "simulate": self._patch_section(
+                self.simulate,
+                other.simulate,
+                conflict=conflict,
+            ),
+        }
+
+        name_payload: dict[str, str | None] = {}
+        if "name" in other.model_fields_set:
+            name_payload["name"] = other.name
+        elif "name" in self.model_fields_set:
+            name_payload["name"] = self.name
+
+        return type(self).model_validate({**name_payload, **sections})
 
     def _check_simulate_engines_or_systems(
         self, kind: Literal["engine", "system", "backend"]
