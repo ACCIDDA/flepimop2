@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ways to specify shape for parameters based on `axes` by changing `ParameterABC.sample` to return a `ParameterValue` that contains both the underlying value as a numpy array as well as shape metadata, and is easily extensible to other metadata and underlying value types in the future. Also added `ModelStateSpecification`, `ParameterRequest` types for systems to advertise their underlying state and request parameters to comply with said state specification. See [#115](https://github.com/ACCIDDA/flepimop2/issues/115), [#133](https://github.com/ACCIDDA/flepimop2/issues/133).
 - Added help text for CLI arguments that are formatted similarly to click's default formatting for options.
 - Added optional shorthand module configuration support across all module namespaces, allowing config values such as `fixed(0.3)` for modules that implement `from_shorthand`. See [#14](https://github.com/ACCIDDA/flepimop2/issues/14).
+- Added `ConfigurationModel/ModuleBase.patch` method to merge configurations together. See [#51](https://github.com/ACCIDDA/flepimop2/issues/51).
 
 ### Changed
 

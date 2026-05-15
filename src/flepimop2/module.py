@@ -22,7 +22,8 @@ from typing import Any, ClassVar, Literal, Self, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from flepimop2.typing import RaiseOnMissing, RaiseOnMissingType
+from flepimop2._utils._dict import _deep_merge_dicts
+from flepimop2.typing import PatchConflictMode, RaiseOnMissing, RaiseOnMissingType
 
 
 class ModuleBase(BaseModel):
@@ -282,3 +283,43 @@ class ModuleBase(BaseModel):
             msg = f"Option '{name}' not found in module '{self.module}'."
             raise KeyError(msg)
         return opts.get(name, default)
+
+    def patch(
+        self,
+        other: Self,
+        *,
+        conflict: Literal[PatchConflictMode.MERGE, PatchConflictMode.REPLACE],
+    ) -> Self:
+        """
+        Patch this module configuration with another module configuration.
+
+        This method treats `other` as the incoming patch. The default
+        implementation is intentionally simple: replace wholesale for `replace`,
+        and deep-merge dumped model dictionaries for `merge`.
+
+        Module developers can override this method to implement more complex patching
+        logic if needed (e.g. merging certain subsections or sets of fields while
+        replacing others). However, they should still try to respect the semantics of
+        the `conflict` argument as much as possible to avoid surprising users.
+
+        Args:
+            other: The patch to apply to this module.
+            conflict: How to handle overlapping fields.
+
+        Returns:
+            The patched module configuration.
+
+        Raises:
+            TypeError: If `self` and `other` are different concrete model types.
+        """
+        if type(self) is not type(other):
+            msg = (
+                f"Cannot patch {type(self).__name__} with {type(other).__name__}; "
+                "module patching requires matching concrete types."
+            )
+            raise TypeError(msg)
+        if conflict is PatchConflictMode.REPLACE:
+            return other.model_copy(deep=True)
+        return type(self).model_validate(
+            _deep_merge_dicts(self.model_dump(), other.model_dump())
+        )

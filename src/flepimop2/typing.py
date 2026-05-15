@@ -33,6 +33,7 @@ __all__ = [
     "ExitCode",
     "Float64NDArray",
     "IdentifierString",
+    "PatchConflictMode",
     "RaiseOnMissing",
     "RaiseOnMissingType",
     "StateChangeEnum",
@@ -50,6 +51,7 @@ from typing import (
     Literal,
     ParamSpec,
     Protocol,
+    Self,
     cast,
     runtime_checkable,
 )
@@ -195,6 +197,48 @@ class RaiseOnMissingType:
 
 RaiseOnMissing: Final[RaiseOnMissingType] = RaiseOnMissingType()
 """Sentinel value indicating an error should be raised if a value is missing."""
+
+
+class PatchConflictMode(StrEnum):
+    """
+    Strategies for handling overlapping configuration keys during patching.
+
+    Examples:
+        >>> from flepimop2.typing import PatchConflictMode
+        >>> PatchConflictMode.from_string("merge")
+        <PatchConflictMode.MERGE: 'merge'>
+        >>> PatchConflictMode.from_string("replace")
+        <PatchConflictMode.REPLACE: 'replace'>
+        >>> PatchConflictMode.from_string("override")
+        Traceback (most recent call last):
+            ...
+        ValueError: Unknown patch conflict mode 'override'; expected one of: error, merge, replace.
+    """  # noqa: E501
+
+    ERROR = "error"
+    MERGE = "merge"
+    REPLACE = "replace"
+
+    @classmethod
+    def from_string(cls, value: str) -> Self:
+        """
+        Parse a patch conflict mode from its string form.
+
+        Args:
+            value: The conflict mode string.
+
+        Returns:
+            The parsed `PatchConflictMode`.
+
+        Raises:
+            ValueError: If `value` is not a valid patch conflict mode.
+        """
+        try:
+            return cls(value)
+        except ValueError as exc:
+            modes = ", ".join(sorted(mode.value for mode in cls))
+            msg = f"Unknown patch conflict mode {value!r}; expected one of: {modes}."
+            raise ValueError(msg) from exc
 
 
 class StateChangeEnum(StrEnum):
