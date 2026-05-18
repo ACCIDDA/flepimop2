@@ -71,6 +71,8 @@ def _apply_overlays(destination: Path, asset_dir: Path) -> None:
         destination: The path to copy the overlays to.
         asset_dir: The path to the asset directory containing the overlays.
     """
+    # Dereference symlinks so downloadable bundles contain plain files even if
+    # docs/assets deduplicates shared content with links in the repository.
     shutil.copytree(
         asset_dir,
         destination,

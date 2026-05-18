@@ -23,6 +23,8 @@ from typing import Any, Final, TypeVar, cast
 
 import click
 
+from flepimop2.typing import PatchConflictMode
+
 AnyCallable = Callable[..., Any]
 FC = TypeVar("FC", bound="AnyCallable | click.Command")
 CommonOptionDecorator = Callable[[AnyCallable], AnyCallable]
@@ -152,12 +154,49 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
             "`configs/configuration.yml`."
         ),
     ),
+    "configs": (
+        click.argument(
+            "configs",
+            nargs=-1,
+            required=True,
+            type=click.Path(exists=True, dir_okay=False, readable=True, path_type=Path),
+        ),
+        (
+            "One or more configuration files to apply from left to right. "
+            "For example, `file1 file2 file3` applies `file2` to `file1`, "
+            "then applies `file3` to the result."
+        ),
+    ),
     "dry_run": (
         click.option(
             "--dry-run",
             is_flag=True,
             default=False,
             help="Should this command be run using dry run?",
+        ),
+        None,
+    ),
+    "output": (
+        click.option(
+            "-o",
+            "--output",
+            default=None,
+            type=click.Path(dir_okay=False, writable=True, path_type=Path),
+            help="Write the patched configuration to this file instead of stdout.",
+        ),
+        None,
+    ),
+    "patch_mode": (
+        click.option(
+            "--patch-mode",
+            default=PatchConflictMode.ERROR.value,
+            show_default=True,
+            type=click.Choice(
+                [mode.value for mode in PatchConflictMode],
+                case_sensitive=False,
+            ),
+            callback=lambda _ctx, _param, value: PatchConflictMode.from_string(value),
+            help="How to handle duplicate configuration keys while patching.",
         ),
         None,
     ),
