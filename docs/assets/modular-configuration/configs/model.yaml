@@ -1,0 +1,22 @@
+---
+name: modular-sir
+systems:
+  default:
+    module: wrapper
+    state_change: flow
+    script: model_input/plugins/SIR.py
+    model_state:
+      parameter_names: [s0, i0, r0]
+      labels: [S, I, R]
+engines:
+  default:
+    module: wrapper
+    state_change: flow
+    script: model_input/plugins/solve_ivp.py
+backends:
+  default:
+    module: csv
+    root: model_output
+simulate:
+  demo:
+    times: 0.0:1.0:60.0

@@ -22,6 +22,7 @@ from typing import Final
 import click
 
 from flepimop2._cli._build_command import BuildCommand
+from flepimop2._cli._patch_command import PatchCommand
 from flepimop2._cli._process_command import ProcessCommand
 from flepimop2._cli._register_command import register_command
 from flepimop2._cli._simulate_command import SimulateCommand
@@ -41,6 +42,7 @@ def cli() -> None:
 
 # Register all commands
 register_command(BuildCommand, cli)
-register_command(SimulateCommand, cli)
+register_command(PatchCommand, cli)
 register_command(ProcessCommand, cli)
+register_command(SimulateCommand, cli)
 register_command(SkeletonCommand, cli)

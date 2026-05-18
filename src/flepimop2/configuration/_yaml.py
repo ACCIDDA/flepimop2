@@ -14,36 +14,71 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from pathlib import Path
-from typing import Self
+from typing import Any, Self
 
 from pydantic import BaseModel
-from yaml import safe_dump, safe_load
+from yaml import safe_dump as yaml_safe_dump
+from yaml import safe_load as yaml_safe_load
 
 
 class YamlSerializableBaseModel(BaseModel):
-    """Base model with YAML serialization support."""
+    """
+    Base model with YAML serialization support.
+
+    Example:
+        >>> class DemoModel(YamlSerializableBaseModel):
+        ...     name: str
+        >>> payload = DemoModel(name="demo").safe_dump()
+        >>> print(payload, end="")
+        name: demo
+        >>> DemoModel.safe_load(payload)
+        DemoModel(name='demo')
+    """
 
     @classmethod
-    def from_yaml(cls, file: Path, encoding: str = "utf-8") -> Self:
+    def safe_load(cls, contents: str) -> Self:
         """
-        Deserialize a YAML string to an instance of the model.
+        Deserialize YAML text to an instance of the model.
 
         Args:
-            file: Path to the YAML file to read.
-            encoding: Encoding of the YAML file.
+            contents: The YAML document to deserialize.
 
         Returns:
             An instance of the model.
         """
-        return cls.model_validate(safe_load(file.read_text(encoding=encoding)))
+        return cls.model_validate(yaml_safe_load(contents))
 
-    def to_yaml(self, file: Path, encoding: str = "utf-8") -> None:
+    @classmethod
+    def from_yaml(cls, file: Path, encoding: str = "utf-8", **kwargs: Any) -> Self:
         """
-        Serialize the model to a YAML string.
+        Deserialize a YAML file to an instance of the model.
 
         Args:
             file: Path to the YAML file to read.
             encoding: Encoding of the YAML file.
+            **kwargs: Additional keyword arguments to pass to `Path.read_text`.
+
+        Returns:
+            An instance of the model.
         """
-        with file.open("w", encoding=encoding) as f:
-            safe_dump(self.model_dump(), stream=f, encoding=encoding)
+        return cls.safe_load(file.read_text(encoding=encoding, **kwargs))
+
+    def safe_dump(self) -> str:
+        """
+        Serialize the model to a YAML document.
+
+        Returns:
+            The serialized YAML document.
+        """
+        return yaml_safe_dump(self.model_dump(), sort_keys=False)
+
+    def to_yaml(self, file: Path, encoding: str = "utf-8", **kwargs: Any) -> None:
+        """
+        Serialize the model to a YAML file.
+
+        Args:
+            file: Path to the YAML file to write.
+            encoding: Encoding of the YAML file.
+            **kwargs: Additional keyword arguments to pass to `Path.write_text`.
+        """
+        file.write_text(self.safe_dump(), encoding=encoding, **kwargs)
