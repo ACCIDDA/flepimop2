@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Tests for `flepimop2._cli._cli_command`."""
+"""Tests for `CliCommand.__call__`."""
 
 from unittest.mock import Mock
 
@@ -23,30 +23,50 @@ from flepimop2._cli._cli_command import CliCommand
 from flepimop2.typing import ExitCode
 
 
+class _FlagCommand(CliCommand):
+    """Command with a flag option (dry_run) and auto-appended verbosity."""
+
+    def run(self, *, dry_run: bool, verbosity: int) -> ExitCode:  # type: ignore[override]
+        """Execute the command.
+
+        Returns:
+            Exit code.
+        """
+        del dry_run, verbosity
+        return ExitCode.OKAY
+
+
 @pytest.mark.parametrize(
-    "return_exit_code",
+    "exit_code",
     [ExitCode.OKAY, ExitCode.GENERAL, ExitCode.CONFIGURATION],
 )
-def test_run_returns_exit_code(
+def test_exits_with_run_return_value(
     monkeypatch: pytest.MonkeyPatch,
-    return_exit_code: ExitCode,
+    exit_code: ExitCode,
 ) -> None:
-    """Test that run return values are passed through to process exit codes."""
+    """__call__ should forward run()'s return value to sys.exit()."""
 
-    class MockExitCodeCommand(CliCommand):
-        """Mock command that returns a configurable exit code."""
+    class _FixedExitCommand(CliCommand):
+        """Command that returns a configured exit code."""
 
-        def run(self) -> ExitCode:  # type: ignore[override]
+        def run(self, *, verbosity: int) -> ExitCode:  # type: ignore[override]
             """Execute the command.
 
             Returns:
                 The configured exit code.
             """
-            return return_exit_code
+            del verbosity
+            return exit_code
 
     exit_mock = Mock()
     monkeypatch.setattr("flepimop2._cli._cli_command.sys.exit", exit_mock)
+    _FixedExitCommand()()
+    exit_mock.assert_called_once_with(exit_code)
 
-    MockExitCodeCommand()()
 
-    exit_mock.assert_called_once_with(return_exit_code)
+def test_uses_bound_kwargs(monkeypatch: pytest.MonkeyPatch) -> None:
+    """__call__ should run the command using the kwargs bound at construction."""
+    exit_mock = Mock()
+    monkeypatch.setattr("flepimop2._cli._cli_command.sys.exit", exit_mock)
+    _FlagCommand(dry_run=False, verbosity=0)()
+    exit_mock.assert_called_once_with(ExitCode.OKAY)

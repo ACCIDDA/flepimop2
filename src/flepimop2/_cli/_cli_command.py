@@ -26,6 +26,8 @@ from pathlib import Path
 from typing import Any
 
 from flepimop2._cli._logging import get_script_logger
+from flepimop2._cli._options import COMMON_OPTIONS
+from flepimop2._utils._click import _click_param_for_option, _render_param
 from flepimop2.typing import ExitCode
 
 _COMMAND_NAME_REGEX = re.compile(r"(?<!^)(?=[A-Z])")
@@ -42,22 +44,28 @@ class CliCommand(ABC):
 
     auto_append_verbosity: bool = True
     logger: logging.Logger | None = None
+    bound_kwargs: dict[str, Any]
 
-    def __call__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """
-        Make the command instance callable.
-
-        This method allows instances of `CliCommand` subclasses to be called
-        directly, forwarding all keyword arguments to the `run` method.
-
-        The 'verbosity' option is consumed here for logger setup. If 'verbosity'
-        was auto-appended (not in _literal_options), it's removed from kwargs
-        before passing to run(). The return value from run() is passed to
-        `sys.exit()`.
+        Bind CLI kwargs to this command instance.
 
         Args:
-            **kwargs: Command-specific arguments passed from Click options/arguments.
+            **kwargs: Keyword arguments corresponding to the options declared
+                by this command's `options()` classmethod.
         """
+        self.bound_kwargs = dict(kwargs)
+
+    def __call__(self) -> None:
+        """
+        Execute this command using the kwargs bound at construction time.
+
+        Consumes 'verbosity' for logger setup. If 'verbosity' was
+        auto-appended (not in `_literal_options`), it is removed from the
+        kwargs passed to `run()`. The return value from `run()` is forwarded
+        to `sys.exit()`.
+        """
+        kwargs = dict(self.bound_kwargs)
         verbosity = kwargs.pop("verbosity", 0)
         self.logger = get_script_logger(__name__, verbosity)
         longest_key = max((len(str(k)) for k in kwargs), default=0)
@@ -150,6 +158,36 @@ class CliCommand(ABC):
         return _COMMAND_NAME_REGEX.sub(
             "-", cls.__name__.removesuffix("Command")
         ).lower()
+
+    def to_argv(self) -> list[str]:
+        """Render this instance's bound kwargs back into argv tokens.
+
+        Walks `cls.options()` in declaration order and converts each bound
+        value to its CLI representation:
+
+        - `click.Argument`: bare positional string (skipped if `None`).
+        - `click.Option` with `is_flag=True`: long flag name when truthy, omitted when
+            falsy.
+        - `click.Option` with `count=True`: repeated short flag
+            (e.g. `-vvv` for `verbosity=3`).
+        - `click.Option` otherwise: `--name value` pair.
+
+        `Path` values are rendered as their absolute string form so the
+        resulting argv replays correctly on a remote with a shared filesystem.
+
+        Returns:
+            A list of string tokens suitable for passing to `subprocess`.
+        """
+        tokens: list[str] = []
+        for name in type(self).options():
+            entry = COMMON_OPTIONS.get(name)
+            if entry is None:
+                continue
+            param = _click_param_for_option(entry[0])
+            if param is None:
+                continue
+            tokens.extend(_render_param(param, self.bound_kwargs.get(name)))
+        return tokens
 
     @classmethod
     def help_text(cls) -> str:
