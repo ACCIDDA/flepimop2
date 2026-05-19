@@ -34,6 +34,7 @@ _CONFIGURATION_SECTION_ORDER: Final[tuple[str, ...]] = (
     "engines",
     "systems",
     "backends",
+    "jobs",
     "process",
     "parameters",
     "scenarios",
@@ -43,6 +44,7 @@ _LIST_VIEW_SECTIONS: Final[tuple[str, ...]] = (
     "engines",
     "systems",
     "backends",
+    "jobs",
     "process",
     "parameters",
     "scenarios",
@@ -77,6 +79,7 @@ class ConfigurationModel(
     process: ModuleGroupModel = Field(default_factory=dict)
     parameters: ParameterGroupModel = Field(default_factory=dict)
     scenarios: ModuleGroupModel = Field(default_factory=dict)
+    jobs: ModuleGroupModel = Field(default_factory=dict)
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )
@@ -270,6 +273,7 @@ class ConfigurationModel(
                 "process",
                 "parameters",
                 "scenarios",
+                "jobs",
                 "simulate",
             )
         }
@@ -323,6 +327,11 @@ class ConfigurationModel(
             "scenarios": self._patch_section(
                 self.scenarios,
                 other.scenarios,
+                conflict=conflict,
+            ),
+            "jobs": self._patch_section(
+                self.jobs,
+                other.jobs,
                 conflict=conflict,
             ),
             "simulate": self._patch_section(
