@@ -35,7 +35,9 @@ from pydantic import TypeAdapter, ValidationError
 from flepimop2.module import ModuleBase
 from flepimop2.typing import IdentifierString
 
-Namespace = Literal["backend", "engine", "parameter", "process", "scenario", "system"]
+Namespace = Literal[
+    "backend", "engine", "job", "parameter", "process", "scenario", "system"
+]
 
 T = TypeVar("T", bound=ModuleBase)
 SHORTHAND_PATTERN = re.compile(
