@@ -18,6 +18,7 @@
 from pathlib import Path
 
 import pytest
+from yaml import safe_load
 
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.parameter.abc import build as build_parameter
@@ -49,3 +50,28 @@ def test_configuration_model_from_yaml_accepts_numeric_parameter_values(
     configuration = ConfigurationModel.from_yaml(config_path)
 
     assert configuration.parameters["beta"] == "fixed(0.3)"
+
+
+def test_configuration_model_safe_dump_formats_fixed_shorthand_as_bare_scalar() -> None:
+    """Formatted YAML should collapse simple fixed-parameter shorthand to scalars."""
+    configuration = ConfigurationModel.model_validate({
+        "parameters": {
+            "s0": "fixed(999)",
+            "i0": "fixed(2)",
+            "r0": "fixed(0)",
+            "beta": "fixed(0.3)",
+            "gamma": "fixed(0.1)",
+        }
+    })
+
+    dumped = configuration.safe_dump()
+
+    assert safe_load(dumped) == {
+        "parameters": {
+            "s0": 999.0,
+            "i0": 2.0,
+            "r0": 0.0,
+            "beta": 0.3,
+            "gamma": 0.1,
+        }
+    }

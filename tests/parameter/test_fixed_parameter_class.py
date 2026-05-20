@@ -19,8 +19,10 @@ from typing import Any
 
 import numpy as np
 import pytest
+from yaml import safe_load
 
 from flepimop2.axis import AxisCollection
+from flepimop2.configuration import ConfigurationModel
 from flepimop2.parameter.abc import ParameterRequest
 from flepimop2.parameter.fixed import FixedParameter
 
@@ -112,3 +114,49 @@ def test_fixed_parameter_rejects_value_with_incompatible_resolved_shape() -> Non
         ),
     ):
         FixedParameter(value=[0.1, 0.2], shape=("age",)).sample(axes=axes)
+
+
+def test_fixed_parameter_to_yaml_data_collapses_simple_scalar() -> None:
+    """Simple scalar fixed parameters should serialize as bare numeric values."""
+    parameter = FixedParameter(value=0.3)
+
+    assert parameter.to_yaml_data() == pytest.approx(0.3)
+
+
+def test_fixed_parameter_to_yaml_data_keeps_expanded_mapping_when_shaped() -> None:
+    """Shaped fixed parameters should keep the expanded module configuration."""
+    parameter = FixedParameter(value=0.3, shape=("age",))
+
+    assert parameter.to_yaml_data() == {
+        "module": "flepimop2.parameter.fixed",
+        "value": 0.3,
+        "shape": ["age"],
+    }
+
+
+def test_fixed_parameter_to_yaml_data_keeps_expanded_mapping_with_options() -> None:
+    """Fixed parameters with options should keep the expanded module configuration."""
+    parameter = FixedParameter(value=0.3, options={"source": "demo"})
+
+    assert parameter.to_yaml_data() == {
+        "module": "flepimop2.parameter.fixed",
+        "options": {"source": "demo"},
+        "value": 0.3,
+        "shape": [],
+    }
+
+
+def test_configuration_model_safe_dump_uses_bare_scalar_for_simple_fixed() -> None:
+    """Configuration YAML should emit simple fixed parameters as bare numbers."""
+    configuration = ConfigurationModel.model_validate({
+        "parameters": {
+            "beta": {
+                "module": "fixed",
+                "value": 0.3,
+            }
+        }
+    })
+
+    dumped = configuration.safe_dump()
+
+    assert safe_load(dumped) == {"parameters": {"beta": 0.3}}

@@ -15,7 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Literal, Self
+from importlib import import_module
+from typing import Final, Literal, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -26,6 +27,26 @@ from flepimop2.configuration._simulate import SimulateSpecificationModel
 from flepimop2.configuration._yaml import YamlSerializableBaseModel
 from flepimop2.module import ModuleBase
 from flepimop2.typing import IdentifierString, PatchConflictMode
+
+_CONFIGURATION_SECTION_ORDER: Final[tuple[str, ...]] = (
+    "name",
+    "axes",
+    "engines",
+    "systems",
+    "backends",
+    "process",
+    "parameters",
+    "scenarios",
+    "simulate",
+)
+_LIST_VIEW_SECTIONS: Final[tuple[str, ...]] = (
+    "engines",
+    "systems",
+    "backends",
+    "process",
+    "parameters",
+    "scenarios",
+)
 
 
 class ConfigurationModel(
@@ -59,6 +80,55 @@ class ConfigurationModel(
     simulate: dict[IdentifierString, SimulateSpecificationModel] = Field(
         default_factory=dict
     )
+
+    def to_yaml_data(self) -> object:
+        """
+        Convert the configuration into its normalized YAML representation.
+
+        This preserves parsing/patching semantics while allowing the emitted
+        YAML to use a more compact, user-facing structure.
+
+        Returns:
+            A YAML-ready representation of the configuration.
+        """
+        data = super().to_yaml_data()
+        if not isinstance(data, dict):
+            return data
+
+        if not data.get("name"):
+            data.pop("name", None)
+
+        if self.parameters:
+            build_parameter = import_module("flepimop2.parameter.abc").build
+            data["parameters"] = {
+                name: build_parameter(parameter).to_yaml_data()
+                if isinstance(parameter, ModuleBase | str)
+                else parameter
+                for name, parameter in self.parameters.items()
+            }
+
+        ordered_data = {}
+        if name := data.get("name"):
+            ordered_data["name"] = name
+
+        for section_name in _CONFIGURATION_SECTION_ORDER[1:]:
+            if not (section := data.get(section_name)):
+                continue
+            if (
+                section_name in _LIST_VIEW_SECTIONS
+                and isinstance(section, dict)
+                and len(section) == 1
+                and "default" in section
+            ):
+                section = [section["default"]]
+            ordered_data[section_name] = section
+
+        ordered_data.update({
+            key: value
+            for key, value in data.items()
+            if key not in _CONFIGURATION_SECTION_ORDER
+        })
+        return ordered_data
 
     @staticmethod
     def _copy_patch_value(value: object) -> object:

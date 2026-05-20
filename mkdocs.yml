@@ -80,6 +80,7 @@ nav:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md
       - Implementing Custom Engines and Systems: development/implementing-custom-engines-and-systems.md
+      - Customizing Module Appearances: development/customizing-module-appearances.md
       - Pydantic for Modelers: development/pydantic-for-modelers.md
       - Integration Testing: development/integration-testing.md
       - Adding A New CLI Command: development/adding-a-new-cli-command.md

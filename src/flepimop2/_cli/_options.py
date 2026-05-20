@@ -138,6 +138,15 @@ def _argument_help_records(
 # Dictionary of common Click options and arguments
 # These can be requested by command classes to maintain consistency
 COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
+    "check": (
+        click.option(
+            "--check",
+            is_flag=True,
+            default=False,
+            help="Check whether the configuration is already formatted.",
+        ),
+        None,
+    ),
     "config": (
         click.argument(
             "config",

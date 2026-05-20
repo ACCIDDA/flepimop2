@@ -93,52 +93,49 @@ The output is a complete configuration:
 
 ```yaml
 name: modular-sir
-axes: {}
 engines:
-  default:
-    module: wrapper
-    options: null
-    state_change: flow
-    script: model_input/plugins/solve_ivp.py
+- module: wrapper
+  state_change: flow
+  script: model_input/plugins/solve_ivp.py
 systems:
-  default:
-    module: wrapper
-    options: null
-    state_change: flow
-    script: model_input/plugins/SIR.py
-    model_state:
-      parameter_names:
-      - s0
-      - i0
-      - r0
-      labels:
-      - S
-      - I
-      - R
+- module: wrapper
+  state_change: flow
+  script: model_input/plugins/SIR.py
+  model_state:
+    parameter_names:
+    - s0
+    - i0
+    - r0
+    labels:
+    - S
+    - I
+    - R
 backends:
-  default:
-    module: csv
-    options: null
-    root: model_output
-process: {}
+- module: csv
+  root: model_output
 parameters:
-  s0: fixed(999)
-  i0: fixed(1)
-  r0: fixed(0)
-  beta: fixed(0.3)
-  gamma: fixed(0.1)
-scenarios: {}
+  s0: 999.0
+  i0: 2.0
+  r0: 0.0
+  beta: 0.3
+  gamma: 0.1
 simulate:
   demo:
     engine: default
     system: default
     backend: default
     times: 0.0:1.0:60.0
-    params: {}
-    scenario: null
 ```
 
 This is often the fastest way to verify that the pieces you selected produce the config you expect.
+
+If you want to normalize an existing configuration file without rebuilding it, use `flepimop2 format`:
+
+```bash
+flepimop2 format configs/built/baseline.yaml
+```
+
+`flepimop2 patch` already formats the YAML it emits, so `format` is most useful for older hand-edited files or configs produced before the formatter existed.
 
 ## 4. Let `error` Mode Catch Accidental Overlap
 
