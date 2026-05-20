@@ -41,6 +41,23 @@ class FixedParameter(ParameterABC, module="fixed"):
     value: float | int | list[Any]
     shape: tuple[IdentifierString, ...] = ()
 
+    def to_yaml_data(self) -> object:
+        """
+        Convert the fixed parameter into YAML-ready Python objects.
+
+        Returns:
+            A bare scalar for simple fixed parameters, otherwise the expanded
+            module configuration mapping.
+        """
+        if (
+            isinstance(self.value, int | float)
+            and not isinstance(self.value, bool)
+            and not self.shape
+            and not self.options
+        ):
+            return self.value
+        return super().to_yaml_data()
+
     @classmethod
     def from_shorthand(cls, shorthand: str) -> Self:
         r"""

@@ -23,6 +23,7 @@ from typing import Any, ClassVar, Literal, Self, cast
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._dict import _deep_merge_dicts
+from flepimop2.configuration._yaml import _model_to_yaml_mapping
 from flepimop2.typing import PatchConflictMode, RaiseOnMissing, RaiseOnMissingType
 
 
@@ -283,6 +284,21 @@ class ModuleBase(BaseModel):
             msg = f"Option '{name}' not found in module '{self.module}'."
             raise KeyError(msg)
         return opts.get(name, default)
+
+    def to_yaml_data(self) -> object:
+        """
+        Convert the module configuration into YAML-ready Python objects.
+
+        Subclasses can override this to customize just their serialized
+        configuration block without changing patch semantics.
+
+        Returns:
+            A YAML-ready representation of the module configuration.
+        """
+        data = _model_to_yaml_mapping(self)
+        if not data.get("options"):
+            data.pop("options", None)
+        return data
 
     def patch(
         self,

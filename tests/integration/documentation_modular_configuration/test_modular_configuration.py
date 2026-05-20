@@ -18,6 +18,7 @@
 import subprocess  # noqa: S404
 from pathlib import Path
 
+import pytest
 from yaml import safe_load
 
 from flepimop2.testing import flepimop2_run, project_skeleton
@@ -74,11 +75,11 @@ def test_modular_configuration_guide(repo_root: Path, tmp_path: Path) -> None:
     assert stdout_result.returncode == 0
     stdout_config = safe_load(stdout_result.stdout)
     assert stdout_config["parameters"] == {
-        "s0": "fixed(999)",
-        "i0": "fixed(1)",
-        "r0": "fixed(0)",
-        "beta": "fixed(0.3)",
-        "gamma": "fixed(0.1)",
+        "s0": 999.0,
+        "i0": 1.0,
+        "r0": 0.0,
+        "beta": 0.3,
+        "gamma": 0.1,
     }
     assert stdout_config["simulate"]["demo"]["backend"] == "default"
 
@@ -122,7 +123,7 @@ def test_modular_configuration_guide(repo_root: Path, tmp_path: Path) -> None:
     assert output_result.returncode == 0
     assert not output_result.stdout
     built_payload = safe_load(built_config.read_text(encoding="utf-8"))
-    assert built_payload["parameters"]["beta"] == "fixed(0.45)"
+    assert built_payload["parameters"]["beta"] == pytest.approx(0.45)
 
     simulate_result = flepimop2_run(
         "simulate",

@@ -104,28 +104,9 @@ simulate:
     assert result.exit_code == ExitCode.OKAY
     assert safe_load(result.output) == {
         "name": "final",
-        "axes": {},
-        "engines": {
-            "default": {
-                "module": "demo.engine",
-                "options": None,
-            }
-        },
-        "systems": {
-            "default": {
-                "module": "demo.system",
-                "options": None,
-            }
-        },
-        "backends": {
-            "default": {
-                "module": "demo.backend",
-                "options": None,
-            }
-        },
-        "process": {},
-        "parameters": {},
-        "scenarios": {},
+        "engines": [{"module": "demo.engine"}],
+        "systems": [{"module": "demo.system"}],
+        "backends": [{"module": "demo.backend"}],
         "simulate": {
             "main": {
                 "engine": "default",
@@ -136,7 +117,6 @@ simulate:
                     "alpha": 1.0,
                     "beta": 2.0,
                 },
-                "scenario": None,
             }
         },
     }
@@ -210,17 +190,9 @@ parameters:
     assert result.exit_code == ExitCode.OKAY
     assert not result.output
     assert safe_load(output.read_text(encoding="utf-8")) == {
-        "name": None,
-        "axes": {},
-        "engines": {},
-        "systems": {},
-        "backends": {},
-        "process": {},
         "parameters": {
-            "rate": "fixed(2.0)",
+            "rate": 2.0,
         },
-        "scenarios": {},
-        "simulate": {},
     }
 
 
@@ -264,16 +236,8 @@ parameters:
 
     assert result.exit_code == ExitCode.OKAY
     assert safe_load(result.output) == {
-        "name": None,
-        "axes": {},
-        "engines": {},
-        "systems": {},
-        "backends": {},
-        "process": {},
         "parameters": {
-            "rate": "fixed(2.0)",
+            "rate": 2.0,
         },
-        "scenarios": {},
-        "simulate": {},
     }
     assert not output.exists()

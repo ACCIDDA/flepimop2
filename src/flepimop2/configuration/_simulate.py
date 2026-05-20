@@ -16,6 +16,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._pydantic import RangeSpec, _to_np_array
+from flepimop2.configuration._yaml import _model_to_yaml_mapping
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
@@ -40,6 +41,20 @@ class SimulateSpecificationModel(BaseModel):
     times: RangeSpec
     params: dict[str, float] | None = Field(default_factory=dict)
     scenario: IdentifierString | None = None
+
+    def to_yaml_data(self) -> object:
+        """
+        Convert the simulation specification into YAML-ready Python objects.
+
+        Returns:
+            A YAML-ready representation of the simulation specification.
+        """
+        data = _model_to_yaml_mapping(self)
+        if not data.get("params"):
+            data.pop("params", None)
+        if data.get("scenario") is None:
+            data.pop("scenario", None)
+        return data
 
     @property
     def t_eval(self) -> Float64NDArray:

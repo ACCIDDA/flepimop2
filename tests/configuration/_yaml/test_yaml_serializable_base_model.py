@@ -19,7 +19,11 @@ from pathlib import Path
 
 import pytest
 
-from flepimop2.configuration._yaml import YamlSerializableBaseModel
+from flepimop2.configuration._yaml import (
+    YamlSerializableBaseModel,
+    yaml_mapping,
+    yaml_sequence,
+)
 
 
 class SimpleModel(YamlSerializableBaseModel):
@@ -35,6 +39,27 @@ class ComplexModel(YamlSerializableBaseModel):
     name: str
     items: list[SimpleModel]
     metadata: dict[str, str]
+
+
+class StyledModel(YamlSerializableBaseModel):
+    """Test model that requests flow-style YAML for specific subtrees."""
+
+    name: str
+    items: list[int]
+    metadata: dict[str, str]
+
+    def to_yaml_data(self) -> object:
+        """
+        Serialize selected subtrees with explicit YAML style wrappers.
+
+        Returns:
+            A YAML-ready mapping with explicit flow-style wrappers.
+        """
+        return {
+            "name": self.name,
+            "items": yaml_sequence(self.items, flow_style=True),
+            "metadata": yaml_mapping(self.metadata, flow_style=True),
+        }
 
 
 @pytest.mark.parametrize(
@@ -91,3 +116,12 @@ def test_yaml_safe_dump_and_safe_load_round_trip(
     dumped = instance.safe_dump()
     loaded = model_class.safe_load(dumped)
     assert loaded == instance
+
+
+def test_yaml_safe_dump_supports_flow_style_wrappers() -> None:
+    """Wrapped subtrees should retain their requested YAML flow style."""
+    instance = StyledModel(name="styled", items=[1, 2], metadata={"a": "b"})
+
+    dumped = instance.safe_dump()
+
+    assert dumped == "name: styled\nitems: [1, 2]\nmetadata: {a: b}\n"
