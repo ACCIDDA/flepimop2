@@ -12,19 +12,6 @@ What is the motivation for the change? Why is it hard to accomplish what you des
 
 Please provide an outline for a possible solution(s).
 
-## What portions of the package does this concern?
-
-- [ ] engines
-- [ ] systems
-- [ ] parameters
-- [ ] backends
-- [ ] processing
-- [ ] command line interface
-- [ ] documentation
-- [ ] internals
-- [ ] configuration
-- [ ] other: __________
-
 ## Additional context
 
 Any additional context that might be helpful, such as other software or standard practices.
