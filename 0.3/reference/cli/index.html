@@ -596,6 +596,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../development/customizing-module-appearances/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customizing Module Appearances
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../development/pydantic-for-modelers/" class="md-nav__link">
         
   
@@ -1322,6 +1350,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2-patch" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1598,6 +1637,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2-patch" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1683,48 +1733,62 @@
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  -v, --verbosity  The verbosity level to use for this command.
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  --help           Show this message and exit.
 </span></code></pre></div>
+<h3 id="flepimop2-format">flepimop2 format<a class="headerlink" href="#flepimop2-format" title="Permanent link">&para;</a></h3>
+<p>Format a configuration file into flepimop2's normalized YAML style.</p>
+<p>By default this command rewrites the input file in place. Use <code>--check</code> to
+validate formatting without modifying the file, or <code>--dry-run</code> to print the
+formatted configuration to stdout.</p>
+<p><strong>Usage:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>flepimop2 format [OPTIONS] [CONFIG]
+</span></code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>  --dry-run        Should this command be run using dry run?
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  --check          Check whether the configuration is already formatted.
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --help           Show this message and exit.
+</span></code></pre></div>
 <h3 id="flepimop2-patch">flepimop2 patch<a class="headerlink" href="#flepimop2-patch" title="Permanent link">&para;</a></h3>
 <p>Patch one or more configuration files together.</p>
 <p>This command applies configuration files from left to right. The first file is
 used as the base configuration, and each subsequent file is patched onto the
 accumulated result.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>flepimop2 patch [OPTIONS] CONFIGS...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>flepimop2 patch [OPTIONS] CONFIGS...
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>  --dry-run                       Should this command be run using dry run?
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  -o, --output FILE               Write the patched configuration to this file
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                                  instead of stdout.
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --patch-mode [error|merge|replace]
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>                                  How to handle duplicate configuration keys
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>                                  while patching.  [default: error]
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  -v, --verbosity                 The verbosity level to use for this command.
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  --help                          Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  --dry-run                       Should this command be run using dry run?
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  -o, --output FILE               Write the patched configuration to this file
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                                  instead of stdout.
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  --patch-mode [error|merge|replace]
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                                  How to handle duplicate configuration keys
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                                  while patching.  [default: error]
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  -v, --verbosity                 The verbosity level to use for this command.
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  --help                          Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-process">flepimop2 process<a class="headerlink" href="#flepimop2-process" title="Permanent link">&para;</a></h3>
 <p>Execute a processing step based on a configuration file.</p>
 <p>The <code>CONFIG</code> argument should point to a valid configuration file.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>flepimop2 process [OPTIONS] [CONFIG]
-</span></code></pre></div>
-<p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  --dry-run          Should this command be run using dry run?
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  -t, --target TEXT  The target to use for this command.
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  -v, --verbosity    The verbosity level to use for this command.
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  --help             Show this message and exit.
-</span></code></pre></div>
-<h3 id="flepimop2-simulate">flepimop2 simulate<a class="headerlink" href="#flepimop2-simulate" title="Permanent link">&para;</a></h3>
-<p>Run simulations based on a configuration file.</p>
-<p>This command runs epidemic simulations specified from a provided configuration file.
-The <code>CONFIG</code> argument should point to a valid configuration file.</p>
-<p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2 simulate [OPTIONS] [CONFIG]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2 process [OPTIONS] [CONFIG]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>  --dry-run          Should this command be run using dry run?
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  -t, --target TEXT  The target to use for this command.
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  -v, --verbosity    The verbosity level to use for this command.
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>  --help             Show this message and exit.
+</span></code></pre></div>
+<h3 id="flepimop2-simulate">flepimop2 simulate<a class="headerlink" href="#flepimop2-simulate" title="Permanent link">&para;</a></h3>
+<p>Run simulations based on a configuration file.</p>
+<p>This command runs epidemic simulations specified from a provided configuration file.
+The <code>CONFIG</code> argument should point to a valid configuration file.</p>
+<p><strong>Usage:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>flepimop2 simulate [OPTIONS] [CONFIG]
+</span></code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>  --dry-run          Should this command be run using dry run?
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  -t, --target TEXT  The target to use for this command.
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  -v, --verbosity    The verbosity level to use for this command.
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  --help             Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-skeleton">flepimop2 skeleton<a class="headerlink" href="#flepimop2-skeleton" title="Permanent link">&para;</a></h3>
 <p>Create a project skeleton with directory structure and template files.</p>
@@ -1740,12 +1804,12 @@ skeleton will be created in the current working directory.</p>
     $ mkdir fizzbuzz &amp;&amp; cd fizzbuzz
     $ flepimop2 skeleton</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>flepimop2 skeleton [OPTIONS] [PATH]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>flepimop2 skeleton [OPTIONS] [PATH]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>  --dry-run        Should this command be run using dry run?
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  -v, --verbosity  The verbosity level to use for this command.
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  --help           Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>  --dry-run        Should this command be run using dry run?
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  --help           Show this message and exit.
 </span></code></pre></div>
 
 

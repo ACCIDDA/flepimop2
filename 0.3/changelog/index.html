@@ -596,6 +596,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../development/customizing-module-appearances/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customizing Module Appearances
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../development/pydantic-for-modelers/" class="md-nav__link">
         
   
@@ -1850,7 +1878,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Added ways to specify shape for parameters based on <code>axes</code> by changing <code>ParameterABC.sample</code> to return a <code>ParameterValue</code> that contains both the underlying value as a numpy array as well as shape metadata, and is easily extensible to other metadata and underlying value types in the future. Also added <code>ModelStateSpecification</code>, <code>ParameterRequest</code> types for systems to advertise their underlying state and request parameters to comply with said state specification. See <a href="https://github.com/ACCIDDA/flepimop2/issues/115">#115</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/133">#133</a>.</li>
 <li>Added help text for CLI arguments that are formatted similarly to click's default formatting for options.</li>
 <li>Added optional shorthand module configuration support across all module namespaces, allowing config values such as <code>fixed(0.3)</code> for modules that implement <code>from_shorthand</code>. See <a href="https://github.com/ACCIDDA/flepimop2/issues/14">#14</a>.</li>
-<li>Added <code>ConfigurationModel/ModuleBase.patch</code> method to merge configurations together along with corresponding <code>flepimop2 patch</code> CLI for users to utilizing patching via the command line. See <a href="https://github.com/ACCIDDA/flepimop2/issues/51">#51</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/52">#52</a>.</li>
+<li>Added <code>ConfigurationModel/ModuleBase.patch</code> method to merge configurations together along with corresponding <code>flepimop2 patch</code> CLI for users to utilizing patching via the command line as well as YAML formatting. See <a href="https://github.com/ACCIDDA/flepimop2/issues/51">#51</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/52">#52</a>, <a href="https://github.com/ACCIDDA/flepimop2/pull/289">#289</a>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
