@@ -300,3 +300,48 @@ def test_non_existent_option_raises_key_error() -> None:
         match=r"Unknown option 'non_existent_option'. Available options: .*",
     ):
         register_command(MockCommandWithNonExistentOption, click.Group())
+
+
+def test_extra_options_appear_before_command_options() -> None:
+    """Extra options should be present on the registered command."""
+    test_cli = click.Group()
+    register_command(MockCommand, test_cli, extra_options=("job_target",))
+    param_names = [p.name for p in test_cli.commands["mock"].params]
+    assert "job_target" in param_names
+    assert param_names.index("job_target") < param_names.index("dry_run")
+
+
+def test_extra_options_are_not_passed_to_command_instance() -> None:
+    """Extra kwargs should be stripped before constructing the command."""
+    captured_instance_kwargs: dict[str, object] = {}
+    captured_extra_kwargs: dict[str, object] = {}
+
+    def capture_invoke(instance: CliCommand, extra_kwargs: dict[str, object]) -> None:
+        captured_instance_kwargs.update(instance.bound_kwargs)
+        captured_extra_kwargs.update(extra_kwargs)
+
+    test_cli = click.Group()
+    register_command(
+        MockCommand,
+        test_cli,
+        extra_options=("job_target",),
+        on_invoke=capture_invoke,
+    )
+    runner = CliRunner()
+    runner.invoke(test_cli.commands["mock"], ["-j", "my_job", "--dry-run"])
+    assert "job_target" not in captured_instance_kwargs
+    assert captured_extra_kwargs.get("job_target") == "my_job"
+
+
+def test_on_invoke_is_called_instead_of_command_call() -> None:
+    """When on_invoke is given, it should be called rather than command_instance()."""
+    on_invoke_called = {"called": False}
+
+    def my_invoke(_instance: CliCommand, _extra_kwargs: dict[str, object]) -> None:
+        on_invoke_called["called"] = True
+
+    test_cli = click.Group()
+    register_command(MockCommand, test_cli, on_invoke=my_invoke)
+    runner = CliRunner()
+    runner.invoke(test_cli.commands["mock"], ["--dry-run"])
+    assert on_invoke_called["called"] is True

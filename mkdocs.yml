@@ -76,6 +76,7 @@ nav:
       - Vaccination Campaign Scenario Grid: guides/vaccination-campaign-scenario-grid-example.md
       - Generating Scenario Results: guides/scenarios.md
       - Modular Configuration: guides/modular-configuration.md
+      - Batch Jobs: guides/batch-jobs.md
   - Development:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md
@@ -93,6 +94,7 @@ nav:
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
           - Exceptions: reference/api/exceptions.md
+          - Job: reference/api/job.md
           - Meta: reference/api/meta.md
           - Module: reference/api/module.md
           - Parameter: reference/api/parameter.md

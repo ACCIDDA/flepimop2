@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Callable, Sequence
 from typing import Any
 
 import click
@@ -38,7 +39,13 @@ class _ArgumentHelpCommand(click.Command):
         super().format_options(ctx, formatter)
 
 
-def register_command(command_cls: type[CliCommand], group: Group) -> None:
+def register_command(
+    command_cls: type[CliCommand],
+    group: Group,
+    *,
+    extra_options: Sequence[str] = (),
+    on_invoke: Callable[[CliCommand, dict[str, Any]], None] | None = None,
+) -> None:
     """
     Register a `CliCommand` subclass as a Click command.
 
@@ -50,23 +57,30 @@ def register_command(command_cls: type[CliCommand], group: Group) -> None:
     Args:
         command_cls: A `CliCommand` subclass to register.
         group: The click `Group` to register the command with.
+        extra_options: Additional option names (from `COMMON_OPTIONS`) to
+            prepend before the command's own options. These are extracted from
+            `kwargs` before the command instance is constructed and passed to
+            `on_invoke` as a separate dict.
+        on_invoke: Optional callback invoked instead of `command_instance()`.
+            Receives the constructed command instance and a dict of the extra
+            kwargs extracted from `extra_options`.
     """
 
-    # Create a wrapper function that instantiates and runs the command
     def command_wrapper(**kwargs: Any) -> None:
+        extra_kwargs = {k: kwargs.pop(k) for k in extra_options if k in kwargs}
         command_instance = command_cls(**kwargs)
-        command_instance()
+        if on_invoke is not None:
+            on_invoke(command_instance, extra_kwargs)
+        else:
+            command_instance()
 
-    # Set the function name and docstring for Click
     command_name = command_cls.command_name()
     command_wrapper.__name__ = command_name
     command_wrapper.__doc__ = command_cls.help_text()
 
-    # Apply the options/arguments in reverse order
-    # (Click decorators are applied bottom-up)
-    for option_name in reversed(command_cls.options()):
+    all_options = [*extra_options, *command_cls.options()]
+    for option_name in reversed(all_options):
         option_decorator = get_option(option_name)
         command_wrapper = option_decorator(command_wrapper)
 
-    # Register the command with the CLI group
     group.command(name=command_name, cls=_ArgumentHelpCommand)(command_wrapper)
