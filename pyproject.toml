@@ -82,9 +82,9 @@ orcid = "0009-0001-2486-7931"
 
 [tool.pytest.ini_options]
 testpaths = [
-    "docs/",
-    "src",
+    "src/flepimop2/",
     "tests/",
+    "docs/",
 ]
 addopts = [
     "--import-mode=importlib",

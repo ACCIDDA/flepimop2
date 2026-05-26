@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added help text for CLI arguments that are formatted similarly to click's default formatting for options.
 - Added optional shorthand module configuration support across all module namespaces, allowing config values such as `fixed(0.3)` for modules that implement `from_shorthand`. See [#14](https://github.com/ACCIDDA/flepimop2/issues/14).
 - Added `ConfigurationModel/ModuleBase.patch` method to merge configurations together along with corresponding `flepimop2 patch` CLI for users to utilizing patching via the command line as well as YAML formatting. See [#51](https://github.com/ACCIDDA/flepimop2/issues/51), [#52](https://github.com/ACCIDDA/flepimop2/issues/52), [#289](https://github.com/ACCIDDA/flepimop2/pull/289).
-- Introduced the `JobABC` to execute CLI commands in separate environments along with corresponding "jobs" top level key in configuration and the `ShellJob` module to run a CLI in a subprocess. See [#276](https://github.com/ACCIDDA/flepimop2/issues/276), [#277](https://github.com/ACCIDDA/flepimop2/issues/277), [#278](https://github.com/ACCIDDA/flepimop2/issues/278).
+- Introduced the `JobABC` to execute CLI commands in separate environments along with corresponding "jobs" top level key in configuration and the `ShellJob` module to run a CLI in a subprocess. Job modules can be utilized by end users via the `flepimop2 job` CLI. See [#276](https://github.com/ACCIDDA/flepimop2/issues/276), [#277](https://github.com/ACCIDDA/flepimop2/issues/277), [#278](https://github.com/ACCIDDA/flepimop2/issues/278), [#280](https://github.com/ACCIDDA/flepimop2/issues/280).
 
 ### Changed
 

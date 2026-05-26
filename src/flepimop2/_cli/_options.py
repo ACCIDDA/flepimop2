@@ -185,6 +185,15 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "job_target": (
+        click.option(
+            "-j",
+            "--job-target",
+            default=None,
+            help="The configured job module to dispatch this command to.",
+        ),
+        None,
+    ),
     "output": (
         click.option(
             "-o",
