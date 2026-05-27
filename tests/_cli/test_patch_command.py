@@ -241,3 +241,48 @@ parameters:
         },
     }
     assert not output.exists()
+
+
+def test_patch_command_preserves_explicit_document_start_from_any_config(
+    tmp_path: Path,
+) -> None:
+    """Patched output should keep `---` if any input config includes it."""
+    base = tmp_path / "base.yaml"
+    base.write_text(
+        """
+parameters:
+  alpha: fixed(1.0)
+""".lstrip(),
+        encoding="utf-8",
+    )
+    patch = tmp_path / "patch.yaml"
+    patch.write_text(
+        """
+---
+parameters:
+  beta: fixed(2.0)
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "--patch-mode",
+            "merge",
+            str(base),
+            str(patch),
+        ],
+        catch_exceptions=False,
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert result.output.startswith("---\n")
+    assert safe_load(result.output) == {
+        "parameters": {
+            "alpha": 1.0,
+            "beta": 2.0,
+        },
+    }

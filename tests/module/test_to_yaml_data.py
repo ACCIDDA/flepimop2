@@ -147,8 +147,8 @@ def test_module_to_yaml_data_override_can_preserve_block_style() -> None:
         "  title: pipeline\n"
         "  dims: [2, 3]\n"
         "  steps:\n"
-        "  - name: prepare\n"
-        "    tool: demo.prepare\n"
-        "  - name: simulate\n"
-        "    tool: demo.simulate\n"
+        "    - name: prepare\n"
+        "      tool: demo.prepare\n"
+        "    - name: simulate\n"
+        "      tool: demo.simulate\n"
     )

@@ -97,3 +97,57 @@ engines:
     assert result.exit_code == ExitCode.OKAY
     assert result.output == "engines:\n- module: demo.engine\n"
     assert config.read_text(encoding="utf-8") == original
+
+
+def test_format_command_preserves_explicit_document_start(
+    tmp_path: Path,
+) -> None:
+    """Formatting should keep `---` when the original file includes it."""
+    config = tmp_path / "config.yaml"
+    original = """
+---
+engines:
+  default:
+    module: demo.engine
+    options: {}
+""".lstrip()
+    config.write_text(original, encoding="utf-8")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["format", str(config)],
+        catch_exceptions=False,
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert not result.output
+    assert config.read_text(encoding="utf-8") == (
+        "---\nengines:\n- module: demo.engine\n"
+    )
+
+
+def test_format_command_dry_run_preserves_explicit_document_start(
+    tmp_path: Path,
+) -> None:
+    """Dry-run output should keep `---` when the original file includes it."""
+    config = tmp_path / "config.yaml"
+    original = """
+---
+engines:
+  default:
+    module: demo.engine
+    options: {}
+""".lstrip()
+    config.write_text(original, encoding="utf-8")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["format", "--dry-run", str(config)],
+        catch_exceptions=False,
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert result.output == "---\nengines:\n- module: demo.engine\n"
+    assert config.read_text(encoding="utf-8") == original
