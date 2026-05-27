@@ -61,12 +61,13 @@ Run `just` to automatically format/lint, type check, and run tests before commit
 
 ### Organization
 
-Tests are organized to mirror the source code structure:
+Tests are organized to mirror the source code structure with additional assets for a test file being placed in a directory suffixed with `_assets` to avoid aliasing issues:
 
 ```
 tests/
 |-- {module}/
 |   |-- {submodule}/
+|   |   |-- {function}_assets/     # Assets for a particular test file
 |   |   |-- test_{function}.py     # Tests for individual functions
 |   |   |-- test_{class}_class.py  # Tests for classes
 |   |-- test_{function}.py
@@ -78,6 +79,7 @@ tests/
 - `tests/logging/test_click_handler_class.py` - Tests for the `ClickHandler` class.
 - `tests/_cli/_options/test_get_option.py` - Tests for the `get_option` function.
 - `tests/configuration/test_fixed_parameter_specification_model_class.py` - Tests for the `FixedParameterSpecificationModel` class.
+- `tests/engine/engine_wrapper_assets/` - Additional test assets, configuration files or external code, that are needed by `tests/engine/test_engine_wrapper.py`.
 
 ### Running Tests
 
