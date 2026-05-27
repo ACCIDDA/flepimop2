@@ -2172,13 +2172,14 @@
 <p>Run <code>just</code> to automatically format/lint, type check, and run tests before committing. If you only want formatting/linting, run <code>just ruff</code>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="organization">Organization<a class="headerlink" href="#organization" title="Permanent link">&para;</a></h3>
-<p>Tests are organized to mirror the source code structure:</p>
+<p>Tests are organized to mirror the source code structure with additional assets for a test file being placed in a directory suffixed with <code>_assets</code> to avoid aliasing issues:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>tests/
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>|-- {module}/
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>|   |-- {submodule}/
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>|   |   |-- test_{function}.py     # Tests for individual functions
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>|   |   |-- test_{class}_class.py  # Tests for classes
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>|   |-- test_{function}.py
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>|   |   |-- {function}_assets/     # Assets for a particular test file
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>|   |   |-- test_{function}.py     # Tests for individual functions
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>|   |   |-- test_{class}_class.py  # Tests for classes
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>|   |-- test_{function}.py
 </span></code></pre></div>
 <p><strong>Examples:</strong></p>
 <ul>
@@ -2186,6 +2187,7 @@
 <li><code>tests/logging/test_click_handler_class.py</code> - Tests for the <code>ClickHandler</code> class.</li>
 <li><code>tests/_cli/_options/test_get_option.py</code> - Tests for the <code>get_option</code> function.</li>
 <li><code>tests/configuration/test_fixed_parameter_specification_model_class.py</code> - Tests for the <code>FixedParameterSpecificationModel</code> class.</li>
+<li><code>tests/engine/engine_wrapper_assets/</code> - Additional test assets, configuration files or external code, that are needed by <code>tests/engine/test_engine_wrapper.py</code>.</li>
 </ul>
 <h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
 <p>Test execution is split into explicit workflows:</p>
