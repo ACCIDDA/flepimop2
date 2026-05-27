@@ -338,7 +338,11 @@ class ConfigurationModel(
         elif "name" in self.model_fields_set:
             name_payload["name"] = self.name
 
-        return type(self).model_validate({**name_payload, **sections})
+        patched = type(self).model_validate({**name_payload, **sections})
+        patched.set_document_start_marker(
+            value=self.document_start_marker or other.document_start_marker
+        )
+        return patched
 
     def _check_simulate_engines_or_systems(
         self, kind: Literal["engine", "system", "backend"]

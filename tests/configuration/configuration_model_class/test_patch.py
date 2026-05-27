@@ -178,3 +178,24 @@ def test_configuration_model_patch_omits_name_when_neither_is_set() -> None:
 
     assert patched.name is None
     assert "name" not in patched.model_fields_set
+
+
+def test_configuration_model_patch_preserves_document_start_marker() -> None:
+    """Patched configs should keep `---` if either source config had it."""
+    configuration = ConfigurationModel.safe_load(
+        """
+parameters:
+  alpha: fixed(1.0)
+""".lstrip()
+    )
+    patch = ConfigurationModel.safe_load(
+        """
+---
+parameters:
+  beta: fixed(2.0)
+""".lstrip()
+    )
+
+    patched = configuration.patch(patch, conflict=PatchConflictMode.MERGE)
+
+    assert patched.safe_dump().startswith("---\n")

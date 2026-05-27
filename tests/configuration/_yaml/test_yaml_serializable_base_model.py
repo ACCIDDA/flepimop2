@@ -125,3 +125,30 @@ def test_yaml_safe_dump_supports_flow_style_wrappers() -> None:
     dumped = instance.safe_dump()
 
     assert dumped == "name: styled\nitems: [1, 2]\nmetadata: {a: b}\n"
+
+
+def test_yaml_safe_dump_supports_explicit_document_start() -> None:
+    """Callers should be able to request a `---` document start."""
+    instance = SimpleModel(name="test", count=42)
+
+    dumped = instance.safe_dump(explicit_start=True)
+
+    assert dumped == "---\nname: test\ncount: 42\n"
+
+
+def test_yaml_safe_load_preserves_explicit_document_start() -> None:
+    """Models loaded from YAML should remember the document-start marker."""
+    instance = SimpleModel.safe_load("---\nname: test\ncount: 42\n")
+
+    dumped = instance.safe_dump()
+
+    assert dumped == "---\nname: test\ncount: 42\n"
+
+
+def test_yaml_safe_dump_can_override_preserved_document_start() -> None:
+    """Callers should be able to override the preserved document-start marker."""
+    instance = SimpleModel.safe_load("---\nname: test\ncount: 42\n")
+
+    dumped = instance.safe_dump(explicit_start=False)
+
+    assert dumped == "name: test\ncount: 42\n"

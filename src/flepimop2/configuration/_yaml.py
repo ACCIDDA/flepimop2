@@ -18,7 +18,8 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Self, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
+from typing_extensions import override
 from yaml import MappingNode, SafeDumper, SequenceNode
 from yaml import dump as yaml_dump
 from yaml import safe_load as yaml_safe_load
@@ -127,6 +128,28 @@ def yaml_mapping(
 class Flepimop2YamlDumper(SafeDumper):
     """Project YAML dumper with support for per-subtree flow-style wrappers."""
 
+    @override
+    def increase_indent(self, flow: bool = False, indentless: bool = False) -> None:
+        """
+        Indent nested block sequences while preserving top-level list-view sections.
+
+        PyYAML's default "indentless" mode emits sequences under mapping keys as:
+
+            key:
+            - value
+
+        That is compact for top-level normalized sections such as `systems`, but
+        it is harder to scan for nested arrays. Keep the top-level behavior and
+        render nested sequences as:
+
+            key:
+              - value
+        """
+        super().increase_indent(
+            flow=flow,
+            indentless=indentless if self.indent == 0 else False,
+        )
+
 
 def _represent_yaml_formatted_sequence(
     dumper: SafeDumper,
@@ -170,6 +193,48 @@ Flepimop2YamlDumper.add_representer(
     YamlFormattedMapping,
     _represent_yaml_formatted_mapping,
 )
+
+
+def _has_explicit_document_start(contents: str) -> bool:
+    r"""
+    Return whether YAML text has an explicit document-start marker.
+
+    Args:
+        contents: The YAML text to check.
+
+    Returns:
+        Whether `contents` has an explicit YAML document-start marker before
+        the first content line.
+
+    Examples:
+        >>> _has_explicit_document_start("---")
+        True
+        >>> _has_explicit_document_start("---\t")
+        True
+        >>> _has_explicit_document_start("name: demo")
+        False
+        >>> _has_explicit_document_start("")
+        False
+        >>> _has_explicit_document_start("\ufeff---")
+        True
+        >>> _has_explicit_document_start("\ufeff")
+        False
+        >>> _has_explicit_document_start("# foobar\n---\t")
+        True
+        >>> _has_explicit_document_start("\n# foobar\n--- # comment")
+        True
+        >>> _has_explicit_document_start("%YAML 1.2\n---\nname: demo")
+        True
+    """
+    contents = contents.removeprefix("\ufeff")
+    for line in contents.splitlines():
+        stripped_line = line.strip()
+        if not stripped_line or stripped_line.startswith("#"):
+            continue
+        if line.startswith("%"):
+            continue
+        return line == "---" or line.startswith(("--- ", "---\t"))
+    return False
 
 
 def _model_to_yaml_mapping(model: BaseModel) -> dict[str, object]:
@@ -252,6 +317,27 @@ class YamlSerializableBaseModel(BaseModel):
         DemoModel(name='demo')
     """
 
+    _document_start_marker: bool = PrivateAttr(default=False)
+
+    @property
+    def document_start_marker(self) -> bool:
+        """
+        Return whether this model emits an explicit document-start marker.
+
+        Returns:
+            Whether `---` is emitted by default when dumping this model.
+        """
+        return self._document_start_marker
+
+    def set_document_start_marker(self, *, value: bool) -> None:
+        """
+        Set whether this model should emit an explicit document-start marker.
+
+        Args:
+            value: Whether to emit `---` by default when dumping this model.
+        """
+        self._document_start_marker = value
+
     @classmethod
     def safe_load(cls, contents: str) -> Self:
         """
@@ -269,7 +355,9 @@ class YamlSerializableBaseModel(BaseModel):
             >>> DemoModel.safe_load("name: demo")
             DemoModel(name='demo')
         """
-        return cls.model_validate(yaml_safe_load(contents))
+        model = cls.model_validate(yaml_safe_load(contents))
+        model.set_document_start_marker(value=_has_explicit_document_start(contents))
+        return model
 
     @classmethod
     def from_yaml(cls, file: Path, encoding: str = "utf-8", **kwargs: Any) -> Self:
@@ -286,9 +374,13 @@ class YamlSerializableBaseModel(BaseModel):
         """
         return cls.safe_load(file.read_text(encoding=encoding, **kwargs))
 
-    def safe_dump(self) -> str:
+    def safe_dump(self, *, explicit_start: bool | None = None) -> str:
         """
         Serialize the model to a YAML document.
+
+        Args:
+            explicit_start: Whether to emit an explicit `---` document start.
+                By default, preserve the marker from the loaded YAML document.
 
         Returns:
             The serialized YAML document.
@@ -303,6 +395,9 @@ class YamlSerializableBaseModel(BaseModel):
             self.to_yaml_data(),
             Dumper=Flepimop2YamlDumper,
             default_flow_style=False,
+            explicit_start=self._document_start_marker
+            if explicit_start is None
+            else explicit_start,
             sort_keys=False,
         )
 
@@ -325,13 +420,26 @@ class YamlSerializableBaseModel(BaseModel):
         """
         return _model_to_yaml_mapping(self)
 
-    def to_yaml(self, file: Path, encoding: str = "utf-8", **kwargs: Any) -> None:
+    def to_yaml(
+        self,
+        file: Path,
+        encoding: str = "utf-8",
+        *,
+        explicit_start: bool | None = None,
+        **kwargs: Any,
+    ) -> None:
         """
         Serialize the model to a YAML file.
 
         Args:
             file: Path to the YAML file to write.
             encoding: Encoding of the YAML file.
+            explicit_start: Whether to emit an explicit `---` document start.
+                By default, preserve the marker from the loaded YAML document.
             **kwargs: Additional keyword arguments to pass to `Path.write_text`.
         """
-        file.write_text(self.safe_dump(), encoding=encoding, **kwargs)
+        file.write_text(
+            self.safe_dump(explicit_start=explicit_start),
+            encoding=encoding,
+            **kwargs,
+        )
