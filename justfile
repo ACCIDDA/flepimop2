@@ -8,7 +8,7 @@ dev: ruff mypy test
 lint: yamllint changelog
 
 # Run all default CI tasks
-ci: quality test docs
+ci: quality ci-pytest docs
 
 # Format code using `ruff`
 [group('dev')]
@@ -26,11 +26,6 @@ cov:
 integration:
     uv run pytest -m "integration"
 
-# Run full pytest suite, including integration tests, without coverage report
-[group('ci')]
-pytest:
-    uv run pytest
-
 # Run coverage and integration tests
 [group('dev')]
 test: cov integration
@@ -40,7 +35,7 @@ test: cov integration
 mypy:
     uv run mypy
 
-# Clean up generated lock files, venvs, and caches
+# Clean up venvs, caches, and build artifacts
 [group('dev')]
 [unix]
 clean:
@@ -50,17 +45,39 @@ clean:
     rm -rf dist
     rm -rf site
     rm -f docs/downloads/*.zip
-    rm -f uv.lock
 
 # Run CI `ruff` formatting/linting checks
 [group('ci')]
 ci-ruff:
-    uv run ruff format --check
-    uv run ruff check --no-fix
+    uv run --locked ruff format --check
+    uv run --locked ruff check --no-fix
+
+# Run CI mypy type checking
+[group('ci')]
+ci-mypy:
+    uv run --locked mypy
+
+# Run CI pytest checks against the committed lockfile
+[group('ci')]
+ci-pytest:
+    uv run --locked --isolated --group dev pytest
+
+# Run CI minimum-version pytest checks without the committed lockfile
+[unix]
+[group('ci')]
+ci-pytest-lowest-direct:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -f uv.lock ]; then
+        trap 'if [ -f uv.lock.bak ]; then mv uv.lock.bak uv.lock; fi' EXIT
+        mv uv.lock uv.lock.bak
+    fi
+    env -u UV_LOCKED -u UV_FROZEN UV_RESOLUTION=lowest-direct \
+        uv run --isolated --group dev pytest
 
 # Run CI quality checks (format/lint/type check)
 [group('ci')]
-quality: ci-ruff mypy
+quality: ci-ruff ci-mypy
 
 # Generate API reference documentation
 [group('docs')]
@@ -99,13 +116,8 @@ build-test:
     #!/usr/bin/env bash
     set -euo pipefail
     CLEANROOM="$(mktemp -d)"
-    HAD_LOCK='false'
-    if [ -f uv.lock ]; then
-        HAD_LOCK='true'
-    fi
-    trap 'rm -rf "${CLEANROOM}"; if [ "${HAD_LOCK}" = "false" ]; then rm -f uv.lock; fi' EXIT
-    uv lock --python "${UV_PYTHON_VERSION:-3.12}"
-    uv export --frozen --only-group dev --no-emit-project --format requirements.txt --no-hashes --output-file "${CLEANROOM}/dev-requirements.txt" >/dev/null
+    trap 'rm -rf "${CLEANROOM}"' EXIT
+    uv export --locked --only-group dev --no-emit-project --format requirements.txt --no-hashes --output-file "${CLEANROOM}/dev-requirements.txt" >/dev/null
     uv run python -m build --wheel --outdir "${CLEANROOM}/dist"
     uv venv --python "${UV_PYTHON_VERSION:-3.12}" "${CLEANROOM}/venv"
     uv pip install --python "${CLEANROOM}/venv/bin/python" "${CLEANROOM}"/dist/*.whl
