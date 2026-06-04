@@ -5,7 +5,7 @@ inputs:
   python-version:
     description: 'Python version to install/configure via uv'
     required: false
-    default: '3.12'
+    default: '3.14'
   enable-cache:
     description: 'Whether to enable uv caching'
     required: false
@@ -13,14 +13,16 @@ inputs:
   cache-dependency-glob:
     description: 'Dependency files used for uv cache keying'
     required: false
-    default: 'pyproject.toml'
+    default: |
+      pyproject.toml
+      uv.lock
 runs:
   using: 'composite'
   steps:
     - name: 'install just'
-      uses: 'extractions/setup-just@v3'
+      uses: 'extractions/setup-just@v4'
     - name: 'setup uv'
-      uses: 'astral-sh/setup-uv@v7'
+      uses: 'astral-sh/setup-uv@v8.0.0'
       with:
         enable-cache: '${{ inputs.enable-cache }}'
         cache-dependency-glob: '${{ inputs.cache-dependency-glob }}'

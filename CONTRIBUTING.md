@@ -22,13 +22,13 @@ cd flepimop2
 2. Create a virtual environment and install dependencies:
 
 ```shell
-uv sync --dev
+uv sync
 ```
 
 This creates a `.venv` virtual environment and installs the package along with all development dependencies (mypy, pytest, ruff, mkdocs). If you need to create an environment with a specific python version you can also run:
 
 ```shell
-uv sync --dev --python 3.12
+uv sync --python 3.12
 ```
 
 3. Verify your setup
@@ -88,7 +88,6 @@ Test execution is split into explicit workflows:
 - `just test` - Local default test workflow (`just cov` then `just integration`).
 - `just cov` - Run tests marked `not integration`, report coverage, and enforce the configured minimum coverage threshold.
 - `just integration` - Run only tests marked `integration` (tests in `tests/integration/` are marked automatically).
-- `just pytest` - Run the full pytest suite (including integration tests) without coverage reporting.
 
 For more advanced test runs, use `pytest` directly:
 
@@ -155,13 +154,13 @@ could affect packaging metadata, installability, or build artifacts.
 
 1. Run CI checks locally using `just ci`. This runs the same checks that CI will run:
 
-- `just quality` - CI quality checks (ruff check mode + mypy).
-- `just test` - Coverage-gated non-integration tests and integration tests.
+- `just quality` - CI quality checks (`just ci-ruff` + `just ci-mypy`), run against the committed lockfile.
+- `just ci-pytest` - Run the full pytest suite against the committed lockfile.
 - `just docs` - Documentation build checks.
 
-In GitHub Actions, these correspond to the `quality`, `tests`, and `docs` jobs in `.github/workflows/ci.yaml`.
+In GitHub Actions, these correspond to the `quality`, `tests`, and `docs` jobs in `.github/workflows/ci.yaml`. The `tests` job additionally runs `just ci-pytest-lowest-direct` against each supported Python version to detect when minimum version bounds need updating.
 
-The separate `package` job runs `just build-check` on Python 3.12.
+The separate `package` job runs `just build-check` on Python 3.14.
 
 If you edit YAML files, also run `just yamllint`. YAML linting is separate from `just ci`.
 
@@ -181,9 +180,9 @@ If you edit YAML files, also run `just yamllint`. YAML linting is separate from 
 
 ### Pull Request Requirements
 
-- Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.
-- Quality checks and documentation build checks run in CI on Python 3.12.
-- Package validation runs in CI on Python 3.12.
+- Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14, against both the committed lockfile and lowest direct dependencies.
+- Quality checks and documentation build checks run in CI on Python 3.14.
+- Package validation runs in CI on Python 3.14.
 - At least one maintainer approval is required before merging.
 - Branches must be up to date against `main` before merging and have a linear history. Only rebases are allowed for merging.
 

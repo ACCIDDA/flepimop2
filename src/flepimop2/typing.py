@@ -24,8 +24,8 @@ repeating NumPy typing boilerplate.
 
 Examples:
     >>> from flepimop2.typing import Float64NDArray
-    >>> Float64NDArray
-    numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]]
+    >>> Float64NDArray  # doctest: +ELLIPSIS
+    numpy.ndarray[tuple[...], numpy.dtype[numpy.float64]]
 """
 
 __all__ = [

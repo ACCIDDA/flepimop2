@@ -13,24 +13,21 @@ permissions:
 jobs:
   changelog:
     name: 'changelog'
+    if:
+      ${{ github.event_name != 'pull_request' ||
+      github.event.pull_request.user.login != 'dependabot[bot]' }}
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'checkout repository'
         uses: 'actions/checkout@v6'
         with:
-          ref: |-
-            ${{ case(
-              github.event_name == 'pull_request',
-              github.event.pull_request.head.ref,
-              github.ref
-            ) }}
           fetch-depth: 0
           persist-credentials: false
       - name: 'setup just and uv'
         uses: './.github/actions/setup-just-and-uv'
         with:
           enable-cache: false
-      - name: 'Check changelog updated'
+      - name: 'check changelog updated'
         run: 'just changelog'
   docs:
     name: 'docs'
@@ -42,8 +39,13 @@ jobs:
           persist-credentials: false
       - name: 'setup just and uv'
         uses: './.github/actions/setup-just-and-uv'
+        with:
+          python-version: '3.14'
       - name: 'build documentation'
         run: 'just docs'
+        env:
+          UV_LOCKED: 'true'
+          UV_PYTHON_VERSION: '3.14'
   quality:
     name: 'quality'
     runs-on: 'ubuntu-latest'
@@ -54,8 +56,13 @@ jobs:
           persist-credentials: false
       - name: 'setup just and uv'
         uses: './.github/actions/setup-just-and-uv'
+        with:
+          python-version: '3.14'
       - name: 'run quality checks'
         run: 'just quality'
+        env:
+          UV_LOCKED: 'true'
+          UV_PYTHON_VERSION: '3.14'
   package:
     name: 'package'
     runs-on: 'ubuntu-latest'
@@ -67,13 +74,16 @@ jobs:
       - name: 'setup just and uv'
         uses: './.github/actions/setup-just-and-uv'
         with:
-          python-version: '3.12'
+          python-version: '3.14'
+      - name: 'sync dev environment'
+        run: 'uv sync --locked --python 3.14 --group dev'
       - name: 'check package artifacts'
         run: 'just build-check'
         env:
-          UV_PYTHON_VERSION: '3.12'
+          UV_LOCKED: 'true'
+          UV_PYTHON_VERSION: '3.14'
   tests:
-    name: 'tests (${{ matrix.python-version }}-${{ matrix.coverage }})'
+    name: 'tests (${{ matrix.python-version }}, ${{ matrix.dependency-set }})'
     needs:
       - 'docs'
       - 'package'
@@ -82,15 +92,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - python-version: '3.11'
-            coverage: false
-          - python-version: '3.12'
-            coverage: true
-          - python-version: '3.13'
-            coverage: false
-          - python-version: '3.14'
-            coverage: false
+        python-version:
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+        dependency-set:
+          - 'locked'
+          - 'lowest-direct'
     steps:
       - name: 'checkout repository'
         uses: 'actions/checkout@v6'
@@ -100,12 +109,14 @@ jobs:
         uses: './.github/actions/setup-just-and-uv'
         with:
           python-version: '${{ matrix.python-version }}'
-      - name: 'run coverage tests'
-        if: '${{ matrix.coverage }}'
-        run: 'just cov'
-      - name: 'run integration tests'
-        if: '${{ matrix.coverage }}'
-        run: 'just integration'
-      - name: 'run full pytest suite'
-        if: '${{ !matrix.coverage }}'
-        run: 'just pytest'
+      - name: 'run locked tests'
+        if: ${{ matrix.dependency-set == 'locked' }}
+        run: 'just ci-pytest'
+        env:
+          UV_LOCKED: 'true'
+          UV_PYTHON_VERSION: '${{ matrix.python-version }}'
+      - name: 'run minimum-version tests'
+        if: ${{ matrix.dependency-set == 'lowest-direct' }}
+        run: 'just ci-pytest-lowest-direct'
+        env:
+          UV_PYTHON_VERSION: '${{ matrix.python-version }}'
