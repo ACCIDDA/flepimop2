@@ -1,6 +1,10 @@
-# flepimop2
+# `flepimop2`: *FLE*xible *P*ipeline for *I*nterchangeable *MO*del *P*rocessing
 
-The next generation of the flexible epidemic modeling pipeline.
+[![DOI](https://zenodo.org/badge/1072205034.svg)](https://zenodo.org/badge/latestdoi/1072205034)
+
+`flepimop2` is a Python package and command-line tool for running dynamic system simulations. It works with configuration files to define and execute analysis pipelines - separating the mathematical model (system), numerical solver (engine), and output format (backend) - so that workflows are reproducible, version-controllable, and easy to share. Because it is also a library, you can write custom analyses that integrate seamlessly with the pipeline, and advanced users can develop shareable modules that plug directly into it.
+
+To learn more and try out the tool, see the [documentation](https://accidda.github.io/flepimop2/latest/).
 
 ## Installation
 
@@ -12,51 +16,9 @@ pip install flepimop2
 
 If you are adding `flepimop2` as a dependency in another project, see the [installation guide](docs/guides/install.md).
 
-## Local Development
+## Contributing
 
-1. Clone the repository
-
-```bash
-git clone git@github.com:ACCIDDA/flepimop2.git
-cd flepimop2
-```
-
-2. Create a virtual environment and install dependencies using [`uv`](https://docs.astral.sh/uv/). To create a `.venv` with the package installed:
-
-```bash
-uv sync --dev
-```
-
-This will create a virtual environment and install the package along with development dependencies (mypy, pytest, ruff).
-
-3. Run default checks using [`just`](https://just.systems/). To run the default development tasks:
-
-```bash
-just
-```
-
-This will run:
-
-- `ruff format` - Format code.
-- `ruff check --fix` - Lint and auto-fix issues.
-- `pytest --doctest-modules` - Run tests including doctests.
-- `mypy --strict` - Type check with strict settings.
-- `yamllint --strict` - Lint YAML files.
-
-4. CI runs on pull requests to `main` and tests against Python 3.11, 3.12, 3.13, and 3.14. The CI checks are defined in `just ci` and include:
-
-- `ruff format --check` - Verify code formatting (no auto-fix).
-- `ruff check --no-fix` - Lint without modifications.
-- `pytest --doctest-modules` - Run test suite.
-- `mypy --strict` - Type checking.
-
-To run the same checks locally that run in CI (say for diagnosing CI failures):
-
-```bash
-just ci
-```
-
-There is a separate CI check which will run `just yamllint` and `just docs` to check YAML file formatting and that the documentation builds successfully.
+Contributions are welcomed and appreciated! Please see the [contributing guide](CONTRIBUTING.md) for details on development setup, code standards, testing, and the pull request process.
 
 ## Funding Acknowledgement
 
