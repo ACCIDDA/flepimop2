@@ -27,7 +27,7 @@ from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
 
 if TYPE_CHECKING:
-    from flepimop2._cli._cli_command import CliCommand
+    from flepimop2.cli import CliCommand
 
 
 @dataclass

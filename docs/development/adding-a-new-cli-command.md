@@ -17,7 +17,7 @@ In this tutorial will demonstrate adding a new command called `flepimop2 hello` 
 - Options/arguments are shared among all CLI commands so they have the same meaning and usage across commands. Developers cannot add bespoke options/arguments for their command.
 - CLI outputs are made consistent via a common logging infrastructure so the outputs of commands have a common feel across the `flepimop2` CLI.
 
-`flepimop2`'s CLI infrastructure is contained in the private `flepimop2._cli` subpackage. The most important elements of this subpackage are:
+`flepimop2`'s CLI infrastructure lives in the `flepimop2.cli` package. The public API is intentionally narrow; the main element intended for external use is `CliCommand`. The remaining modules support the built-in CLI implementation. The most important elements of this package are:
 
 - `CliCommand`: The abstract base class that CLI commands must implement. The main benefit of having CLI commands subclass a common class is that repeated logic can be consolidated, CLI inputs/outputs can be made consistent, and development work can be eased.
 - `COMMON_OPTIONS`: A constant dictionary mapping option/argument names to their definitions. CLI commands can request options/arguments from this dictionary by having them as keyword only arguments to their `run` method. The main benefit of this approach is that commands cannot define bespoke options/arguments and developers are forced to use consistent meanings across commands. I.e. the `--dry-run` option means the same thing in all commands.
@@ -57,7 +57,7 @@ Options:
 
 ### Add The `HelloCommand` Class
 
-The first step is to implement the `HelloCommand` class in a new `src/flepimop2/_cli/_hello_command.py` file.
+The first step is to implement the `HelloCommand` class in a new `src/flepimop2/cli/_hello_command.py` file.
 
 ```python
 """Hello command implementation."""
@@ -65,7 +65,7 @@ The first step is to implement the `HelloCommand` class in a new `src/flepimop2/
 __all__ = []
 
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli import CliCommand
 
 
 class HelloCommand(CliCommand):
@@ -90,7 +90,7 @@ The `run` method contains the logic of the command and it's keyword arguments co
 
 ### Adding A New Option
 
-The implementation of `flepimop2 hello` needs a times argument. To add this argument a developer needs to add it to the `COMMON_OPTIONS` dictionary in `src/flepimop2/_cli/_options.py`.
+The implementation of `flepimop2 hello` needs a times argument. To add this argument a developer needs to add it to the `COMMON_OPTIONS` dictionary in `src/flepimop2/cli/_options.py`.
 
 ```python
 # Dictionary of common Click options and arguments
@@ -111,13 +111,13 @@ This adds a new `times` argument to the `COMMON_OPTIONS` dictionary. Note that t
 
 ### Register The New Command
 
-The final step is to register the new command with the `flepimop2` CLI by adding a call to `register_command` in `src/flepimop2/_cli/_cli.py`.
+The final step is to register the new command with the `flepimop2` CLI by adding a call to `register_command` in `src/flepimop2/cli/_cli.py`.
 
 ```python
 ...
-from flepimop2._cli._build_command import BuildCommand
-from flepimop2._cli._hello_command import HelloCommand
-from flepimop2._cli._process_command import ProcessCommand
+from flepimop2.cli._build_command import BuildCommand
+from flepimop2.cli._hello_command import HelloCommand
+from flepimop2.cli._process_command import ProcessCommand
 ...
 # Register all commands
 register_command(BuildCommand, cli)
@@ -210,12 +210,12 @@ With that being said, the `flepimop2 hello` command does not have behavior that 
             self.info(f"({i + 1}/{times}) Hello, world!")
 ```
 
-Now the command has behavior, raising an exception, that is worth testing and cannot be pushed to the object being operated on or an external function. To unit test this behavior add the following to `tests/_cli/test_hello_command.py`:
+Now the command has behavior, raising an exception, that is worth testing and cannot be pushed to the object being operated on or an external function. To unit test this behavior add the following to `tests/cli/test_hello_command.py`:
 
 ```python
 """Unit tests for the `flepimop2 hello` CLI command."""
 
-from flepimop2._cli._hello_command import HelloCommand
+from flepimop2.cli._hello_command import HelloCommand
 import pytest
 
 
@@ -231,7 +231,7 @@ Another benefit to `flepimop2`'s CLI infrastructure is that the `run` method of 
 ```python
 """Unit tests for the `flepimop2 hello` CLI command."""
 
-from flepimop2._cli._hello_command import HelloCommand
+from flepimop2.cli._hello_command import HelloCommand
 import pytest
 
 

@@ -19,7 +19,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli import CliCommand
 from flepimop2.typing import ExitCode
 
 
@@ -59,7 +59,7 @@ def test_exits_with_run_return_value(
             return exit_code
 
     exit_mock = Mock()
-    monkeypatch.setattr("flepimop2._cli._cli_command.sys.exit", exit_mock)
+    monkeypatch.setattr("flepimop2.cli._cli_command.sys.exit", exit_mock)
     _FixedExitCommand()()
     exit_mock.assert_called_once_with(exit_code)
 
@@ -67,6 +67,6 @@ def test_exits_with_run_return_value(
 def test_uses_bound_kwargs(monkeypatch: pytest.MonkeyPatch) -> None:
     """__call__ should run the command using the kwargs bound at construction."""
     exit_mock = Mock()
-    monkeypatch.setattr("flepimop2._cli._cli_command.sys.exit", exit_mock)
+    monkeypatch.setattr("flepimop2.cli._cli_command.sys.exit", exit_mock)
     _FlagCommand(dry_run=False, verbosity=0)()
     exit_mock.assert_called_once_with(ExitCode.OKAY)

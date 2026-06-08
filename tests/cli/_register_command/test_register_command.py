@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Tests for the `register_command` function in `flepimop2._cli._cli`."""
+"""Tests for the `register_command` function in `flepimop2.cli._cli`."""
 
 import inspect
 from unittest.mock import MagicMock
@@ -22,8 +22,8 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from flepimop2._cli._cli_command import CliCommand
-from flepimop2._cli._register_command import register_command
+from flepimop2.cli import CliCommand
+from flepimop2.cli._register_command import register_command
 
 
 class MockCommand(CliCommand):

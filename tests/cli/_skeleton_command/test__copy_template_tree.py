@@ -17,7 +17,7 @@
 
 from pathlib import Path
 
-from flepimop2._cli._skeleton_command import SkeletonCommand
+from flepimop2.cli._skeleton_command import SkeletonCommand
 
 
 def test_copy_empty_directory(tmp_path: Path) -> None:

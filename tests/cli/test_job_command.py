@@ -21,8 +21,8 @@ from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
-from flepimop2._cli._job_command import job_group
-from flepimop2._cli._simulate_command import SimulateCommand
+from flepimop2.cli._job_command import job_group
+from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.job.abc import JobHandle
 
 
@@ -49,8 +49,8 @@ def test_job_simulate_dispatches_to_job_backend(tmp_path: Path) -> None:
 
     runner = CliRunner()
     with (
-        patch("flepimop2._cli._job_command.build_job", return_value=mock_job),
-        patch("flepimop2._cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
     ):
         mock_config = MagicMock()
         mock_config.jobs = {"local": {"module": "shell", "detach": False}}
@@ -79,9 +79,9 @@ def test_job_simulate_inner_command_not_executed_locally(tmp_path: Path) -> None
 
     runner = CliRunner()
     with (
-        patch("flepimop2._cli._job_command.build_job", return_value=mock_job),
-        patch("flepimop2._cli._job_command.ConfigurationModel.from_yaml") as mock_load,
-        patch("flepimop2._cli._simulate_command.SimulateCommand.run") as mock_run,
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch("flepimop2.cli._simulate_command.SimulateCommand.run") as mock_run,
     ):
         mock_config = MagicMock()
         mock_config.jobs = {"local": {"module": "shell", "detach": False}}
@@ -113,8 +113,8 @@ def test_job_simulate_passes_inner_command_to_submit(tmp_path: Path) -> None:
 
     runner = CliRunner()
     with (
-        patch("flepimop2._cli._job_command.build_job", return_value=mock_job),
-        patch("flepimop2._cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
     ):
         mock_config = MagicMock()
         mock_config.jobs = {"local": {"module": "shell", "detach": False}}
@@ -140,8 +140,8 @@ def test_job_simulate_submits_and_produces_handle(tmp_path: Path) -> None:
 
     runner = CliRunner()
     with (
-        patch("flepimop2._cli._job_command.build_job", return_value=mock_job),
-        patch("flepimop2._cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
     ):
         mock_config = MagicMock()
         mock_config.jobs = {"local": {"module": "shell", "detach": False}}
@@ -169,9 +169,9 @@ def test_job_target_option_selects_named_job(tmp_path: Path) -> None:
 
     runner = CliRunner()
     with (
-        patch("flepimop2._cli._job_command.build_job", return_value=mock_job),
-        patch("flepimop2._cli._job_command.ConfigurationModel.from_yaml") as mock_load,
-        patch("flepimop2._cli._job_command._get_config_target") as mock_target,
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch("flepimop2.cli._job_command._get_config_target") as mock_target,
     ):
         mock_config = MagicMock()
         mock_config.jobs = {"cluster": {"module": "shell"}}

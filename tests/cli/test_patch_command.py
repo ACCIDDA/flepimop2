@@ -20,7 +20,7 @@ from pathlib import Path
 from click.testing import CliRunner
 from yaml import safe_load
 
-from flepimop2._cli._cli import cli
+from flepimop2.cli._cli import cli
 from flepimop2.typing import ExitCode
 
 

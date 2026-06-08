@@ -28,7 +28,7 @@ from flepimop2.exceptions import ValidationIssue
 from flepimop2.job.abc import JobABC, JobHandle
 
 if TYPE_CHECKING:
-    from flepimop2._cli._cli_command import CliCommand
+    from flepimop2.cli import CliCommand
 
 
 class ShellJob(JobABC, module="shell"):

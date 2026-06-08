@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Unit tests for `get_script_logger` in `flepimop2._cli._logging`."""
+"""Unit tests for `get_script_logger` in `flepimop2.cli._logging`."""
 
 import logging
 import random
@@ -21,7 +21,7 @@ import string
 
 import pytest
 
-from flepimop2._cli._logging import (
+from flepimop2.cli._logging import (
     DEFAULT_LOG_FORMAT,
     LoggingLevel,
     get_script_logger,

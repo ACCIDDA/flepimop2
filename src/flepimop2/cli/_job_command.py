@@ -22,12 +22,12 @@ from typing import Any
 
 import click
 
-from flepimop2._cli._cli_command import CliCommand
-from flepimop2._cli._logging import get_script_logger
-from flepimop2._cli._process_command import ProcessCommand
-from flepimop2._cli._register_command import register_command
-from flepimop2._cli._simulate_command import SimulateCommand
 from flepimop2._utils._click import _get_config_target
+from flepimop2.cli._cli_command import CliCommand
+from flepimop2.cli._logging import get_script_logger
+from flepimop2.cli._process_command import ProcessCommand
+from flepimop2.cli._register_command import register_command
+from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.job.abc import build as build_job
 

@@ -17,7 +17,7 @@
 
 from pathlib import Path
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli import CliCommand
 from flepimop2.typing import ExitCode
 
 

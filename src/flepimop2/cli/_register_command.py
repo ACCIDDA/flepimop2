@@ -19,8 +19,8 @@ from typing import Any
 import click
 from click import Group
 
-from flepimop2._cli._cli_command import CliCommand
-from flepimop2._cli._options import _argument_help_records, get_option
+from flepimop2.cli._cli_command import CliCommand
+from flepimop2.cli._options import _argument_help_records, get_option
 
 
 class _ArgumentHelpCommand(click.Command):

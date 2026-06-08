@@ -21,14 +21,14 @@ from typing import Final
 
 import click
 
-from flepimop2._cli._build_command import BuildCommand
-from flepimop2._cli._format_command import FormatCommand
-from flepimop2._cli._job_command import job_group
-from flepimop2._cli._patch_command import PatchCommand
-from flepimop2._cli._process_command import ProcessCommand
-from flepimop2._cli._register_command import register_command
-from flepimop2._cli._simulate_command import SimulateCommand
-from flepimop2._cli._skeleton_command import SkeletonCommand
+from flepimop2.cli._build_command import BuildCommand
+from flepimop2.cli._format_command import FormatCommand
+from flepimop2.cli._job_command import job_group
+from flepimop2.cli._patch_command import PatchCommand
+from flepimop2.cli._process_command import ProcessCommand
+from flepimop2.cli._register_command import register_command
+from flepimop2.cli._simulate_command import SimulateCommand
+from flepimop2.cli._skeleton_command import SkeletonCommand
 
 _FLEPIMOP2_VERSION: Final[str] = version("flepimop2")
 

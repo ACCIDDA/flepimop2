@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 [project.scripts]
-flepimop2 = "flepimop2._cli._cli:cli"
+flepimop2 = "flepimop2.cli._cli:cli"
 
 [build-system]
 requires = ["hatchling"]
