@@ -16,8 +16,8 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._pydantic import RangeSpec, _to_np_array
-from flepimop2.configuration._yaml import _model_to_yaml_mapping
 from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.yaml import _model_to_yaml_mapping
 
 
 class SimulateSpecificationModel(BaseModel):

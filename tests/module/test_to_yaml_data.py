@@ -15,13 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Examples and tests for overriding `ModuleBase.to_yaml_data`."""
 
-from flepimop2.configuration import (
+from flepimop2.module import ModuleBase
+from flepimop2.yaml import (
+    YamlFormattedMapping,
+    YamlFormattedSequence,
     YamlSerializableBaseModel,
     yaml_mapping,
     yaml_sequence,
 )
-from flepimop2.configuration._yaml import YamlFormattedMapping, YamlFormattedSequence
-from flepimop2.module import ModuleBase
 
 
 class StyledModule(ModuleBase, module="flepimop2.test.styled"):

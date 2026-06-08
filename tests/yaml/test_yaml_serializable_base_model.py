@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from flepimop2.configuration._yaml import (
+from flepimop2.yaml import (
     YamlSerializableBaseModel,
     yaml_mapping,
     yaml_sequence,

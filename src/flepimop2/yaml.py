@@ -13,6 +13,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""YAML serialization helpers and flow-style wrappers for flepimop2."""
+
+__all__ = [
+    "Flepimop2YamlDumper",
+    "YamlFormattedMapping",
+    "YamlFormattedSequence",
+    "YamlSerializableBaseModel",
+    "yaml_mapping",
+    "yaml_sequence",
+]
+
 from collections import UserDict, UserList
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -49,6 +60,7 @@ class YamlFormattedSequence(UserList[T]):
         *,
         flow_style: bool | None = None,
     ) -> None:
+        """Initialize the sequence wrapper with optional flow-style metadata."""
         super().__init__(values)
         self.flow_style = flow_style
 
@@ -73,6 +85,7 @@ class YamlFormattedMapping(UserDict[K, V]):
         *,
         flow_style: bool | None = None,
     ) -> None:
+        """Initialize the mapping wrapper with optional flow-style metadata."""
         super().__init__(values)
         self.flow_style = flow_style
 
