@@ -17,7 +17,7 @@
 
 __all__ = []
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli._cli_command import CliCommand
 from flepimop2.typing import ExitCode
 
 

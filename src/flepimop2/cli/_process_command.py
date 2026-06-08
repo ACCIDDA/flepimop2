@@ -19,8 +19,8 @@ __all__ = []
 
 from pathlib import Path
 
-from flepimop2._cli._cli_command import CliCommand
 from flepimop2._utils._click import _get_config_target
+from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
 from flepimop2.typing import ExitCode

@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Patch command implementation."""
+"""Format command implementation."""
 
 __all__ = []
 
@@ -21,52 +21,56 @@ from pathlib import Path
 
 import click
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
-from flepimop2.typing import ExitCode, PatchConflictMode
+from flepimop2.typing import ExitCode
 
 
-class PatchCommand(CliCommand):
+class FormatCommand(CliCommand):
     """
-    Patch one or more configuration files together.
+    Format a configuration file into flepimop2's normalized YAML style.
 
-    This command applies configuration files from left to right. The first file is
-    used as the base configuration, and each subsequent file is patched onto the
-    accumulated result.
+    By default this command rewrites the input file in place. Use `--check` to
+    validate formatting without modifying the file, or `--dry-run` to print the
+    formatted configuration to stdout.
     """
 
     def run(  # type: ignore[override]
         self,
         *,
-        configs: tuple[Path, ...],
+        config: Path,
         dry_run: bool,
-        output: Path | None,
-        patch_mode: PatchConflictMode,
+        check: bool,
     ) -> ExitCode:
         """
-        Execute configuration patching.
+        Execute configuration formatting.
 
         Args:
-            configs: One or more configuration files to patch in order.
-            dry_run: Whether to print the patched configuration without writing files.
-            output: Optional output file for the patched configuration.
-            patch_mode: Conflict strategy to use while patching.
+            config: The configuration file to format.
+            dry_run: Whether to print the formatted configuration to stdout.
+            check: Whether to only verify formatting without writing the file.
 
         Returns:
             An exit code indicating success or failure.
         """
         try:
-            patched = ConfigurationModel.from_yaml(configs[0])
-            for config_path in configs[1:]:
-                patch = ConfigurationModel.from_yaml(config_path)
-                patched = patched.patch(patch, conflict=patch_mode)
+            configuration = ConfigurationModel.from_yaml(config)
         except ValueError as exc:
             self.error("%s", exc)
             return ExitCode.CONFIGURATION
 
-        if dry_run or output is None:
-            click.echo(patched.safe_dump(), nl=False)
-        else:
-            patched.to_yaml(output, encoding="utf-8")
+        rendered = configuration.safe_dump()
+        current = config.read_text(encoding="utf-8")
 
+        if check:
+            if current == rendered:
+                return ExitCode.OKAY
+            self.error("%s is not formatted.", config)
+            return ExitCode.GENERAL
+
+        if dry_run:
+            click.echo(rendered, nl=False)
+            return ExitCode.OKAY
+
+        config.write_text(rendered, encoding="utf-8")
         return ExitCode.OKAY

@@ -25,9 +25,9 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-from flepimop2._cli._logging import get_script_logger
-from flepimop2._cli._options import COMMON_OPTIONS
 from flepimop2._utils._click import _click_param_for_option, _render_param
+from flepimop2.cli._logging import get_script_logger
+from flepimop2.cli._options import COMMON_OPTIONS
 from flepimop2.typing import ExitCode
 
 _COMMAND_NAME_REGEX = re.compile(r"(?<!^)(?=[A-Z])")
@@ -254,7 +254,7 @@ class CliCommand(ABC):
 
         Examples:
             >>> from pathlib import Path
-            >>> from flepimop2._cli._cli_command import CliCommand
+            >>> from flepimop2.cli import CliCommand
             >>> CliCommand.format("abc")
             'abc'
             >>> CliCommand.format(Path("/some/path"))

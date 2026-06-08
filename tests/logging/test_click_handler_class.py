@@ -13,14 +13,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Unit tests for the `ClickHandler` class in `flepimop2._cli._logging` module."""
+"""Unit tests for the `ClickHandler` class in `flepimop2.cli._logging` module."""
 
 import io
 import logging
 
 import pytest
 
-from flepimop2._cli._logging import _PUNCTUATION, ClickHandler
+from flepimop2.cli._logging import _PUNCTUATION, ClickHandler
 
 
 @pytest.mark.parametrize(

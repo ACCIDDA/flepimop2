@@ -21,8 +21,8 @@ from pathlib import Path
 
 import numpy as np
 
-from flepimop2._cli._cli_command import CliCommand
 from flepimop2.axis import ResolvedShape
+from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.meta import RunMeta
 from flepimop2.parameter.abc import ParameterValue

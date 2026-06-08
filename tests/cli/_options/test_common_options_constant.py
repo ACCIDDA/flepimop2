@@ -13,14 +13,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Tests for the `COMMON_OPTIONS` constant in `flepimop2._cli._options`."""
+"""Tests for the `COMMON_OPTIONS` constant in `flepimop2.cli._options`."""
 
 from collections import Counter
 from collections.abc import Callable
 
 import click
 
-from flepimop2._cli._options import COMMON_OPTIONS
+from flepimop2.cli._options import COMMON_OPTIONS
 
 
 def _click_param_from_decorator(

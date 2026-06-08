@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Tests for shared config argument resolution in `flepimop2._cli._options`."""
+"""Tests for shared config argument resolution in `flepimop2.cli._options`."""
 
 from pathlib import Path
 
@@ -21,7 +21,7 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from flepimop2._cli._options import (
+from flepimop2.cli._options import (
     _resolve_config_argument,
     get_option,
 )

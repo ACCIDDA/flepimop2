@@ -20,7 +20,7 @@ __all__ = []
 import os
 from pathlib import Path
 
-from flepimop2._cli._cli_command import CliCommand
+from flepimop2.cli._cli_command import CliCommand
 from flepimop2.typing import ExitCode
 
 
@@ -91,7 +91,7 @@ class SkeletonCommand(CliCommand):
 
         Examples:
             >>> from pathlib import Path
-            >>> from flepimop2._cli._skeleton_command import SkeletonCommand
+            >>> from flepimop2.cli._skeleton_command import SkeletonCommand
             >>> test_dir = Path.cwd() / "copy_tree_test"
             >>> test_dir.mkdir(exist_ok=True)
             >>> source = test_dir / "source"
@@ -132,7 +132,7 @@ class SkeletonCommand(CliCommand):
 
         Examples:
             >>> from pathlib import Path
-            >>> from flepimop2._cli._skeleton_command import SkeletonCommand
+            >>> from flepimop2.cli._skeleton_command import SkeletonCommand
             >>> example_dir = Path.cwd() / "tree_example"
             >>> example_dir.mkdir(exist_ok=True)
             >>> (example_dir / "file.txt").write_text("Sample file")
