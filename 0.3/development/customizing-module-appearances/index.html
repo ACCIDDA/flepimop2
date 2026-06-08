@@ -1399,6 +1399,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Yaml
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1715,7 +1743,7 @@
 <p>An instance like <code>DemoParameter(values=(0.1, 0.2, 0.3))</code> will serialize its fields using the default block-style YAML layout unless you override <code>to_yaml_data()</code>.</p>
 <h2 id="2-override-to_yaml_data-for-user-facing-control">2. Override <code>to_yaml_data()</code> for User-Facing Control<a class="headerlink" href="#2-override-to_yaml_data-for-user-facing-control" title="Permanent link">&para;</a></h2>
 <p>Use <code>super().to_yaml_data()</code> as your starting point, then replace individual fields with the structure you want users to see:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_mapping</span><span class="p">,</span> <span class="n">yaml_sequence</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.yaml</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_mapping</span><span class="p">,</span> <span class="n">yaml_sequence</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.parameter.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterABC</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
@@ -1750,7 +1778,7 @@
 </span></code></pre></div>
 <h2 id="3-keep-complex-structures-expanded">3. Keep Complex Structures Expanded<a class="headerlink" href="#3-keep-complex-structures-expanded" title="Permanent link">&para;</a></h2>
 <p>Flow style is usually best for short, simple values. For more complex nested data, developers can keep block style explicitly:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_mapping</span><span class="p">,</span> <span class="n">yaml_sequence</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.yaml</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_mapping</span><span class="p">,</span> <span class="n">yaml_sequence</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flepimop2.parameter.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterABC</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
