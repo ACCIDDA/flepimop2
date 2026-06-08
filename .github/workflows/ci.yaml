@@ -19,7 +19,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v6.0.2'
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -34,7 +34,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v6.0.2'
         with:
           persist-credentials: false
       - name: 'setup just and uv'
@@ -51,7 +51,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v6.0.2'
         with:
           persist-credentials: false
       - name: 'setup just and uv'
@@ -68,7 +68,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v6.0.2'
         with:
           persist-credentials: false
       - name: 'setup just and uv'
@@ -102,7 +102,7 @@ jobs:
           - 'lowest-direct'
     steps:
       - name: 'checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v6.0.2'
         with:
           persist-credentials: false
       - name: 'setup just and uv with python ${{ matrix.python-version }}'
