@@ -24,9 +24,9 @@ from flepimop2._utils._dict import _deep_merge_dicts
 from flepimop2.configuration._axes import AxesGroupModel
 from flepimop2.configuration._module import ModuleGroupModel, ParameterGroupModel
 from flepimop2.configuration._simulate import SimulateSpecificationModel
-from flepimop2.configuration._yaml import YamlSerializableBaseModel
 from flepimop2.module import ModuleBase
 from flepimop2.typing import IdentifierString, PatchConflictMode
+from flepimop2.yaml import YamlSerializableBaseModel
 
 _CONFIGURATION_SECTION_ORDER: Final[tuple[str, ...]] = (
     "name",

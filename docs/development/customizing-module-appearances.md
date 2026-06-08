@@ -35,7 +35,7 @@ An instance like `DemoParameter(values=(0.1, 0.2, 0.3))` will serialize its fiel
 Use `super().to_yaml_data()` as your starting point, then replace individual fields with the structure you want users to see:
 
 ```python
-from flepimop2.configuration import yaml_mapping, yaml_sequence
+from flepimop2.yaml import yaml_mapping, yaml_sequence
 from flepimop2.parameter.abc import ParameterABC
 
 
@@ -77,7 +77,7 @@ metadata: {kind: demo}
 Flow style is usually best for short, simple values. For more complex nested data, developers can keep block style explicitly:
 
 ```python
-from flepimop2.configuration import yaml_mapping, yaml_sequence
+from flepimop2.yaml import yaml_mapping, yaml_sequence
 from flepimop2.parameter.abc import ParameterABC
 
 

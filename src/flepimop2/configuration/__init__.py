@@ -26,9 +26,6 @@ __all__ = [
     "ParameterConfigurationValue",
     "ParameterGroupModel",
     "SimulateSpecificationModel",
-    "YamlSerializableBaseModel",
-    "yaml_mapping",
-    "yaml_sequence",
 ]
 
 from flepimop2.configuration._axes import (
@@ -45,8 +42,3 @@ from flepimop2.configuration._module import (
     ParameterGroupModel,
 )
 from flepimop2.configuration._simulate import SimulateSpecificationModel
-from flepimop2.configuration._yaml import (
-    YamlSerializableBaseModel,
-    yaml_mapping,
-    yaml_sequence,
-)
