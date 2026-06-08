@@ -2200,10 +2200,10 @@
 <ol>
 <li>Create a virtual environment and install dependencies:</li>
 </ol>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--dev
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>sync
 </span></code></pre></div>
 <p>This creates a <code>.venv</code> virtual environment and installs the package along with all development dependencies (mypy, pytest, ruff, mkdocs). If you need to create an environment with a specific python version you can also run:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--dev<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
 </span></code></pre></div>
 <ol>
 <li>Verify your setup</li>
@@ -2251,7 +2251,6 @@
 <li><code>just test</code> - Local default test workflow (<code>just cov</code> then <code>just integration</code>).</li>
 <li><code>just cov</code> - Run tests marked <code>not integration</code>, report coverage, and enforce the configured minimum coverage threshold.</li>
 <li><code>just integration</code> - Run only tests marked <code>integration</code> (tests in <code>tests/integration/</code> are marked automatically).</li>
-<li><code>just pytest</code> - Run the full pytest suite (including integration tests) without coverage reporting.</li>
 </ul>
 <p>For more advanced test runs, use <code>pytest</code> directly:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="o">{</span>module<span class="o">}</span>/<span class="w"> </span>-v<span class="w">                    </span><span class="c1"># Run all tests in a module</span>
@@ -2300,13 +2299,13 @@ could affect packaging metadata, installability, or build artifacts.</p>
 <p>Run CI checks locally using <code>just ci</code>. This runs the same checks that CI will run:</p>
 </li>
 <li>
-<p><code>just quality</code> - CI quality checks (ruff check mode + mypy).</p>
+<p><code>just quality</code> - CI quality checks (<code>just ci-ruff</code> + <code>just ci-mypy</code>), run against the committed lockfile.</p>
 </li>
-<li><code>just test</code> - Coverage-gated non-integration tests and integration tests.</li>
+<li><code>just ci-pytest</code> - Run the full pytest suite against the committed lockfile.</li>
 <li><code>just docs</code> - Documentation build checks.</li>
 </ol>
-<p>In GitHub Actions, these correspond to the <code>quality</code>, <code>tests</code>, and <code>docs</code> jobs in <code>.github/workflows/ci.yaml</code>.</p>
-<p>The separate <code>package</code> job runs <code>just build-check</code> on Python 3.12.</p>
+<p>In GitHub Actions, these correspond to the <code>quality</code>, <code>tests</code>, and <code>docs</code> jobs in <code>.github/workflows/ci.yaml</code>. The <code>tests</code> job additionally runs <code>just ci-pytest-lowest-direct</code> against each supported Python version to detect when minimum version bounds need updating.</p>
+<p>The separate <code>package</code> job runs <code>just build-check</code> on Python 3.14.</p>
 <p>If you edit YAML files, also run <code>just yamllint</code>. YAML linting is separate from <code>just ci</code>.</p>
 <ol>
 <li>
@@ -2332,9 +2331,9 @@ could affect packaging metadata, installability, or build artifacts.</p>
 </ol>
 <h3 id="pull-request-requirements">Pull Request Requirements<a class="headerlink" href="#pull-request-requirements" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14.</li>
-<li>Quality checks and documentation build checks run in CI on Python 3.12.</li>
-<li>Package validation runs in CI on Python 3.12.</li>
+<li>Tests run in CI against Python 3.11, 3.12, 3.13, and 3.14, against both the committed lockfile and lowest direct dependencies.</li>
+<li>Quality checks and documentation build checks run in CI on Python 3.14.</li>
+<li>Package validation runs in CI on Python 3.14.</li>
 <li>At least one maintainer approval is required before merging.</li>
 <li>Branches must be up to date against <code>main</code> before merging and have a linear history. Only rebases are allowed for merging.</li>
 </ul>
