@@ -159,6 +159,14 @@ class CliCommand(ABC):
             "-", cls.__name__.removesuffix("Command")
         ).lower()
 
+    def __str__(self) -> str:
+        """Render this command as a CLI invocation string.
+
+        Returns:
+            The command rendered as a CLI invocation.
+        """
+        return " ".join(("flepimop2", self.command_name(), *self.to_argv()))
+
     def to_argv(self) -> list[str]:
         """Render this instance's bound kwargs back into argv tokens.
 
