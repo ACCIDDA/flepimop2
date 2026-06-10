@@ -98,6 +98,7 @@ def test_simulator_resolves_inputs_and_runs(
     simulator = Simulator.from_configuration_model(config)
     initial_state, params = simulator.resolve_inputs()
 
+    assert simulator.target == "demo"
     assert tuple(initial_state) == ("s0", "i0", "r0")
     np.testing.assert_array_equal(initial_state["s0"].value, np.array([100.0] * 3))
     np.testing.assert_array_equal(initial_state["i0"].value, np.array([1.0] * 3))

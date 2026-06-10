@@ -86,6 +86,31 @@ class CliCommand(ABC):
         """
         raise NotImplementedError
 
+    @property
+    def target(self) -> str | None:
+        """
+        Get the resolved logical target for this command, if any.
+
+        Commands that do not operate on a named configuration target should use
+        this default implementation. Target-aware commands should override this
+        property and return the resolved configuration entry name.
+        """
+        return None
+
+    @property
+    def config(self) -> Path | None:
+        """
+        Get the primary configuration path for this command, if any.
+
+        Commands that bind the shared `config` argument use this default
+        implementation. Commands that use multiple configuration files or no
+        configuration file should return `None` or override as needed.
+        """
+        value = self.bound_kwargs.get("config")
+        if value is None:
+            return None
+        return Path(value)
+
     @classmethod
     def _literal_options(cls) -> list[str]:
         """

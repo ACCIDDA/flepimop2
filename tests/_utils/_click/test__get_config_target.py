@@ -22,7 +22,7 @@ Helper for the 'target' click option and handling bad values only knowable at ru
 import pytest
 from click import BadOptionUsage, UsageError
 
-from flepimop2._utils._click import _get_config_target
+from flepimop2._utils._click import _get_config_target, _resolve_config_target
 
 
 @pytest.fixture
@@ -50,6 +50,25 @@ def test_get_config_target_valid(
 ) -> None:
     """Test `_get_config_target` with valid names."""
     result = _get_config_target(sample_group, name, "test")
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        (None, ("first", 1)),  # Default to first item
+        ("first", ("first", 1)),
+        ("second", ("second", 2)),
+        ("third", ("third", 3)),
+    ],
+)
+def test_resolve_config_target_valid(
+    sample_group: dict[str, int],
+    name: str | None,
+    expected: tuple[str, int],
+) -> None:
+    """Test `_resolve_config_target` returns the resolved name and value."""
+    result = _resolve_config_target(sample_group, name, "test")
     assert result == expected
 
 

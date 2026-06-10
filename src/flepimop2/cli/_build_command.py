@@ -17,6 +17,8 @@
 
 __all__ = []
 
+from pathlib import Path
+
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.typing import ExitCode
 
@@ -24,7 +26,7 @@ from flepimop2.typing import ExitCode
 class BuildCommand(CliCommand):
     """Compile and build a model defined in a configuration file."""
 
-    def run(self, *, config: str, dry_run: bool) -> ExitCode:  # type: ignore[override]
+    def run(self, *, config: Path, dry_run: bool) -> ExitCode:  # type: ignore[override]
         """
         Execute the build.
 

@@ -42,9 +42,13 @@ def _override_or_val(override: T | None, value: U) -> T | U:
     return value if override is None else override
 
 
-def _get_config_target(group: dict[str, T], name: str | None, group_name: str) -> T:
+def _resolve_config_target(
+    group: dict[str, T],
+    name: str | None,
+    group_name: str,
+) -> tuple[str, T]:
     """
-    Get a `T` by name from a group.
+    Resolve a named target from a configuration group.
 
     Args:
         group: The module group to get the target from.
@@ -53,7 +57,7 @@ def _get_config_target(group: dict[str, T], name: str | None, group_name: str) -
         group_name: The name of the group, for error messages.
 
     Returns:
-        The `T` with the specified name.
+        The resolved target name and target value.
 
     Raises:
         click.UsageError: If the group is empty.
@@ -68,6 +72,23 @@ def _get_config_target(group: dict[str, T], name: str | None, group_name: str) -
     if res is None:
         msg = f"Target '{name}' not available from {group.keys()} for '{group_name}'."
         raise BadOptionUsage(option_name="target", message=msg)
+    return name, res
+
+
+def _get_config_target(group: dict[str, T], name: str | None, group_name: str) -> T:
+    """
+    Get a `T` by name from a group.
+
+    Args:
+        group: The module group to get the target from.
+        name: The name of the module target. If `None`, defaults to the first item
+          in group.
+        group_name: The name of the group, for error messages.
+
+    Returns:
+        The `T` with the specified name.
+    """
+    _, res = _resolve_config_target(group, name, group_name)
     return res
 
 
