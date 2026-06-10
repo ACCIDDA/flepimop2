@@ -19,7 +19,7 @@ __all__ = []
 
 from pathlib import Path
 
-from flepimop2._utils._click import _get_config_target
+from flepimop2._utils._click import _resolve_config_target
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
@@ -32,6 +32,22 @@ class ProcessCommand(CliCommand):
 
     The `CONFIG` argument should point to a valid configuration file.
     """
+
+    @property
+    def target(self) -> str | None:
+        """
+        Get the resolved process target name.
+
+        The returned value accounts for the implicit default target used when
+        no `--target` option was provided.
+        """
+        configmodel = ConfigurationModel.from_yaml(self.bound_kwargs["config"])
+        target, _ = _resolve_config_target(
+            configmodel.process,
+            self.bound_kwargs.get("target"),
+            "process",
+        )
+        return target
 
     def run(  # type: ignore[override]
         self,
@@ -53,11 +69,15 @@ class ProcessCommand(CliCommand):
         """
         configmodel = ConfigurationModel.from_yaml(config)
         processconfig = configmodel.process
-        processtarget = _get_config_target(processconfig, target, "process")
+        processtargetname, processtarget = _resolve_config_target(
+            processconfig,
+            target,
+            "process",
+        )
 
         self.info(f"Processing configuration file: {config}")
         self.info(f"Process section: {processconfig}")
-        self.info(f"Process target: {processtarget}")
+        self.info(f"Process target: {processtargetname} => {processtarget}")
 
         process_instance = build_process(processtarget)
         process_instance.execute(dry_run=dry_run)

@@ -17,7 +17,7 @@
 
 __all__ = ["Simulator"]
 
-from flepimop2._utils._click import _get_config_target
+from flepimop2._utils._click import _resolve_config_target
 from flepimop2.axis import AxisCollection
 from flepimop2.backend.abc import BackendABC
 from flepimop2.backend.abc import build as build_backend
@@ -129,7 +129,7 @@ class Simulator:
             The constructed simulator instance.
 
         """
-        simulate_config = _get_config_target(
+        target, simulate_config = _resolve_config_target(
             config_model.simulate,
             target,
             "simulate",

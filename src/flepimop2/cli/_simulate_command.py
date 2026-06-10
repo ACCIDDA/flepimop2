@@ -21,6 +21,7 @@ from pathlib import Path
 
 import numpy as np
 
+from flepimop2._utils._click import _resolve_config_target
 from flepimop2.axis import ResolvedShape
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
@@ -46,6 +47,22 @@ class SimulateCommand(CliCommand):
     This command runs epidemic simulations specified from a provided configuration file.
     The `CONFIG` argument should point to a valid configuration file.
     """
+
+    @property
+    def target(self) -> str | None:
+        """
+        Get the resolved simulate target name.
+
+        The returned value accounts for the implicit default target used when
+        no `--target` option was provided.
+        """
+        config_model = ConfigurationModel.from_yaml(self.bound_kwargs["config"])
+        target, _ = _resolve_config_target(
+            config_model.simulate,
+            self.bound_kwargs.get("target"),
+            "simulate",
+        )
+        return target
 
     def run(  # type: ignore[override]
         self,
