@@ -185,12 +185,37 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "job_id": (
+        click.argument(
+            "job_id",
+            required=True,
+            type=str,
+        ),
+        (
+            "Identifier of a submitted job to inspect. Accepts either the "
+            "`<backend>-<job_id>` key shown by `flepimop2 job list` or a bare "
+            "job id when it is unambiguous."
+        ),
+    ),
     "job_target": (
         click.option(
             "-j",
             "--job-target",
             default=None,
             help="The configured job module to dispatch this command to.",
+        ),
+        None,
+    ),
+    "no_cache": (
+        click.option(
+            "--no-cache",
+            is_flag=True,
+            default=False,
+            help=(
+                "Do not record the submitted job handle in the local job "
+                "cache. Useful for one-off or debugging submissions that "
+                "should not appear in `flepimop2 job list`."
+            ),
         ),
         None,
     ),

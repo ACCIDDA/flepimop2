@@ -22,13 +22,17 @@ from typing import Any
 
 import click
 
+from flepimop2 import _cache
 from flepimop2._utils._click import _get_config_target
 from flepimop2.cli._cli_command import CliCommand
+from flepimop2.cli._job_list_command import JobListCommand
+from flepimop2.cli._job_status_command import JobStatusCommand
 from flepimop2.cli._logging import get_script_logger
 from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._register_command import register_command
 from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.configuration import ConfigurationModel
+from flepimop2.job.abc import JobDryRun
 from flepimop2.job.abc import build as build_job
 
 
@@ -56,21 +60,32 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if dry_run:
         logger.info("Dry run: preflight checks only, no submission.")
 
-    handle = job.submit(inner, dry_run=dry_run)
-    if handle is not None:
-        logger.info("Job submitted: %s", handle)
+    no_cache: bool = bool(job_kwargs.get("no_cache"))
+    if no_cache:
+        logger.debug("Skipping job cache (--no-cache).")
+
+    result = job.submit(inner, dry_run=dry_run)
+    if isinstance(result, JobDryRun):
+        logger.info("Dry run, would have submitted: %s", result)
+    else:
+        logger.info("Job submitted: %s", result)
+        if not no_cache:
+            cached_job = _cache.save_job(result, job.model_dump())
+            logger.debug("Job cached to: %s", cached_job.key)
     sys.exit(0)
 
 
 register_command(
     ProcessCommand,
     job_group,
-    extra_options=("job_target",),
+    extra_options=("job_target", "no_cache"),
     on_invoke=_dispatch_to_job,
 )
 register_command(
     SimulateCommand,
     job_group,
-    extra_options=("job_target",),
+    extra_options=("job_target", "no_cache"),
     on_invoke=_dispatch_to_job,
 )
+register_command(JobListCommand, job_group)
+register_command(JobStatusCommand, job_group)

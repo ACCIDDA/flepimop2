@@ -91,6 +91,7 @@ nav:
           - Abcs: reference/api/abcs.md
           - Axis: reference/api/axis.md
           - Backend: reference/api/backend.md
+          - Cli: reference/api/cli.md
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
           - Exceptions: reference/api/exceptions.md
@@ -104,6 +105,7 @@ nav:
           - System: reference/api/system.md
           - Testing: reference/api/testing.md
           - Typing: reference/api/typing.md
+          - Yaml: reference/api/yaml.md
       - CLI: reference/cli.md
   - Connectors: connectors.md
   - Changelog: changelog.md

@@ -21,7 +21,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
-from flepimop2.job.abc import JobHandle
+from flepimop2.job.abc import JobDryRun, JobHandle, JobStatus
 from flepimop2.job.shell import ShellJob
 from flepimop2.typing import ExitCode
 
@@ -67,7 +67,7 @@ def test_submit_detached_uses_pid_as_job_id() -> None:
     ):
         handles = job.submit(cmd)
 
-    assert handles is not None
+    assert isinstance(handles, JobHandle)
     assert handles.job_id == "99999"
     assert handles.backend == "shell"
 
@@ -123,8 +123,8 @@ def test_submit_validate_returns_issue_when_exe_missing() -> None:
     assert job._exe is None
 
 
-def test_submit_dry_run_returns_none() -> None:
-    """submit(dry_run=True) should validate and return None without submitting."""
+def test_submit_dry_run_returns_dry_run() -> None:
+    """submit(dry_run=True) should validate and describe, but not submit."""
     job = ShellJob.model_validate({"module": "flepimop2.job.shell"})
     cmd = _make_command([])
 
@@ -132,10 +132,33 @@ def test_submit_dry_run_returns_none() -> None:
         patch("flepimop2.job.shell.shutil.which", return_value=_EXE),
         patch("flepimop2.job.shell.subprocess.Popen") as mock_popen,
     ):
-        handles = job.submit(cmd, dry_run=True)
+        result = job.submit(cmd, dry_run=True)
 
-    assert handles is None
+    assert isinstance(result, JobDryRun)
     mock_popen.assert_not_called()
+
+
+def test_submit_dry_run_describes_command() -> None:
+    """A dry run performs preflight work and reports the command it would run."""
+    job = ShellJob.model_validate({"module": "flepimop2.job.shell"})
+    cmd = _make_command(["config.yaml"])
+
+    with (
+        patch("flepimop2.job.shell.shutil.which", return_value=_EXE) as mock_which,
+        patch("flepimop2.job.shell.subprocess.Popen") as mock_popen,
+        patch("flepimop2.job.shell.subprocess.run") as mock_run,
+    ):
+        result = job.submit(cmd, dry_run=True)
+
+    assert isinstance(result, JobDryRun)
+    # The argv is assembled from the resolved executable and the command...
+    mock_which.assert_called()
+    cmd.to_argv.assert_called()
+    assert result.command == f"{_EXE} simulate config.yaml"
+    assert result.details["mode"] == "detached"
+    # ...but nothing is actually launched.
+    mock_popen.assert_not_called()
+    mock_run.assert_not_called()
 
 
 def test_submit_reuses_cached_exe() -> None:
@@ -226,7 +249,7 @@ def test_submit_synchronous_uses_returncode_as_job_id() -> None:
     ):
         handles = job.submit(cmd)
 
-    assert handles is not None
+    assert isinstance(handles, JobHandle)
     assert handles.job_id == str(int(ExitCode.OKAY))
     assert handles.backend == "shell"
 
@@ -250,3 +273,60 @@ def test_submit_synchronous_does_not_use_popen() -> None:
 
     mock_run.assert_called_once()
     mock_popen.assert_not_called()
+
+
+def _shell_job() -> ShellJob:
+    """Build a concrete ShellJob for status tests.
+
+    Returns:
+        A `ShellJob` with default settings.
+    """
+    return ShellJob.model_validate({"module": "flepimop2.job.shell"})
+
+
+def test_status_blocking_zero_returncode_is_successful() -> None:
+    """A blocking job with returncode 0 reports SUCCESSFUL."""
+    handle = JobHandle(
+        job_id="0",
+        backend="shell",
+        metadata={"mode": "blocking", "returncode": 0},
+    )
+    result = _shell_job().status(handle)
+    assert result.status is JobStatus.SUCCESSFUL
+    assert result.detail["returncode"] == 0
+
+
+def test_status_blocking_nonzero_returncode_is_failed() -> None:
+    """A blocking job with a nonzero returncode reports FAILED."""
+    handle = JobHandle(
+        job_id="1",
+        backend="shell",
+        metadata={"mode": "blocking", "returncode": 1},
+    )
+    result = _shell_job().status(handle)
+    assert result.status is JobStatus.FAILED
+    assert result.detail["returncode"] == 1
+
+
+def test_status_detached_live_pid_is_running() -> None:
+    """A detached job whose PID is alive reports RUNNING."""
+    handle = JobHandle(job_id="12345", backend="shell", metadata={"mode": "detached"})
+    with patch("flepimop2.job.shell.os.kill", return_value=None):
+        result = _shell_job().status(handle)
+    assert result.status is JobStatus.RUNNING
+
+
+def test_status_detached_dead_pid_is_finished_unknown() -> None:
+    """A detached job whose PID is gone reports FINISHED_UNKNOWN (exit unknown)."""
+    handle = JobHandle(job_id="12345", backend="shell", metadata={"mode": "detached"})
+    with patch("flepimop2.job.shell.os.kill", side_effect=ProcessLookupError):
+        result = _shell_job().status(handle)
+    assert result.status is JobStatus.FINISHED_UNKNOWN
+
+
+def test_status_detached_foreign_pid_is_running() -> None:
+    """A detached job whose PID is owned by another user reports RUNNING."""
+    handle = JobHandle(job_id="12345", backend="shell", metadata={"mode": "detached"})
+    with patch("flepimop2.job.shell.os.kill", side_effect=PermissionError):
+        result = _shell_job().status(handle)
+    assert result.status is JobStatus.RUNNING
