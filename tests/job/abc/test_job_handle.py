@@ -35,7 +35,7 @@ def handle() -> JobHandle:
 def test_str_format(handle: JobHandle) -> None:
     """str() should include the backend, job_id, and submission timestamp."""
     line = str(handle)
-    assert "shell/42" in line
+    assert "shell-42" in line
     assert "submitted_at=2026-01-15T12:00:00" in line
 
 

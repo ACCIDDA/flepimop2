@@ -15,15 +15,31 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for the `flepimop2 job` CLI group."""
 
+from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
 from click.testing import CliRunner
 
 from flepimop2.cli._job_command import job_group
 from flepimop2.cli._simulate_command import SimulateCommand
-from flepimop2.job.abc import JobHandle
+from flepimop2.job.abc import JobDryRun, JobHandle
+
+
+@pytest.fixture(autouse=True)
+def save_job_mock() -> Iterator[MagicMock]:
+    """Stub out job-handle caching so dispatch tests don't touch the real cache.
+
+    Caching is exercised separately by the `_cache` tests; here we only care
+    about dispatch behavior, and the mocked job objects cannot be serialized.
+
+    Yields:
+        The mock standing in for `_cache.save_job`.
+    """
+    with patch("flepimop2.cli._job_command._cache.save_job") as mock:
+        yield mock
 
 
 def _make_minimal_config(config_path: Path, job_name: str = "local") -> None:
@@ -63,6 +79,41 @@ def test_job_simulate_dispatches_to_job_backend(tmp_path: Path) -> None:
 
     assert mock_job.submit.called
     assert result.exit_code == 0
+
+
+def test_job_simulate_dry_run_reports_and_does_not_cache(
+    tmp_path: Path, save_job_mock: MagicMock
+) -> None:
+    """A dry-run dispatch reports the skipped command and caches nothing."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+
+    mock_job = MagicMock()
+    mock_job.submit.return_value = JobDryRun(
+        command="flepimop2 simulate config.yaml --dry-run",
+        details={"mode": "blocking"},
+    )
+
+    runner = CliRunner()
+    with (
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+    ):
+        mock_config = MagicMock()
+        mock_config.jobs = {"local": {"module": "shell", "detach": False}}
+        mock_load.return_value = mock_config
+
+        result = runner.invoke(
+            job_group,
+            ["simulate", "-vv", "--dry-run", str(config_path)],
+        )
+
+    assert result.exit_code == 0
+    _, kwargs = mock_job.submit.call_args
+    assert kwargs["dry_run"] is True
+    assert "would have submitted" in result.output
+    assert "flepimop2 simulate config.yaml --dry-run" in result.output
+    save_job_mock.assert_not_called()
 
 
 def test_job_simulate_inner_command_not_executed_locally(tmp_path: Path) -> None:

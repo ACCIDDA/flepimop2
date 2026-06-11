@@ -51,3 +51,25 @@ def test_batch_jobs_guide(repo_root: Path, tmp_path: Path) -> None:
 
     output_files = list((tmp_path / "model_output").glob("*.csv"))
     assert len(output_files) == 1
+
+    # Submitting through the shell backend caches a handle and a summary.
+    cache_dir = tmp_path / ".flepimop2_cache" / "job"
+    handle_files = list((cache_dir / "handles").glob("*.json"))
+    assert len(handle_files) == 1
+    assert (cache_dir / "summary.json").is_file()
+
+    # `job list` reports the cached shell job with a resolved status.
+    list_result = flepimop2_run("job", args=["list"], cwd=tmp_path)
+    assert list_result.returncode == 0
+    assert "shell-" in list_result.stdout
+
+    # The config uses `detach: false`, so the blocking job's return code yields
+    # a definite, successful status.
+    assert "status=successful" in list_result.stdout
+
+    # `job status` reconstructs the backend from the cached config and reports
+    # the same job. The handle file is named `<backend>-<job_id>.json`.
+    job_key = handle_files[0].stem
+    status_result = flepimop2_run("job", args=["status", job_key], cwd=tmp_path)
+    assert status_result.returncode == 0
+    assert "status=successful" in status_result.stdout

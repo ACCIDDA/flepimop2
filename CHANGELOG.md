@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `ConfigurationModel/ModuleBase.patch` method to merge configurations together along with corresponding `flepimop2 patch` CLI for users to utilizing patching via the command line as well as YAML formatting. See [#51](https://github.com/ACCIDDA/flepimop2/issues/51), [#52](https://github.com/ACCIDDA/flepimop2/issues/52), [#289](https://github.com/ACCIDDA/flepimop2/pull/289).
 - Introduced the `JobABC` to execute CLI commands in separate environments along with corresponding "jobs" top level key in configuration and the `ShellJob` module to run a CLI in a subprocess. Job modules can be utilized by end users via the `flepimop2 job` CLI. See [#276](https://github.com/ACCIDDA/flepimop2/issues/276), [#277](https://github.com/ACCIDDA/flepimop2/issues/277), [#278](https://github.com/ACCIDDA/flepimop2/issues/278), [#280](https://github.com/ACCIDDA/flepimop2/issues/280).
 - Added a public modules, `flepimop2.cli` and `flepimop2.yaml`, moved from a private modules.
+- Added a private caching mechanism to store intermediate results that can be later pulled from for user convenience. See [#293](https://github.com/ACCIDDA/flepimop2/issues/293).
+- Added `flepimop2 job list/status` CLI commands to inspect job results. See [#298](https://github.com/ACCIDDA/flepimop2/issues/298).
 
 ### Changed
 
