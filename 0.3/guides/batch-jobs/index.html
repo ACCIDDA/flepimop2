@@ -586,10 +586,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-validate-with-dry-run" class="md-nav__link">
+  <a href="#7-track-submitted-jobs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Validate with --dry-run
+        7. Track Submitted Jobs
       
     </span>
   </a>
@@ -597,10 +597,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-summary" class="md-nav__link">
+  <a href="#8-list-jobs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. Summary
+        8. List Jobs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-check-job-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Check Job Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-validate-with-dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Validate with --dry-run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Summary
       
     </span>
   </a>
@@ -1797,10 +1830,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-validate-with-dry-run" class="md-nav__link">
+  <a href="#7-track-submitted-jobs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Validate with --dry-run
+        7. Track Submitted Jobs
       
     </span>
   </a>
@@ -1808,10 +1841,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-summary" class="md-nav__link">
+  <a href="#8-list-jobs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. Summary
+        8. List Jobs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-check-job-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Check Job Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-validate-with-dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Validate with --dry-run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Summary
       
     </span>
   </a>
@@ -1931,9 +1997,9 @@
 </span></code></pre></div>
 <p>Both commands produce the same result with the <code>shell</code> module. The difference is that <code>flepimop2 job simulate</code> builds a <code>SimulateCommand</code> instance, hands it to the configured job backend, and the backend re-invokes <code>flepimop2 simulate</code> as a subprocess rather than running the simulation inline.</p>
 <p>When the job is submitted, <code>flepimop2 job</code> prints a handle that identifies the submitted work unit:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>2026-05-26 16:56:24,480:INFO&gt; Job submitted: shell/0 submitted_at=2026-05-26T20:56:24.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>2026-05-26 16:56:24,480:INFO&gt; Job submitted: shell-0 submitted_at=2026-05-26T20:56:24.
 </span></code></pre></div>
-<p>The token before the <code>/</code> is the backend name; the token after is the job identifier (a PID for the <code>shell</code> module). More capable backends replace the PID with their own opaque identifier (a Slurm job id, an AWS Batch ARN, etc.).</p>
+<p>The token before the <code>-</code> is the backend name and the token after is the job identifier (a PID for the <code>shell</code> module). More capable backends replace the PID with their own opaque identifier (a Slurm job id, an AWS Batch ARN, etc.). This <code>&lt;backend&gt;-&lt;job_id&gt;</code> form is also the key you pass to <code>flepimop2 job status</code>.</p>
 <h2 id="5-select-a-named-job-target">5. Select a Named Job Target<a class="headerlink" href="#5-select-a-named-job-target" title="Permanent link">&para;</a></h2>
 <p>If your configuration defines more than one job backend you can give each a name and select among them with <code>-j</code> / <code>--job-target</code>:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">jobs</span><span class="p">:</span>
@@ -1950,26 +2016,52 @@
 <p>When exactly one job backend is defined (including the list shorthand form), <code>-j</code> can be omitted and the default entry is used automatically.</p>
 <h2 id="6-combine-with-inner-command-options">6. Combine with Inner Command Options<a class="headerlink" href="#6-combine-with-inner-command-options" title="Permanent link">&para;</a></h2>
 <p>All options accepted by the inner command (<code>simulate</code> or <code>process</code>) work normally when dispatched through <code>flepimop2 job</code>. The <code>--target</code> flag, for example, selects the simulation target as usual:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>--job-target<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--target<span class="w"> </span>hires<span class="w"> </span>configs/config.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>--target<span class="w"> </span>demo<span class="w"> </span>configs/config.yaml
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>--job-target<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--target<span class="w"> </span>demo<span class="w"> </span>configs/extra-jobs.yaml
 </span></code></pre></div>
-<h2 id="7-validate-with-dry-run">7. Validate with <code>--dry-run</code><a class="headerlink" href="#7-validate-with-dry-run" title="Permanent link">&para;</a></h2>
-<p>The <code>--dry-run</code> flag runs the job backend's preflight checks — for example, verifying that the <code>flepimop2</code> executable is on <code>PATH</code> — without actually submitting anything. The inner command is never executed:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>-vvv<span class="w"> </span>--dry-run<span class="w"> </span>configs/config.yaml
+<h2 id="7-track-submitted-jobs">7. Track Submitted Jobs<a class="headerlink" href="#7-track-submitted-jobs" title="Permanent link">&para;</a></h2>
+<p>Each real submission (anything that is not a <code>--dry-run</code>) is recorded locally so you can check on it later with <code>flepimop2 job list</code> and <code>flepimop2 job status</code>. flepimop2 remembers both the job handle and the exact settings of the backend that launched it, so a later status check can rebuild the same backend without you having to point back at (a possibly renamed or edited) configuration file.</p>
+<p>If you are launching a throwaway or debugging job and do not want it recorded, pass <code>--no-cache</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>--no-cache<span class="w"> </span>configs/config.yaml
+</span></code></pre></div>
+<h2 id="8-list-jobs">8. List Jobs<a class="headerlink" href="#8-list-jobs" title="Permanent link">&para;</a></h2>
+<p><code>flepimop2 job list</code> prints every cached job and its current status:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>list
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>shell-0 submitted_at=2026-05-26T20:56:24 status=successful
+</span></code></pre></div>
+<p>Finished jobs are kept, so the list doubles as a record of recent work. To stay fast, <code>list</code> only re-queries the backend for jobs whose last-known status was still unfinished - never-checked, <code>pending</code>, or <code>running</code>. Jobs already known to be finished are reported from their last recorded status.</p>
+<h2 id="9-check-job-status">9. Check Job Status<a class="headerlink" href="#9-check-job-status" title="Permanent link">&para;</a></h2>
+<p>To inspect a single job, pass its identifier to <code>flepimop2 job status</code>. The identifier is either the <code>&lt;backend&gt;-&lt;job_id&gt;</code> key shown by <code>list</code>, or a bare job id when it is unambiguous:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>status<span class="w"> </span>shell-0
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1"># or, equivalently when unambiguous:</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>status<span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>shell-0 submitted_at=2026-05-26T20:56:24 status=successful
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  returncode: 0
+</span></code></pre></div>
+<p>The indented lines are backend-specific <code>detail</code>. The <code>shell</code> module reports the subprocess <code>returncode</code> for blocking submissions. More capable backends (Slurm, AWS Batch, ...) can surface queue position, node assignment, accounting, and so on.</p>
+<p>A note on the <code>shell</code> module's detached mode: once a detached subprocess has exited, the operating system has already reaped it, so its exit code can no longer be recovered. Such jobs are reported as <code>finished_unknown</code> rather than <code>successful</code> or <code>failed</code>. Use <code>detach: false</code> during testing if you need a definite success/failure result.</p>
+<h2 id="10-validate-with-dry-run">10. Validate with <code>--dry-run</code><a class="headerlink" href="#10-validate-with-dry-run" title="Permanent link">&para;</a></h2>
+<p>The <code>--dry-run</code> flag runs the job backend's preflight checks - for example, verifying that the <code>flepimop2</code> executable is on <code>PATH</code> - and lets the backend perform all of the work leading up to a submission (assembling the command, and for more capable backends rendering batch scripts or staging inputs) before stopping just short of the actual submission. Nothing is submitted, the inner command is never executed, and no handle is cached. The backend then reports exactly what it <em>would</em> have submitted:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>flepimop2<span class="w"> </span>job<span class="w"> </span>simulate<span class="w"> </span>-vvv<span class="w"> </span>--dry-run<span class="w"> </span>configs/config.yaml
 </span></code></pre></div>
 <p>Example output:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>2026-05-26 16:59:43,433:INFO&gt; Job backend: flepimop2.job.shell.
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>2026-05-26 16:59:43,433:INFO&gt; Command: simulate /Users/twillard/Downloads/batch-jobs-guide/configs/config.yaml --dry-run -vvv.
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>2026-05-26 16:59:43,433:INFO&gt; Dry run: preflight checks only, no submission.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>2026-05-26 16:59:43,433:INFO&gt; Job backend: flepimop2.job.shell.
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>2026-05-26 16:59:43,433:INFO&gt; Command: simulate /.../batch-jobs-guide/configs/config.yaml --dry-run -vvv.
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>2026-05-26 16:59:43,433:INFO&gt; Dry run, would have submitted: command=&quot;/.../batch-jobs-guide/venv/bin/flepimop2 simulate /.../batch-jobs-guide/configs/config.yaml --dry-run -vvv&quot; details={&#39;mode&#39;: &#39;blocking&#39;}.
 </span></code></pre></div>
+<p>The <code>command</code> is the exact command the backend skipped - <code>flepimop2 ...</code> for the <code>shell</code> module, or something like <code>sbatch ...</code> for a Slurm backend. Backends can also report extra <code>details</code> (here, the subprocess <code>mode</code>, a Slurm backend might list the partition or the generated script path).</p>
 <p>Without <code>--dry-run</code>, the same <code>-v</code> output appears before the job handle is printed, letting you verify the backend and reconstructed command on every real submission too.</p>
-<h2 id="8-summary">8. Summary<a class="headerlink" href="#8-summary" title="Permanent link">&para;</a></h2>
+<h2 id="11-summary">11. Summary<a class="headerlink" href="#11-summary" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add a <code>jobs:</code> block to your configuration file to define one or more job backends.</li>
 <li>Replace <code>flepimop2 &lt;subcommand&gt;</code> with <code>flepimop2 job &lt;subcommand&gt;</code> to dispatch through a backend.</li>
 <li>Use <code>-j</code> / <code>--job-target</code> to select a named backend when more than one is defined.</li>
+<li>Submitted jobs are recorded locally so they can be tracked later or use <code>--no-cache</code> to skip recording a one-off job.</li>
+<li>Use <code>flepimop2 job list</code> to see all jobs and <code>flepimop2 job status &lt;job-id&gt;</code> to inspect one.</li>
 <li>Use <code>--dry-run</code> to validate the job setup without submitting.</li>
-<li>The <code>shell</code> module is the right tool for local testing; use a purpose-built module for remote or production workloads.</li>
+<li>The <code>shell</code> module is the right tool for local testing, but use a purpose-built module for remote or production workloads.</li>
 </ul>
 <p>For a full list of options run <code>flepimop2 job --help</code> or see the <a href="../../reference/cli/#flepimop2-job">CLI reference</a>.</p>
 

@@ -1993,6 +1993,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Added <code>ConfigurationModel/ModuleBase.patch</code> method to merge configurations together along with corresponding <code>flepimop2 patch</code> CLI for users to utilizing patching via the command line as well as YAML formatting. See <a href="https://github.com/ACCIDDA/flepimop2/issues/51">#51</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/52">#52</a>, <a href="https://github.com/ACCIDDA/flepimop2/pull/289">#289</a>.</li>
 <li>Introduced the <code>JobABC</code> to execute CLI commands in separate environments along with corresponding "jobs" top level key in configuration and the <code>ShellJob</code> module to run a CLI in a subprocess. Job modules can be utilized by end users via the <code>flepimop2 job</code> CLI. See <a href="https://github.com/ACCIDDA/flepimop2/issues/276">#276</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/277">#277</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/278">#278</a>, <a href="https://github.com/ACCIDDA/flepimop2/issues/280">#280</a>.</li>
 <li>Added a public modules, <code>flepimop2.cli</code> and <code>flepimop2.yaml</code>, moved from a private modules.</li>
+<li>Added a private caching mechanism to store intermediate results that can be later pulled from for user convenience. See <a href="https://github.com/ACCIDDA/flepimop2/issues/293">#293</a>.</li>
+<li>Added <code>flepimop2 job list/status</code> CLI commands to inspect job results. See <a href="https://github.com/ACCIDDA/flepimop2/issues/298">#298</a>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
