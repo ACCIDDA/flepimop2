@@ -1,0 +1,36 @@
+---
+engines:
+  - module: wrapper
+    state_change: flow
+    script: model_input/plugins/solve_ivp.py
+systems:
+  - module: wrapper
+    state_change: flow
+    script: model_input/plugins/SIR.py
+    model_state:
+      parameter_names:
+        - s0
+        - i0
+        - r0
+      labels:
+        - S
+        - I
+        - R
+backends:
+  - module: csv
+    root: model_output
+jobs:
+  - module: shell
+    detach: false
+parameters:
+  s0: 990.0
+  i0: 10.0
+  r0: 0.0
+  beta: 0.3
+  gamma: 0.1
+simulate:
+  demo:
+    engine: default
+    system: default
+    backend: default
+    times: 0.0:1.0:60.0
