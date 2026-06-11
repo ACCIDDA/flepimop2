@@ -1499,15 +1499,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
+  <a href="#030-2026-06-11" class="md-nav__link">
     <span class="md-ellipsis">
       
-        [Unreleased]
+        [0.3.0] - 2026-06-11
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[Unreleased]">
+    <nav class="md-nav" aria-label="[0.3.0] - 2026-06-11">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1533,17 +1533,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deprecated
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#removed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1559,17 +1548,6 @@
     <span class="md-ellipsis">
       
         Fixed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
       
     </span>
   </a>
@@ -1802,15 +1780,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
+  <a href="#030-2026-06-11" class="md-nav__link">
     <span class="md-ellipsis">
       
-        [Unreleased]
+        [0.3.0] - 2026-06-11
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[Unreleased]">
+    <nav class="md-nav" aria-label="[0.3.0] - 2026-06-11">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1836,17 +1814,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deprecated
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#removed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1862,17 +1829,6 @@
     <span class="md-ellipsis">
       
         Fixed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
       
     </span>
   </a>
@@ -1983,7 +1939,7 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="030-2026-06-11">[0.3.0] - 2026-06-11<a class="headerlink" href="#030-2026-06-11" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Introduced the axis concept as a way to represent aligned shapes across parameters, systems, etc. Added two kinds of axes, categorical and continuous, to represent different kinds of dimensions. Also added an <code>axes</code> top level key to the <code>ConfigurationModel</code> so users can provide these axes via configuration and <code>flepimop2.axis</code> module for realizing &amp; manipulating axes from configuration. See <a href="https://github.com/ACCIDDA/flepimop2/issues/147">#147</a>.</li>
@@ -2004,10 +1960,6 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Simplified <code>ScenarioABC</code> to use <code>module_namespace="scenario"</code> so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to <a href="https://github.com/ACCIDDA/flepimop2/pull/216">#216</a>.</li>
 <li>Updated documentation guides to provide <code>.zip</code> bundles of their files overlaid on the project skeleton template making demos easier to run. See <a href="https://github.com/ACCIDDA/flepimop2/issues/246">#246</a>.</li>
 </ul>
-<h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
-<ul>
-<li>...</li>
-</ul>
 <h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The non-<code>pydantic</code> approach to defining custom modules. See <a href="https://github.com/ACCIDDA/flepimop2/issues/257">#257</a>.</li>
@@ -2017,10 +1969,6 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Restored <code>parameter: value</code> syntax (i.e. <code>pi: 3.14</code>) for specifying scalar parameters directly as floats/ints in the configuration file. See <a href="https://github.com/ACCIDDA/flepimop2/issues/100">#100</a>.</li>
 <li>Fixed bug where <code>flepimop2 --version</code> would show 0.1.0, now corrected to show the version from <code>flepimop2</code> installed. See <a href="https://github.com/ACCIDDA/flepimop2/issues/266">#266</a>.</li>
 <li>Loosened <code>ParameterValue.value</code> to any Array-API-compliant array (<code>numpy.ndarray</code>, <code>jax.Array</code>, etc.) by retyping the field via a new <code>flepimop2.typing.Array</code> <code>Protocol</code> and removing the unconditional <code>np.asarray(..., dtype=np.float64)</code> cast in <code>__post_init__</code>. Producers are responsible for handing in the correct dtype, which <code>mypy</code> already enforces; consumers that require NumPy now coerce explicitly at the engine boundary. Non-numeric Array-API dtypes (e.g. NumPy string/object arrays) are rejected at <code>ParameterValue</code> construction via <code>__array_namespace__().isdtype(..., "numeric")</code> (with a <code>dtype.kind</code> fallback), addressing review feedback on the breadth of the <code>Array</code> protocol. This unblocks engine-level <code>jax.vmap</code> / <code>jit</code> / inference workflows. See <a href="https://github.com/ACCIDDA/flepimop2/issues/270">#270</a>.</li>
-</ul>
-<h3 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
-<ul>
-<li>...</li>
 </ul>
 <h2 id="020-2026-04-28">[0.2.0] - 2026-04-28<a class="headerlink" href="#020-2026-04-28" title="Permanent link">&para;</a></h2>
 <h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
