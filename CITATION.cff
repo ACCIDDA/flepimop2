@@ -19,7 +19,7 @@ authors:
     email: 'twillard@unc.edu'
     orcid: 'https://orcid.org/0009-0001-2486-7931'
     affiliation: 'University of North Carolina at Chapel Hill'
-version: '0.2.0'
+version: '0.3.0'
 license: 'GPL-3.0-or-later'
 repository-code: 'https://github.com/ACCIDDA/flepimop2'
 url: 'https://github.com/ACCIDDA/flepimop2'

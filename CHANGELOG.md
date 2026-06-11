@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2026-06-11
 
 ### Added
 
@@ -27,10 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified `ScenarioABC` to use `module_namespace="scenario"` so scenario modules can use the same module-name shortcut mechanism as the other ABCs. Follow up to [#216](https://github.com/ACCIDDA/flepimop2/pull/216).
 - Updated documentation guides to provide `.zip` bundles of their files overlaid on the project skeleton template making demos easier to run. See [#246](https://github.com/ACCIDDA/flepimop2/issues/246).
 
-### Deprecated
-
-- ...
-
 ### Removed
 
 - The non-`pydantic` approach to defining custom modules. See [#257](https://github.com/ACCIDDA/flepimop2/issues/257).
@@ -40,10 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restored `parameter: value` syntax (i.e. `pi: 3.14`) for specifying scalar parameters directly as floats/ints in the configuration file. See [#100](https://github.com/ACCIDDA/flepimop2/issues/100).
 - Fixed bug where `flepimop2 --version` would show 0.1.0, now corrected to show the version from `flepimop2` installed. See [#266](https://github.com/ACCIDDA/flepimop2/issues/266).
 - Loosened `ParameterValue.value` to any Array-API-compliant array (`numpy.ndarray`, `jax.Array`, etc.) by retyping the field via a new `flepimop2.typing.Array` `Protocol` and removing the unconditional `np.asarray(..., dtype=np.float64)` cast in `__post_init__`. Producers are responsible for handing in the correct dtype, which `mypy` already enforces; consumers that require NumPy now coerce explicitly at the engine boundary. Non-numeric Array-API dtypes (e.g. NumPy string/object arrays) are rejected at `ParameterValue` construction via `__array_namespace__().isdtype(..., "numeric")` (with a `dtype.kind` fallback), addressing review feedback on the breadth of the `Array` protocol. This unblocks engine-level `jax.vmap` / `jit` / inference workflows. See [#270](https://github.com/ACCIDDA/flepimop2/issues/270).
-
-### Security
-
-- ...
 
 ## [0.2.0] - 2026-04-28
 
