@@ -1,6 +1,6 @@
 [project]
 name = "flepimop2"
-version = "0.3.0"
+version = "0.4.0dev"
 description = "The flexible epidemic modeling pipeline"
 readme = "README.md"
 license = { file = "LICENSE" }
