@@ -5,5 +5,6 @@
 
 These packages are known to be compatible with `flepimop2`:
 
-- [op_engine](https://accidda.github.io/op_engine/latest/)
-- [op_system](https://accidda.github.io/op_system/latest/)
+- [`flepimop2-extras`](https://github.com/ACCIDDA/flepimop2-extras)
+- [`op_engine`](https://accidda.github.io/op_engine/latest/)
+- [`op_system`](https://accidda.github.io/op_system/latest/)
