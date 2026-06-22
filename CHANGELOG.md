@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Added regression tests covering the `flepimop2 skeleton` command's scaffolding, current-directory default, dry-run, and non-writable-target behavior, ahead of the modular-skeleton refactor. See [#250](https://github.com/ACCIDDA/flepimop2/issues/250).
 
 ### Changed
 
