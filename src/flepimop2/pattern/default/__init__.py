@@ -13,30 +13,29 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""
-Abstract base classes for flepimop2 modules.
+"""The default project pattern, scaffolded from the bundled template."""
 
-This module provides abstract base classes (ABCs) for key modules of the flepimop2
-pipeline. The ABCs defined here can also be found in their respective submodules, but
-are re-exported here for developer convenience.
+__all__ = ["DefaultPattern"]
 
-"""
+from pathlib import Path
 
-__all__ = [
-    "BackendABC",
-    "EngineABC",
-    "EngineProtocol",
-    "ParameterABC",
-    "PatternABC",
-    "ProcessABC",
-    "SystemABC",
-    "SystemProtocol",
-]
-
-from flepimop2.backend.abc import BackendABC
-from flepimop2.engine.abc import EngineABC, EngineProtocol
-from flepimop2.parameter.abc import ParameterABC
 from flepimop2.pattern.abc import PatternABC
-from flepimop2.process.abc import ProcessABC
-from flepimop2.system.abc import SystemABC
-from flepimop2.typing import SystemProtocol
+
+_TEMPLATE_DIR = Path(__file__).parents[2] / "templates" / "skeleton"
+
+
+class DefaultPattern(PatternABC, module="default"):
+    """Scaffold a fresh project from the bundled template tree."""
+
+    def _scaffold(self, destination: Path, *, dry_run: bool = False) -> None:
+        """
+        Copy the bundled template tree into `destination`.
+
+        Args:
+            destination: Directory in which to create the project.
+            dry_run: If `True`, perform no filesystem writes.
+        """
+        if dry_run:
+            return
+        destination.mkdir(parents=True, exist_ok=True)
+        self._copy_template_tree(_TEMPLATE_DIR, destination)

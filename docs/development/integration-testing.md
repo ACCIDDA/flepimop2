@@ -47,7 +47,7 @@ def test_simulate(tmp_path: Path) -> None:
 Above is a brief example of what an integration test might look like. The key elements of this example are:
 
 - The test provides a temporary directory to `project_skeleton` and `flepimop2_run` that is cleaned up after test completion via [`pytest`'s `tmp_path` fixture](https://docs.pytest.org/en/stable/how-to/tmp_path.html).
-- The files `sir.py`, `solve_ivp.py`, and `config.yaml` are copied from the integration test to the project directory after the project is created via the `flepimop2 skeleton` CLI.
+- The files `sir.py`, `solve_ivp.py`, and `config.yaml` are copied from the integration test to the project directory after the project is created via the `flepimop2 pattern` CLI.
 - The dependencies `numpy`, `pandas`, and `scipy` are additionally installed to the project directory's virtual environment and are available to the `flepimop2` CLI.
 - Finally, the `flepimop2_run` function invokes the `flepimop2 simulate` CLI in the project directory and the returned object is a [`subprocess.CompletedProcess`](https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess). However, you could invoke any action available via the `flepimop2` CLI, for a full list please refer to `flepimop2 --help`.
 

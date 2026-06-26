@@ -196,7 +196,7 @@ Now you can run the built config directly:
 flepimop2 simulate configs/built/high-transmission.yaml
 ```
 
-`configs/built/` is the right place for generated configs in a project created from `flepimop2 skeleton`. The directory is already set up to stay out of version control, which is what you usually want. Built configs are cheap to reconstruct, so it is more useful to track the modular source pieces than the generated YAML.
+`configs/built/` is the right place for generated configs in a project created from `flepimop2 pattern`. The directory is already set up to stay out of version control, which is what you usually want. Built configs are cheap to reconstruct, so it is more useful to track the modular source pieces than the generated YAML.
 
 ## 6. Automate the Build Step in Your Task Runner
 

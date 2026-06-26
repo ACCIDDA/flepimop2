@@ -302,7 +302,7 @@ def project_skeleton(
             check=True,
         )
 
-    flepimop2_run("skeleton", args=[], cwd=parent_directory)
+    flepimop2_run("pattern", args=[], cwd=parent_directory)
 
     copy_files = copy_files or {}
     for src, dest in copy_files.items():

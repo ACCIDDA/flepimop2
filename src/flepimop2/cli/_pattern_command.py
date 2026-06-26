@@ -1,0 +1,124 @@
+# flepimop2: The FLExible Pipeline for Interchangeable MOdel Processing
+# Copyright (C) 2026  Carl Pearson, Joshua Macdonald, Timothy Willard
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""Pattern command implementation."""
+
+__all__ = []
+
+import os
+from pathlib import Path
+
+from flepimop2.cli._cli_command import CliCommand
+from flepimop2.pattern.abc import build as build_pattern
+from flepimop2.typing import ExitCode
+
+
+class PatternCommand(CliCommand):
+    """
+    Create a project from a pattern.
+
+    This command scaffolds a new flepimop2 project from a pattern. The bundled
+    `default` pattern creates the directory structure and starter files needed to
+    begin; other patterns can plug in to source a project differently (see #251).
+
+    The `PATH` argument specifies where to create the project. If omitted, the
+    project is created in the current working directory.
+
+    \b
+    Examples:
+        # Create a project in a new directory
+        $ flepimop2 pattern foobar
+        # Create a project in the current directory
+        $ mkdir fizzbuzz && cd fizzbuzz
+        $ flepimop2 pattern
+
+    """  # noqa: D301
+
+    def run(  # type: ignore[override]
+        self,
+        *,
+        path: Path | None,
+        dry_run: bool,
+    ) -> ExitCode:
+        """
+        Create a project from a pattern.
+
+        Args:
+            path: Path to the new project.
+            dry_run: Whether to perform a dry run.
+
+        Returns:
+            An exit code indicating success or failure.
+        """
+        path = path or Path.cwd()
+        if not path.exists():
+            parent_dir = path.parent
+            while not parent_dir.exists():
+                parent_dir = parent_dir.parent
+            if os.access(parent_dir, os.W_OK) is False:
+                self.error(f"Cannot write to path: {path}")
+                return ExitCode.GENERAL
+
+        if dry_run:
+            self.info(f"Would create project at: {path}")
+            return ExitCode.OKAY
+
+        build_pattern({"module": "default"}).scaffold(path)
+        self.info(f"Project created at: {path}")
+        self.info(f"Directory structure:\n{self._generate_tree(path)}")
+        return ExitCode.OKAY
+
+    @staticmethod
+    def _generate_tree(directory: Path, prefix: str = "") -> str:
+        """
+        Generate ASCII tree representation of directory structure.
+
+        Args:
+            directory: The root directory to generate the tree from.
+            prefix: The prefix for the current level (used in recursion).
+
+        Returns:
+            A string representing the directory tree.
+
+        Examples:
+            >>> from pathlib import Path
+            >>> from flepimop2.cli._pattern_command import PatternCommand
+            >>> example_dir = Path.cwd() / "tree_example"
+            >>> example_dir.mkdir(exist_ok=True)
+            >>> (example_dir / "file.txt").write_text("Sample file")
+            11
+            >>> (example_dir / "subdir").mkdir(exist_ok=True)
+            >>> (example_dir / "subdir" / "file1.txt").write_text("Sample file 1")
+            13
+            >>> print(PatternCommand._generate_tree(example_dir))
+            ├── subdir
+            │   └── file1.txt
+            └── file.txt
+            <BLANKLINE>
+
+        """
+        tree = ""
+        try:
+            items = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name))
+        except (OSError, PermissionError):
+            return tree
+        for i, item in enumerate(items):
+            is_last_item = i == len(items) - 1
+            current_prefix = "└── " if is_last_item else "├── "
+            tree += f"{prefix}{current_prefix}{item.name}\n"
+            if item.is_dir():
+                next_prefix = prefix + ("    " if is_last_item else "│   ")
+                tree += PatternCommand._generate_tree(item, next_prefix)
+        return tree
