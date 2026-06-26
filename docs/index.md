@@ -33,7 +33,7 @@ unzip quickstart-project.zip
 cd quickstart-project
 ```
 
-The bundle already contains the standard project structure created by `flepimop2 skeleton`:
+The bundle already contains the standard project structure created by `flepimop2 pattern`:
 
 ```
 quickstart-project/

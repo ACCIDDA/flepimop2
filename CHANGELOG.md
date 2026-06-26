@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Promoted project scaffolding to a pluggable `pattern` module namespace (`PatternABC` and the bundled `flepimop2.pattern.default`) and added the `flepimop2 pattern` command, so custom project sources/templates can plug in. See [#250](https://github.com/ACCIDDA/flepimop2/issues/250).
 
 ### Changed
 
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- ...
+- Deprecated the `flepimop2 skeleton` command in favor of `flepimop2 pattern`; `skeleton` remains as an alias and will be removed in a future release. See [#250](https://github.com/ACCIDDA/flepimop2/issues/250).
 
 ### Removed
 
