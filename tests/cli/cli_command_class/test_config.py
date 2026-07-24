@@ -21,9 +21,9 @@ from flepimop2.cli import CliCommand
 from flepimop2.cli._build_command import BuildCommand
 from flepimop2.cli._format_command import FormatCommand
 from flepimop2.cli._patch_command import PatchCommand
+from flepimop2.cli._pattern_command import PatternCommand
 from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._simulate_command import SimulateCommand
-from flepimop2.cli._skeleton_command import SkeletonCommand
 from flepimop2.typing import ExitCode, PatchConflictMode
 
 
@@ -80,6 +80,6 @@ def test_patch_command_config_is_none(tmp_path: Path) -> None:
     assert command.config is None
 
 
-def test_skeleton_command_config_is_none(tmp_path: Path) -> None:
-    """SkeletonCommand acts on a filesystem path, not a config file."""
-    assert SkeletonCommand(path=tmp_path, dry_run=False).config is None
+def test_pattern_command_config_is_none(tmp_path: Path) -> None:
+    """PatternCommand acts on a filesystem path, not a config file."""
+    assert PatternCommand(path=tmp_path, dry_run=False).config is None

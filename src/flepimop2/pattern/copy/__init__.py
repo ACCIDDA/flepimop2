@@ -13,9 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""The default project pattern, scaffolded from the bundled template."""
+"""The bundled copy pattern: scaffold a project from the template tree."""
 
-__all__ = ["DefaultPattern"]
+__all__ = ["CopyPattern"]
 
 from pathlib import Path
 
@@ -24,7 +24,7 @@ from flepimop2.pattern.abc import PatternABC
 _TEMPLATE_DIR = Path(__file__).parents[2] / "templates" / "skeleton"
 
 
-class DefaultPattern(PatternABC, module="default"):
+class CopyPattern(PatternABC, module="copy"):
     """Scaffold a fresh project from the bundled template tree."""
 
     def _scaffold(self, destination: Path, *, dry_run: bool = False) -> None:

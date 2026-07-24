@@ -13,11 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Tests for `DefaultPattern.scaffold`."""
+"""Tests for `CopyPattern.scaffold`."""
 
 from pathlib import Path
 
-from flepimop2.pattern.default import _TEMPLATE_DIR, DefaultPattern
+from flepimop2.pattern.copy import _TEMPLATE_DIR, CopyPattern
 
 
 def _relative_files(root: Path) -> set[Path]:
@@ -37,7 +37,7 @@ def test_scaffold_reproduces_template_tree(tmp_path: Path) -> None:
     """`scaffold` reproduces the bundled template tree, contents and all."""
     destination = tmp_path / "nested" / "project"
 
-    DefaultPattern().scaffold(destination)
+    CopyPattern().scaffold(destination)
 
     assert _relative_files(destination) == _relative_files(_TEMPLATE_DIR)
     for relative_path in _relative_files(_TEMPLATE_DIR):
@@ -50,6 +50,6 @@ def test_scaffold_dry_run_writes_nothing(tmp_path: Path) -> None:
     """A dry-run `scaffold` performs no filesystem writes."""
     destination = tmp_path / "project"
 
-    DefaultPattern().scaffold(destination, dry_run=True)
+    CopyPattern().scaffold(destination, dry_run=True)
 
     assert not destination.exists()

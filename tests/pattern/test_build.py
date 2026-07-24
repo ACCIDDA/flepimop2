@@ -18,21 +18,21 @@
 import pytest
 
 from flepimop2.pattern.abc import PatternABC, build
-from flepimop2.pattern.default import DefaultPattern
+from flepimop2.pattern.copy import CopyPattern
 
 
-def test_build_resolves_default_short_name() -> None:
+def test_build_resolves_copy_short_name() -> None:
     """A short `module` name resolves under the `pattern` namespace."""
-    pattern = build({"module": "default"})
-    assert isinstance(pattern, DefaultPattern)
+    pattern = build({"module": "copy"})
+    assert isinstance(pattern, CopyPattern)
     assert isinstance(pattern, PatternABC)
-    assert pattern.module == "flepimop2.pattern.default"
+    assert pattern.module == "flepimop2.pattern.copy"
 
 
 def test_build_accepts_fully_qualified_name() -> None:
     """A fully-qualified `module` name builds the same module."""
-    pattern = build({"module": "flepimop2.pattern.default"})
-    assert isinstance(pattern, DefaultPattern)
+    pattern = build({"module": "flepimop2.pattern.copy"})
+    assert isinstance(pattern, CopyPattern)
 
 
 def test_build_rejects_missing_module() -> None:

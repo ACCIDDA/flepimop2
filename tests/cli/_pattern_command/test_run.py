@@ -22,7 +22,7 @@ import pytest
 from click.testing import CliRunner
 
 from flepimop2.cli._cli import cli
-from flepimop2.pattern.default import _TEMPLATE_DIR
+from flepimop2.pattern.copy import _TEMPLATE_DIR
 from flepimop2.typing import ExitCode
 
 

@@ -30,7 +30,7 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
     Abstract base class for flepimop2 project patterns.
 
     A pattern materializes a starting project at a destination directory. The
-    bundled `pattern.default` scaffolds from a template; other patterns can, for
+    bundled `pattern.copy` scaffolds from a template; other patterns can, for
     example, clone and activate an existing project (see #251). New project
     sources plug in by implementing `_scaffold`, so the CLI and any callers stay
     agnostic to where the project comes from.

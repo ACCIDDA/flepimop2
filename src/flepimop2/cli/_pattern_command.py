@@ -30,7 +30,7 @@ class PatternCommand(CliCommand):
     Create a project from a pattern.
 
     This command scaffolds a new flepimop2 project from a pattern. The bundled
-    `default` pattern creates the directory structure and starter files needed to
+    `copy` pattern creates the directory structure and starter files needed to
     begin; other patterns can plug in to source a project differently (see #251).
 
     The `PATH` argument specifies where to create the project. If omitted, the
@@ -75,7 +75,7 @@ class PatternCommand(CliCommand):
             self.info(f"Would create project at: {path}")
             return ExitCode.OKAY
 
-        build_pattern({"module": "default"}).scaffold(path)
+        build_pattern({"module": "copy"}).scaffold(path)
         self.info(f"Project created at: {path}")
         self.info(f"Directory structure:\n{self._generate_tree(path)}")
         return ExitCode.OKAY
