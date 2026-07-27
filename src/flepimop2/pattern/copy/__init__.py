@@ -39,3 +39,12 @@ class CopyPattern(PatternABC, module="copy"):
             return
         destination.mkdir(parents=True, exist_ok=True)
         self._copy_template_tree(_TEMPLATE_DIR, destination)
+
+    def plan(self) -> str:
+        """
+        Describe the bundled template tree this pattern copies.
+
+        Returns:
+            A text tree of the template's files and directories.
+        """
+        return self._render_tree(_TEMPLATE_DIR)

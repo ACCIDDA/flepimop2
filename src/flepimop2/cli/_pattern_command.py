@@ -19,10 +19,14 @@ __all__ = []
 
 import os
 from pathlib import Path
+from typing import Final
 
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.pattern.abc import build as build_pattern
 from flepimop2.typing import ExitCode
+
+# The bundled pattern used when the caller does not request a specific module.
+_DEFAULT_PATTERN: Final = "copy"
 
 
 class PatternCommand(CliCommand):
@@ -31,18 +35,21 @@ class PatternCommand(CliCommand):
 
     This command scaffolds a new flepimop2 project from a pattern. The bundled
     `copy` pattern creates the directory structure and starter files needed to
-    begin; other patterns can plug in to source a project differently (see #251).
+    begin; other patterns can plug in to source a project differently.
 
     The `PATH` argument specifies where to create the project. If omitted, the
-    project is created in the current working directory.
+    project is created in the current working directory. `--module` selects the
+    pattern, defaulting to the bundled `copy` pattern.
 
     \b
     Examples:
-        # Create a project in a new directory
+        # Create a project in a new directory (bundled `copy` pattern)
         $ flepimop2 pattern foobar
         # Create a project in the current directory
         $ mkdir fizzbuzz && cd fizzbuzz
         $ flepimop2 pattern
+        # Select a specific pattern module
+        $ flepimop2 pattern --module copy foobar
 
     """  # noqa: D301
 
@@ -51,6 +58,7 @@ class PatternCommand(CliCommand):
         *,
         path: Path | None,
         dry_run: bool,
+        module: str | None,
     ) -> ExitCode:
         """
         Create a project from a pattern.
@@ -58,11 +66,20 @@ class PatternCommand(CliCommand):
         Args:
             path: Path to the new project.
             dry_run: Whether to perform a dry run.
+            module: Pattern module to source the project from; defaults to the
+                bundled `copy` pattern when not supplied.
 
         Returns:
             An exit code indicating success or failure.
         """
         path = path or Path.cwd()
+        module = module or _DEFAULT_PATTERN
+        try:
+            pattern = build_pattern({"module": module})
+        except ModuleNotFoundError:
+            self.error(f"Unknown pattern module: '{module}'")
+            return ExitCode.GENERAL
+
         if not path.exists():
             parent_dir = path.parent
             while not parent_dir.exists():
@@ -71,54 +88,15 @@ class PatternCommand(CliCommand):
                 self.error(f"Cannot write to path: {path}")
                 return ExitCode.GENERAL
 
+        # The pattern module is the authority on what it sets up, for both the
+        # dry-run preview and the post-scaffold confirmation.
         if dry_run:
-            self.info(f"Would create project at: {path}")
+            pattern.scaffold(path, dry_run=True)
+            self.info(f"Would create a project at {path} using the '{module}' pattern:")
+            self.info(pattern.plan())
             return ExitCode.OKAY
 
-        build_pattern({"module": "copy"}).scaffold(path)
-        self.info(f"Project created at: {path}")
-        self.info(f"Directory structure:\n{self._generate_tree(path)}")
+        pattern.scaffold(path)
+        self.info(f"Created a project at {path} using the '{module}' pattern:")
+        self.info(pattern.plan())
         return ExitCode.OKAY
-
-    @staticmethod
-    def _generate_tree(directory: Path, prefix: str = "") -> str:
-        """
-        Generate ASCII tree representation of directory structure.
-
-        Args:
-            directory: The root directory to generate the tree from.
-            prefix: The prefix for the current level (used in recursion).
-
-        Returns:
-            A string representing the directory tree.
-
-        Examples:
-            >>> from pathlib import Path
-            >>> from flepimop2.cli._pattern_command import PatternCommand
-            >>> example_dir = Path.cwd() / "tree_example"
-            >>> example_dir.mkdir(exist_ok=True)
-            >>> (example_dir / "file.txt").write_text("Sample file")
-            11
-            >>> (example_dir / "subdir").mkdir(exist_ok=True)
-            >>> (example_dir / "subdir" / "file1.txt").write_text("Sample file 1")
-            13
-            >>> print(PatternCommand._generate_tree(example_dir))
-            ├── subdir
-            │   └── file1.txt
-            └── file.txt
-            <BLANKLINE>
-
-        """
-        tree = ""
-        try:
-            items = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name))
-        except (OSError, PermissionError):
-            return tree
-        for i, item in enumerate(items):
-            is_last_item = i == len(items) - 1
-            current_prefix = "└── " if is_last_item else "├── "
-            tree += f"{prefix}{current_prefix}{item.name}\n"
-            if item.is_dir():
-                next_prefix = prefix + ("    " if is_last_item else "│   ")
-                tree += PatternCommand._generate_tree(item, next_prefix)
-        return tree

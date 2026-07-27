@@ -75,7 +75,8 @@ def test_run_dry_run_reports_target_without_writing(tmp_path: Path) -> None:
 
     assert result.exit_code == ExitCode.OKAY
     assert not target.exists()
-    assert "Would create project at" in result.output
+    assert "Would create a project at" in result.output
+    assert "using the 'copy' pattern" in result.output
 
 
 def test_run_returns_general_when_target_not_writable(
@@ -107,3 +108,30 @@ def test_run_returns_general_when_target_not_writable(
     assert result.exit_code == ExitCode.GENERAL
     assert not target.exists()
     assert "Cannot write to path" in result.output
+
+
+def test_run_module_option_selects_the_copy_pattern(tmp_path: Path) -> None:
+    """`--module copy` scaffolds the same tree as the default."""
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(
+        cli, ["pattern", "--module", "copy", str(target)], catch_exceptions=False
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert _relative_files(target) == _relative_files(_TEMPLATE_DIR)
+
+
+def test_run_unknown_module_errors_without_writing(tmp_path: Path) -> None:
+    """An unregistered `--module` reports a clean error and writes nothing."""
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(
+        cli,
+        ["pattern", "--module", "no_such_pattern", str(target)],
+        catch_exceptions=False,
+    )
+
+    assert result.exit_code == ExitCode.GENERAL
+    assert not target.exists()
+    assert "Unknown pattern module" in result.output

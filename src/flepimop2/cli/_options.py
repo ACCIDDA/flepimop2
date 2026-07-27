@@ -206,6 +206,17 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "module": (
+        click.option(
+            "--module",
+            default=None,
+            help=(
+                "Pattern module to source the project from. Defaults to the "
+                "bundled `copy` pattern, which scaffolds from a template."
+            ),
+        ),
+        None,
+    ),
     "no_cache": (
         click.option(
             "--no-cache",

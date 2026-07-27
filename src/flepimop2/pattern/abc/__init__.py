@@ -51,6 +51,21 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
         """Pattern-specific implementation for materializing the project."""
         ...
 
+    @abstractmethod
+    def plan(self) -> str:
+        """
+        Describe the project layout this pattern will create.
+
+        The command layer shows this before a dry run and after a real scaffold,
+        so each pattern is the authority on what it sets up rather than the CLI
+        inferring it from the filesystem.
+
+        Returns:
+            A human-readable tree of the files and directories the pattern
+            materializes.
+        """
+        ...
+
     @staticmethod
     def _copy_template_tree(source: Path, destination: Path) -> None:
         """
@@ -88,6 +103,49 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
                 PatternABC._copy_template_tree(item, dest_item)
             else:
                 dest_item.write_text(item.read_text())
+
+    @staticmethod
+    def _render_tree(directory: Path, prefix: str = "") -> str:
+        """
+        Render a directory's structure as an ASCII tree.
+
+        A shared helper for patterns whose `plan` describes a directory layout.
+
+        Args:
+            directory: The root directory to render.
+            prefix: The prefix for the current level (used in recursion).
+
+        Returns:
+            A string representing the directory tree.
+
+        Examples:
+            >>> import tempfile
+            >>> from pathlib import Path
+            >>> from flepimop2.pattern.abc import PatternABC
+            >>> root = Path(tempfile.mkdtemp())
+            >>> _ = (root / "config.yaml").write_text("key: value")
+            >>> sub = root / "subdir"
+            >>> sub.mkdir()
+            >>> _ = (sub / "data.txt").write_text("x")
+            >>> print(PatternABC._render_tree(root))
+            ├── subdir
+            │   └── data.txt
+            └── config.yaml
+            <BLANKLINE>
+        """
+        tree = ""
+        try:
+            items = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name))
+        except (OSError, PermissionError):
+            return tree
+        for i, item in enumerate(items):
+            is_last_item = i == len(items) - 1
+            current_prefix = "└── " if is_last_item else "├── "
+            tree += f"{prefix}{current_prefix}{item.name}\n"
+            if item.is_dir():
+                next_prefix = prefix + ("    " if is_last_item else "│   ")
+                tree += PatternABC._render_tree(item, next_prefix)
+        return tree
 
 
 def build(config: dict[str, Any] | ModuleBase | str) -> PatternABC:

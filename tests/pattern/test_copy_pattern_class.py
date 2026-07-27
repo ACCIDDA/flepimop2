@@ -53,3 +53,12 @@ def test_scaffold_dry_run_writes_nothing(tmp_path: Path) -> None:
     CopyPattern().scaffold(destination, dry_run=True)
 
     assert not destination.exists()
+
+
+def test_plan_describes_the_template_without_writing() -> None:
+    """`plan` renders the template tree and touches no filesystem destination."""
+    tree = CopyPattern().plan()
+
+    assert tree.strip()
+    for relative_path in _relative_files(_TEMPLATE_DIR):
+        assert relative_path.name in tree
