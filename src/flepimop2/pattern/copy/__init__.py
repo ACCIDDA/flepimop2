@@ -25,11 +25,37 @@ _TEMPLATE_DIR = Path(__file__).parents[2] / "templates" / "skeleton"
 
 
 class CopyPattern(PatternABC, module="copy"):
-    """Scaffold a fresh project from the bundled template tree."""
+    """Scaffold a project by copying a source tree.
+
+    The `source` directory is copied verbatim into the target. It defaults to the
+    bundled project template, so `flepimop2 pattern` with no `--source` produces
+    the documented quickstart; point `source` at another project to pattern off
+    it instead.
+    """
+
+    # Directory to copy from; None uses the bundled project template.
+    source: Path | None = None
+
+    def _source_dir(self) -> Path:
+        """
+        Resolve the directory this pattern copies from.
+
+        Returns:
+            `source` if set, otherwise the bundled project template.
+
+        Raises:
+            ValueError: If `source` is set but is not a directory.
+        """
+        if self.source is None:
+            return _TEMPLATE_DIR
+        if not self.source.is_dir():
+            msg = f"pattern source is not a directory: {self.source}"
+            raise ValueError(msg)
+        return self.source
 
     def _scaffold(self, destination: Path, *, dry_run: bool = False) -> None:
         """
-        Copy the bundled template tree into `destination`.
+        Copy the source tree into `destination`.
 
         Args:
             destination: Directory in which to create the project.
@@ -38,13 +64,33 @@ class CopyPattern(PatternABC, module="copy"):
         if dry_run:
             return
         destination.mkdir(parents=True, exist_ok=True)
-        self._copy_template_tree(_TEMPLATE_DIR, destination)
+        self._copy_template_tree(self._source_dir(), destination)
 
     def plan(self) -> str:
         """
-        Describe the bundled template tree this pattern copies.
+        Describe the source tree this pattern copies.
 
         Returns:
-            A text tree of the template's files and directories.
+            A text tree of the source's files and directories.
         """
-        return self._render_tree(_TEMPLATE_DIR)
+        return self._render_tree(self._source_dir())
+
+    def conflicts(self, destination: Path) -> list[Path]:
+        """
+        List files under `destination` that copying the source would overwrite.
+
+        Args:
+            destination: The directory the project would be created in.
+
+        Returns:
+            Paths, relative to the source, that already exist under `destination`.
+        """
+        source = self._source_dir()
+        found: list[Path] = []
+        for item in source.rglob("*"):
+            if not item.is_file() or "__pycache__" in item.parts:
+                continue
+            relative = item.relative_to(source)
+            if (destination / relative).exists():
+                found.append(relative)
+        return found

@@ -67,6 +67,24 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
         """
         ...
 
+    @abstractmethod
+    def conflicts(self, destination: Path) -> list[Path]:
+        """
+        List existing files under `destination` this pattern would overwrite.
+
+        The command refuses to scaffold when this is non-empty, so unrelated
+        content already in the target (for example a virtual environment) does
+        not block scaffolding, but a genuine clobber does.
+
+        Args:
+            destination: The directory the project would be created in.
+
+        Returns:
+            Paths, relative to `destination`, that already exist and would be
+            overwritten. Empty when there is no conflict.
+        """
+        ...
+
     @staticmethod
     def _copy_template_tree(source: Path, destination: Path) -> None:
         """

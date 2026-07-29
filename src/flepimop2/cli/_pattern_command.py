@@ -39,17 +39,21 @@ class PatternCommand(CliCommand):
 
     The `PATH` argument specifies where to create the project. If omitted, the
     project is created in the current working directory. `--module` selects the
-    pattern, defaulting to the bundled `copy` pattern.
+    pattern (default `copy`), and `--source` selects what the `copy` pattern
+    copies from (default the bundled project template). So a bare
+    `flepimop2 pattern PATH` is shorthand for
+    `flepimop2 pattern --module copy --source <bundled template> PATH`; point
+    `--source` at another project to pattern off it instead.
 
     \b
     Examples:
-        # Create a project in a new directory (bundled `copy` pattern)
+        # Create a project from the bundled template
         $ flepimop2 pattern foobar
         # Create a project in the current directory
         $ mkdir fizzbuzz && cd fizzbuzz
         $ flepimop2 pattern
-        # Select a specific pattern module
-        $ flepimop2 pattern --module copy foobar
+        # Copy from another project instead of the bundled template
+        $ flepimop2 pattern --source path/to/existing-project foobar
 
     """  # noqa: D301
 
@@ -59,6 +63,7 @@ class PatternCommand(CliCommand):
         path: Path | None,
         dry_run: bool,
         module: str | None,
+        source: Path | None,
     ) -> ExitCode:
         """
         Create a project from a pattern.
@@ -66,20 +71,37 @@ class PatternCommand(CliCommand):
         Args:
             path: Path to the new project.
             dry_run: Whether to perform a dry run.
-            module: Pattern module to source the project from; defaults to the
+            module: Pattern module that creates the project; defaults to the
                 bundled `copy` pattern when not supplied.
+            source: Directory the pattern copies from; defaults to the bundled
+                template when not supplied.
 
         Returns:
             An exit code indicating success or failure.
         """
         path = path or Path.cwd()
         module = module or _DEFAULT_PATTERN
+        config: dict[str, str | Path] = {"module": module}
+        if source is not None:
+            config["source"] = source
         try:
-            pattern = build_pattern({"module": module})
+            pattern = build_pattern(config)
         except ModuleNotFoundError:
             self.error(f"Unknown pattern module: '{module}'")
             return ExitCode.GENERAL
 
+        # Refuse only when scaffolding would overwrite existing files, so
+        # unrelated content already in the target (for example a virtual
+        # environment) does not block it. Also check a new target is writable
+        # (click already rejects an existing file path).
+        overwrite = pattern.conflicts(path)
+        if overwrite:
+            names = ", ".join(str(p) for p in sorted(overwrite)[:5])
+            self.error(
+                f"Target {path} already contains files this pattern would "
+                f"overwrite: {names}"
+            )
+            return ExitCode.GENERAL
         if not path.exists():
             parent_dir = path.parent
             while not parent_dir.exists():

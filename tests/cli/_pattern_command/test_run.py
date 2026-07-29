@@ -135,3 +135,59 @@ def test_run_unknown_module_errors_without_writing(tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.GENERAL
     assert not target.exists()
     assert "Unknown pattern module" in result.output
+
+
+def test_run_source_option_copies_the_given_tree(tmp_path: Path) -> None:
+    """`--source` copies from the given directory instead of the bundled template."""
+    source = tmp_path / "source"
+    (source / "sub").mkdir(parents=True)
+    (source / "top.yaml").write_text("x: 1")
+    (source / "sub" / "inner.txt").write_text("hi")
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(
+        cli, ["pattern", "--source", str(source), str(target)], catch_exceptions=False
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert _relative_files(target) == _relative_files(source)
+    assert (target / "sub" / "inner.txt").read_text() == "hi"
+
+
+def test_run_module_short_flag_selects_the_pattern(tmp_path: Path) -> None:
+    """`-m` is a shorthand for `--module`."""
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(
+        cli, ["pattern", "-m", "copy", str(target)], catch_exceptions=False
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert _relative_files(target) == _relative_files(_TEMPLATE_DIR)
+
+
+def test_run_refuses_to_overwrite_existing_files(tmp_path: Path) -> None:
+    """Scaffolding refuses when it would overwrite files already in the target."""
+    target = tmp_path / "project"
+    target.mkdir()
+    # README.md is part of the bundled template, so this is a genuine clobber.
+    (target / "README.md").write_text("do not clobber")
+
+    result = CliRunner().invoke(cli, ["pattern", str(target)], catch_exceptions=False)
+
+    assert result.exit_code == ExitCode.GENERAL
+    assert "overwrite" in result.output
+    assert (target / "README.md").read_text() == "do not clobber"
+
+
+def test_run_scaffolds_alongside_unrelated_files(tmp_path: Path) -> None:
+    """A target holding only non-conflicting content (e.g. a venv) still scaffolds."""
+    target = tmp_path / "project"
+    (target / ".venv").mkdir(parents=True)
+    (target / ".venv" / "marker").write_text("keep")
+
+    result = CliRunner().invoke(cli, ["pattern", str(target)], catch_exceptions=False)
+
+    assert result.exit_code == ExitCode.OKAY
+    assert (target / "README.md").exists()
+    assert (target / ".venv" / "marker").read_text() == "keep"

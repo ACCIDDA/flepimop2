@@ -17,6 +17,8 @@
 
 from pathlib import Path
 
+import pytest
+
 from flepimop2.pattern.copy import _TEMPLATE_DIR, CopyPattern
 
 
@@ -62,3 +64,24 @@ def test_plan_describes_the_template_without_writing() -> None:
     assert tree.strip()
     for relative_path in _relative_files(_TEMPLATE_DIR):
         assert relative_path.name in tree
+
+
+def test_source_overrides_the_bundled_template(tmp_path: Path) -> None:
+    """A `source` copies from that directory instead of the bundled template."""
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "custom.txt").write_text("hello")
+    destination = tmp_path / "out"
+
+    CopyPattern(source=source).scaffold(destination)
+
+    assert (destination / "custom.txt").read_text() == "hello"
+    assert "custom.txt" in CopyPattern(source=source).plan()
+
+
+def test_a_source_that_is_not_a_directory_is_rejected(tmp_path: Path) -> None:
+    """A `source` pointing at a missing path raises rather than scaffolding."""
+    pattern = CopyPattern(source=tmp_path / "does_not_exist")
+
+    with pytest.raises(ValueError, match="not a directory"):
+        pattern.scaffold(tmp_path / "out")

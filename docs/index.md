@@ -26,14 +26,20 @@ If you want to work from a local clone instead, see the [installation guide](gui
 
 ## Create a Project
 
-Scaffold a new project with `flepimop2 pattern`, then move into it:
+You can create a new project with `flepimop2 pattern <target_project_directory>`. For this guide:
 
 ```bash
 flepimop2 pattern quickstart-project
-cd quickstart-project
 ```
 
-This creates the standard project structure:
+If the target directory already exists and is not empty, `flepimop2 pattern` stops rather than overwriting it. Move into the new project and list it:
+
+```bash
+cd quickstart-project
+ls -R
+```
+
+This is the standard project structure:
 
 ```
 quickstart-project/
@@ -53,6 +59,8 @@ quickstart-project/
 │   └── SIR_plot.R
 └── README.md
 ```
+
+`flepimop2 pattern quickstart-project` is shorthand for `flepimop2 pattern --module copy --source <bundled quickstart> quickstart-project`: the `copy` pattern (the default `--module`) copies a source tree, and the default `--source` is the bundled quickstart shown above. Point `--source` at another project directory to pattern off it instead, which is how you start from an existing model rather than the bundled example.
 
 Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The **configuration file** (saved in `configs`) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The **system** and **engine** are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in `model_input/plugins`) for both the system and the engine. `flepimop2 pattern` already places those files in the correct locations, includes the dependencies required for this page, and includes the post-processing script used later in the guide.
 
