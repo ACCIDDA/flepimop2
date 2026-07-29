@@ -17,6 +17,7 @@
 
 __all__ = ["PatternABC", "build"]
 
+import shutil
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any
@@ -97,12 +98,16 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
 
         """
         for item in source.iterdir():
+            # Never scaffold Python bytecode caches into a user's project.
+            if item.name == "__pycache__":
+                continue
             dest_item = destination / item.name
             if item.is_dir():
                 dest_item.mkdir(parents=True, exist_ok=True)
                 PatternABC._copy_template_tree(item, dest_item)
             else:
-                dest_item.write_text(item.read_text())
+                # Copy bytes so non-UTF-8 or binary template assets survive.
+                shutil.copyfile(item, dest_item)
 
     @staticmethod
     def _render_tree(directory: Path, prefix: str = "") -> str:

@@ -89,6 +89,10 @@ testpaths = [
 addopts = [
     "--import-mode=importlib",
     "--doctest-modules",
+    # Project templates ship example plugin scripts as data, not importable
+    # package modules; keep --doctest-modules from importing them (which would
+    # litter the template with __pycache__ that scaffolding then copies).
+    "--ignore=src/flepimop2/templates",
 ]
 markers = [
     "integration: marks integration tests in tests/integration/",
@@ -133,6 +137,9 @@ allow-star-arg-any = true
 "scripts/**/*" = [
     "T201",     # Use of `print` detected
 ]
+"src/flepimop2/templates/**/*" = [
+    "CPY001",   # Scaffolding shipped to users as a project template, not package source
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -143,6 +150,7 @@ files = "."
 exclude = [
     "^build/",
     "^docs/assets/",
+    "^src/flepimop2/templates/",
     "^site/",
 ]
 namespace_packages = true
