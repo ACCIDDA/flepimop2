@@ -1266,6 +1266,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/api/pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pattern
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/api/process/" class="md-nav__link">
         
   
@@ -1788,7 +1816,7 @@
 <p>Above is a brief example of what an integration test might look like. The key elements of this example are:</p>
 <ul>
 <li>The test provides a temporary directory to <code>project_skeleton</code> and <code>flepimop2_run</code> that is cleaned up after test completion via <a href="https://docs.pytest.org/en/stable/how-to/tmp_path.html"><code>pytest</code>'s <code>tmp_path</code> fixture</a>.</li>
-<li>The files <code>sir.py</code>, <code>solve_ivp.py</code>, and <code>config.yaml</code> are copied from the integration test to the project directory after the project is created via the <code>flepimop2 skeleton</code> CLI.</li>
+<li>The files <code>sir.py</code>, <code>solve_ivp.py</code>, and <code>config.yaml</code> are copied from the integration test to the project directory after the project is created via the <code>flepimop2 pattern</code> CLI.</li>
 <li>The dependencies <code>numpy</code>, <code>pandas</code>, and <code>scipy</code> are additionally installed to the project directory's virtual environment and are available to the <code>flepimop2</code> CLI.</li>
 <li>Finally, the <code>flepimop2_run</code> function invokes the <code>flepimop2 simulate</code> CLI in the project directory and the returned object is a <a href="https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess"><code>subprocess.CompletedProcess</code></a>. However, you could invoke any action available via the <code>flepimop2</code> CLI, for a full list please refer to <code>flepimop2 --help</code>.</li>
 </ul>

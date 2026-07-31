@@ -1299,6 +1299,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/api/pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pattern
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/api/process/" class="md-nav__link">
         
   
@@ -1992,7 +2020,7 @@
 <p>Now you can run the built config directly:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>flepimop2<span class="w"> </span>simulate<span class="w"> </span>configs/built/high-transmission.yaml
 </span></code></pre></div>
-<p><code>configs/built/</code> is the right place for generated configs in a project created from <code>flepimop2 skeleton</code>. The directory is already set up to stay out of version control, which is what you usually want. Built configs are cheap to reconstruct, so it is more useful to track the modular source pieces than the generated YAML.</p>
+<p><code>configs/built/</code> is the right place for generated configs in a project created from <code>flepimop2 pattern</code>. The directory is already set up to stay out of version control, which is what you usually want. Built configs are cheap to reconstruct, so it is more useful to track the modular source pieces than the generated YAML.</p>
 <h2 id="6-automate-the-build-step-in-your-task-runner">6. Automate the Build Step in Your Task Runner<a class="headerlink" href="#6-automate-the-build-step-in-your-task-runner" title="Permanent link">&para;</a></h2>
 <p>If your workflow depends on built configs, make the config build step an explicit dependency in your task runner.</p>
 <p>For example, with the default <code>justfile</code>, you might add:</p>
