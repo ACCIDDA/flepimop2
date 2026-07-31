@@ -20,9 +20,9 @@ from pathlib import Path
 from flepimop2.cli import CliCommand
 from flepimop2.cli._format_command import FormatCommand
 from flepimop2.cli._patch_command import PatchCommand
+from flepimop2.cli._pattern_command import PatternCommand
 from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._simulate_command import SimulateCommand
-from flepimop2.cli._skeleton_command import SkeletonCommand
 from flepimop2.typing import ExitCode
 
 
@@ -44,10 +44,10 @@ def test_base_target_defaults_to_none() -> None:
 
 
 def test_targetless_builtin_commands_return_none() -> None:
-    """Format, patch, and skeleton commands do not act on named config targets."""
+    """Format, patch, and pattern commands do not act on named config targets."""
     assert FormatCommand().target is None
     assert PatchCommand().target is None
-    assert SkeletonCommand().target is None
+    assert PatternCommand().target is None
 
 
 def test_process_target_returns_explicit_target(tmp_path: Path) -> None:

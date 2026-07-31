@@ -26,14 +26,20 @@ If you want to work from a local clone instead, see the [installation guide](gui
 
 ## Create a Project
 
-Download [quickstart-project.zip](downloads/quickstart-project.zip), unzip it wherever you want your project to live, then run:
+You can create a new project with `flepimop2 pattern <target_project_directory>`. For this guide:
 
 ```bash
-unzip quickstart-project.zip
-cd quickstart-project
+flepimop2 pattern quickstart-project
 ```
 
-The bundle already contains the standard project structure created by `flepimop2 skeleton`:
+If the target directory already exists and is not empty, `flepimop2 pattern` stops rather than overwriting it. Move into the new project and list it:
+
+```bash
+cd quickstart-project
+ls -R
+```
+
+This is the standard project structure:
 
 ```
 quickstart-project/
@@ -46,13 +52,17 @@ quickstart-project/
 ├── model_input/
 │   ├── data/
 │   └── plugins/
+│       ├── SIR.py
+│       └── solve_ivp.py
 ├── model_output/
 ├── postprocessing/
 │   └── SIR_plot.R
 └── README.md
 ```
 
-Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The **configuration file** (saved in `configs`) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The **system** and **engine** are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in `model_input/plugins`) for both the system and the engine. The ZIP bundle above already places those files in the correct locations, includes the dependencies required for this page, and includes the post-processing script used later in the guide.
+`flepimop2 pattern quickstart-project` is shorthand for `flepimop2 pattern --module copy --source <bundled quickstart> quickstart-project`: the `copy` pattern (the default `--module`) copies a source tree, and the default `--source` is the bundled quickstart shown above. Point `--source` at another project directory to pattern off it instead, which is how you start from an existing model rather than the bundled example.
+
+Every flepimop2 project needs at least three things to run: a configuration file, a system, and an engine. The **configuration file** (saved in `configs`) is a YAML file that specifies your model parameters, which system and engine to use, where to write outputs, and optionally what post-processing steps to run after a simulation. The **system** and **engine** are backends that implement the model dynamics and the numerical solver, respectively. In this quickstart, we will use Python scripts (saved in `model_input/plugins`) for both the system and the engine. `flepimop2 pattern` already places those files in the correct locations, includes the dependencies required for this page, and includes the post-processing script used later in the guide.
 
 ??? example "Configuration File"
     ```yaml
@@ -69,7 +79,7 @@ Every flepimop2 project needs at least three things to run: a configuration file
     --8<-- "assets/quickstart-project/model_input/plugins/solve_ivp.py"
     ```
 
-Next, set up the project's virtual environment. The bundled `environment.yaml` already includes the dependencies required for this guide.
+Next, set up the project's virtual environment. The scaffolded `environment.yaml` already includes the dependencies required for this guide.
 
 ??? example "Environment YAML file"
     ```yaml
@@ -99,9 +109,9 @@ Results are saved automatically to the `model_output` directory as a CSV file.
 
 flepimop2 supports post-processing steps that run after a simulation - useful for generating plots, rendering notebooks, or producing summary tables. Post-processing steps are defined in the `process` block of your configuration file and can invoke R scripts, Python scripts, or Jupyter notebooks.
 
-The same `quickstart-project.zip` bundle already includes the post-processing config, script, and dependencies needed for this section.
+The project scaffolded by `flepimop2 pattern` already includes the post-processing config, script, and dependencies needed for this section.
 
-The bundled project includes this post-processing file layout:
+The scaffolded project includes this post-processing file layout:
 
 ```
 quickstart-project/

@@ -206,6 +206,18 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "module": (
+        click.option(
+            "-m",
+            "--module",
+            default=None,
+            help=(
+                "Pattern module that creates the project. Defaults to the "
+                "bundled `copy` pattern, which copies a source tree."
+            ),
+        ),
+        None,
+    ),
     "no_cache": (
         click.option(
             "--no-cache",
@@ -255,6 +267,18 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
             default=None,
         ),
         "Filesystem path used by the command.",
+    ),
+    "source": (
+        click.option(
+            "--source",
+            default=None,
+            type=click.Path(exists=True, file_okay=False, path_type=Path),
+            help=(
+                "Directory the pattern copies from. Defaults to the bundled "
+                "project template."
+            ),
+        ),
+        None,
     ),
     "target": (
         click.option(

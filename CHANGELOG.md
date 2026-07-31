@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Promoted project scaffolding to a pluggable `pattern` module namespace (`PatternABC` and the bundled `flepimop2.pattern.copy`) and added the `flepimop2 pattern` command, so custom project sources/templates can plug in. See [#250](https://github.com/ACCIDDA/flepimop2/issues/250).
 
 ### Changed
 

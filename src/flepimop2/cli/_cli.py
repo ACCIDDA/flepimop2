@@ -25,10 +25,10 @@ from flepimop2.cli._build_command import BuildCommand
 from flepimop2.cli._format_command import FormatCommand
 from flepimop2.cli._job_command import job_group
 from flepimop2.cli._patch_command import PatchCommand
+from flepimop2.cli._pattern_command import PatternCommand
 from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._register_command import register_command
 from flepimop2.cli._simulate_command import SimulateCommand
-from flepimop2.cli._skeleton_command import SkeletonCommand
 
 _FLEPIMOP2_VERSION: Final[str] = version("flepimop2")
 
@@ -46,9 +46,9 @@ def cli() -> None:
 register_command(BuildCommand, cli)
 register_command(FormatCommand, cli)
 register_command(PatchCommand, cli)
+register_command(PatternCommand, cli)
 register_command(ProcessCommand, cli)
 register_command(SimulateCommand, cli)
-register_command(SkeletonCommand, cli)
 
 # Register subgroups
 cli.add_command(job_group)

@@ -13,11 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Unit tests for SkeletonCommand._copy_template_tree method."""
+"""Unit tests for the `PatternABC._copy_template_tree` helper."""
 
 from pathlib import Path
 
-from flepimop2.cli._skeleton_command import SkeletonCommand
+from flepimop2.pattern.abc import PatternABC
 
 
 def test_copy_empty_directory(tmp_path: Path) -> None:
@@ -26,7 +26,7 @@ def test_copy_empty_directory(tmp_path: Path) -> None:
     source.mkdir()
     dest = tmp_path / "dest"
     dest.mkdir()
-    SkeletonCommand._copy_template_tree(source, dest)
+    PatternABC._copy_template_tree(source, dest)
     assert dest.exists()
     assert list(dest.iterdir()) == []
 
@@ -46,7 +46,7 @@ def test_copy_mixed_structure(tmp_path: Path) -> None:
     (source / "data" / "output" / ".gitkeep").write_text("")
     dest = tmp_path / "dest"
     dest.mkdir()
-    SkeletonCommand._copy_template_tree(source, dest)
+    PatternABC._copy_template_tree(source, dest)
     assert (dest / "root_file.txt").read_text() == "Root content"
     assert (dest / "config").is_dir()
     assert (dest / "config" / "example.yaml").read_text() == "key: value"

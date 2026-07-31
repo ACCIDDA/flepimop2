@@ -36,7 +36,14 @@ from flepimop2.module import ModuleBase
 from flepimop2.typing import IdentifierString
 
 Namespace = Literal[
-    "backend", "engine", "job", "parameter", "process", "scenario", "system"
+    "backend",
+    "engine",
+    "job",
+    "parameter",
+    "pattern",
+    "process",
+    "scenario",
+    "system",
 ]
 
 T = TypeVar("T", bound=ModuleBase)
