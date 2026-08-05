@@ -272,10 +272,10 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         click.option(
             "--source",
             default=None,
-            type=click.Path(exists=True, file_okay=False, path_type=Path),
+            type=click.Path(exists=True, path_type=Path),
             help=(
-                "Directory the pattern copies from. Defaults to the bundled "
-                "project template."
+                "Directory or local zip/tar archive the pattern copies from. "
+                "Defaults to the bundled project template."
             ),
         ),
         None,

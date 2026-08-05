@@ -16,6 +16,7 @@
 """Tests for `PatternCommand.run` via the `flepimop2 pattern` CLI."""
 
 import os
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -152,6 +153,34 @@ def test_run_source_option_copies_the_given_tree(tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.OKAY
     assert _relative_files(target) == _relative_files(source)
     assert (target / "sub" / "inner.txt").read_text() == "hi"
+
+
+def test_run_source_option_unpacks_a_local_archive(tmp_path: Path) -> None:
+    """`--source` accepts a local archive as well as a directory."""
+    archive_path = tmp_path / "project.zip"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("configs/config.yaml", "name: archived")
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(
+        cli, ["pattern", "--source", str(archive_path), str(target)]
+    )
+
+    assert result.exit_code == ExitCode.OKAY
+    assert (target / "configs" / "config.yaml").read_text() == "name: archived"
+
+
+def test_run_rejects_an_unsupported_source_file(tmp_path: Path) -> None:
+    """An unsupported source file reports a clean command error."""
+    source = tmp_path / "project.txt"
+    source.write_text("not an archive")
+    target = tmp_path / "project"
+
+    result = CliRunner().invoke(cli, ["pattern", "--source", str(source), str(target)])
+
+    assert result.exit_code == ExitCode.GENERAL
+    assert "not a supported zip or tar archive" in result.output
+    assert not target.exists()
 
 
 def test_run_module_short_flag_selects_the_pattern(tmp_path: Path) -> None:

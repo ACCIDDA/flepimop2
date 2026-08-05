@@ -15,6 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for `CopyPattern.scaffold`."""
 
+import tarfile
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -79,9 +81,48 @@ def test_source_overrides_the_bundled_template(tmp_path: Path) -> None:
     assert "custom.txt" in CopyPattern(source=source).plan()
 
 
+@pytest.mark.parametrize("archive_type", ["zip", "tar"])
+def test_archive_source_is_unpacked(tmp_path: Path, archive_type: str) -> None:
+    """A local zip or tar source is unpacked into the destination."""
+    source = tmp_path / "source"
+    (source / "nested").mkdir(parents=True)
+    (source / "top.yaml").write_text("x: 1")
+    (source / "nested" / "inner.txt").write_text("hello")
+    archive_path = tmp_path / f"source.{archive_type}"
+    if archive_type == "zip":
+        with zipfile.ZipFile(archive_path, "w") as archive:
+            for path in source.rglob("*"):
+                if path.is_file():
+                    archive.write(path, path.relative_to(source))
+    else:
+        with tarfile.open(archive_path, "w") as archive:
+            for path in source.rglob("*"):
+                archive.add(path, path.relative_to(source), recursive=False)
+
+    destination = tmp_path / "out"
+    pattern = CopyPattern(source=archive_path)
+    pattern.scaffold(destination)
+
+    assert (destination / "top.yaml").read_text() == "x: 1"
+    assert (destination / "nested" / "inner.txt").read_text() == "hello"
+    assert "inner.txt" in pattern.plan()
+
+
+def test_archive_source_rejects_parent_traversal(tmp_path: Path) -> None:
+    """An archive member cannot write outside the destination."""
+    archive_path = tmp_path / "unsafe.zip"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("../outside.txt", "unsafe")
+
+    with pytest.raises(ValueError, match="escapes the target"):
+        CopyPattern(source=archive_path).scaffold(tmp_path / "out")
+
+    assert not (tmp_path / "outside.txt").exists()
+
+
 def test_a_source_that_is_not_a_directory_is_rejected(tmp_path: Path) -> None:
     """A `source` pointing at a missing path raises rather than scaffolding."""
     pattern = CopyPattern(source=tmp_path / "does_not_exist")
 
-    with pytest.raises(ValueError, match="not a directory"):
+    with pytest.raises(ValueError, match="does not exist"):
         pattern.scaffold(tmp_path / "out")
