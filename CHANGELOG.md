@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Promoted project scaffolding to a pluggable `pattern` module namespace (`PatternABC` and the bundled `flepimop2.pattern.copy`) and added the `flepimop2 pattern` command, so custom project sources/templates can plug in. See [#250](https://github.com/ACCIDDA/flepimop2/issues/250).
 - Added local zip and tar archives as sources for the bundled `copy` pattern. See [#322](https://github.com/ACCIDDA/flepimop2/issues/322).
+- Process steps can declare upstream steps with `depends`, and `flepimop2 process` now runs a step's dependencies first, in dependency order. Unknown references, self-dependencies, and cycles are rejected before anything executes. A step may report its target as already present via `ProcessABC.is_satisfied()`, which makes a re-run a no-op; `--force` runs the requested step anyway. See [#323](https://github.com/ACCIDDA/flepimop2/issues/323).
 
 ### Changed
 

@@ -185,6 +185,19 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "force": (
+        click.option(
+            "--force",
+            is_flag=True,
+            default=False,
+            help=(
+                "Run the requested step even when its target is already "
+                "present. Dependencies are left alone, so forcing a step does "
+                "not re-run everything upstream of it."
+            ),
+        ),
+        None,
+    ),
     "job_id": (
         click.argument(
             "job_id",

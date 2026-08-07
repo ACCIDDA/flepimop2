@@ -23,6 +23,7 @@ from flepimop2._utils._click import _resolve_config_target
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
+from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import ExitCode
 
 
@@ -55,14 +56,23 @@ class ProcessCommand(CliCommand):
         config: Path,
         dry_run: bool,
         target: str | None = None,
+        force: bool = False,
     ) -> ExitCode:
         """
-        Execute the processing step.
+        Execute the processing step and anything it depends on.
+
+        The requested step's `depends` are resolved first, so asking for one
+        step also runs whatever it needs, in dependency order. A step that
+        reports its target already satisfied is skipped, which is what makes
+        re-running a pipeline cheap.
 
         Args:
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
             target: Optional target process config to use.
+            force: Run the requested step even when its target is already
+                present. Dependencies keep their normal skip behaviour, so
+                forcing a transform does not re-fetch its inputs.
 
         Returns:
             An exit code indicating success or failure.
@@ -79,6 +89,16 @@ class ProcessCommand(CliCommand):
         self.info(f"Process section: {processconfig}")
         self.info(f"Process target: {processtargetname} => {processtarget}")
 
-        process_instance = build_process(processtarget)
-        process_instance.execute(dry_run=dry_run)
+        plan = resolve_plan(processconfig, processtargetname)
+        if len(plan) > 1:
+            self.info(f"Process plan: {' -> '.join(plan)}")
+
+        for step in plan:
+            process_instance = build_process(processconfig[step])
+            # Only the step actually asked for is forced; its dependencies keep
+            # their own satisfied-means-skip behaviour.
+            process_instance.execute(
+                dry_run=dry_run,
+                force=force and step == processtargetname,
+            )
         return ExitCode.OKAY
