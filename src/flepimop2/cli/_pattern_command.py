@@ -39,8 +39,9 @@ class PatternCommand(CliCommand):
 
     The `PATH` argument specifies where to create the project. If omitted, the
     project is created in the current working directory. `--module` selects the
-    pattern (default `copy`), and `--source` selects what the `copy` pattern
-    copies from (default the bundled project template). So a bare
+    pattern (default `copy`), and `--source` selects the directory or local
+    zip/tar archive the `copy` pattern copies from (default the bundled project
+    template). So a bare
     `flepimop2 pattern PATH` is shorthand for
     `flepimop2 pattern --module copy --source <bundled template> PATH`; point
     `--source` at another project to pattern off it instead.
@@ -54,6 +55,8 @@ class PatternCommand(CliCommand):
         $ flepimop2 pattern
         # Copy from another project instead of the bundled template
         $ flepimop2 pattern --source path/to/existing-project foobar
+        # Unpack a local project archive
+        $ flepimop2 pattern --source path/to/project.zip foobar
 
     """  # noqa: D301
 
@@ -73,8 +76,8 @@ class PatternCommand(CliCommand):
             dry_run: Whether to perform a dry run.
             module: Pattern module that creates the project; defaults to the
                 bundled `copy` pattern when not supplied.
-            source: Directory the pattern copies from; defaults to the bundled
-                template when not supplied.
+            source: Directory or local zip/tar archive the pattern copies from;
+                defaults to the bundled template when not supplied.
 
         Returns:
             An exit code indicating success or failure.
@@ -94,7 +97,11 @@ class PatternCommand(CliCommand):
         # unrelated content already in the target (for example a virtual
         # environment) does not block it. Also check a new target is writable
         # (click already rejects an existing file path).
-        overwrite = pattern.conflicts(path)
+        try:
+            overwrite = pattern.conflicts(path)
+        except ValueError as error:
+            self.error(str(error))
+            return ExitCode.GENERAL
         if overwrite:
             names = ", ".join(str(p) for p in sorted(overwrite)[:5])
             self.error(
