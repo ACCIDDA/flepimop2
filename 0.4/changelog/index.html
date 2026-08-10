@@ -2138,6 +2138,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Promoted project scaffolding to a pluggable <code>pattern</code> module namespace (<code>PatternABC</code> and the bundled <code>flepimop2.pattern.copy</code>) and added the <code>flepimop2 pattern</code> command, so custom project sources/templates can plug in. See <a href="https://github.com/ACCIDDA/flepimop2/issues/250">#250</a>.</li>
 <li>Added local zip and tar archives as sources for the bundled <code>copy</code> pattern. See <a href="https://github.com/ACCIDDA/flepimop2/issues/322">#322</a>.</li>
+<li>Process steps can declare upstream steps with <code>depends</code>, and <code>flepimop2 process</code> now runs a step's dependencies first, in dependency order. Unknown references, self-dependencies, and cycles are rejected before anything executes. A step may report its target as already present via <code>ProcessABC.is_satisfied()</code>, which makes a re-run a no-op; <code>-f</code>/<code>--force</code> runs the requested step anyway, and repeating it (<code>-ff</code>) forces that step's dependencies too. See <a href="https://github.com/ACCIDDA/flepimop2/issues/323">#323</a>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>

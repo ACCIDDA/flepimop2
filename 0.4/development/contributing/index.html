@@ -663,6 +663,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cli-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI options
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2021,6 +2032,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cli-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI options
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2310,6 +2332,8 @@
 <li><strong>Linting</strong>: <code>ruff check</code> enforces code quality rules.</li>
 </ul>
 <p>Run <code>just</code> to automatically format/lint, type check, and run tests before committing. If you only want formatting/linting, run <code>just ruff</code>.</p>
+<h3 id="cli-options">CLI options<a class="headerlink" href="#cli-options" title="Permanent link">&para;</a></h3>
+<p>Give every option added to <code>flepimop2.cli._options.COMMON_OPTIONS</code> <strong>both</strong> a short and a long flag, e.g. <code>click.option("-f", "--force", ...)</code>. Short flags are what users reach for interactively, and a counted option depends on having one: commands are re-dispatched to job backends by rendering their bound options back into argv, and <code>_render_param</code> renders a counter by repeating its <em>short</em> flag, so a counted option without one renders unusably.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="organization">Organization<a class="headerlink" href="#organization" title="Permanent link">&para;</a></h3>
 <p>Tests are organized to mirror the source code structure with additional assets for a test file being placed in a directory suffixed with <code>_assets</code> to avoid aliasing issues:</p>
