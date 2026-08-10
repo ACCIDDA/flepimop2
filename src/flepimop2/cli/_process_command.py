@@ -23,7 +23,43 @@ from flepimop2._utils._click import _resolve_config_target
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
+from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import ExitCode
+
+# `--force` is a counter so that forcing a step and forcing everything it needs
+# are separate asks: one `-f` re-runs the step you named, a second also re-runs
+# its dependencies.
+_FORCE_TARGET = 1
+_FORCE_DEPENDENCIES = 2
+
+
+def _should_force(force: int, step: str, target: str | None) -> bool:
+    """
+    Decide whether one step of a plan runs regardless of being satisfied.
+
+    Args:
+        force: How many times `--force` was given.
+        step: The plan step being considered.
+        target: The step the user actually asked for.
+
+    Returns:
+        True if this step should run even when its target already exists.
+
+    Examples:
+        >>> from flepimop2.cli._process_command import _should_force
+        >>> _should_force(0, "transform", "transform")
+        False
+        >>> _should_force(1, "transform", "transform")
+        True
+        >>> _should_force(1, "fetch", "transform")
+        False
+        >>> _should_force(2, "fetch", "transform")
+        True
+
+    """
+    if force >= _FORCE_DEPENDENCIES:
+        return True
+    return force >= _FORCE_TARGET and step == target
 
 
 class ProcessCommand(CliCommand):
@@ -55,14 +91,25 @@ class ProcessCommand(CliCommand):
         config: Path,
         dry_run: bool,
         target: str | None = None,
+        force: int = 0,
     ) -> ExitCode:
         """
-        Execute the processing step.
+        Execute the processing step and anything it depends on.
+
+        The requested step's `depends` are resolved first, so asking for one
+        step also runs whatever it needs, in dependency order. A step that
+        reports its target already satisfied is skipped, which is what makes
+        re-running a pipeline cheap.
 
         Args:
             config: Path to the configuration file.
             dry_run: Whether dry run mode is enabled.
             target: Optional target process config to use.
+            force: How much of the plan to run regardless of whether its
+                targets are already present. `0` skips satisfied steps, `1`
+                (`-f`) forces only the requested step, so forcing a transform
+                does not re-fetch its inputs, and `2` or more (`-ff`) forces
+                its dependencies too.
 
         Returns:
             An exit code indicating success or failure.
@@ -79,6 +126,16 @@ class ProcessCommand(CliCommand):
         self.info(f"Process section: {processconfig}")
         self.info(f"Process target: {processtargetname} => {processtarget}")
 
-        process_instance = build_process(processtarget)
-        process_instance.execute(dry_run=dry_run)
+        plan = resolve_plan(processconfig, processtargetname)
+        if len(plan) > 1:
+            self.info(f"Process plan: {' -> '.join(plan)}")
+
+        for step in plan:
+            process_instance = build_process(processconfig[step])
+            # One -f forces just the step asked for, leaving its dependencies
+            # to their own satisfied-means-skip behaviour; -ff forces those too.
+            process_instance.execute(
+                dry_run=dry_run,
+                force=_should_force(force, step, processtargetname),
+            )
         return ExitCode.OKAY
