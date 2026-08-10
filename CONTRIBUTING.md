@@ -57,6 +57,10 @@ We use [`ruff`](https://docs.astral.sh/ruff/) for both formatting and linting:
 
 Run `just` to automatically format/lint, type check, and run tests before committing. If you only want formatting/linting, run `just ruff`.
 
+### CLI options
+
+Give every option added to `flepimop2.cli._options.COMMON_OPTIONS` **both** a short and a long flag, e.g. `click.option("-f", "--force", ...)`. Short flags are what users reach for interactively, and a counted option depends on having one: commands are re-dispatched to job backends by rendering their bound options back into argv, and `_render_param` renders a counter by repeating its *short* flag, so a counted option without one renders unusably.
+
 ## Testing
 
 ### Organization

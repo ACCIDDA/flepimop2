@@ -19,6 +19,9 @@ from typing import Any
 
 import pytest
 
+from flepimop2._utils._click import _click_param_for_option, _render_param
+from flepimop2.cli._options import get_option
+from flepimop2.cli._process_command import _should_force
 from flepimop2.exceptions import Flepimop2ValidationError
 from flepimop2.process.abc import ProcessABC, resolve_plan
 
@@ -63,6 +66,58 @@ def test_resolve_plan_without_dependencies_keeps_config_order() -> None:
     """
     section = {"b": _step(), "a": _step(), "c": _step()}
     assert resolve_plan(section) == ["b", "a", "c"]
+
+
+def test_resolve_plan_orders_multiple_dependencies_before_their_dependent() -> None:
+    """A step with several dependencies runs after all of them.
+
+    The dependencies are mutually independent, so their relative order is only
+    required to follow the configuration; what must hold is that every one of
+    them precedes the step that declares them.
+    """
+    section = {
+        "combine": _step(["fetch_b", "fetch_a", "fetch_c"]),
+        "fetch_a": _step(),
+        "fetch_b": _step(),
+        "fetch_c": _step(),
+    }
+    plan = resolve_plan(section)
+
+    assert plan[-1] == "combine"
+    # Independent steps keep configuration order rather than the order they
+    # happen to be named in `depends`.
+    assert plan[:-1] == ["fetch_a", "fetch_b", "fetch_c"]
+
+
+def test_resolve_plan_orders_a_diamond() -> None:
+    """A step reachable by two paths runs once, after both of them."""
+    section = {
+        "report": _step(["left", "right"]),
+        "left": _step(["base"]),
+        "right": _step(["base"]),
+        "base": _step(),
+    }
+    plan = resolve_plan(section)
+
+    assert plan.count("base") == 1
+    assert plan.index("base") < plan.index("left")
+    assert plan.index("base") < plan.index("right")
+    assert plan.index("left") < plan.index("report")
+    assert plan.index("right") < plan.index("report")
+
+
+def test_resolve_plan_narrows_past_multiple_dependencies() -> None:
+    """Narrowing to a step pulls in every branch it needs, and nothing else."""
+    section = {
+        "combine": _step(["fetch_a", "fetch_b"]),
+        "fetch_a": _step(),
+        "fetch_b": _step(),
+        "unrelated": _step(),
+    }
+    plan = resolve_plan(section, target="combine")
+
+    assert plan == ["fetch_a", "fetch_b", "combine"]
+    assert "unrelated" not in plan
 
 
 def test_resolve_plan_narrows_to_a_target_and_its_upstream() -> None:
@@ -206,3 +261,45 @@ def test_depends_defaults_to_empty() -> None:
             return None
 
     assert _Plain2().depends == []
+
+
+# --- the --force counter ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("force", "expected"),
+    [
+        (0, (False, False)),
+        (1, (True, False)),
+        (2, (True, True)),
+        (3, (True, True)),
+    ],
+)
+def test_force_counter_selects_how_much_of_the_plan_is_forced(
+    force: int,
+    expected: tuple[bool, bool],
+) -> None:
+    """`-f` forces the requested step, `-ff` its dependencies as well.
+
+    Separating the two keeps the common case cheap: re-running a transform
+    should not re-download everything upstream of it unless asked.
+    """
+    target_forced, dependency_forced = expected
+    assert _should_force(force, "transform", "transform") is target_forced
+    assert _should_force(force, "fetch", "transform") is dependency_forced
+
+
+def test_force_option_renders_back_to_repeated_short_flag() -> None:
+    """A counted `--force` must survive being re-rendered as argv.
+
+    Commands are re-dispatched to job backends by rendering their bound options
+    back into tokens, and `_render_param` renders a counter using its *short*
+    flag. Without `-f` the option would render as `-forceforce`, so the
+    shorthand is what makes the counter round-trip.
+    """
+    param = _click_param_for_option(get_option("force"))
+    assert param is not None
+    assert "-f" in param.opts
+    assert _render_param(param, 0) == []
+    assert _render_param(param, 1) == ["-f"]
+    assert _render_param(param, 2) == ["-ff"]
