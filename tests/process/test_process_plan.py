@@ -23,7 +23,14 @@ from flepimop2._utils._click import _click_param_for_option, _render_param
 from flepimop2.cli._options import get_option
 from flepimop2.cli._process_command import _should_force
 from flepimop2.exceptions import Flepimop2ValidationError
-from flepimop2.process.abc import ProcessABC, resolve_plan
+from flepimop2.process.abc import (
+    ProcessABC,
+    build,
+    expand_scenarios,
+    resolve_plan,
+    validate_scenarios,
+)
+from flepimop2.process.shell import ShellProcess
 
 
 def _step(depends: list[str] | None = None) -> dict[str, Any]:
@@ -303,3 +310,158 @@ def test_force_option_renders_back_to_repeated_short_flag() -> None:
     assert _render_param(param, 0) == []
     assert _render_param(param, 1) == ["-f"]
     assert _render_param(param, 2) == ["-ff"]
+
+
+# --- scenario parameterization ------------------------------------------------
+
+
+def _grid(**parameters: list[Any]) -> dict[str, Any]:
+    """
+    Build a grid scenario configuration entry.
+
+    Args:
+        **parameters: Scenario names mapped to the values they take.
+
+    Returns:
+        A scenario configuration entry.
+
+    """
+    return {"module": "grid", "parameters": parameters}
+
+
+def test_a_step_without_a_scenario_is_unchanged() -> None:
+    """The unparameterized case stays exactly one configuration."""
+    entry = {"module": "shell", "command": "run.sh"}
+    assert expand_scenarios(entry, {}) == [entry]
+
+
+def test_a_scenario_expands_a_step_once_per_tuple() -> None:
+    """A step naming a scenario runs once for each of its tuples."""
+    section_entry = {
+        "module": "shell",
+        "command": "run.sh",
+        "args": ["--beta", "{beta}"],
+        "scenario": "sweep",
+    }
+    configs = expand_scenarios(section_entry, {"sweep": _grid(beta=[0.1, 0.2])})
+
+    assert len(configs) == 2
+    assert [c["args"] for c in configs] == [["--beta", "0.1"], ["--beta", "0.2"]]
+
+
+def test_a_grid_scenario_expands_to_its_cartesian_product() -> None:
+    """Two scenario names give one configuration per combination."""
+    entry = {
+        "module": "shell",
+        "command": "run.sh --beta {beta} --gamma {gamma}",
+        "scenario": "sweep",
+    }
+    configs = expand_scenarios(entry, {"sweep": _grid(beta=[0.1, 0.2], gamma=[1, 2])})
+
+    assert [c["command"] for c in configs] == [
+        "run.sh --beta 0.1 --gamma 1",
+        "run.sh --beta 0.1 --gamma 2",
+        "run.sh --beta 0.2 --gamma 1",
+        "run.sh --beta 0.2 --gamma 2",
+    ]
+
+
+def test_substitution_leaves_structural_keys_alone() -> None:
+    """`module`, `depends`, and `scenario` describe the step, not its work."""
+    entry = {
+        "module": "shell",
+        "depends": ["fetch"],
+        "scenario": "sweep",
+        "command": "run.sh {beta}",
+    }
+    (config,) = expand_scenarios(entry, {"sweep": _grid(beta=[0.5])})
+
+    assert config["module"] == "shell"
+    assert config["depends"] == ["fetch"]
+    assert config["scenario"] == "sweep"
+    assert config["command"] == "run.sh 0.5"
+
+
+def test_substitution_survives_shell_brace_syntax() -> None:
+    """Braces that are not a scenario name are ordinary text.
+
+    Process steps are usually shell commands, where `awk '{print $1}'` is
+    perfectly normal, so substitution must not treat every brace as a template.
+    """
+    entry = {
+        "module": "shell",
+        "command": "awk '{print $1}' in.txt --beta {beta}",
+        "scenario": "sweep",
+    }
+    (config,) = expand_scenarios(entry, {"sweep": _grid(beta=[0.5])})
+
+    assert config["command"] == "awk '{print $1}' in.txt --beta 0.5"
+
+
+def test_expanded_configurations_build_into_process_modules() -> None:
+    """The expansion must produce configurations a module actually accepts.
+
+    Substituting as text rather than as the raw object is what makes this hold:
+    a float dropped into `ShellProcess.args` (a `list[str]`) would be rejected.
+    """
+    entry = {
+        "module": "shell",
+        "command": "echo",
+        "args": ["--beta", "{beta}"],
+        "scenario": "sweep",
+    }
+    (config,) = expand_scenarios(entry, {"sweep": _grid(beta=[0.25])})
+    instance = build(config)
+
+    assert isinstance(instance, ShellProcess)
+    assert instance.args == ["--beta", "0.25"]
+
+
+def test_expand_scenarios_rejects_an_unknown_scenario() -> None:
+    """A step naming a scenario that is not defined is an error."""
+    entry = {"module": "shell", "command": "run.sh", "scenario": "nope"}
+    with pytest.raises(Flepimop2ValidationError) as excinfo:
+        expand_scenarios(entry, {"sweep": _grid(beta=[0.1])})
+    assert excinfo.value.issues[0].kind == "unknown_scenario"
+
+
+def test_validate_scenarios_reports_every_bad_reference_at_once() -> None:
+    """Scenario typos are collected like `depends` typos, not raised one by one."""
+    section = {
+        "a": {"module": "shell", "command": "x", "scenario": "missing_one"},
+        "b": {"module": "shell", "command": "y", "scenario": "missing_two"},
+        "c": {"module": "shell", "command": "z"},
+    }
+    with pytest.raises(Flepimop2ValidationError) as excinfo:
+        validate_scenarios(section, {})
+    kinds = [issue.kind for issue in excinfo.value.issues]
+    assert kinds == ["unknown_scenario", "unknown_scenario"]
+
+
+def test_validate_scenarios_accepts_a_sound_section() -> None:
+    """A section whose scenario references all resolve raises nothing."""
+    section = {"a": {"module": "shell", "command": "x", "scenario": "sweep"}}
+    validate_scenarios(section, {"sweep": _grid(beta=[0.1])})
+
+
+def test_scenario_defaults_to_none() -> None:
+    """Declaring no scenario is the common case and needs no configuration."""
+
+    class _Plain3(ProcessABC, module="plain3"):
+        def _process(self, *, dry_run: bool) -> None:  # noqa: ARG002
+            return None
+
+    assert _Plain3().scenario is None
+
+
+def test_a_scenario_step_stays_one_node_in_the_plan() -> None:
+    """Fan-out happens inside a step, so the DAG contract is unchanged.
+
+    A downstream step therefore runs after *every* scenario of what it depends
+    on, and `depends` needs no notion of a per-scenario edge.
+    """
+    section = {
+        "sweep_step": {"module": "shell", "command": "x", "scenario": "sweep"},
+        "collect": {"module": "shell", "command": "y", "depends": ["sweep_step"]},
+    }
+    assert resolve_plan(section) == ["sweep_step", "collect"]

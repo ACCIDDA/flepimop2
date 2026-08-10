@@ -23,7 +23,7 @@ from flepimop2._utils._click import _resolve_config_target
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.process.abc import build as build_process
-from flepimop2.process.abc import resolve_plan
+from flepimop2.process.abc import expand_scenarios, resolve_plan, validate_scenarios
 from flepimop2.typing import ExitCode
 
 # `--force` is a counter so that forcing a step and forcing everything it needs
@@ -127,15 +127,20 @@ class ProcessCommand(CliCommand):
         self.info(f"Process target: {processtargetname} => {processtarget}")
 
         plan = resolve_plan(processconfig, processtargetname)
+        # Scenario references are checked across the whole section before any
+        # step runs, for the same reason `depends` is: a typo should cost
+        # nothing rather than surface partway through a pipeline.
+        validate_scenarios(processconfig, configmodel.scenarios)
         if len(plan) > 1:
             self.info(f"Process plan: {' -> '.join(plan)}")
 
         for step in plan:
-            process_instance = build_process(processconfig[step])
             # One -f forces just the step asked for, leaving its dependencies
             # to their own satisfied-means-skip behaviour; -ff forces those too.
-            process_instance.execute(
-                dry_run=dry_run,
-                force=_should_force(force, step, processtargetname),
-            )
+            forced = _should_force(force, step, processtargetname)
+            configs = expand_scenarios(processconfig[step], configmodel.scenarios)
+            if len(configs) > 1:
+                self.info(f"Step '{step}' runs {len(configs)} scenarios.")
+            for config_ in configs:
+                build_process(config_).execute(dry_run=dry_run, force=forced)
         return ExitCode.OKAY

@@ -15,16 +15,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Abstract base class for flepimop2 processing steps."""
 
-__all__ = ["ProcessABC", "build", "resolve_plan"]
+__all__ = [
+    "ProcessABC",
+    "build",
+    "expand_scenarios",
+    "resolve_plan",
+    "validate_scenarios",
+]
 
 from abc import abstractmethod
+from collections.abc import Mapping
 from typing import Any
 
 from pydantic import Field
 
-from flepimop2._utils._module import _build
+from flepimop2._utils._module import _as_dict, _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
+from flepimop2.scenario.abc import build as build_scenario
+
+# Configuration keys that describe the step itself rather than its work, and so
+# are never rewritten by a scenario.
+_STRUCTURAL_KEYS = frozenset({"module", "depends", "scenario"})
 
 
 class ProcessABC(ModuleBase, module_namespace="process"):
@@ -36,10 +48,15 @@ class ProcessABC(ModuleBase, module_namespace="process"):
             must run before this one. These are opaque identifiers, i.e. sibling
             keys of the `process:` section, not filesystem paths: core orders
             steps but does not know what any of them produces.
+        scenario: Optional name of an entry in the top-level `scenarios:`
+            section. When set, the step runs once per scenario, with the
+            scenario's values substituted into this step's configuration (see
+            `expand_scenarios()`).
 
     """
 
     depends: list[str] = Field(default_factory=list)
+    scenario: str | None = None
 
     def execute(self, *, dry_run: bool = False, force: bool = False) -> None:
         """
@@ -138,6 +155,176 @@ def _declared_depends(entry: object) -> list[str]:
         declared = entry.get("depends") or []
         return [declared] if isinstance(declared, str) else list(declared)
     return []
+
+
+def _declared_scenario(entry: object) -> str | None:
+    """
+    Read the `scenario` name off a raw process configuration entry.
+
+    Read from the configuration for the same reason as `_declared_depends()`:
+    every reference can then be checked before any module is imported.
+
+    Args:
+        entry: A single process configuration entry.
+
+    Returns:
+        The declared scenario name, or `None` when the step declares none.
+
+    """
+    if isinstance(entry, ModuleBase):
+        declared = getattr(entry, "scenario", None)
+    elif isinstance(entry, dict):
+        declared = entry.get("scenario")
+    else:
+        return None
+    return declared if isinstance(declared, str) and declared else None
+
+
+def _substitute(value: object, values: Mapping[str, object]) -> object:
+    """
+    Rewrite `{name}` placeholders in a configuration value.
+
+    Only the scenario's own names are substituted, and substitution is a plain
+    replacement rather than `str.format`, so braces that are not a scenario name
+    survive untouched. That matters because process steps are frequently shell
+    commands, where `awk '{print $1}'` is ordinary text rather than a template.
+
+    A placeholder always resolves to text, even when it spans the whole value.
+    Substituting the raw object instead would look tidier but breaks on the
+    commonest field there is: a number dropped into a `list[str]` is rejected by
+    the module's own validation, whereas text is coerced back to whatever the
+    field declares (`"3"` into an `int` field is an `int`).
+
+    Args:
+        value: The configuration value to rewrite.
+        values: The scenario's names and their values.
+
+    Returns:
+        The value with any placeholders resolved.
+
+    Examples:
+        >>> from flepimop2.process.abc import _substitute
+        >>> _substitute("run --beta {beta}", {"beta": 0.3})
+        'run --beta 0.3'
+        >>> _substitute(["--n", "{n}"], {"n": 3})
+        ['--n', '3']
+        >>> _substitute("awk '{print $1}'", {"beta": 0.3})
+        "awk '{print $1}'"
+
+    """
+    if isinstance(value, dict):
+        return {key: _substitute(item, values) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_substitute(item, values) for item in value]
+    if not isinstance(value, str):
+        return value
+    for name, replacement in values.items():
+        value = value.replace("{" + name + "}", str(replacement))
+    return value
+
+
+def _scenario_issues(
+    section: dict[str, Any],
+    scenarios: Mapping[str, Any],
+) -> list[ValidationIssue]:
+    """
+    Collect every bad `scenario` reference in a process section.
+
+    Args:
+        section: The `process` configuration section.
+        scenarios: The top-level `scenarios` section.
+
+    Returns:
+        One issue per step naming a scenario that does not exist.
+
+    """
+    return [
+        ValidationIssue(
+            msg=f"Process step '{name}' names unknown scenario '{declared}'.",
+            kind="unknown_scenario",
+            ctx={"step": name, "scenario": declared, "known": sorted(scenarios)},
+        )
+        for name, entry in section.items()
+        if (declared := _declared_scenario(entry)) is not None
+        and declared not in scenarios
+    ]
+
+
+def validate_scenarios(
+    section: dict[str, Any],
+    scenarios: Mapping[str, Any],
+) -> None:
+    """
+    Check that every step's `scenario` names a defined scenario.
+
+    Run before executing a plan, so that a typo costs nothing rather than
+    surfacing partway through a pipeline. All bad references are reported
+    together, matching how `resolve_plan()` reports `depends` problems.
+
+    Args:
+        section: The `process` configuration section.
+        scenarios: The top-level `scenarios` section.
+
+    Raises:
+        Flepimop2ValidationError: If any step names a scenario that is not
+            defined.
+
+    """
+    if issues := _scenario_issues(section, scenarios):
+        raise Flepimop2ValidationError(issues)
+
+
+def expand_scenarios(
+    entry: dict[str, Any] | ModuleBase | str,
+    scenarios: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Expand one process step into the configurations it should run as.
+
+    A step without a `scenario` yields its own configuration unchanged, so the
+    unparameterized case stays exactly as it was. A step naming a scenario
+    yields one configuration per scenario tuple, with that tuple's values
+    substituted into the step's non-structural fields (see `_substitute()`).
+
+    The fan-out deliberately happens *within* a plan step rather than by
+    multiplying plan entries: `depends` names steps, so keeping a step a single
+    node means a downstream step runs after every scenario of what it depends
+    on, and the dependency contract needs no notion of a per-scenario edge.
+
+    Args:
+        entry: A single process configuration entry.
+        scenarios: The top-level `scenarios` section.
+
+    Returns:
+        The configurations to execute, in scenario order.
+
+    Raises:
+        Flepimop2ValidationError: If the step names a scenario that is not
+            defined.
+
+    """
+    config = _as_dict(entry) if not isinstance(entry, str) else {"module": entry}
+    declared = _declared_scenario(entry)
+    if declared is None:
+        return [config]
+    if declared not in scenarios:
+        raise Flepimop2ValidationError([
+            ValidationIssue(
+                msg=f"Process step names unknown scenario '{declared}'.",
+                kind="unknown_scenario",
+                ctx={"scenario": declared, "known": sorted(scenarios)},
+            )
+        ])
+
+    scenario = build_scenario(scenarios[declared])
+    expanded: list[dict[str, Any]] = []
+    for tuple_ in scenario.scenarios():
+        values = tuple_._asdict()
+        expanded.append({
+            key: value if key in _STRUCTURAL_KEYS else _substitute(value, values)
+            for key, value in config.items()
+        })
+    return expanded
 
 
 def _depends_issues(depends: dict[str, list[str]]) -> list[ValidationIssue]:
