@@ -398,6 +398,28 @@ def test_substitution_survives_shell_brace_syntax() -> None:
     assert config["command"] == "awk '{print $1}' in.txt --beta 0.5"
 
 
+@pytest.mark.parametrize(
+    "parameters",
+    [
+        {"first": ["{second}"], "second": ["VALUE"]},
+        {"second": ["VALUE"], "first": ["{second}"]},
+    ],
+    ids=["referencing-value-first", "referenced-value-first"],
+)
+def test_substitution_does_not_reinterpret_scenario_values(
+    parameters: dict[str, list[str]],
+) -> None:
+    """Replacement text is preserved regardless of parameter order."""
+    entry = {
+        "module": "shell",
+        "command": "{first} {second}",
+        "scenario": "sweep",
+    }
+    (config,) = expand_scenarios(entry, {"sweep": _grid(**parameters)})
+
+    assert config["command"] == "{second} VALUE"
+
+
 def test_expanded_configurations_build_into_process_modules() -> None:
     """The expansion must produce configurations a module actually accepts.
 

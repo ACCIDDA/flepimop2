@@ -23,6 +23,7 @@ __all__ = [
     "validate_scenarios",
 ]
 
+import re
 from abc import abstractmethod
 from collections.abc import Mapping
 from typing import Any
@@ -37,6 +38,7 @@ from flepimop2.scenario.abc import build as build_scenario
 # Configuration keys that describe the step itself rather than its work, and so
 # are never rewritten by a scenario.
 _STRUCTURAL_KEYS = frozenset({"module", "depends", "scenario"})
+_PLACEHOLDER_PATTERN = re.compile(r"\{([^{}]+)\}")
 
 
 class ProcessABC(ModuleBase, module_namespace="process"):
@@ -184,10 +186,12 @@ def _substitute(value: object, values: Mapping[str, object]) -> object:
     """
     Rewrite `{name}` placeholders in a configuration value.
 
-    Only the scenario's own names are substituted, and substitution is a plain
-    replacement rather than `str.format`, so braces that are not a scenario name
-    survive untouched. That matters because process steps are frequently shell
-    commands, where `awk '{print $1}'` is ordinary text rather than a template.
+    Only the scenario's own names are substituted, and all placeholders are
+    matched from the original string before replacement. Replacement values are
+    therefore not recursively interpreted as placeholders. Braces that are not
+    a scenario name survive untouched, which matters because process steps are
+    frequently shell commands, where `awk '{print $1}'` is ordinary text rather
+    than a template.
 
     A placeholder always resolves to text, even when it spans the whole value.
     Substituting the raw object instead would look tidier but breaks on the
@@ -218,9 +222,12 @@ def _substitute(value: object, values: Mapping[str, object]) -> object:
         return [_substitute(item, values) for item in value]
     if not isinstance(value, str):
         return value
-    for name, replacement in values.items():
-        value = value.replace("{" + name + "}", str(replacement))
-    return value
+
+    def replace(match: re.Match[str]) -> str:
+        name = match.group(1)
+        return str(values[name]) if name in values else match.group(0)
+
+    return _PLACEHOLDER_PATTERN.sub(replace, value)
 
 
 def _scenario_issues(
