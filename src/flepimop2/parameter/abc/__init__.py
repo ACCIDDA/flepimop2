@@ -183,10 +183,10 @@ class ParameterValue:
         value: The realized array-API value for this parameter.  Any
             object satisfying the `Array` protocol is accepted -- NumPy
             arrays, JAX arrays, PyTorch tensors, etc. -- which lets
-            backend-specific drivers (e.g. a ``jax.vmap``-wrapped engine)
+            backend-specific drivers (e.g. a `jax.vmap`-wrapped engine)
             keep their tracers without an unwanted host round-trip.
             Producers remain responsible for handing in the dtype the
-            downstream engine expects; ``ParameterValue`` does **not**
+            downstream engine expects; `ParameterValue` does **not**
             coerce.
         shape: Named runtime shape resolved against a concrete axis collection.
 
@@ -216,13 +216,13 @@ class ParameterValue:
         """
         Validate the value's shape and that its dtype is numeric.
 
-        ``ParameterValue`` no longer coerces the underlying ``value``.
+        `ParameterValue` no longer coerces the underlying `value`.
         Producers (`ParameterABC` subclasses) hand in an Array-API value
-        of the correct dtype; the static ``Array`` annotation expresses
-        the contract and ``mypy`` enforces it.  This leaves the value's
+        of the correct dtype; the static `Array` annotation expresses
+        the contract and `mypy` enforces it.  This leaves the value's
         array backend (NumPy, JAX, PyTorch, ...) untouched so consumers
-        wrapped in ``jax.jit`` / ``jax.vmap`` see a tracer rather than a
-        ``TracerArrayConversionError`` from an implicit ``np.asarray``.
+        wrapped in `jax.jit` / `jax.vmap` see a tracer rather than a
+        `TracerArrayConversionError` from an implicit `np.asarray`.
 
         The `Array` `Protocol` is intentionally broad enough to cover
         every Array-API-compliant backend, which means it also nominally
@@ -230,9 +230,9 @@ class ParameterValue:
         Those have no meaningful place in a `ParameterValue`, so this
         check rejects them at construction time without forcing a host
         round-trip on tracer-bearing backends: it asks the value's own
-        Array-API namespace via ``__array_namespace__().isdtype(...,
-        "numeric")``, falling back to ``dtype.kind`` for backends that
-        predate the Array-API ``isdtype`` helper.
+        Array-API namespace via `__array_namespace__().isdtype(...,
+        "numeric")`, falling back to `dtype.kind` for backends that
+        predate the Array-API `isdtype` helper.
 
         Raises:
             ValueError: If the array shape does not match the resolved named shape.
@@ -301,7 +301,45 @@ class ParameterABC(ModuleBase, module_namespace="parameter"):
         parameter may broadcast to a requested age axis, while a data-backed
         parameter may validate that its loaded data already matches the requested
         shape.
+
+        A parameter may itself depend on other parameters. Declare those dependencies
+        by overriding `requested_parameters`. The `Simulator` resolves declared
+        dependencies before calling `sample`, then passes the resolved values via
+        the `params` argument so the implementation can consume them.
+
+        Circular dependencies (e.g. A -> B -> A) are detected by the `Simulator` at
+        resolution time and raised as a `ValueError`.
     """
+
+    def requested_parameters(  # noqa: PLR6301
+        self,
+        axes: AxisCollection,  # noqa: ARG002
+    ) -> dict[IdentifierString, ParameterRequest]:
+        """
+        Declare runtime parameter dependencies for this parameter.
+
+        Override this method when a parameter's value depends on other configured
+        parameters. The `Simulator` will resolve the declared dependencies and
+        supply them via the `params` argument to `sample`.
+
+        Args:
+            axes: Resolved runtime axes for the active simulation.
+
+        Returns:
+            A mapping of dependency parameter names to their runtime requests.
+            The default implementation returns an empty dict (no dependencies).
+
+        Examples:
+            >>> from flepimop2.axis import AxisCollection
+            >>> from flepimop2.parameter.abc import ParameterABC, ParameterRequest
+            >>> class MyParameter(ParameterABC, module="flepimop2.parameter._example"):
+            ...     def requested_parameters(self, axes):
+            ...         return {"base": ParameterRequest(name="base")}
+            ...
+            ...     def sample(self, *, axes=None, request=None, params=None):
+            ...         raise NotImplementedError
+        """
+        return {}
 
     @abstractmethod
     def sample(
@@ -309,6 +347,7 @@ class ParameterABC(ModuleBase, module_namespace="parameter"):
         *,
         axes: AxisCollection | None = None,
         request: ParameterRequest | None = None,
+        params: dict[IdentifierString, ParameterValue] | None = None,
     ) -> ParameterValue:
         """
         Sample a value from the parameter.
@@ -317,6 +356,10 @@ class ParameterABC(ModuleBase, module_namespace="parameter"):
             axes: Resolved runtime axes available for this simulation.
             request: Optional system-declared request describing the expected shape
                 and advisory type for the parameter.
+            params: Resolved values for any parameters declared by
+                `requested_parameters`. The `Simulator` populates this before
+                calling `sample`; callers that do not go through the `Simulator`
+                may pass `None` or omit the argument.
 
         Returns:
             A sampled parameter value with resolved shape metadata.
