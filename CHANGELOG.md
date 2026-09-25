@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Updated the package validation tooling to accept Core Metadata 2.5 distributions. See [#336](https://github.com/ACCIDDA/flepimop2/issues/336).
 - ...
 
 ### Security
