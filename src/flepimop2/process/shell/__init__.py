@@ -17,8 +17,10 @@
 
 __all__ = ["ShellProcess"]
 
+import shlex
 from subprocess import run  # noqa: S404
 
+from click import echo
 from pydantic import Field
 
 from flepimop2.process.abc import ProcessABC
@@ -48,8 +50,8 @@ class ShellProcess(ProcessABC, module="shell"):
         """
         cmd = [self.command, *self.args]
         if dry_run:
-            cmd = ["echo", *cmd]
-        cmd = " ".join(cmd).split(" ")
+            echo(shlex.join(cmd))
+            return
         result = run(cmd, check=False)  # noqa: S603
         if result.returncode != 0:
             msg = f"Command failed with exit code {result.returncode}: {self.command}"
