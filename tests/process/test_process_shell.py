@@ -15,6 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for `ProcessABC` default `ShellProcess`."""
 
+import shlex
+import sys
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -42,3 +45,47 @@ def test_shell_process_shorthand_not_supported() -> None:
         ),
     ):
         build_process("shell(echo, hello)")
+
+
+def test_shell_process_preserves_argument_boundaries(tmp_path: Path) -> None:
+    """Arguments containing spaces reach the child as one argv element."""
+    output = tmp_path / "argv.txt"
+    process = build_process({
+        "module": "shell",
+        "command": sys.executable,
+        "args": [
+            "-c",
+            (
+                "from pathlib import Path; import sys; "
+                "Path(sys.argv[1]).write_text(sys.argv[2])"
+            ),
+            str(output),
+            "not benchmark",
+        ],
+    })
+
+    process.execute()
+
+    assert output.read_text() == "not benchmark"
+
+
+def test_shell_process_dry_run_prints_without_executing(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Dry runs render shell-safe argv and do not start the command."""
+    output = tmp_path / "should-not-exist.txt"
+    args = [
+        "-c",
+        "from pathlib import Path; import sys; Path(sys.argv[1]).touch()",
+        str(output),
+    ]
+    process = build_process({
+        "module": "shell",
+        "command": sys.executable,
+        "args": args,
+    })
+
+    process.execute(dry_run=True)
+
+    assert not output.exists()
+    assert capsys.readouterr().out.strip() == shlex.join([sys.executable, *args])
