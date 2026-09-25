@@ -25,12 +25,12 @@ __all__ = [
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.module import ModuleBase
-from flepimop2.typing import Array, IdentifierString
+from flepimop2.typing import Array, ArrayBackend, IdentifierString
 
 
 @dataclass(frozen=True, slots=True)
@@ -302,6 +302,9 @@ class ParameterABC(ModuleBase, module_namespace="parameter"):
         parameter may validate that its loaded data already matches the requested
         shape.
     """
+
+    backend: ClassVar[ArrayBackend] = ArrayBackend.ANY
+    """Array backend produced by this parameter, if fixed."""
 
     @abstractmethod
     def sample(
