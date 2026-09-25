@@ -18,13 +18,13 @@
 __all__ = ["FixedParameter"]
 
 
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 import numpy as np
 
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.parameter.abc import ParameterABC, ParameterRequest, ParameterValue
-from flepimop2.typing import IdentifierString
+from flepimop2.typing import ArrayBackend, IdentifierString
 
 
 class FixedParameter(ParameterABC, module="fixed"):
@@ -37,6 +37,8 @@ class FixedParameter(ParameterABC, module="fixed"):
         >>> param.sample().item()
         42.0
     """
+
+    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
 
     value: float | int | list[Any]
     shape: tuple[IdentifierString, ...] = ()

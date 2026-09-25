@@ -18,7 +18,7 @@
 __all__ = ["EngineABC", "EngineProtocol", "build"]
 
 from collections.abc import Mapping
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, ClassVar, Protocol, runtime_checkable
 
 from pydantic import PrivateAttr
 
@@ -28,6 +28,7 @@ from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC
 from flepimop2.typing import (
+    ArrayBackend,
     Float64NDArray,
     IdentifierString,
     SystemProtocol,
@@ -65,6 +66,9 @@ def _no_run_func(
 
 class EngineABC(ModuleBase, module_namespace="engine"):
     """Abstract class for Engines to evolve Dynamic Systems."""
+
+    backend: ClassVar[ArrayBackend] = ArrayBackend.ANY
+    """Array backend required by this engine, if any."""
 
     _runner: Any = PrivateAttr(default=None)
 
