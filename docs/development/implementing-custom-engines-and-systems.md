@@ -84,7 +84,7 @@ Key elements in the system implementation:
 ```python
 """Euler engine implementation."""
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 from pydantic import PrivateAttr
@@ -93,7 +93,12 @@ from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray, IdentifierString, StateChangeEnum
+from flepimop2.typing import (
+    ArrayBackend,
+    Float64NDArray,
+    IdentifierString,
+    StateChangeEnum,
+)
 
 
 def runner(
@@ -125,6 +130,7 @@ def runner(
 class EulerEngine(EngineABC, module="euler"):
     """Euler integration engine."""
 
+    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
     _runner: Any = PrivateAttr(default=None)
 
     def model_post_init(self, __context: object) -> None:
@@ -159,6 +165,7 @@ Key elements in the engine implementation:
 
 - `runner` drives the simulation by applying the stepper across time points.
 - `EulerEngine` inherits `EngineABC` and stores its runner in `model_post_init` via `self.__pydantic_private__["_runner"]`. This pattern avoids descriptor binding that occurs when storing callables in `PrivateAttr` and accessing them via `self._runner`.
+- `backend` advertises the array namespace required by the engine. Before invoking the runner, `Simulator` converts each `ParameterValue.value` once at the producer-to-engine boundary. Values already in that namespace retain their identity. Engines that operate on any Array-API namespace can keep the inherited `ArrayBackend.ANY` default and receive values unchanged.
 - The `module="euler"` class argument indicates how configuration files will indicate to use this module, i.e. `module: euler`.
 - `EulerEngine` implements the optional `validate_system` hook to ensure that the system is compatible.
 - No `build(...)` function is needed - `flepimop2` calls `EulerEngine.model_validate(config)` directly.
@@ -168,6 +175,6 @@ Key elements in the engine implementation:
 Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let `flepimop2` handle construction and validation.
 
 - Systems must inherit from `SystemABC` and supply a stepper (via `PrivateAttr` + `model_post_init`) as well as required attributes `module` and `state_change`.
-- Engines must inherit from `EngineABC` and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Engines must inherit from `EngineABC`, advertise their `ArrayBackend`, and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
 - Both use `model_post_init` for any initialization logic that runs after Pydantic has validated configuration fields.
 - Neither requires a `build(...)` function - Pydantic's `model_validate` handles configuration-driven construction.

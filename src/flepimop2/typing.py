@@ -30,6 +30,7 @@ Examples:
 
 __all__ = [
     "Array",
+    "ArrayBackend",
     "ExitCode",
     "Float64NDArray",
     "IdentifierString",
@@ -62,6 +63,15 @@ from pydantic import AfterValidator, Field
 
 Float64NDArray = npt.NDArray[np.float64]
 """Alias for a NumPy ndarray with float64 data type."""
+
+
+class ArrayBackend(StrEnum):
+    """Array namespaces that a producer or consumer may advertise."""
+
+    NUMPY = "numpy"
+    JAX = "jax"
+    TORCH = "torch"
+    ANY = "any"
 
 
 @runtime_checkable
