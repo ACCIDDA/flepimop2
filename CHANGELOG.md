@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Preserved declared argument boundaries for shell processes and made dry runs render shell-safe commands without executing child processes. See [#334](https://github.com/ACCIDDA/flepimop2/issues/334).
+- Updated the package validation tooling to accept Core Metadata 2.5 distributions. See [#336](https://github.com/ACCIDDA/flepimop2/issues/336).
 - ...
 
 ### Security
