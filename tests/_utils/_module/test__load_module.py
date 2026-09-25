@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Unit tests for `_load_module` function."""
 
+from importlib import import_module
 from pathlib import Path
 from shutil import copy
 from typing import Final
@@ -86,3 +87,53 @@ def test_load_module_success(tmp_path: Path, fixture: str) -> None:
     # Verify module was loaded
     assert mod is not None
     assert mod.__name__ == module_name
+
+
+def test_load_module_returns_package_module_for_package_scripts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A script inside an importable package shares that module's state (#339)."""
+    package = tmp_path / "wrapperpkg_339"
+    package.mkdir()
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    script = package / "engine.py"
+    script.write_text("STATE: dict[str, int] = {}\n", encoding="utf-8")
+    monkeypatch.syspath_prepend(str(tmp_path))
+
+    canonical = import_module("wrapperpkg_339.engine")
+    loaded = _load_module(script, "flepimop2.engine.wrapped")
+
+    assert loaded is canonical
+    canonical.STATE["rtol"] = 1
+    assert loaded.STATE == {"rtol": 1}
+
+
+def test_load_module_keeps_fresh_loading_for_standalone_scripts(tmp_path: Path) -> None:
+    """Scripts outside any package are still executed under the given name."""
+    script = tmp_path / "standalone_339.py"
+    script.write_text("VALUE = 3\n", encoding="utf-8")
+
+    first = _load_module(script, "flepimop2.engine.wrapped")
+    second = _load_module(script, "flepimop2.engine.wrapped")
+
+    assert first.__name__ == "flepimop2.engine.wrapped"
+    assert first.VALUE == second.VALUE == 3
+
+
+def test_load_module_falls_back_when_package_import_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A package whose import fails does not block loading the script itself."""
+    package = tmp_path / "brokenpkg_339"
+    package.mkdir()
+    (package / "__init__.py").write_text(
+        "raise ImportError('broken')\n", encoding="utf-8"
+    )
+    script = package / "engine.py"
+    script.write_text("VALUE = 5\n", encoding="utf-8")
+    monkeypatch.syspath_prepend(str(tmp_path))
+
+    loaded = _load_module(script, "flepimop2.engine.wrapped")
+
+    assert loaded.VALUE == 5
+    assert loaded.__name__ == "flepimop2.engine.wrapped"

@@ -17,6 +17,7 @@
 
 import inspect
 import re
+import sys
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
@@ -155,9 +156,45 @@ def _as_dict(
     raise TypeError(msg)
 
 
+def _package_module_name(resolved: Path) -> str | None:
+    """
+    Return the dotted name under which a file is importable as a package module.
+
+    A file is importable as ``a.b.c`` when it lies under a ``sys.path`` entry
+    and every directory between that entry and the file has an
+    ``__init__.py``. Returns `None` for standalone scripts.
+
+    Args:
+        resolved: An absolute, resolved path to a Python file.
+
+    Returns:
+        The dotted module name, or `None` if the file is not in a package.
+    """
+    for entry in sys.path:
+        try:
+            root = Path(entry or ".").expanduser().resolve()
+            relative = resolved.relative_to(root)
+        except (OSError, ValueError):
+            continue
+        parts = relative.with_suffix("").parts
+        if len(parts) < 2 or not all(part.isidentifier() for part in parts):
+            continue
+        packages = [root.joinpath(*parts[:depth]) for depth in range(1, len(parts))]
+        if all((package / "__init__.py").is_file() for package in packages):
+            return ".".join(parts)
+    return None
+
+
 def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
     """
     Load a Python module from a given file path as a given name.
+
+    When the file is also importable as a package module (it sits inside a
+    package on ``sys.path``), that module is imported and returned instead of
+    executing a second, unregistered copy. Two copies would hold separate
+    module-level state, so settings or caches changed through the package
+    import would never reach the loaded copy (see #339). Standalone scripts
+    are loaded fresh under ``mod_name`` as before.
 
     Args:
         path: The path to the Python file.
@@ -179,6 +216,19 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
     if resolved.suffix != ".py":
         msg = f"No valid Python file found at: {resolved}"
         raise FileNotFoundError(msg)
+    package_name = _package_module_name(resolved)
+    if package_name is not None:
+        try:
+            module = import_module(package_name)
+        except ImportError:
+            module = None
+        module_file = getattr(module, "__file__", None)
+        if (
+            module is not None
+            and module_file
+            and Path(module_file).resolve() == resolved
+        ):
+            return module
     spec = spec_from_file_location(mod_name, str(resolved))
     if not (spec and spec.loader):
         msg = f"Could not load module from spec at: {resolved}"
