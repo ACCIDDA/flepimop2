@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- ...
+- Wrapper engines and systems whose `script` is also importable as a package module now use that module instead of executing a second, unregistered copy. Two copies had separate module-level state, so settings or caches changed through the package import never reached the running wrapper. Standalone scripts load as before. See [#339](https://github.com/ACCIDDA/flepimop2/issues/339).
 
 ### Security
 
