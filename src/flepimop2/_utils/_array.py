@@ -15,7 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Array-backend detection, extensible registration, and conversion helpers."""
 
-__all__ = ["array_backend", "coerce_to", "coerce_to_host", "register_array_backend"]
+__all__ = [
+    "array_backend",
+    "array_namespace",
+    "coerce_to",
+    "coerce_to_host",
+    "register_array_backend",
+]
 
 import contextlib
 from collections.abc import Callable
@@ -24,6 +30,9 @@ from importlib.metadata import entry_points
 from typing import Any, Final
 
 import numpy as np
+from array_api_compat import (  # type: ignore[import-untyped]
+    array_namespace as _array_namespace,
+)
 
 from flepimop2.typing import Array, ArrayBackend, Float64NDArray
 
@@ -35,6 +44,32 @@ _DEFAULT_BACKENDS: Final[dict[str, str]] = {
 _CUSTOM_BACKENDS: dict[str, str | Callable[[], Any]] = {}
 _CUSTOM_COERCERS: dict[str, Callable[[Array], Array]] = {}
 _ENTRY_POINTS_DISCOVERED: bool = False
+
+
+def array_namespace(value: Array) -> Any:  # noqa: ANN401
+    """Return the Array-API-compatible namespace for ``value``.
+
+    ``array-api-compat`` recognizes standard-compliant arrays and native
+    arrays such as ``torch.Tensor``. Optional backends remain unloaded until
+    an array from that backend is supplied.
+
+    Args:
+        value: Numerical array whose namespace should be selected.
+
+    Returns:
+        The Array-API-compatible namespace for ``value``.
+
+    Raises:
+        TypeError: If ``value`` is not a supported array object.
+    """
+    try:
+        return _array_namespace(value)
+    except TypeError as error:
+        msg = (
+            "flepimop2 numerical inputs must be supported array objects; "
+            f"got {type(value).__name__}."
+        )
+        raise TypeError(msg) from error
 
 
 def register_array_backend(
@@ -83,10 +118,15 @@ def array_backend(value: Array) -> ArrayBackend | str:
         The recognized backend enum member, custom backend string, or
         `ArrayBackend.ANY` when the namespace cannot be determined.
     """
+    _discover_entry_points()
     try:
-        namespace: Any = value.__array_namespace__()
-        namespace_name = getattr(namespace, "__name__", "")
-        root_name = namespace_name.partition(".")[0].lower()
+        namespace = array_namespace(value)
+        namespace_parts = getattr(namespace, "__name__", "").split(".")
+        root_name = (
+            namespace_parts[1]
+            if namespace_parts[:1] == ["array_api_compat"] and len(namespace_parts) > 1
+            else namespace_parts[0]
+        ).lower()
         try:
             return ArrayBackend(root_name)
         except ValueError:
