@@ -15,6 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for array-backend detection and conversion."""
 
+import subprocess  # noqa: S404
+import sys
+
 import jax.numpy as jnp
 import numpy as np
 import pytest
@@ -25,7 +28,7 @@ from flepimop2._utils._array import (
     coerce_to_host,
     register_array_backend,
 )
-from flepimop2.typing import ArrayBackend
+from flepimop2.typing import Array, ArrayBackend
 
 
 def test_numpy_backend_detection_and_identity() -> None:
@@ -62,13 +65,12 @@ def test_jax_to_numpy_conversion() -> None:
     np.testing.assert_array_equal(converted, np.asarray([1.0, 2.0]))
 
 
-def test_torch_backend_when_available() -> None:
-    """PyTorch participates when its Array-API marker is available."""
+def test_raw_torch_backend_when_available() -> None:
+    """Raw Torch tensors participate through the compatibility namespace."""
     torch = pytest.importorskip("torch")
     value = torch.asarray([1.0, 2.0])
-    if not hasattr(value, "__array_namespace__"):
-        pytest.skip("Installed PyTorch does not expose __array_namespace__.")
 
+    assert isinstance(value, Array)
     assert array_backend(value) is ArrayBackend.TORCH
     assert coerce_to(value, ArrayBackend.TORCH) is value
 
@@ -98,3 +100,21 @@ def test_coerce_to_host_converts_jax_and_numpy_to_ndarray() -> None:
     assert isinstance(host_jax, np.ndarray)
     assert host_jax.dtype == np.float64
     np.testing.assert_array_equal(host_jax, [3.0, 4.0])
+
+
+def test_numpy_discovery_does_not_import_optional_backends() -> None:
+    """Inspecting NumPy must not eagerly import JAX or Torch."""
+    code = """
+import sys
+import numpy as np
+from flepimop2._utils._array import array_backend
+array_backend(np.asarray([1.0]))
+print(int("jax" in sys.modules), int("torch" in sys.modules))
+"""
+    completed = subprocess.run(  # noqa: S603
+        [sys.executable, "-c", code],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.stdout.strip() == "0 0"
