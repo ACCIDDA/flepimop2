@@ -15,12 +15,42 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Array-backend detection and conversion helpers."""
 
-__all__ = ["array_backend", "coerce_to"]
+__all__ = ["array_backend", "array_namespace", "coerce_to"]
 
 from importlib import import_module
 from typing import Any
 
+from array_api_compat import (  # type: ignore[import-untyped]
+    array_namespace as _array_namespace,
+)
+
 from flepimop2.typing import Array, ArrayBackend
+
+
+def array_namespace(value: Array) -> Any:  # noqa: ANN401
+    """Return the Array-API-compatible namespace for ``value``.
+
+    ``array-api-compat`` recognizes standard-compliant arrays and native
+    arrays such as ``torch.Tensor``. Optional backends remain unloaded until
+    an array from that backend is supplied.
+
+    Args:
+        value: Numerical array whose namespace should be selected.
+
+    Returns:
+        The Array-API-compatible namespace for ``value``.
+
+    Raises:
+        TypeError: If ``value`` is not a supported array object.
+    """
+    try:
+        return _array_namespace(value)
+    except TypeError as error:
+        msg = (
+            "flepimop2 numerical inputs must be supported array objects; "
+            f"got {type(value).__name__}."
+        )
+        raise TypeError(msg) from error
 
 
 def array_backend(value: Array) -> ArrayBackend:
@@ -33,9 +63,13 @@ def array_backend(value: Array) -> ArrayBackend:
         The recognized backend, or `ArrayBackend.ANY` when the namespace is
         valid but is not one of the explicitly supported backends.
     """
-    namespace: Any = value.__array_namespace__()
-    namespace_name = getattr(namespace, "__name__", "")
-    root_name = namespace_name.partition(".")[0]
+    namespace = array_namespace(value)
+    namespace_parts = getattr(namespace, "__name__", "").split(".")
+    root_name = (
+        namespace_parts[1]
+        if namespace_parts[:1] == ["array_api_compat"] and len(namespace_parts) > 1
+        else namespace_parts[0]
+    )
     try:
         return ArrayBackend(root_name)
     except ValueError:

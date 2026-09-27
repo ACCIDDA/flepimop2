@@ -80,11 +80,10 @@ class Array(Protocol):
     Minimal Array-API duck type.
 
     Captures only the surface that `flepimop2` itself touches at
-    cross-plugin boundaries: a ``shape`` tuple, a ``dtype``, and the
-    ``__array_namespace__`` marker that identifies a value as belonging to
-    an `Array-API-compliant <https://data-apis.org/array-api/latest/>`_
-    backend (NumPy >= 2.0, JAX >= 0.4.32, PyTorch >= 2.1, CuPy, dask,
-    ...).
+    cross-plugin boundaries: a ``shape`` tuple, a ``dtype``, and scalar
+    extraction. Runtime namespace discovery is delegated to
+    ``array_api_compat.array_namespace``, which accepts both standard-compliant
+    arrays and native arrays such as ``torch.Tensor``.
 
     Concrete consumers (e.g. an ODE engine) remain free to require a
     specific backend internally; using `Array` at module boundaries lets
@@ -105,9 +104,6 @@ class Array(Protocol):
     @property
     def dtype(self) -> object:
         """The array's dtype (backend-defined)."""
-
-    def __array_namespace__(self, *, api_version: Any = None) -> object:  # noqa: PLW3201, ANN401
-        """Return the Array-API namespace for this array."""
 
     def item(self) -> Any:  # noqa: ANN401
         """Return a 0-d array as a Python scalar."""

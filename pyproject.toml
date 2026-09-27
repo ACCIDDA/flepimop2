@@ -11,6 +11,7 @@ authors = [
 ]
 requires-python = ">=3.11,<3.15"
 dependencies = [
+    "array-api-compat>=1.12",
     "click>=8.3.0",
     "numpy>=2.2.6",
     "pydantic>=2.12.2",

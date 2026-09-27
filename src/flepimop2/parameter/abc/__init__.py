@@ -27,6 +27,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
+from flepimop2._utils._array import array_namespace
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.module import ModuleBase
@@ -229,10 +230,10 @@ class ParameterValue:
         admits non-numeric NumPy arrays (e.g. string or object dtypes).
         Those have no meaningful place in a `ParameterValue`, so this
         check rejects them at construction time without forcing a host
-        round-trip on tracer-bearing backends: it asks the value's own
-        Array-API namespace via ``__array_namespace__().isdtype(...,
-        "numeric")``, falling back to ``dtype.kind`` for backends that
-        predate the Array-API ``isdtype`` helper.
+        round-trip on tracer-bearing backends: it discovers the compatible
+        namespace through ``array_api_compat.array_namespace`` and calls
+        ``isdtype(..., "numeric")``, falling back to ``dtype.kind`` for
+        namespaces that predate the Array-API ``isdtype`` helper.
 
         Raises:
             ValueError: If the array shape does not match the resolved named shape.
@@ -261,8 +262,8 @@ class ParameterValue:
                 f"for axes {self.shape.axis_names}."
             )
             raise ValueError(msg)
+        xp: Any = array_namespace(self.value)
         try:
-            xp: Any = self.value.__array_namespace__()
             is_numeric = bool(xp.isdtype(self.value.dtype, "numeric"))
         except (AttributeError, TypeError):
             kind = getattr(self.value.dtype, "kind", None)

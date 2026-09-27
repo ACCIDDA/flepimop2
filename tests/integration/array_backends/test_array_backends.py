@@ -23,7 +23,7 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from flepimop2._utils._array import array_backend
+from flepimop2._utils._array import array_backend, array_namespace
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.backend.abc import BackendABC
 from flepimop2.configuration import SimulateSpecificationModel
@@ -65,6 +65,27 @@ class _JaxParameter(ParameterABC, module="test_array_backend_jax"):
             The scalar value and its empty named shape.
         """
         return ParameterValue(jnp.asarray(self.value), ResolvedShape())
+
+
+class _TorchParameter(ParameterABC, module="test_array_backend_torch"):
+    """Scalar raw-Torch parameter used to exercise producer advertisement."""
+
+    backend: ClassVar[ArrayBackend] = ArrayBackend.TORCH
+    value: float
+
+    def sample(
+        self,
+        *,
+        axes: AxisCollection | None = None,  # noqa: ARG002
+        request: ParameterRequest | None = None,  # noqa: ARG002
+    ) -> ParameterValue:
+        """Produce one scalar raw Torch value.
+
+        Returns:
+            The scalar value and its empty named shape.
+        """
+        torch = pytest.importorskip("torch")
+        return ParameterValue(torch.asarray(self.value), ResolvedShape())
 
 
 def _step(
@@ -111,7 +132,7 @@ def _evolve(
     x0 = initial_state["x"].value
     backend_stepper: Any = stepper
     x1 = backend_stepper(np.float64(1.0), x0, **params)
-    xp: Any = x0.__array_namespace__()
+    xp: Any = array_namespace(x0)
     return cast("Array", xp.stack((x0, x1)))
 
 
@@ -160,6 +181,22 @@ def _jax_runner(
     )
 
 
+def _torch_runner(
+    stepper: SystemProtocol,
+    times: Float64NDArray,  # noqa: ARG001
+    initial_state: dict[IdentifierString, ParameterValue],
+    params: Mapping[IdentifierString, ParameterValue],
+    model_state: ModelStateSpecification | None = None,  # noqa: ARG001
+    **kwargs: Any,  # noqa: ARG001
+) -> Float64NDArray:
+    """Run the shared calculation using raw Torch inputs.
+
+    Returns:
+        The initial and evolved raw Torch states.
+    """
+    return cast("Float64NDArray", _evolve(stepper, initial_state, params))
+
+
 class _NumpyEngine(EngineABC, module="test_array_backend_numpy"):
     """Engine requiring NumPy parameter payloads."""
 
@@ -182,6 +219,17 @@ class _JaxEngine(EngineABC, module="test_array_backend_jax"):
         self._runner = _jax_runner
 
 
+class _TorchEngine(EngineABC, module="test_array_backend_torch"):
+    """Engine requiring raw Torch parameter payloads."""
+
+    backend: ClassVar[ArrayBackend] = ArrayBackend.TORCH
+
+    def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
+        """Install the Torch runner."""
+        super().model_post_init(__context)
+        self._runner = _torch_runner
+
+
 class _NoopBackend(BackendABC, module="test_array_backend_noop"):
     """Persistence sink for orchestration tests."""
 
@@ -199,12 +247,20 @@ def _sample(backend: ArrayBackend, value: float) -> ParameterValue:
 
     Returns:
         A scalar value from a producer advertising `backend`.
+
+    Raises:
+        ValueError: If no concrete test producer is defined for ``backend``.
     """
     producer: ParameterABC
     if backend is ArrayBackend.NUMPY:
         producer = FixedParameter(value=value)
-    else:
+    elif backend is ArrayBackend.JAX:
         producer = _JaxParameter(value=value)
+    elif backend is ArrayBackend.TORCH:
+        producer = _TorchParameter(value=value)
+    else:
+        msg = f"Cannot sample test producer for {backend.value!r}."
+        raise ValueError(msg)
     return producer.sample()
 
 
@@ -236,3 +292,27 @@ def test_simulator_converts_once_at_engine_boundary(
 
     assert array_backend(cast("Array", result)) is engine_backend
     np.testing.assert_allclose(np.asarray(result), np.asarray([1.0, 3.0]))
+
+
+def test_raw_torch_producer_consumer_integration_when_available() -> None:
+    """A raw-Torch producer should flow unchanged into a Torch consumer."""
+    torch = pytest.importorskip("torch")
+    initial = _sample(ArrayBackend.TORCH, 1.0)
+    rate = _sample(ArrayBackend.TORCH, 2.0)
+    simulator = Simulator(
+        _SYSTEM,
+        _TorchEngine(),
+        _NoopBackend(),
+        simulate_config=SimulateSpecificationModel(times=[0.0, 1.0]),
+    )
+
+    result = simulator.run(
+        initial_state={"x": initial},
+        params={"rate": rate},
+    )
+
+    assert isinstance(initial.value, torch.Tensor)
+    assert isinstance(rate.value, torch.Tensor)
+    assert isinstance(result, torch.Tensor)
+    assert array_backend(cast("Array", result)) is ArrayBackend.TORCH
+    assert torch.allclose(result, torch.asarray([1.0, 3.0]))
