@@ -109,12 +109,13 @@ def test_simulator_resolves_inputs_and_runs(
     result = simulator.run(initial_state, params)
 
     assert result.shape == (2, 10)
-    np.testing.assert_array_equal(result[:, 0], np.array([0.0, 1.0]))
+    result_array = np.asarray(result)
+    np.testing.assert_array_equal(result_array[:, 0], np.array([0.0, 1.0]))
     np.testing.assert_array_equal(
-        result[0, 1:],
+        result_array[0, 1:],
         np.array([100.0, 100.0, 100.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0]),
     )
     np.testing.assert_allclose(
-        result[1, 1:],
+        result_array[1, 1:],
         np.array([100.4, 100.4, 100.4, 1.4, 1.4, 1.4, 0.4, 0.4, 0.4]),
     )

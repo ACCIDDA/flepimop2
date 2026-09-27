@@ -32,15 +32,15 @@ from pydantic import PrivateAttr
 
 from flepimop2.parameter.abc import ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray, StateChangeEnum
+from flepimop2.typing import Array, StateChangeEnum
 
 
 def global_sir(
     time: np.float64,
-    state: Float64NDArray,
+    state: Array,
     beta: ParameterValue,
     gamma: ParameterValue,
-) -> Float64NDArray:
+) -> Array:
     """
     SIR model stepper function.
 
@@ -94,6 +94,7 @@ from flepimop2.exceptions import ValidationIssue
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import (
+    Array,
     ArrayBackend,
     Float64NDArray,
     IdentifierString,
@@ -108,7 +109,7 @@ def runner(
     params: dict[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,
     **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
+) -> Array:
     """
     Simple Euler runner for the SIR model.
 
@@ -163,7 +164,7 @@ class EulerEngine(EngineABC, module="euler"):
 
 Key elements in the engine implementation:
 
-- `runner` drives the simulation by applying the stepper across time points.
+- `runner` drives the simulation by applying the stepper across time points. State and result boundaries use the backend-neutral `Array` protocol, while `times` remains a NumPy `Float64NDArray` supplied by simulation configuration.
 - `EulerEngine` inherits `EngineABC` and stores its runner in `model_post_init` via `self.__pydantic_private__["_runner"]`. This pattern avoids descriptor binding that occurs when storing callables in `PrivateAttr` and accessing them via `self._runner`.
 - `backend` advertises the array namespace required by the engine. Before invoking the runner, `Simulator` converts each `ParameterValue.value` once at the producer-to-engine boundary. Namespace discovery uses `array-api-compat`, so standard-compliant arrays and native arrays such as `torch.Tensor` follow the same path. Values already in that namespace retain their identity. Engines that operate on any Array-API namespace can keep the inherited `ArrayBackend.ANY` default and receive values unchanged.
 - Backend advertisement and Array-API compatibility describe conversion semantics only. They do not promise that an engine supports JIT compilation, automatic differentiation, devices, sparse layouts, or every dtype for that backend; providers must document and test those capabilities separately.

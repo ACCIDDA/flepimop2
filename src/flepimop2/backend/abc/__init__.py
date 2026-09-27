@@ -23,18 +23,18 @@ from typing import Any
 from flepimop2._utils._module import _build
 from flepimop2.meta import RunMeta
 from flepimop2.module import ModuleBase
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Array, Float64NDArray
 
 
 class BackendABC(ModuleBase, module_namespace="backend"):
     """Abstract base class for flepimop2 file IO backends."""
 
-    def save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
+    def save(self, data: Array, run_meta: RunMeta) -> None:
         """
-        Save a numpy array to storage.
+        Save an array to storage.
 
         Args:
-            data: The numpy array to save.
+            data: The array to save.
             run_meta: Metadata about the current run.
         """
         return self._save(data, run_meta)
@@ -52,7 +52,7 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         return self._read(run_meta)
 
     @abstractmethod
-    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
+    def _save(self, data: Array, run_meta: RunMeta) -> None:
         """Backend-specific implementation for saving data."""
         ...
 

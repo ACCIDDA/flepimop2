@@ -42,10 +42,14 @@ def test_set_valid_static_parameters(test_system: SystemABC) -> None:
     time = np.float64(1.0)
     initial_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
     newproto = test_system.bind(offset=offset)
-    assert all(newproto(time, initial_state) == (initial_state + offset.item()))
+    np.testing.assert_array_equal(
+        np.asarray(newproto(time, initial_state)), initial_state + offset.item()
+    )
     doubled = ParameterValue(np.array(offset.item() * 2), ResolvedShape())
     newproto = test_system.bind(params={"offset": doubled})
-    assert all(newproto(time, initial_state) == (initial_state + doubled.item()))
+    np.testing.assert_array_equal(
+        np.asarray(newproto(time, initial_state)), initial_state + doubled.item()
+    )
 
 
 @par

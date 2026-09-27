@@ -24,7 +24,7 @@ from pydantic import ValidationError
 from flepimop2.backend.abc import BackendABC
 from flepimop2.module import ModuleBase
 from flepimop2.process.abc import ProcessABC
-from flepimop2.typing import Float64NDArray, PatchConflictMode
+from flepimop2.typing import Array, Float64NDArray, PatchConflictMode
 
 
 def test_missing_module_attribute_raises() -> None:
@@ -63,7 +63,7 @@ def test_module_shortcut_sets_fully_qualified_module_for_backend_subclass() -> N
     """The class-definition shortcut should resolve namespaced backends."""
 
     class MyBackend(BackendABC, module="test_backend"):
-        def _save(self, data: Float64NDArray, run_meta: object) -> None: ...
+        def _save(self, data: Array, run_meta: object) -> None: ...
 
         def _read(self, _run_meta: object) -> Float64NDArray:
             return np.array([], dtype=np.float64)

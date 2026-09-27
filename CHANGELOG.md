@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Generalized system state, engine result, simulator result, and backend-save
+  contracts to the backend-neutral `Array` protocol while retaining NumPy
+  evaluation-time grids. See [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
 - ...
 
 ### Deprecated
