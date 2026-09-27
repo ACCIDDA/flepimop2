@@ -25,7 +25,7 @@ from pydantic import Field, field_validator
 
 from flepimop2.backend.abc import BackendABC
 from flepimop2.meta import RunMeta
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Array, Float64NDArray
 
 
 class CsvBackend(BackendABC, module="csv"):
@@ -68,17 +68,17 @@ class CsvBackend(BackendABC, module="csv"):
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.csv"
         return self.root / filename
 
-    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
+    def _save(self, data: Array, run_meta: RunMeta) -> None:
         """
-        Save a numpy array to a CSV file.
+        Save an array to a CSV file.
 
         Args:
-            data: The numpy array to save.
+            data: The array to save.
             run_meta: Metadata about the current run.
         """
         file_path = self._get_file_path(run_meta)
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        np.savetxt(file_path, data, delimiter=",")
+        np.savetxt(file_path, np.asarray(data), delimiter=",")
 
     def _read(self, run_meta: RunMeta) -> Float64NDArray:
         """

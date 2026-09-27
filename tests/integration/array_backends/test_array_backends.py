@@ -90,9 +90,9 @@ class _TorchParameter(ParameterABC, module="test_array_backend_torch"):
 
 def _step(
     time: np.float64,
-    state: Float64NDArray,
+    state: Array,
     **params: ParameterValue,
-) -> Float64NDArray:
+) -> Array:
     """Use only namespace-polymorphic arithmetic in the test system.
 
     Returns:
@@ -100,7 +100,7 @@ def _step(
     """
     state_value: Any = state
     rate_value: Any = params["rate"].value
-    return cast("Float64NDArray", state_value + rate_value * time)
+    return cast("Array", state_value + rate_value * time)
 
 
 def _model_state(_axes: AxisCollection) -> ModelStateSpecification:
@@ -130,8 +130,7 @@ def _evolve(
         The initial and evolved states in their original namespace.
     """
     x0 = initial_state["x"].value
-    backend_stepper: Any = stepper
-    x1 = backend_stepper(np.float64(1.0), x0, **params)
+    x1 = stepper(np.float64(1.0), x0, **params)
     xp: Any = array_namespace(x0)
     return cast("Array", xp.stack((x0, x1)))
 
@@ -143,13 +142,13 @@ def _numpy_runner(
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
     **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
+) -> Array:
     """Run the shared calculation using NumPy inputs.
 
     Returns:
         The initial and evolved NumPy states.
     """
-    return cast("Float64NDArray", _evolve(stepper, initial_state, params))
+    return _evolve(stepper, initial_state, params)
 
 
 def _jax_runner(
@@ -159,7 +158,7 @@ def _jax_runner(
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
     **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
+) -> Array:
     """JIT the shared calculation to catch accidental host coercion.
 
     Returns:
@@ -175,10 +174,7 @@ def _jax_runner(
             {"rate": ParameterValue(rate, shape)},
         )
 
-    return cast(
-        "Float64NDArray",
-        solve(initial_state["x"].value, params["rate"].value),
-    )
+    return cast("Array", solve(initial_state["x"].value, params["rate"].value))
 
 
 def _torch_runner(
@@ -188,13 +184,13 @@ def _torch_runner(
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
     **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
+) -> Array:
     """Run the shared calculation using raw Torch inputs.
 
     Returns:
         The initial and evolved raw Torch states.
     """
-    return cast("Float64NDArray", _evolve(stepper, initial_state, params))
+    return _evolve(stepper, initial_state, params)
 
 
 class _NumpyEngine(EngineABC, module="test_array_backend_numpy"):
@@ -233,7 +229,7 @@ class _TorchEngine(EngineABC, module="test_array_backend_torch"):
 class _NoopBackend(BackendABC, module="test_array_backend_noop"):
     """Persistence sink for orchestration tests."""
 
-    def _save(self, data: Float64NDArray, run_meta: RunMeta) -> None:
+    def _save(self, data: Array, run_meta: RunMeta) -> None:
         """Accept the result without changing it."""
 
     def _read(self, run_meta: RunMeta) -> Float64NDArray:
@@ -290,7 +286,7 @@ def test_simulator_converts_once_at_engine_boundary(
         params={"rate": _sample(producer_backend, 2.0)},
     )
 
-    assert array_backend(cast("Array", result)) is engine_backend
+    assert array_backend(result) is engine_backend
     np.testing.assert_allclose(np.asarray(result), np.asarray([1.0, 3.0]))
 
 
@@ -314,5 +310,5 @@ def test_raw_torch_producer_consumer_integration_when_available() -> None:
     assert isinstance(initial.value, torch.Tensor)
     assert isinstance(rate.value, torch.Tensor)
     assert isinstance(result, torch.Tensor)
-    assert array_backend(cast("Array", result)) is ArrayBackend.TORCH
+    assert array_backend(result) is ArrayBackend.TORCH
     assert torch.allclose(result, torch.asarray([1.0, 3.0]))

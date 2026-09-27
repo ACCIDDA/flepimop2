@@ -28,6 +28,7 @@ from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC
 from flepimop2.typing import (
+    Array,
     ArrayBackend,
     Float64NDArray,
     IdentifierString,
@@ -47,7 +48,7 @@ class EngineProtocol(Protocol):
         params: Mapping[IdentifierString, ParameterValue],
         model_state: ModelStateSpecification | None = None,
         **kwargs: Any,
-    ) -> Float64NDArray:
+    ) -> Array:
         """Protocol for engine runner functions."""
         ...
 
@@ -59,7 +60,7 @@ def _no_run_func(
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,
     **kwargs: Any,
-) -> Float64NDArray:
+) -> Array:
     msg = "EngineABC::_runner must be provided by a concrete implementation."
     raise NotImplementedError(msg)
 
@@ -95,7 +96,7 @@ class EngineABC(ModuleBase, module_namespace="engine"):
         params: Mapping[IdentifierString, ParameterValue],
         model_state: ModelStateSpecification | None = None,
         **kwargs: Any,
-    ) -> Float64NDArray:
+    ) -> Array:
         """
         Run the engine with the provided system and parameters.
 

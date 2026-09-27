@@ -53,6 +53,7 @@ from typing import (
     ParamSpec,
     Protocol,
     Self,
+    TypeVar,
     cast,
     runtime_checkable,
 )
@@ -288,19 +289,18 @@ class StateChangeEnum(StrEnum):
 class SystemProtocol(Protocol):
     """Type-definition (Protocol) for system stepper functions."""
 
-    def __call__(
-        self, time: np.float64, state: Float64NDArray, **kwargs: Any
-    ) -> Float64NDArray:
+    def __call__(self, time: np.float64, state: Array, **kwargs: Any) -> Array:
         """Protocol for system stepper functions."""
         ...
 
 
 _P = ParamSpec("_P")
+_ArrayT = TypeVar("_ArrayT", bound=Array)
 
-_SystemCallable = Callable[Concatenate[np.float64, Float64NDArray, _P], Float64NDArray]
+_SystemCallable = Callable[Concatenate[np.float64, _ArrayT, _P], _ArrayT]
 
 
-def as_system_protocol(func: _SystemCallable[_P]) -> SystemProtocol:
+def as_system_protocol(func: _SystemCallable[_ArrayT, _P]) -> SystemProtocol:
     """
     Decorator to mark a function as a SystemProtocol.
 
