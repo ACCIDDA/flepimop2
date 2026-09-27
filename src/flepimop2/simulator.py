@@ -38,7 +38,7 @@ from flepimop2.parameter.abc import (
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as build_system
-from flepimop2.typing import ArrayBackend, Float64NDArray, IdentifierString
+from flepimop2.typing import Array, ArrayBackend, IdentifierString
 
 
 def _coerce_parameter_values(
@@ -245,7 +245,7 @@ class Simulator:
         initial_state: dict[IdentifierString, ParameterValue] | None = None,
         params: dict[IdentifierString, ParameterValue] | None = None,
         meta: RunMeta | None = None,
-    ) -> Float64NDArray:
+    ) -> Array:
         """
         Run the simulation and persist results via the backend.
 

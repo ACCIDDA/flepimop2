@@ -44,7 +44,7 @@ from flepimop2.parameter.abc import (
 )
 from flepimop2.system.abc import SystemABC
 from flepimop2.typing import (
-    Float64NDArray,
+    Array,
     IdentifierString,
     StateChangeEnum,
     SystemProtocol,
@@ -335,7 +335,7 @@ def _adapt_wrapper_stepper(stepper: Callable[..., Any]) -> Callable[..., Any]:
     adapted_signature = raw_signature.replace(parameters=adapted_parameters)
 
     @functools.wraps(stepper)
-    def _adapted_stepper(*args: Any, **kwargs: Any) -> Float64NDArray:
+    def _adapted_stepper(*args: Any, **kwargs: Any) -> Array:
         bound = raw_signature.bind_partial(*args, **kwargs)
         for name, parameter in raw_signature.parameters.items():
             if name in {"time", "state"} or name not in bound.arguments:

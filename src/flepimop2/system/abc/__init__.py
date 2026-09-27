@@ -43,7 +43,7 @@ from flepimop2.parameter.abc import (
     ParameterValue,
 )
 from flepimop2.typing import (
-    Float64NDArray,
+    Array,
     IdentifierString,
     StateChangeEnum,
     SystemProtocol,
@@ -123,9 +123,7 @@ class SystemABC(ModuleBase, module_namespace="system"):
         msg = "Concrete implementations must implement _bind_impl."
         raise NotImplementedError(msg)
 
-    def step(
-        self, time: np.float64, state: Float64NDArray, **params: ParameterValue
-    ) -> Float64NDArray:
+    def step(self, time: np.float64, state: Array, **params: ParameterValue) -> Array:
         """
         Perform a single step of the system's dynamics.
 

@@ -16,6 +16,7 @@
 """A dummy stepper function for testing `WrapperEngine`."""
 
 from collections.abc import Mapping
+from typing import cast
 
 import numpy as np
 
@@ -63,7 +64,7 @@ def runner(  # noqa: PLR0913
     res[0, 1:] = flat_state
     current_state = state
     for i, t in enumerate(times[1:], start=1):
-        next_state = f(t, current_state, **params)
+        next_state = cast("Float64NDArray", f(t, current_state, **params))
         current_state = current_state + next_state if accumulate else next_state
         res[i, 1:] = current_state.reshape(-1)
     return res
