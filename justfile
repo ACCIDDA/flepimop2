@@ -125,6 +125,8 @@ build-test:
     cp pyproject.toml "${CLEANROOM}/pyproject.toml"
     cp -R tests "${CLEANROOM}/tests"
     cp conftest.py "${CLEANROOM}/conftest.py"
+    mkdir -p "${CLEANROOM}/docs/assets"
+    cp -R docs/assets/quickstart-project "${CLEANROOM}/docs/assets/quickstart-project"
     cd "${CLEANROOM}"
     "${CLEANROOM}/venv/bin/pytest" --import-mode=importlib tests --quiet --exitfirst -m "not integration"
 
