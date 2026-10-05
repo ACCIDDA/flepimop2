@@ -111,13 +111,16 @@ def test_load_module_returns_package_module_for_package_scripts(
 def test_load_module_keeps_fresh_loading_for_standalone_scripts(tmp_path: Path) -> None:
     """Scripts outside any package are still executed under the given name."""
     script = tmp_path / "standalone_339.py"
-    script.write_text("VALUE = 3\n", encoding="utf-8")
+    script.write_text("STATE: dict[str, int] = {}\n", encoding="utf-8")
 
     first = _load_module(script, "flepimop2.engine.wrapped")
     second = _load_module(script, "flepimop2.engine.wrapped")
 
+    assert first is not second
     assert first.__name__ == "flepimop2.engine.wrapped"
-    assert first.VALUE == second.VALUE == 3
+    first.STATE["rtol"] = 1
+    assert second.STATE == {}
+    assert first.STATE == {"rtol": 1}
 
 
 def test_load_module_falls_back_when_package_import_fails(
