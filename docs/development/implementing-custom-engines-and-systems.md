@@ -1,3 +1,4 @@
+<!-- skip: start -->
 # Implementing Custom Engines and Systems
 
 This guide shows how to implement `EngineABC` and `SystemABC` modules so they can be used in `flepimop2` for simulation. This guide mirrors the external provider guide, but focuses only on the engine/system interfaces.
