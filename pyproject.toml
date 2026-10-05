@@ -60,7 +60,7 @@ dev = [
     "scipy>=1.17.0",
     "scipy-stubs>=1.17.0.2",
     "sybil[pytest]>=9.2.0",
-    "twine>=6.2.0",
+    "twine>=7.0.0",
     "types-pyyaml>=6.0.12.20250915",
     "yamllint>=1.37.1",
 ]
