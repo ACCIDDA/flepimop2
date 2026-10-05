@@ -17,7 +17,7 @@
 
 __all__ = ["Simulator"]
 
-from flepimop2._utils._array import coerce_to
+from flepimop2._utils._array import coerce_to, coerce_to_host
 from flepimop2._utils._click import _resolve_config_target
 from flepimop2.axis import AxisCollection
 from flepimop2.backend.abc import BackendABC
@@ -43,14 +43,17 @@ from flepimop2.typing import ArrayBackend, Float64NDArray, IdentifierString
 
 def _coerce_parameter_values(
     values: dict[IdentifierString, ParameterValue],
-    target: ArrayBackend,
+    target: ArrayBackend | str,
 ) -> dict[IdentifierString, ParameterValue]:
     """Convert parameter payloads at the producer-to-engine boundary.
 
     Returns:
         Parameter values accepted by the target engine backend.
     """
-    if target is ArrayBackend.ANY:
+    target_str = str(
+        target.value if isinstance(target, ArrayBackend) else target
+    ).lower()
+    if target_str in {"any", "arraybackend.any"}:
         return values
 
     converted: dict[IdentifierString, ParameterValue] = {}
@@ -286,5 +289,6 @@ class Simulator:
             model_state=model_state,
         )
         meta = meta or RunMeta()
-        self.backend.save(res, meta)
+        save_res = coerce_to_host(res)
+        self.backend.save(save_res, meta)
         return res

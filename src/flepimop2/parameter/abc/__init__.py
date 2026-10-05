@@ -303,7 +303,7 @@ class ParameterABC(ModuleBase, module_namespace="parameter"):
         shape.
     """
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.ANY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.ANY
     """Array backend produced by this parameter, if fixed."""
 
     @abstractmethod

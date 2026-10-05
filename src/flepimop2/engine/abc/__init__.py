@@ -67,7 +67,7 @@ def _no_run_func(
 class EngineABC(ModuleBase, module_namespace="engine"):
     """Abstract class for Engines to evolve Dynamic Systems."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.ANY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.ANY
     """Array backend required by this engine, if any."""
 
     _runner: Any = PrivateAttr(default=None)

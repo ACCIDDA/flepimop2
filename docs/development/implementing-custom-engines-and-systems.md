@@ -130,7 +130,7 @@ def runner(
 class EulerEngine(EngineABC, module="euler"):
     """Euler integration engine."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.NUMPY
     _runner: Any = PrivateAttr(default=None)
 
     def model_post_init(self, __context: object) -> None:
