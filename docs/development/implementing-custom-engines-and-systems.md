@@ -170,11 +170,68 @@ Key elements in the engine implementation:
 - `EulerEngine` implements the optional `validate_system` hook to ensure that the system is compatible.
 - No `build(...)` function is needed - `flepimop2` calls `EulerEngine.model_validate(config)` directly.
 
+## Array Backends and Extensibility
+
+`flepimop2` supports interchangeable array backends so engines and parameters can utilize hardware acceleration (such as JAX or PyTorch) while maintaining interoperability across disparate modules.
+
+### Builtin Backends
+
+The standard backends are defined by [`ArrayBackend`](file:///home/holism/workspaces/ACCIDDA/flepimop2/src/flepimop2/typing.py):
+
+- `ArrayBackend.NUMPY`: Standard NumPy ndarrays (`np.ndarray`).
+- `ArrayBackend.JAX`: JAX DeviceArrays and tracer arrays (`jax.Array`).
+- `ArrayBackend.TORCH`: PyTorch Tensors (`torch.Tensor`).
+- `ArrayBackend.ANY`: Accepts any Array-API compliant structure without conversion.
+
+### Backend Advertisement
+
+Subclasses of `EngineABC` and `ParameterABC` declare their array requirement or output using `backend`:
+
+```python
+class MyJaxEngine(EngineABC, module="my_jax"):
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.JAX
+```
+
+Engines or parameters that accept arbitrary Array-API arrays can keep the default `ArrayBackend.ANY`. When `Simulator` runs, it converts parameter values once at the producer-to-engine boundary; matching backend payloads and `ArrayBackend.ANY` consumers retain their exact array reference without host memory copying or tracer disruption.
+
+### Custom Array Backend Registration
+
+Third-party packages and plugins can register custom array backends (such as CuPy or Dask) in two ways:
+
+1. **Programmatic Registration**:
+   ```python
+   from flepimop2._utils._array import register_array_backend
+
+   register_array_backend(
+       name="cupy",
+       target="cupy",
+       coerce=lambda val: cp.asarray(val),
+   )
+   ```
+
+2. **Entry Points in `pyproject.toml`**:
+   ```toml
+   [project.entry-points."flepimop2.array_backends"]
+   cupy = "my_cupy_plugin:get_cupy_namespace"
+   ```
+
+### Wrapped Script Hooks (`WrapperEngine` and `WrapperSystem`)
+
+User scripts wrapped by `WrapperEngine` or `WrapperSystem` can declare custom backend attributes directly in their script file:
+
+- `ARRAY_BACKEND = "jax"`: Tells `WrapperEngine` to expect JAX inputs.
+- `coerce_array = lambda val: ...`: Defines a custom coercion callable that is automatically registered with the backend registry.
+
+### Output Seam
+
+When simulations finish, `Simulator` automatically converts non-NumPy output arrays to standard host NumPy arrays (`np.float64`) using `coerce_to_host()` before passing them to persistence backends like `CsvBackend` or `ParquetBackend`.
+
 ## Summary
 
 Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let `flepimop2` handle construction and validation.
 
 - Systems must inherit from `SystemABC` and supply a stepper (via `PrivateAttr` + `model_post_init`) as well as required attributes `module` and `state_change`.
-- Engines must inherit from `EngineABC`, advertise their `ArrayBackend`, and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Engines must inherit from `EngineABC`, advertise their `backend` (`ClassVar[ArrayBackend | str]`), and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Wrapped scripts can dynamically specify `ARRAY_BACKEND` and `coerce_array`.
 - Both use `model_post_init` for any initialization logic that runs after Pydantic has validated configuration fields.
 - Neither requires a `build(...)` function - Pydantic's `model_validate` handles configuration-driven construction.

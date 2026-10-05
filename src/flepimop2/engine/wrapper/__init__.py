@@ -31,7 +31,20 @@ from flepimop2.typing import ArrayBackend, StateChangeEnum
 
 
 class WrapperEngine(EngineABC, module="wrapper"):
-    """A `EngineABC` which wraps a user-defined script file."""
+    """An `EngineABC` that wraps a user-defined script file.
+
+    The wrapped script must provide a `runner` function compatible with
+    `EngineProtocol`. Additionally, the script may optionally define:
+    - ``ARRAY_BACKEND``: A string or `ArrayBackend` indicating the required
+      array namespace (e.g. ``"jax"``, ``"numpy"``, or a custom registered backend).
+    - ``coerce_array``: A callable ``(Array) -> Array`` that converts foreign array
+      values into the namespace required by the runner. If supplied, it is
+      automatically registered with the array backend registry.
+
+    Attributes:
+        script: Path to the Python script containing the `runner` function.
+        state_change: State-change convention declared by the engine.
+    """
 
     state_change: StateChangeEnum
     script: Path

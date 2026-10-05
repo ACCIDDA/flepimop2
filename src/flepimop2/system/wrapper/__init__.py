@@ -32,6 +32,7 @@ from pydantic import (
     model_validator,
 )
 
+from flepimop2._utils._array import register_array_backend
 from flepimop2._utils._checked_partial import _checked_partial
 from flepimop2._utils._inspect import _is_ndarray_annotation, _unwrap_annotation
 from flepimop2._utils._module import _as_dict as _as_dict
@@ -90,7 +91,11 @@ class WrapperSystem(SystemABC, module="wrapper"):
     A `SystemABC` that wraps a user-defined Python script file.
 
     The script must define a `stepper` function compatible with
-    `SystemProtocol`.
+    `SystemProtocol`. Additionally, the script may optionally define:
+    - ``coerce_array``: A callable ``(Array) -> Array`` that converts foreign
+      array values into the array namespace required by the stepper.
+    - ``ARRAY_BACKEND``: An optional name for the backend namespace associated with
+      ``coerce_array``.
 
     Attributes:
         script: Path to the Python script containing the `stepper` function.
@@ -168,6 +173,9 @@ class WrapperSystem(SystemABC, module="wrapper"):
         self._stepper = adapted
         self._requested_parameters_func = self._build_requested_parameters_func()
         self._model_state_func = self._build_model_state_func()
+        if hasattr(mod, "coerce_array") and callable(mod.coerce_array):
+            backend_name = str(getattr(mod, "ARRAY_BACKEND", self.script.stem)).lower()
+            register_array_backend(backend_name, coerce=mod.coerce_array)
         return self
 
     def _build_requested_parameters_func(
