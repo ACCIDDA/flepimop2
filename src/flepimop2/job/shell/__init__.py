@@ -22,7 +22,7 @@ import shlex
 import shutil
 import subprocess  # noqa: S404
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any
 
 from pydantic import PrivateAttr
 
@@ -34,6 +34,7 @@ from flepimop2.job.abc import (
     JobStatus,
     JobStatusResult,
 )
+from flepimop2.typing import override
 
 if TYPE_CHECKING:
     from flepimop2.cli import CliCommand

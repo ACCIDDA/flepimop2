@@ -24,7 +24,6 @@ __all__ = [
 ]
 
 import inspect
-import sys
 from abc import abstractmethod
 from collections.abc import Callable
 from typing import Any
@@ -47,12 +46,8 @@ from flepimop2.typing import (
     IdentifierString,
     StateChangeEnum,
     SystemProtocol,
+    override,
 )
-
-if sys.version_info >= (3, 12):
-    from typing import override
-else:
-    from typing_extensions import override
 
 
 class SystemABC(ModuleBase, module_namespace="system"):
