@@ -15,10 +15,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Euler engine implementation."""
 
-from typing import Any, ClassVar, override
+import sys
+from typing import Any, ClassVar
 
 import numpy as np
 from pydantic import PrivateAttr
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
