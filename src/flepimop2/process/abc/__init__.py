@@ -28,7 +28,7 @@ from abc import abstractmethod
 from collections.abc import Mapping
 from typing import Any
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from flepimop2._utils._module import _as_dict, _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
@@ -37,7 +37,7 @@ from flepimop2.scenario.abc import build as build_scenario
 
 # Configuration keys that describe the step itself rather than its work, and so
 # are never rewritten by a scenario.
-_STRUCTURAL_KEYS = frozenset({"module", "depends", "scenario"})
+_STRUCTURAL_KEYS = frozenset({"module", "depends"})
 _PLACEHOLDER_PATTERN = re.compile(r"\{([^{}]+)\}")
 
 
@@ -50,15 +50,31 @@ class ProcessABC(ModuleBase, module_namespace="process"):
             must run before this one. These are opaque identifiers, i.e. sibling
             keys of the `process:` section, not filesystem paths: core orders
             steps but does not know what any of them produces.
-        scenario: Optional name of an entry in the top-level `scenarios:`
-            section. When set, the step runs once per scenario, with the
-            scenario's values substituted into this step's configuration (see
-            `expand_scenarios()`).
-
     """
 
     depends: list[str] = Field(default_factory=list)
-    scenario: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _reject_process_scenario(cls, data: object) -> object:
+        """Reject the obsolete process-side association on direct builds.
+
+        Args:
+            data: Raw process configuration.
+
+        Returns:
+            The configuration when it has no obsolete association.
+
+        Raises:
+            ValueError: If a process declares `scenario`.
+        """
+        if isinstance(data, dict) and "scenario" in data:
+            msg = (
+                "Put process names in a scenario's 'processes' list, "
+                "not 'scenario' on a process."
+            )
+            raise ValueError(msg)
+        return data
 
     def execute(self, *, dry_run: bool = False, force: bool = False) -> None:
         """
@@ -159,27 +175,25 @@ def _declared_depends(entry: object) -> list[str]:
     return []
 
 
-def _declared_scenario(entry: object) -> str | None:
+def _declared_processes(entry: object) -> object:
     """
-    Read the `scenario` name off a raw process configuration entry.
+    Read `processes` off a raw scenario configuration entry.
 
-    Read from the configuration for the same reason as `_declared_depends()`:
-    every reference can then be checked before any module is imported.
+    Keep the raw value so validation can report malformed lists before any
+    process runs or scenario module is imported.
 
     Args:
-        entry: A single process configuration entry.
+        entry: A single scenario configuration entry.
 
     Returns:
-        The declared scenario name, or `None` when the step declares none.
+        The declared process names, or an empty list when none are declared.
 
     """
     if isinstance(entry, ModuleBase):
-        declared = getattr(entry, "scenario", None)
-    elif isinstance(entry, dict):
-        declared = entry.get("scenario")
-    else:
-        return None
-    return declared if isinstance(declared, str) and declared else None
+        return getattr(entry, "processes", [])
+    if isinstance(entry, dict):
+        return entry.get("processes", [])
+    return []
 
 
 def _substitute(value: object, values: Mapping[str, object]) -> object:
@@ -235,26 +249,71 @@ def _scenario_issues(
     scenarios: Mapping[str, Any],
 ) -> list[ValidationIssue]:
     """
-    Collect every bad `scenario` reference in a process section.
+    Collect invalid scenario-owned process associations.
 
     Args:
         section: The `process` configuration section.
         scenarios: The top-level `scenarios` section.
 
     Returns:
-        One issue per step naming a scenario that does not exist.
+        Issues for obsolete, malformed, duplicate, or unknown references.
 
     """
-    return [
-        ValidationIssue(
-            msg=f"Process step '{name}' names unknown scenario '{declared}'.",
-            kind="unknown_scenario",
-            ctx={"step": name, "scenario": declared, "known": sorted(scenarios)},
-        )
-        for name, entry in section.items()
-        if (declared := _declared_scenario(entry)) is not None
-        and declared not in scenarios
-    ]
+    issues: list[ValidationIssue] = []
+    for name, entry in section.items():
+        config = _as_dict(entry) if isinstance(entry, (dict, ModuleBase)) else {}
+        if "scenario" in config:
+            issues.append(
+                ValidationIssue(
+                    msg=(
+                        f"Process step '{name}' uses obsolete 'scenario'; list the "
+                        "step in a scenario's 'processes' instead."
+                    ),
+                    kind="process_side_scenario",
+                    ctx={"step": name},
+                )
+            )
+
+    for scenario_name, entry in scenarios.items():
+        declared = _declared_processes(entry)
+        if not isinstance(declared, list) or any(
+            not isinstance(name, str) or not name.strip() for name in declared
+        ):
+            issues.append(
+                ValidationIssue(
+                    msg=f"Scenario '{scenario_name}' requires a list of process names.",
+                    kind="malformed_processes",
+                    ctx={"scenario": scenario_name},
+                )
+            )
+            continue
+        seen: set[str] = set()
+        for name in declared:
+            if name in seen:
+                issues.append(
+                    ValidationIssue(
+                        msg=f"Scenario '{scenario_name}' lists process '{name}' twice.",
+                        kind="duplicate_process",
+                        ctx={"scenario": scenario_name, "step": name},
+                    )
+                )
+            elif name not in section:
+                issues.append(
+                    ValidationIssue(
+                        msg=(
+                            f"Scenario '{scenario_name}' names unknown "
+                            f"process '{name}'."
+                        ),
+                        kind="unknown_process",
+                        ctx={
+                            "scenario": scenario_name,
+                            "step": name,
+                            "known": sorted(section),
+                        },
+                    )
+                )
+            seen.add(name)
+    return issues
 
 
 def validate_scenarios(
@@ -262,7 +321,7 @@ def validate_scenarios(
     scenarios: Mapping[str, Any],
 ) -> None:
     """
-    Check that every step's `scenario` names a defined scenario.
+    Check scenario-owned process references and obsolete process-side fields.
 
     Run before executing a plan, so that a typo costs nothing rather than
     surfacing partway through a pipeline. All bad references are reported
@@ -273,8 +332,7 @@ def validate_scenarios(
         scenarios: The top-level `scenarios` section.
 
     Raises:
-        Flepimop2ValidationError: If any step names a scenario that is not
-            defined.
+        Flepimop2ValidationError: If any association is invalid.
 
     """
     if issues := _scenario_issues(section, scenarios):
@@ -282,16 +340,16 @@ def validate_scenarios(
 
 
 def expand_scenarios(
+    name: str,
     entry: dict[str, Any] | ModuleBase | str,
     scenarios: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
     """
     Expand one process step into the configurations it should run as.
 
-    A step without a `scenario` yields its own configuration unchanged, so the
-    unparameterized case stays exactly as it was. A step naming a scenario
-    yields one configuration per scenario tuple, with that tuple's values
-    substituted into the step's non-structural fields (see `_substitute()`).
+    A step not listed by a scenario yields its own configuration unchanged.
+    Each scenario listing the step contributes one configuration per tuple,
+    with that tuple's values substituted into non-structural fields.
 
     The fan-out deliberately happens *within* a plan step rather than by
     multiplying plan entries: `depends` names steps, so keeping a step a single
@@ -299,6 +357,7 @@ def expand_scenarios(
     on, and the dependency contract needs no notion of a per-scenario edge.
 
     Args:
+        name: Name of this step in the `process` section.
         entry: A single process configuration entry.
         scenarios: The top-level `scenarios` section.
 
@@ -306,32 +365,56 @@ def expand_scenarios(
         The configurations to execute, in scenario order.
 
     Raises:
-        Flepimop2ValidationError: If the step names a scenario that is not
-            defined.
+        Flepimop2ValidationError: If associations or expanded runs collide.
 
     """
     config = _as_dict(entry) if not isinstance(entry, str) else {"module": entry}
-    declared = _declared_scenario(entry)
-    if declared is None:
-        return [config]
-    if declared not in scenarios:
+    if "scenario" in config:
         raise Flepimop2ValidationError([
             ValidationIssue(
-                msg=f"Process step names unknown scenario '{declared}'.",
-                kind="unknown_scenario",
-                ctx={"scenario": declared, "known": sorted(scenarios)},
+                msg=f"Process step '{name}' uses obsolete 'scenario'.",
+                kind="process_side_scenario",
+                ctx={"step": name},
             )
         ])
 
-    scenario = build_scenario(scenarios[declared])
     expanded: list[dict[str, Any]] = []
-    for tuple_ in scenario.scenarios():
-        values = tuple_._asdict()
-        expanded.append({
-            key: value if key in _STRUCTURAL_KEYS else _substitute(value, values)
-            for key, value in config.items()
-        })
-    return expanded
+    associated = False
+    for scenario_name, scenario_entry in scenarios.items():
+        declared = _declared_processes(scenario_entry)
+        if not isinstance(declared, list) or any(
+            not isinstance(step, str) or not step.strip() for step in declared
+        ):
+            raise Flepimop2ValidationError([
+                ValidationIssue(
+                    msg=f"Scenario '{scenario_name}' requires a list of process names.",
+                    kind="malformed_processes",
+                    ctx={"scenario": scenario_name},
+                )
+            ])
+        if name not in declared:
+            continue
+        associated = True
+        scenario = build_scenario(scenario_entry)
+        for tuple_ in scenario.scenarios():
+            values = tuple_._asdict()
+            run = {
+                key: value if key in _STRUCTURAL_KEYS else _substitute(value, values)
+                for key, value in config.items()
+            }
+            if run in expanded:
+                raise Flepimop2ValidationError([
+                    ValidationIssue(
+                        msg=(
+                            f"Scenario runs for process '{name}' produce the same "
+                            "configuration; distinguish each run with scenario values."
+                        ),
+                        kind="duplicate_process_run",
+                        ctx={"step": name, "scenario": scenario_name},
+                    )
+                ])
+            expanded.append(run)
+    return expanded if associated else [config]
 
 
 def _depends_issues(depends: dict[str, list[str]]) -> list[ValidationIssue]:

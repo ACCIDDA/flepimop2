@@ -127,10 +127,14 @@ class ProcessCommand(CliCommand):
         self.info(f"Process target: {processtargetname} => {processtarget}")
 
         plan = resolve_plan(processconfig, processtargetname)
-        # Scenario references are checked across the whole section before any
-        # step runs, for the same reason `depends` is: a typo should cost
-        # nothing rather than surface partway through a pipeline.
+        # Check all associations and expand the full plan before any step runs.
+        # A bad reference or a duplicate expanded run must not leave an
+        # upstream dependency's effects behind.
         validate_scenarios(processconfig, configmodel.scenarios)
+        expanded = {
+            step: expand_scenarios(step, processconfig[step], configmodel.scenarios)
+            for step in plan
+        }
         if len(plan) > 1:
             self.info(f"Process plan: {' -> '.join(plan)}")
 
@@ -138,7 +142,7 @@ class ProcessCommand(CliCommand):
             # One -f forces just the step asked for, leaving its dependencies
             # to their own satisfied-means-skip behaviour; -ff forces those too.
             forced = _should_force(force, step, processtargetname)
-            configs = expand_scenarios(processconfig[step], configmodel.scenarios)
+            configs = expanded[step]
             if len(configs) > 1:
                 self.info(f"Step '{step}' runs {len(configs)} scenarios.")
             for config_ in configs:
