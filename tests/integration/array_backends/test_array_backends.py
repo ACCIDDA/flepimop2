@@ -16,6 +16,7 @@
 """Cross-backend tests for the parameter-to-engine conversion seam."""
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any, ClassVar, cast
 
 import jax
@@ -26,6 +27,7 @@ import pytest
 from flepimop2._utils._array import array_backend
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.backend.abc import BackendABC
+from flepimop2.backend.csv import CsvBackend
 from flepimop2.configuration import SimulateSpecificationModel
 from flepimop2.engine.abc import EngineABC
 from flepimop2.meta import RunMeta
@@ -50,7 +52,7 @@ from flepimop2.typing import (
 class _JaxParameter(ParameterABC, module="test_array_backend_jax"):
     """Scalar JAX parameter used to exercise producer advertisement."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.JAX
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.JAX
     value: float
 
     def sample(
@@ -163,7 +165,7 @@ def _jax_runner(
 class _NumpyEngine(EngineABC, module="test_array_backend_numpy"):
     """Engine requiring NumPy parameter payloads."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.NUMPY
 
     def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
         """Install the NumPy runner."""
@@ -174,7 +176,7 @@ class _NumpyEngine(EngineABC, module="test_array_backend_numpy"):
 class _JaxEngine(EngineABC, module="test_array_backend_jax"):
     """Engine requiring JAX parameter payloads."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.JAX
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.JAX
 
     def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
         """Install the JAX runner."""
@@ -236,3 +238,27 @@ def test_simulator_converts_once_at_engine_boundary(
 
     assert array_backend(cast("Array", result)) is engine_backend
     np.testing.assert_allclose(np.asarray(result), np.asarray([1.0, 3.0]))
+
+
+def test_simulator_output_seam_saves_jax_to_csv_backend(tmp_path: Path) -> None:
+    """The output seam should coerce non-NumPy results for file backends."""
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    backend = CsvBackend(root=output_dir)
+    simulator = Simulator(
+        _SYSTEM,
+        _JaxEngine(),
+        backend,
+        simulate_config=SimulateSpecificationModel(times=[0.0, 1.0]),
+    )
+
+    meta = RunMeta(name="jax_sim")
+    result = simulator.run(
+        initial_state={"x": _sample(ArrayBackend.JAX, 1.0)},
+        params={"rate": _sample(ArrayBackend.JAX, 2.0)},
+        meta=meta,
+    )
+
+    assert array_backend(cast("Array", result)) is ArrayBackend.JAX
+    saved_data = backend.read(meta)
+    np.testing.assert_allclose(saved_data, [1.0, 3.0])

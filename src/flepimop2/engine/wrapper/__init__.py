@@ -20,13 +20,14 @@ __all__ = ["WrapperEngine"]
 from pathlib import Path
 from typing import Self
 
-from pydantic import model_validator
+from pydantic import PrivateAttr, model_validator
 
+from flepimop2._utils._array import register_array_backend
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.engine.abc import EngineABC
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.system.abc import SystemABC
-from flepimop2.typing import StateChangeEnum
+from flepimop2.typing import ArrayBackend, StateChangeEnum
 
 
 class WrapperEngine(EngineABC, module="wrapper"):
@@ -35,6 +36,17 @@ class WrapperEngine(EngineABC, module="wrapper"):
     state_change: StateChangeEnum
     script: Path
 
+    _backend: ArrayBackend | str = PrivateAttr(default=ArrayBackend.ANY)
+
+    @property
+    def backend(self) -> ArrayBackend | str:
+        """Array backend required by this wrapped engine instance."""
+        return self._backend
+
+    @backend.setter
+    def backend(self, value: ArrayBackend | str) -> None:
+        self._backend = value
+
     @model_validator(mode="after")
     def _validate_script(self) -> Self:
         mod = _load_module(self.script, "flepimop2.engine.wrapped")
@@ -42,6 +54,16 @@ class WrapperEngine(EngineABC, module="wrapper"):
             msg = f"Module at {self.script} does not have a valid 'runner' function."
             raise AttributeError(msg)
         self._runner = mod.runner
+        if hasattr(mod, "ARRAY_BACKEND"):
+            self._backend = str(mod.ARRAY_BACKEND).lower()
+        if hasattr(mod, "coerce_array") and callable(mod.coerce_array):
+            backend_name = (
+                str(self._backend).lower()
+                if str(self._backend).lower() != "any"
+                else self.script.stem
+            )
+            self._backend = backend_name
+            register_array_backend(backend_name, coerce=mod.coerce_array)
         return self
 
     def validate_system(self, system: SystemABC) -> list[ValidationIssue] | None:

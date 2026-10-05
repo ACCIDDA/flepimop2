@@ -74,7 +74,7 @@ def runner(
 class EulerEngine(EngineABC, module="flepimop2.engine.euler"):
     """SIR model runner."""
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.NUMPY
 
     def model_post_init(self, __context: Any, /) -> None:  # noqa: ANN401
         """Set the Euler runner function."""

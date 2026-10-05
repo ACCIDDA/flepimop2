@@ -38,7 +38,7 @@ class FixedParameter(ParameterABC, module="fixed"):
         42.0
     """
 
-    backend: ClassVar[ArrayBackend] = ArrayBackend.NUMPY
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.NUMPY
 
     value: float | int | list[Any]
     shape: tuple[IdentifierString, ...] = ()
