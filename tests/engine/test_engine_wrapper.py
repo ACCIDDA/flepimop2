@@ -21,6 +21,7 @@ from typing import Any, Final
 import numpy as np
 import pytest
 
+from flepimop2._utils._array import coerce_to
 from flepimop2.axis import ResolvedShape
 from flepimop2.engine.abc import build as engine_build
 from flepimop2.exceptions import ValidationIssue
@@ -106,3 +107,42 @@ def test_wrapper_engine_validate_system_properties(config: dict[str, Any]) -> No
     assert issues is not None
     assert all(isinstance(issue, ValidationIssue) for issue in issues)
     assert [issue.kind for issue in issues] == ["incompatible_system"]
+
+
+def test_wrapper_engine_registers_array_backend(tmp_path: Path) -> None:
+    """WrapperEngine inspects ARRAY_BACKEND from the wrapped script."""
+    script = tmp_path / "custom_backend_engine.py"
+    script.write_text(
+        "ARRAY_BACKEND = 'jax'\n"
+        "def runner(stepper, times, initial_state, params, **kwargs):\n"
+        "    return times\n"
+    )
+    engine = engine_build({
+        "module": "wrapper",
+        "script": script,
+        "state_change": "flow",
+    })
+    assert engine.backend == "jax"
+
+
+def test_wrapper_engine_registers_custom_coercer(tmp_path: Path) -> None:
+    """WrapperEngine registers custom coerce_array function when provided."""
+    script = tmp_path / "custom_coercer_engine.py"
+    script.write_text(
+        "import numpy as np\n"
+        "ARRAY_BACKEND = 'scaled_numpy'\n"
+        "def coerce_array(val):\n"
+        "    return np.asarray(val) * 10.0\n"
+        "def runner(stepper, times, initial_state, params, **kwargs):\n"
+        "    return times\n"
+    )
+    engine = engine_build({
+        "module": "wrapper",
+        "script": script,
+        "state_change": "flow",
+    })
+    assert engine.backend == "scaled_numpy"
+
+    test_input = np.asarray([1.0, 2.0])
+    coerced = coerce_to(test_input, "scaled_numpy")
+    np.testing.assert_array_equal(coerced, np.asarray([10.0, 20.0]))
