@@ -12,17 +12,21 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for `flepimop2 check` and `flepimop2.check.check_configuration`."""
 
 from pathlib import Path
 from typing import Any
 
+import pytest
 import yaml
 from click.testing import CliRunner
 
 from flepimop2.check import check_configuration
 from flepimop2.cli._cli import cli
 from flepimop2.configuration import ConfigurationModel
+from flepimop2.exceptions import ValidationIssue
+from flepimop2.process.abc import ProcessABC
 from flepimop2.typing import ExitCode
 
 ENGINE_SCRIPT = (
@@ -107,6 +111,64 @@ def test_missing_parameter_and_bad_process_are_all_reported(tmp_path: Path) -> N
     assert "process_build" in kinds
     missing = next(i for i in issues if i.kind == "missing_parameter")
     assert missing.ctx == {"target": "demo", "parameter": "beta"}
+
+
+def test_section_walk_reports_standalone_component_issues(tmp_path: Path) -> None:
+    """Standalone components in top-level sections are validated independently."""
+    raw = _config(tmp_path)
+    raw["backends"]["broken_backend"] = {
+        "module": "flepimop2_nonexistent_backend",
+    }
+    raw["engines"]["broken_engine"] = {
+        "module": "flepimop2_nonexistent_engine",
+    }
+
+    issues = check_configuration(ConfigurationModel.model_validate(raw))
+
+    kinds = {issue.kind for issue in issues}
+    assert "backend_build" in kinds
+    assert "engine_build" in kinds
+
+
+def test_process_dependency_cycle_reported(tmp_path: Path) -> None:
+    """Dependency cycles between process steps are reported as validation issues."""
+    raw = _config(tmp_path)
+    raw["process"] = {
+        "step_a": {"module": "shell", "command": "echo", "depends": ["step_b"]},
+        "step_b": {"module": "shell", "command": "echo", "depends": ["step_a"]},
+    }
+
+    issues = check_configuration(ConfigurationModel.model_validate(raw))
+
+    kinds = {issue.kind for issue in issues}
+    assert "dependency_cycle" in kinds
+
+
+def test_module_validate_hook_reports_issues(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Module implementations can report validation issues through validate()."""
+    raw = _config(tmp_path)
+    raw["process"] = {"custom_step": {"module": "shell", "command": "echo"}}
+
+    def mock_validate(self: ProcessABC) -> list[ValidationIssue]:  # noqa: ARG001
+        return [
+            ValidationIssue(
+                msg="Custom process preflight validation failed.",
+                kind="custom_process_issue",
+                ctx={"custom_key": "custom_val"},
+            )
+        ]
+
+    monkeypatch.setattr(ProcessABC, "validate_module", mock_validate)
+
+    issues = check_configuration(ConfigurationModel.model_validate(raw))
+
+    custom = next((i for i in issues if i.kind == "custom_process_issue"), None)
+    assert custom is not None
+    assert custom.ctx is not None
+    assert custom.ctx.get("process") == "custom_step"
+    assert custom.ctx.get("custom_key") == "custom_val"
 
 
 def test_unparseable_configuration_is_one_issue(tmp_path: Path) -> None:

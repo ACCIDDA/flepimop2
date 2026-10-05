@@ -22,7 +22,7 @@ import shlex
 import shutil
 import subprocess  # noqa: S404
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from pydantic import PrivateAttr
 
@@ -59,7 +59,8 @@ class ShellJob(JobABC, module="shell"):
 
     _exe: str | None = PrivateAttr(default=None)
 
-    def _submit_validate(self) -> list[ValidationIssue] | None:
+    @override
+    def _submit_validate(self) -> list[ValidationIssue]:
         """Resolve the `flepimop2` executable and cache it for use in `_submit`.
 
         Returns:
@@ -77,6 +78,7 @@ class ShellJob(JobABC, module="shell"):
             ]
         return []
 
+    @override
     def _submit(
         self, command: "CliCommand", *, dry_run: bool = False
     ) -> JobHandle | JobDryRun:

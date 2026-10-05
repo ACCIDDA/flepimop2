@@ -23,6 +23,7 @@ from typing import Any, ClassVar, Literal, Self, cast
 from pydantic import BaseModel, ConfigDict, Field
 
 from flepimop2._utils._dict import _deep_merge_dicts
+from flepimop2.exceptions import ValidationIssue
 from flepimop2.typing import PatchConflictMode, RaiseOnMissing, RaiseOnMissingType
 from flepimop2.yaml import _model_to_yaml_mapping
 
@@ -339,3 +340,15 @@ class ModuleBase(BaseModel):
         return type(self).model_validate(
             _deep_merge_dicts(self.model_dump(), other.model_dump())
         )
+
+    def validate_module(self) -> list[ValidationIssue]:  # noqa: PLR6301
+        """
+        Validate module configuration and runtime requirements.
+
+        Subclasses should override this method to perform self-validation
+        (e.g., verifying parameters, paths, or schema constraints).
+
+        Returns:
+            A list of `ValidationIssue` instances (empty if valid).
+        """
+        return []

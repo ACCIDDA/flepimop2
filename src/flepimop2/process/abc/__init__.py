@@ -18,7 +18,7 @@
 __all__ = ["ProcessABC", "build", "resolve_plan"]
 
 from abc import abstractmethod
-from typing import Any
+from typing import Any, override
 
 from pydantic import Field
 
@@ -59,10 +59,8 @@ class ProcessABC(ModuleBase, module_namespace="process"):
         Raises:
             Flepimop2ValidationError: If validation fails during a dry run.
         """
-        if dry_run and (result := self._process_validate()) is not None:
-            if result:
-                raise Flepimop2ValidationError(result)
-            return None
+        if dry_run and (issues := self.validate_module()):
+            raise Flepimop2ValidationError(issues)
         if not force and self.is_satisfied():
             return None
         return self._process(dry_run=dry_run)
@@ -91,15 +89,24 @@ class ProcessABC(ModuleBase, module_namespace="process"):
         """Backend-specific implementation for processing data."""
         ...
 
-    def _process_validate(self) -> list[ValidationIssue] | None:  # noqa: PLR6301
+    @override
+    def validate_module(self) -> list[ValidationIssue]:
+        """Validate the process configuration and prerequisites.
+
+        Returns:
+            A list of validation issues found, or an empty list if valid.
+        """
+        return self._process_validate()
+
+    def _process_validate(self) -> list[ValidationIssue]:  # noqa: PLR6301
         """
         Process validation hook.
 
         Returns:
-            A boolean indicating if the process is valid, or `None` if not implemented.
+            A list of validation issues found, or an empty list if valid.
 
         """
-        return None
+        return []
 
 
 def build(config: dict[str, Any] | ModuleBase | str) -> ProcessABC:

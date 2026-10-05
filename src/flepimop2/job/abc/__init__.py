@@ -27,7 +27,7 @@ __all__ = [
 from abc import abstractmethod
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from pydantic import BaseModel, Field
 
@@ -159,7 +159,7 @@ class JobABC(ModuleBase, module_namespace="job"):
         Raises:
             Flepimop2ValidationError: If `_submit_validate` returns issues.
         """
-        if (issues := self._submit_validate()) is not None and issues:
+        if issues := self.validate_module():
             raise Flepimop2ValidationError(issues)
         return self._submit(command, dry_run=dry_run)
 
@@ -186,7 +186,16 @@ class JobABC(ModuleBase, module_namespace="job"):
         """
         ...
 
-    def _submit_validate(self) -> list[ValidationIssue] | None:  # noqa: PLR6301
+    @override
+    def validate_module(self) -> list[ValidationIssue]:
+        """Validate that this backend is ready to accept submissions.
+
+        Returns:
+            A list of `ValidationIssue` objects (empty if valid).
+        """
+        return self._submit_validate()
+
+    def _submit_validate(self) -> list[ValidationIssue]:  # noqa: PLR6301
         """Validate that this backend is ready to accept submissions.
 
         Called by `submit` before delegating to `_submit`. Subclasses may
@@ -194,11 +203,10 @@ class JobABC(ModuleBase, module_namespace="job"):
         executables, checking credentials, testing connectivity).
 
         Returns:
-            A list of `ValidationIssue` objects if validation fails, an empty
-            list if validation passes with no issues, or `None` if not
-            implemented.
+            A list of `ValidationIssue` objects if validation fails, or an empty
+            list if valid.
         """
-        return None
+        return []
 
     def status(self, handle: JobHandle) -> JobStatusResult:
         """Query the status of a previously submitted job.
