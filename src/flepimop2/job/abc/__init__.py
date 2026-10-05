@@ -27,13 +27,14 @@ __all__ = [
 from abc import abstractmethod
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
 from flepimop2._utils._module import _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
+from flepimop2.typing import override
 
 if TYPE_CHECKING:
     from flepimop2.cli import CliCommand

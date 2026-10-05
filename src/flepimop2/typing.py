@@ -28,6 +28,8 @@ Examples:
     numpy.ndarray[tuple[...], numpy.dtype[numpy.float64]]
 """
 
+import sys
+
 __all__ = [
     "Array",
     "ExitCode",
@@ -38,6 +40,7 @@ __all__ = [
     "RaiseOnMissingType",
     "StateChangeEnum",
     "SystemProtocol",
+    "override",
 ]
 
 from collections.abc import Callable
@@ -55,6 +58,11 @@ from typing import (
     cast,
     runtime_checkable,
 )
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 import numpy as np
 import numpy.typing as npt

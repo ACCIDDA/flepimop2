@@ -18,12 +18,11 @@
 __all__ = []
 
 import click
-from typing_extensions import override
 
 from flepimop2 import _cache
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.job.abc import build as build_job
-from flepimop2.typing import ExitCode
+from flepimop2.typing import ExitCode, override
 
 
 class JobStatusCommand(CliCommand):

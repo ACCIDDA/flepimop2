@@ -18,13 +18,14 @@
 __all__ = ["ProcessABC", "build", "resolve_plan"]
 
 from abc import abstractmethod
-from typing import Any, override
+from typing import Any
 
 from pydantic import Field
 
 from flepimop2._utils._module import _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
+from flepimop2.typing import override
 
 
 class ProcessABC(ModuleBase, module_namespace="process"):
