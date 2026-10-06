@@ -21,6 +21,7 @@ from typing import Any, Final
 import numpy as np
 import pytest
 
+from flepimop2._utils._array import coerce_to
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.parameter.abc import (
     ModelStateSpecification,
@@ -116,3 +117,26 @@ def test_wrapper_system_loads_requested_parameters_and_model_state_from_config()
         ),
     )
     np.testing.assert_array_equal(result, np.array([1.7, 2.9], dtype=np.float64))
+
+
+def test_wrapper_system_registers_custom_coercer(tmp_path: Path) -> None:
+    """WrapperSystem registers custom coerce_array function when provided."""
+    script = tmp_path / "custom_system_script.py"
+    script.write_text(
+        "import numpy as np\n"
+        "ARRAY_BACKEND = 'system_custom_backend'\n"
+        "def coerce_array(val):\n"
+        "    return np.asarray(val) * 3.0\n"
+        "def stepper(time, state, **kwargs):\n"
+        "    return state\n"
+    )
+    system = build({
+        "module": "wrapper",
+        "script": script,
+        "state_change": "flow",
+    })
+    assert system is not None
+
+    test_input = np.asarray([2.0, 4.0])
+    coerced = coerce_to(test_input, "system_custom_backend")
+    np.testing.assert_array_equal(coerced, np.asarray([6.0, 12.0]))

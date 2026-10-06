@@ -17,6 +17,7 @@
 
 __all__ = ["Simulator"]
 
+from flepimop2._utils._array import coerce_to, coerce_to_host
 from flepimop2._utils._click import _resolve_config_target
 from flepimop2.axis import AxisCollection
 from flepimop2.backend.abc import BackendABC
@@ -37,7 +38,33 @@ from flepimop2.parameter.abc import (
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.system.abc import SystemABC
 from flepimop2.system.abc import build as build_system
-from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.typing import ArrayBackend, Float64NDArray, IdentifierString
+
+
+def _coerce_parameter_values(
+    values: dict[IdentifierString, ParameterValue],
+    target: ArrayBackend | str,
+) -> dict[IdentifierString, ParameterValue]:
+    """Convert parameter payloads at the producer-to-engine boundary.
+
+    Returns:
+        Parameter values accepted by the target engine backend.
+    """
+    target_str = str(
+        target.value if isinstance(target, ArrayBackend) else target
+    ).lower()
+    if target_str in {"any", "arraybackend.any"}:
+        return values
+
+    converted: dict[IdentifierString, ParameterValue] = {}
+    for name, parameter_value in values.items():
+        value = coerce_to(parameter_value.value, target)
+        converted[name] = (
+            parameter_value
+            if value is parameter_value.value
+            else ParameterValue(value=value, shape=parameter_value.shape)
+        )
+    return converted
 
 
 class Simulator:
@@ -252,6 +279,8 @@ class Simulator:
                 "provided or both be omitted."
             )
             raise ValueError(msg)
+        initial_state = _coerce_parameter_values(initial_state, self.engine.backend)
+        params = _coerce_parameter_values(params, self.engine.backend)
         res = self.engine.run(
             self.system,
             self.simulate_config.t_eval,
@@ -260,5 +289,6 @@ class Simulator:
             model_state=model_state,
         )
         meta = meta or RunMeta()
-        self.backend.save(res, meta)
+        save_res = coerce_to_host(res)
+        self.backend.save(save_res, meta)
         return res

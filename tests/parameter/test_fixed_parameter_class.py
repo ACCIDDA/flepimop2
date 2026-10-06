@@ -25,6 +25,12 @@ from flepimop2.axis import AxisCollection
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.parameter.abc import ParameterRequest
 from flepimop2.parameter.fixed import FixedParameter
+from flepimop2.typing import ArrayBackend
+
+
+def test_fixed_parameter_advertises_numpy_backend() -> None:
+    """Fixed parameters should declare the namespace they produce."""
+    assert FixedParameter.backend is ArrayBackend.NUMPY
 
 
 @pytest.mark.parametrize("value", [42.0, 123.45])

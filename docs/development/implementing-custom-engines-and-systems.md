@@ -1,3 +1,4 @@
+<!-- skip: start -->
 # Implementing Custom Engines and Systems
 
 This guide shows how to implement `EngineABC` and `SystemABC` modules so they can be used in `flepimop2` for simulation. This guide mirrors the external provider guide, but focuses only on the engine/system interfaces.
@@ -25,51 +26,7 @@ While any given **System** object represents a particular model world, a **Syste
 For now, however, we'll stick with a module that only contains this single world. Since there's only the single world, we can implement all the pieces directly:
 
 ```python
-"""SIR system implementation."""
-
-import numpy as np
-from pydantic import PrivateAttr
-
-from flepimop2.parameter.abc import ParameterValue
-from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray, StateChangeEnum
-
-
-def global_sir(
-    time: np.float64,
-    state: Float64NDArray,
-    beta: ParameterValue,
-    gamma: ParameterValue,
-) -> Float64NDArray:
-    """
-    SIR model stepper function.
-
-    Args:
-        time: Current time point (unused in this autonomous system).
-        state: Array of [S, I, R] populations.
-        beta: Transmission rate.
-        gamma: Recovery rate.
-
-    Returns:
-        Array of state derivatives [dS/dt, dI/dt, dR/dt].
-    """
-    return np.array([
-        -beta.item() * state[0] * state[1],
-        beta.item() * state[0] * state[1] - gamma.item() * state[1],
-        gamma.item() * state[1]
-    ])
-
-
-class SirSystem(SystemABC, module="sir"):
-    """SIR model system."""
-
-    state_change: StateChangeEnum = StateChangeEnum.FLOW
-
-    _stepper: SystemProtocol = PrivateAttr(default=None)
-
-    def model_post_init(self, __context: object) -> None:
-        super().model_post_init(__context)
-        self.__pydantic_private__["_stepper"] = global_sir
+--8<-- "assets/custom-engines-and-systems/sir.py"
 ```
 
 Key elements in the system implementation:
@@ -82,92 +39,80 @@ Key elements in the system implementation:
 ## Engine Implementation (`EulerEngine`)
 
 ```python
-"""Euler engine implementation."""
-
-from typing import Any
-
-import numpy as np
-from pydantic import PrivateAttr
-
-from flepimop2.engine.abc import EngineABC
-from flepimop2.exceptions import ValidationIssue
-from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
-from flepimop2.system.abc import SystemABC, SystemProtocol
-from flepimop2.typing import Float64NDArray, IdentifierString, StateChangeEnum
-
-
-def runner(
-    stepper: SystemProtocol,
-    times: Float64NDArray,
-    initial_state: dict[IdentifierString, ParameterValue],
-    params: dict[IdentifierString, ParameterValue],
-    model_state: ModelStateSpecification | None = None,
-    **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
-    """
-    Simple Euler runner for the SIR model.
-
-    Args:
-        stepper: The system stepper function.
-        times: Array of time points.
-        initial_state: Structured initial-state parameters.
-        params: Additional structured parameters for the stepper.
-        model_state: Specification describing how to order the initial state.
-        **kwargs: Additional keyword arguments for the engine. Unused by this runner.
-
-    Returns:
-        The evolved time x state array.
-    """
-    # Implementors add their own logic here
-    pass
-
-
-class EulerEngine(EngineABC, module="euler"):
-    """Euler integration engine."""
-
-    _runner: Any = PrivateAttr(default=None)
-
-    def model_post_init(self, __context: object) -> None:
-        super().model_post_init(__context)
-        self.__pydantic_private__["_runner"] = runner
-
-    def validate_system(self, system: SystemABC) -> list[ValidationIssue] | None:
-        """
-        Validation hook for system properties.
-
-        Args:
-            system: The system to validate.
-
-        Returns:
-            A list of validation issues, or `None` if not implemented.
-        """
-        if system.state_change != StateChangeEnum.FLOW:
-            return [
-                ValidationIssue(
-                    msg=(
-                        "Engine state change type, 'flow', is not "
-                        "compatible with system state change type "
-                        f"'{system.state_change}'."
-                    ),
-                    kind="incompatible_system",
-                )
-            ]
-        return None
+--8<-- "assets/custom-engines-and-systems/euler.py"
 ```
 
 Key elements in the engine implementation:
 
 - `runner` drives the simulation by applying the stepper across time points.
 - `EulerEngine` inherits `EngineABC` and stores its runner in `model_post_init` via `self.__pydantic_private__["_runner"]`. This pattern avoids descriptor binding that occurs when storing callables in `PrivateAttr` and accessing them via `self._runner`.
+- `backend` advertises the array namespace required by the engine. Before invoking the runner, `Simulator` converts each `ParameterValue.value` once at the producer-to-engine boundary. Values already in that namespace retain their identity. Engines that operate on any Array-API namespace can keep the inherited `ArrayBackend.ANY` default and receive values unchanged.
 - The `module="euler"` class argument indicates how configuration files will indicate to use this module, i.e. `module: euler`.
 - `EulerEngine` implements the optional `validate_system` hook to ensure that the system is compatible.
 - No `build(...)` function is needed - `flepimop2` calls `EulerEngine.model_validate(config)` directly.
+
+## Array Backends and Extensibility
+
+`flepimop2` supports interchangeable array backends so engines and parameters can utilize hardware acceleration (such as JAX or PyTorch) while maintaining interoperability across disparate modules.
+
+### Builtin Backends
+
+The standard backends are defined by [`ArrayBackend`](file:///home/holism/workspaces/ACCIDDA/flepimop2/src/flepimop2/typing.py):
+
+- `ArrayBackend.NUMPY`: Standard NumPy ndarrays (`np.ndarray`).
+- `ArrayBackend.JAX`: JAX DeviceArrays and tracer arrays (`jax.Array`).
+- `ArrayBackend.TORCH`: PyTorch Tensors (`torch.Tensor`).
+- `ArrayBackend.ANY`: Accepts any Array-API compliant structure without conversion.
+
+### Backend Advertisement
+
+Subclasses of `EngineABC` and `ParameterABC` declare their array requirement or output using `backend`:
+
+```python
+class MyJaxEngine(EngineABC, module="my_jax"):
+    backend: ClassVar[ArrayBackend | str] = ArrayBackend.JAX
+```
+
+Engines or parameters that accept arbitrary Array-API arrays can keep the default `ArrayBackend.ANY`. When `Simulator` runs, it converts parameter values once at the producer-to-engine boundary; matching backend payloads and `ArrayBackend.ANY` consumers retain their exact array reference without host memory copying or tracer disruption.
+
+### Custom Array Backend Registration
+
+Third-party packages and plugins can register custom array backends (such as CuPy or Dask) in two ways:
+
+1. **Programmatic Registration**:
+   ```python
+   from flepimop2._utils._array import register_array_backend
+
+   register_array_backend(
+       name="cupy",
+       target="cupy",
+       coerce=lambda val: cp.asarray(val),
+   )
+   ```
+
+2. **Entry Points in `pyproject.toml`**:
+   ```toml
+   [project.entry-points."flepimop2.array_backends"]
+   cupy = "my_cupy_plugin:get_cupy_namespace"
+   ```
+
+### Wrapped Script Hooks (`WrapperEngine` and `WrapperSystem`)
+
+User scripts wrapped by `WrapperEngine` or `WrapperSystem` can declare custom backend attributes directly in their script file:
+
+- `ARRAY_BACKEND = "jax"`: Tells `WrapperEngine` to expect JAX inputs.
+- `coerce_array = lambda val: ...`: Defines a custom coercion callable that is automatically registered with the backend registry.
+
+### Output Seam
+
+When simulations finish, `Simulator` automatically converts non-NumPy output arrays to standard host NumPy arrays (`np.float64`) using `coerce_to_host()` before passing them to persistence backends like `CsvBackend` or `ParquetBackend`.
 
 ## Summary
 
 Custom engines and systems are simple to implement once you know the required hooks. Keep the interfaces small and explicit, and let `flepimop2` handle construction and validation.
 
 - Systems must inherit from `SystemABC` and supply a stepper (via `PrivateAttr` + `model_post_init`) as well as required attributes `module` and `state_change`.
-- Engines must inherit from `EngineABC` and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Engines must inherit from `EngineABC`, advertise their `backend` (`ClassVar[ArrayBackend | str]`), and supply a runner function compatible with `SystemProtocol` (via `PrivateAttr` + `model_post_init`) as well as the required `module` attribute and the optional `validate_system` hook.
+- Wrapped scripts can dynamically specify `ARRAY_BACKEND` and `coerce_array`.
 - Both use `model_post_init` for any initialization logic that runs after Pydantic has validated configuration fields.
 - Neither requires a `build(...)` function - Pydantic's `model_validate` handles configuration-driven construction.
