@@ -951,6 +951,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/check/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/cli/" class="md-nav__link">
         
   
@@ -1490,6 +1518,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1838,6 +1877,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#flepimop2-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flepimop2-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1995,27 +2045,39 @@
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  -v, --verbosity  The verbosity level to use for this command.
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  --help           Show this message and exit.
 </span></code></pre></div>
+<h3 id="flepimop2-check">flepimop2 check<a class="headerlink" href="#flepimop2-check" title="Permanent link">&para;</a></h3>
+<p>Validate a whole configuration without running it.</p>
+<p>Builds every simulate target, resolves every requested parameter, and runs
+each process step's validation hook, then reports all issues found. Exits
+with a configuration error when any issue is found.</p>
+<p><strong>Usage:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>flepimop2 check [OPTIONS] [CONFIG]
+</span></code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  --help           Show this message and exit.
+</span></code></pre></div>
 <h3 id="flepimop2-format">flepimop2 format<a class="headerlink" href="#flepimop2-format" title="Permanent link">&para;</a></h3>
 <p>Format a configuration file into flepimop2's normalized YAML style.</p>
 <p>By default this command rewrites the input file in place. Use <code>--check</code> to
 validate formatting without modifying the file, or <code>--dry-run</code> to print the
 formatted configuration to stdout.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>flepimop2 format [OPTIONS] [CONFIG]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>flepimop2 format [OPTIONS] [CONFIG]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>  --dry-run        Should this command be run using dry run?
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  --check          Check whether the configuration is already formatted.
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  -v, --verbosity  The verbosity level to use for this command.
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --help           Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  --dry-run        Should this command be run using dry run?
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  --check          Check whether the configuration is already formatted.
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  --help           Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-job">flepimop2 job<a class="headerlink" href="#flepimop2-job" title="Permanent link">&para;</a></h3>
 <p>Dispatch a flepimop2 command to a configured job backend.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>flepimop2 job [OPTIONS] COMMAND [ARGS]...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2 job [OPTIONS] COMMAND [ARGS]...
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  --help  Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>  --help  Show this message and exit.
 </span></code></pre></div>
 <h4 id="flepimop2-job-list">flepimop2 job list<a class="headerlink" href="#flepimop2-job-list" title="Permanent link">&para;</a></h4>
 <p>List submitted jobs and their current status.</p>
@@ -2028,41 +2090,17 @@ last-known status (read from <code>summary.json</code>) was unfinished - i.e. ne
 checked, pending, or running. Jobs already known to be finished are reported
 from the cached summary without contacting the backend again.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>flepimop2 job list [OPTIONS]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>flepimop2 job list [OPTIONS]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>  -v, --verbosity  The verbosity level to use for this command.
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  --help           Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  --help           Show this message and exit.
 </span></code></pre></div>
 <h4 id="flepimop2-job-process">flepimop2 job process<a class="headerlink" href="#flepimop2-job-process" title="Permanent link">&para;</a></h4>
 <p>Execute a processing step based on a configuration file.</p>
 <p>The <code>CONFIG</code> argument should point to a valid configuration file.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>flepimop2 job process [OPTIONS] [CONFIG]
-</span></code></pre></div>
-<p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>  -j, --job-target TEXT  The configured job module to dispatch this command
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>                         to.
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  --no-cache             Do not record the submitted job handle in the local
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>                         job cache. Useful for one-off or debugging
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>                         submissions that should not appear in `flepimop2 job
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>                         list`.
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>  --dry-run              Should this command be run using dry run?
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>  -t, --target TEXT      The target to use for this command.
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>  -f, --force            Run the requested step even when its target is
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>                         already present. Given once, dependencies are left
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>                         alone, so forcing a step does not re-run everything
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>                         upstream of it; repeat it (-ff) to force the step&#39;s
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>                         dependencies as well.
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>  -v, --verbosity        The verbosity level to use for this command.
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>  --help                 Show this message and exit.
-</span></code></pre></div>
-<h4 id="flepimop2-job-simulate">flepimop2 job simulate<a class="headerlink" href="#flepimop2-job-simulate" title="Permanent link">&para;</a></h4>
-<p>Run simulations based on a configuration file.</p>
-<p>This command runs epidemic simulations specified from a provided configuration file.
-The <code>CONFIG</code> argument should point to a valid configuration file.</p>
-<p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>flepimop2 job simulate [OPTIONS] [CONFIG]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>flepimop2 job process [OPTIONS] [CONFIG]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>  -j, --job-target TEXT  The configured job module to dispatch this command
@@ -2073,8 +2111,32 @@ The <code>CONFIG</code> argument should point to a valid configuration file.</p>
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>                         list`.
 </span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>  --dry-run              Should this command be run using dry run?
 </span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>  -t, --target TEXT      The target to use for this command.
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>  -v, --verbosity        The verbosity level to use for this command.
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>  --help                 Show this message and exit.
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>  -f, --force            Run the requested step even when its target is
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>                         already present. Given once, dependencies are left
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>                         alone, so forcing a step does not re-run everything
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>                         upstream of it; repeat it (-ff) to force the step&#39;s
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>                         dependencies as well.
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>  -v, --verbosity        The verbosity level to use for this command.
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>  --help                 Show this message and exit.
+</span></code></pre></div>
+<h4 id="flepimop2-job-simulate">flepimop2 job simulate<a class="headerlink" href="#flepimop2-job-simulate" title="Permanent link">&para;</a></h4>
+<p>Run simulations based on a configuration file.</p>
+<p>This command runs epidemic simulations specified from a provided configuration file.
+The <code>CONFIG</code> argument should point to a valid configuration file.</p>
+<p><strong>Usage:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>flepimop2 job simulate [OPTIONS] [CONFIG]
+</span></code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>  -j, --job-target TEXT  The configured job module to dispatch this command
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>                         to.
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>  --no-cache             Do not record the submitted job handle in the local
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>                         job cache. Useful for one-off or debugging
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>                         submissions that should not appear in `flepimop2 job
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>                         list`.
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>  --dry-run              Should this command be run using dry run?
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>  -t, --target TEXT      The target to use for this command.
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>  -v, --verbosity        The verbosity level to use for this command.
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>  --help                 Show this message and exit.
 </span></code></pre></div>
 <h4 id="flepimop2-job-status">flepimop2 job status<a class="headerlink" href="#flepimop2-job-status" title="Permanent link">&para;</a></h4>
 <p>Show the status of a single submitted job.</p>
@@ -2083,11 +2145,11 @@ rebuilds the exact job backend that launched it from the cached
 configuration, queries the backend, and prints the job's current status
 along with any backend-specific detail.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>flepimop2 job status [OPTIONS] JOB_ID
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>flepimop2 job status [OPTIONS] JOB_ID
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>  -v, --verbosity  The verbosity level to use for this command.
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>  --help           Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>  -v, --verbosity  The verbosity level to use for this command.
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>  --help           Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-patch">flepimop2 patch<a class="headerlink" href="#flepimop2-patch" title="Permanent link">&para;</a></h3>
 <p>Patch one or more configuration files together.</p>
@@ -2095,17 +2157,17 @@ along with any backend-specific detail.</p>
 used as the base configuration, and each subsequent file is patched onto the
 accumulated result.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>flepimop2 patch [OPTIONS] CONFIGS...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>flepimop2 patch [OPTIONS] CONFIGS...
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>  --dry-run                       Should this command be run using dry run?
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>  -o, --output FILE               Write the patched configuration to this file
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>                                  instead of stdout.
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>  --patch-mode [error|merge|replace]
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>                                  How to handle duplicate configuration keys
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>                                  while patching.  [default: error]
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>  -v, --verbosity                 The verbosity level to use for this command.
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>  --help                          Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>  --dry-run                       Should this command be run using dry run?
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>  -o, --output FILE               Write the patched configuration to this file
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>                                  instead of stdout.
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>  --patch-mode [error|merge|replace]
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>                                  How to handle duplicate configuration keys
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>                                  while patching.  [default: error]
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>  -v, --verbosity                 The verbosity level to use for this command.
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>  --help                          Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-pattern">flepimop2 pattern<a class="headerlink" href="#flepimop2-pattern" title="Permanent link">&para;</a></h3>
 <p>Create a project from a pattern.</p>
@@ -2131,45 +2193,45 @@ template). So a bare
     # Unpack a local project archive
     $ flepimop2 pattern --source path/to/project.zip foobar</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>flepimop2 pattern [OPTIONS] [PATH]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>flepimop2 pattern [OPTIONS] [PATH]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>  --dry-run          Should this command be run using dry run?
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>  -m, --module TEXT  Pattern module that creates the project. Defaults to the
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>                     bundled `copy` pattern, which copies a source tree.
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>  --source PATH      Directory or local zip/tar archive the pattern copies
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>                     from. Defaults to the bundled project template.
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>  -v, --verbosity    The verbosity level to use for this command.
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>  --help             Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>  --dry-run          Should this command be run using dry run?
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  -m, --module TEXT  Pattern module that creates the project. Defaults to the
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>                     bundled `copy` pattern, which copies a source tree.
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>  --source PATH      Directory or local zip/tar archive the pattern copies
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>                     from. Defaults to the bundled project template.
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>  -v, --verbosity    The verbosity level to use for this command.
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>  --help             Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-process">flepimop2 process<a class="headerlink" href="#flepimop2-process" title="Permanent link">&para;</a></h3>
 <p>Execute a processing step based on a configuration file.</p>
 <p>The <code>CONFIG</code> argument should point to a valid configuration file.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>flepimop2 process [OPTIONS] [CONFIG]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>flepimop2 process [OPTIONS] [CONFIG]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>  --dry-run          Should this command be run using dry run?
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  -t, --target TEXT  The target to use for this command.
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>  -f, --force        Run the requested step even when its target is already
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>                     present. Given once, dependencies are left alone, so
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>                     forcing a step does not re-run everything upstream of it;
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>                     repeat it (-ff) to force the step&#39;s dependencies as well.
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>  -v, --verbosity    The verbosity level to use for this command.
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>  --help             Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>  --dry-run          Should this command be run using dry run?
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>  -t, --target TEXT  The target to use for this command.
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>  -f, --force        Run the requested step even when its target is already
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>                     present. Given once, dependencies are left alone, so
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>                     forcing a step does not re-run everything upstream of it;
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>                     repeat it (-ff) to force the step&#39;s dependencies as well.
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>  -v, --verbosity    The verbosity level to use for this command.
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>  --help             Show this message and exit.
 </span></code></pre></div>
 <h3 id="flepimop2-simulate">flepimop2 simulate<a class="headerlink" href="#flepimop2-simulate" title="Permanent link">&para;</a></h3>
 <p>Run simulations based on a configuration file.</p>
 <p>This command runs epidemic simulations specified from a provided configuration file.
 The <code>CONFIG</code> argument should point to a valid configuration file.</p>
 <p><strong>Usage:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>flepimop2 simulate [OPTIONS] [CONFIG]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>flepimop2 simulate [OPTIONS] [CONFIG]
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>  --dry-run          Should this command be run using dry run?
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>  -t, --target TEXT  The target to use for this command.
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>  -v, --verbosity    The verbosity level to use for this command.
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>  --help             Show this message and exit.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>  --dry-run          Should this command be run using dry run?
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>  -t, --target TEXT  The target to use for this command.
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>  -v, --verbosity    The verbosity level to use for this command.
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>  --help             Show this message and exit.
 </span></code></pre></div>
 
 
