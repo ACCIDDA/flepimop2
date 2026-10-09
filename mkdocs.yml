@@ -73,6 +73,7 @@ nav:
   - Guides:
       - Installation: guides/install.md
       - Getting Started: guides/getting-started.md
+      - Research Workflow: guides/research-workflow.md
       - Vaccination Campaign Scenario Grid: guides/vaccination-campaign-scenario-grid-example.md
       - Generating Scenario Results: guides/scenarios.md
       - Modular Configuration: guides/modular-configuration.md

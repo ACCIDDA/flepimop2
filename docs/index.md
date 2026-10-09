@@ -151,7 +151,25 @@ flepimop2 process configs/config.yaml
 
 This runs the post-processing steps defined for the `demo` target, producing a plot. You can call post-processing for a specific plot with the same --target argument as you use for simulations.
 
+On macOS, if post-processing reports that an R package is missing even though it is listed in the project environment, check which R executable is being used:
+
+```bash
+command -v Rscript
+```
+
+If the path is outside the active project environment, run its R executable directly. For the quickstart project:
+
+```bash
+./venv/bin/Rscript postprocessing/SIR_plot.R configs/config.yaml model_output/SIR_plot.png
+```
+
 ```bash
 flepimop2 simulate --target hires configs/config.yaml
 flepimop2 process --target hires configs/config.yaml
 ```
+
+## Continue to a Research Workflow
+
+The quickstart shows how to run one model with selected parameter values. Continue to [From a First Simulation to Research Workflows](guides/research-workflow.md) to change model parameters, compare scenarios, and learn where project-specific inference workflows fit. For a hands-on scenario comparison, go directly to the [vaccination campaign scenario-grid example](guides/vaccination-campaign-scenario-grid-example.md).
+
+These scenario sweeps compare forward simulations under values you choose; they do not estimate parameters from observed data. See the [getting-started guide](guides/getting-started.md) for more model, solver, and configuration options.
