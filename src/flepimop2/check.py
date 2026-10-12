@@ -60,7 +60,7 @@ from flepimop2.job.abc import build as build_job
 from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import build as build_parameter
 from flepimop2.process.abc import build as build_process
-from flepimop2.process.abc import resolve_plan
+from flepimop2.process.abc import expand_scenarios, resolve_plan, validate_scenarios
 from flepimop2.scenario.abc import build as build_scenario
 from flepimop2.simulator import Simulator
 from flepimop2.system.abc import build as build_system
@@ -81,6 +81,35 @@ def _issue(kind: str, exc: BaseException, **ctx: object) -> ValidationIssue:
     return ValidationIssue(
         msg=message, kind=kind, ctx={**ctx, "error": type(exc).__name__}
     )
+
+
+def _check_module_configuration(
+    builder: Callable[[Any], ModuleBase],
+    config: Any,  # noqa: ANN401
+    singular: str,
+    ctx: dict[str, str],
+) -> list[ValidationIssue]:
+    """Build and validate one concrete module configuration.
+
+    Returns:
+        Build or validation issues annotated with the configured target.
+    """
+    try:
+        instance = builder(config)
+    except Exception as exc:  # noqa: BLE001
+        return [_issue(f"{singular}_build", exc, **ctx)]
+    try:
+        module_issues = instance.validate_module()
+    except Exception as exc:  # noqa: BLE001
+        return [_issue(f"{singular}_validation", exc, **ctx)]
+    return [
+        ValidationIssue(
+            msg=issue.msg,
+            kind=issue.kind,
+            ctx={**ctx, **(issue.ctx or {})},
+        )
+        for issue in module_issues or []
+    ]
 
 
 def _check_top_level_sections(model: ConfigurationModel) -> list[ValidationIssue]:
@@ -110,24 +139,28 @@ def _check_top_level_sections(model: ConfigurationModel) -> list[ValidationIssue
                 "target": str(target_name),
                 singular: str(target_name),
             }
-            try:
-                instance = builder(target_config)
-            except Exception as exc:  # noqa: BLE001
-                issues.append(_issue(f"{singular}_build", exc, **ctx))
-                continue
-            try:
-                module_issues = instance.validate_module()
-            except Exception as exc:  # noqa: BLE001
-                issues.append(_issue(f"{singular}_validation", exc, **ctx))
-                continue
-            for issue in module_issues or []:
-                merged_ctx = {**ctx, **(issue.ctx or {})}
-                issues.append(
-                    ValidationIssue(
-                        msg=issue.msg,
-                        kind=issue.kind,
-                        ctx=merged_ctx,
+            configs = [target_config]
+            if section_name == "process":
+                try:
+                    configs = expand_scenarios(
+                        str(target_name), target_config, model.scenarios
                     )
+                except Flepimop2ValidationError as exc:
+                    issues.extend(
+                        ValidationIssue(
+                            msg=issue.msg,
+                            kind=issue.kind,
+                            ctx={**ctx, **(issue.ctx or {})},
+                        )
+                        for issue in exc.issues
+                    )
+                    continue
+                except Exception as exc:  # noqa: BLE001
+                    issues.append(_issue("process_expansion", exc, **ctx))
+                    continue
+            for config in configs:
+                issues.extend(
+                    _check_module_configuration(builder, config, singular, ctx)
                 )
 
     return issues
@@ -145,6 +178,13 @@ def _check_referential_integrity(
         A list of missing dependency validation issues.
     """
     issues: list[ValidationIssue] = []
+
+    try:
+        validate_scenarios(model.process, model.scenarios)
+    except Flepimop2ValidationError as exc:
+        issues.extend(exc.issues)
+    except Exception as exc:  # noqa: BLE001
+        issues.append(_issue("scenario_process_validation", exc, section="scenarios"))
 
     for name, spec in model.simulate.items():
         if spec.system not in model.systems:
