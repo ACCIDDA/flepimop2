@@ -21,13 +21,27 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any, NamedTuple
 
+from pydantic import Field
+
 from flepimop2._utils._module import _build
 from flepimop2.module import ModuleBase
 from flepimop2.typing import Float64NDArray, IdentifierString
 
 
 class ScenarioABC(ModuleBase, module_namespace="scenario"):
-    """Abstract base class for scenarios."""
+    """
+    Abstract base class for scenarios.
+
+    Attributes:
+        processes: Names of process steps, i.e. keys of the `process:` section,
+            that run once per scenario tuple, with the tuple's values
+            substituted into their configuration (see
+            `flepimop2.process.abc.expand_scenarios()`). A step may be listed by
+            several scenarios; a step that no scenario lists runs once.
+
+    """
+
+    processes: list[str] = Field(default_factory=list)
 
     @property
     @abstractmethod
