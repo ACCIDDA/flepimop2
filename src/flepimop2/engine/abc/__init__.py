@@ -30,7 +30,6 @@ from flepimop2.system.abc import SystemABC
 from flepimop2.typing import (
     Array,
     ArrayBackend,
-    Float64NDArray,
     IdentifierString,
     SystemProtocol,
 )
@@ -43,7 +42,7 @@ class EngineProtocol(Protocol):
     def __call__(
         self,
         stepper: SystemProtocol,
-        times: Float64NDArray,
+        times: Array,
         initial_state: dict[IdentifierString, ParameterValue],
         params: Mapping[IdentifierString, ParameterValue],
         model_state: ModelStateSpecification | None = None,
@@ -55,7 +54,7 @@ class EngineProtocol(Protocol):
 
 def _no_run_func(
     stepper: SystemProtocol,
-    times: Float64NDArray,
+    times: Array,
     initial_state: dict[IdentifierString, ParameterValue],
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,
@@ -91,7 +90,7 @@ class EngineABC(ModuleBase, module_namespace="engine"):
     def run(
         self,
         system: SystemABC,
-        eval_times: Float64NDArray,
+        eval_times: Array,
         initial_state: dict[IdentifierString, ParameterValue],
         params: Mapping[IdentifierString, ParameterValue],
         model_state: ModelStateSpecification | None = None,
