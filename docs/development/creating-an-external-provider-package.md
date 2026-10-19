@@ -34,9 +34,12 @@ External provider packages leverage Python's namespace package mechanism to seam
 | `backend` | Result persistence and loading | The NPZ provider developed below |
 | `process` | Configured analysis/reporting tasks | Notebook rendering from `flepimop2-ipynbrender` |
 | `job` | Launching a configured command | A local launcher or `flepimop2-slurm` |
+| `scenario` | Named variants of a configured simulation | The bundled `grid` provider |
+| `pattern` | Project scaffolding from templates or archives | The bundled `copy` provider on merged main (added after 0.3.0) |
 
-These are responsibilities, rather than a mandatory sequence of six steps.
-Project code and configuration determine when values are requested, which
+The schematic highlights execution and data flow. Scenario and pattern
+providers supply campaign variants and project scaffolds. Project code and
+configuration determine when values are requested, which
 commands run, and how analysis consumes persisted results. Numerical and
 statistical adequacy remain the responsibility of the selected methods and
 scientific application.
