@@ -139,7 +139,7 @@ def _evolve(
 
 def _numpy_runner(
     stepper: SystemProtocol,
-    times: Float64NDArray,  # noqa: ARG001
+    times: Array,  # noqa: ARG001
     initial_state: dict[IdentifierString, ParameterValue],
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
@@ -155,7 +155,7 @@ def _numpy_runner(
 
 def _jax_runner(
     stepper: SystemProtocol,
-    times: Float64NDArray,  # noqa: ARG001
+    times: Array,  # noqa: ARG001
     initial_state: dict[IdentifierString, ParameterValue],
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
@@ -181,7 +181,7 @@ def _jax_runner(
 
 def _torch_runner(
     stepper: SystemProtocol,
-    times: Float64NDArray,  # noqa: ARG001
+    times: Array,  # noqa: ARG001
     initial_state: dict[IdentifierString, ParameterValue],
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,  # noqa: ARG001
