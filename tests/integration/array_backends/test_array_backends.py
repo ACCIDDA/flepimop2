@@ -17,7 +17,7 @@
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar
 
 import jax
 import jax.numpy as jnp
@@ -101,7 +101,9 @@ def _step(
     """
     state_value: Any = state
     rate_value: Any = params["rate"].value
-    return cast("Array", state_value + rate_value * time)
+    result = state_value + rate_value * time
+    assert isinstance(result, Array)
+    return result
 
 
 def _model_state(_axes: AxisCollection) -> ModelStateSpecification:
@@ -113,8 +115,9 @@ def _model_state(_axes: AxisCollection) -> ModelStateSpecification:
     return ModelStateSpecification(parameter_names=("x",))
 
 
+assert isinstance(_step, SystemProtocol)
 _SYSTEM = wrap(
-    cast("SystemProtocol", _step),
+    _step,
     StateChangeEnum.FLOW,
     model_state=_model_state,
 )
@@ -133,7 +136,9 @@ def _evolve(
     x0 = initial_state["x"].value
     x1 = stepper(1.0, x0, **params)
     xp: Any = array_namespace(x0)
-    return cast("Array", xp.stack((x0, x1)))
+    result = xp.stack((x0, x1))
+    assert isinstance(result, Array)
+    return result
 
 
 def _numpy_runner(
@@ -175,7 +180,9 @@ def _jax_runner(
             {"rate": ParameterValue(rate, shape)},
         )
 
-    return cast("Array", solve(initial_state["x"].value, params["rate"].value))
+    result = solve(initial_state["x"].value, params["rate"].value)
+    assert isinstance(result, Array)
+    return result
 
 
 def _torch_runner(
