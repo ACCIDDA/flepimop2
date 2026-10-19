@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ...
+- Bumped development and runtime dependencies in the minor group (including Ruff 0.16 and mypy 2.3), updating Ruff configuration and type annotations for compatibility. See [#354](https://github.com/ACCIDDA/flepimop2/pull/354).
 
 ### Deprecated
 

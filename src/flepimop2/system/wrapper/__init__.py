@@ -20,7 +20,7 @@ import inspect
 import math
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, Self, cast
 
 import numpy as np
 from pydantic import (
@@ -263,7 +263,7 @@ def _binding_annotation(annotation: object) -> object:
             if isinstance(value, ParameterValue):
                 value.item()
                 return value
-            annotation(value)
+            cast("Callable[[Any], Any]", annotation)(value)
             return value
 
         _validate_scalar.__name__ = f"coercible_{annotation.__name__}"
