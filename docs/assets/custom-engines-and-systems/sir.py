@@ -26,7 +26,7 @@ from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 def global_sir(
-    time: np.float64,  # noqa: ARG001
+    time: float,  # noqa: ARG001
     state: Float64NDArray,
     beta: ParameterValue,
     gamma: ParameterValue,

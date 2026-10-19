@@ -297,7 +297,7 @@ class StateChangeEnum(StrEnum):
 class SystemProtocol(Protocol):
     """Type-definition (Protocol) for system stepper functions."""
 
-    def __call__(self, time: np.float64, state: Array, **kwargs: Any) -> Array:
+    def __call__(self, time: float, state: Array, **kwargs: Any) -> Array:
         """Protocol for system stepper functions."""
         ...
 
@@ -305,7 +305,7 @@ class SystemProtocol(Protocol):
 _P = ParamSpec("_P")
 _ArrayT = TypeVar("_ArrayT", bound=Array)
 
-_SystemCallable = Callable[Concatenate[np.float64, _ArrayT, _P], _ArrayT]
+_SystemCallable = Callable[Concatenate[float, _ArrayT, _P], _ArrayT]
 
 
 def as_system_protocol(func: _SystemCallable[_ArrayT, _P]) -> SystemProtocol:

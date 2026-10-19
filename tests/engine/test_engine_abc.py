@@ -28,7 +28,7 @@ from flepimop2.typing import Float64NDArray, StateChangeEnum, as_system_protocol
 
 @as_system_protocol
 def sample_step(
-    time: np.float64,
+    time: float,
     state: Float64NDArray,
     /,
     **kwargs: ParameterValue,
@@ -37,7 +37,7 @@ def sample_step(
     A simple stepper function for testing purposes.
 
     Args:
-        time: The current time as a float64.
+        time: The current time as a float.
         state: The current state as a numpy array.
         **kwargs: Additional keyword arguments, including `offset`.
 
