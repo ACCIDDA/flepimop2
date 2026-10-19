@@ -23,7 +23,7 @@ from typing import Any
 from flepimop2._utils._module import _build
 from flepimop2.meta import RunMeta
 from flepimop2.module import ModuleBase
-from flepimop2.typing import Array, Float64NDArray
+from flepimop2.typing import Array
 
 
 class BackendABC(ModuleBase, module_namespace="backend"):
@@ -39,15 +39,15 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         """
         return self._save(data, run_meta)
 
-    def read(self, run_meta: RunMeta) -> Float64NDArray:
+    def read(self, run_meta: RunMeta) -> Array:
         """
-        Read a numpy array from storage.
+        Read an array from storage.
 
         Args:
             run_meta: Metadata about the current run.
 
         Returns:
-            The numpy array read from storage.
+            The array read from storage.
         """
         return self._read(run_meta)
 
@@ -57,7 +57,7 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         ...
 
     @abstractmethod
-    def _read(self, run_meta: RunMeta) -> Float64NDArray:
+    def _read(self, run_meta: RunMeta) -> Array:
         """Backend-specific implementation for reading data."""
         ...
 
