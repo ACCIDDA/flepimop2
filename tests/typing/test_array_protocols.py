@@ -24,7 +24,6 @@ from flepimop2.engine.abc import EngineProtocol
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.typing import (
     Array,
-    Float64NDArray,
     IdentifierString,
     SystemProtocol,
 )
@@ -60,7 +59,7 @@ def _fake_step(
 
 def _fake_runner(
     stepper: SystemProtocol,
-    times: Float64NDArray,
+    times: Array,
     initial_state: dict[IdentifierString, ParameterValue],
     params: Mapping[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,
@@ -81,5 +80,5 @@ def test_callable_protocols_accept_non_numpy_array() -> None:
 
     assert isinstance(fake, Array)
     assert _FAKE_SYSTEM(np.float64(0.0), fake) is fake
-    result = _FAKE_ENGINE(_FAKE_SYSTEM, np.array([0.0]), {}, {})
+    result = _FAKE_ENGINE(_FAKE_SYSTEM, fake, {}, {})
     assert isinstance(result, _FakeArray)
