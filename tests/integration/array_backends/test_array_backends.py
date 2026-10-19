@@ -43,7 +43,6 @@ from flepimop2.system.abc import SystemProtocol, wrap
 from flepimop2.typing import (
     Array,
     ArrayBackend,
-    Float64NDArray,
     IdentifierString,
     StateChangeEnum,
 )
@@ -234,7 +233,7 @@ class _NoopBackend(BackendABC, module="test_array_backend_noop"):
     def _save(self, data: Array, run_meta: RunMeta) -> None:
         """Accept the result without changing it."""
 
-    def _read(self, run_meta: RunMeta) -> Float64NDArray:
+    def _read(self, run_meta: RunMeta) -> Array:
         """Reading is outside this test's scope."""
         msg = "The no-op test backend does not store results."
         raise NotImplementedError(msg)
@@ -313,7 +312,7 @@ def test_simulator_output_seam_saves_jax_to_csv_backend(tmp_path: Path) -> None:
 
     assert array_backend(result) is ArrayBackend.JAX
     saved_data = backend.read(meta)
-    np.testing.assert_allclose(saved_data, [1.0, 3.0])
+    np.testing.assert_allclose(np.asarray(saved_data), [1.0, 3.0])
 
 
 def test_raw_torch_producer_consumer_integration_when_available() -> None:
