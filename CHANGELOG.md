@@ -24,9 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bumped development and runtime dependencies in the minor group (including Ruff 0.16 and mypy 2.3), updating Ruff configuration and type annotations for compatibility. See [#354](https://github.com/ACCIDDA/flepimop2/pull/354).
-- Generalized system state, evaluation-time grid (`times`), engine result,
-  simulator result, and backend-save/read contracts to the backend-neutral
-  `Array` protocol. See [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
+- Generalized system state, system stepper time parameter (to standard
+  `float`), evaluation-time grid (`times`), engine result, simulator result,
+  and backend-save/read contracts to backend-neutral protocols. See
+  [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
 
 ### Deprecated
 

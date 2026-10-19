@@ -25,7 +25,7 @@ from flepimop2.typing import Float64NDArray, StateChangeEnum
 
 
 def stepper(
-    time: np.float64, state: Float64NDArray, offset: ParameterValue
+    time: float, state: Float64NDArray, offset: ParameterValue
 ) -> Float64NDArray:
     """
     A dummy stepper function for testing purposes: (state + offset) * time.

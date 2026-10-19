@@ -37,7 +37,7 @@ from flepimop2.typing import (
 
 
 def stepper(
-    time: np.float64,  # noqa: ARG001
+    time: float,  # noqa: ARG001
     state: Float64NDArray,
     *,
     beta: ParameterValue,
