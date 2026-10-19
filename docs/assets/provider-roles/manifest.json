@@ -1,7 +1,7 @@
 {
-  "source_sha256": "c871b5fc55075293f65d643f0e90177dc70531b91534f4cb37371d476c9ff4fa",
+  "source_sha256": "1563bbbb4bdc5db41d2842ca8a72136c0b51bfff31b3db19f872f1f5b8f3859d",
   "exports": {
-    "figure.svg": "438cf46b8f2caeade9bc9bb3b49284cfc51ba2a486f9969a16ef0e57b1738d24",
-    "figure.pdf": "1930cb50cf04c8dc218c0c6dc1aa103e1b3fd580dc3777218669799eef12694a"
+    "figure.svg": "b0994286199a159d73181b53e9996d969427eb40e3fb9894ac308ae9138a2f0c",
+    "figure.pdf": "ad2ed9b42dbe008156bc7c5472822f82f5946ff61f70ef8f2d1f0f197498f5af"
   }
 }

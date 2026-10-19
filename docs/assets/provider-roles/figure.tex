@@ -14,7 +14,7 @@
 \pdfsuppressptexinfo=15
 \tikzset{every node/.style={font=\sffamily\fontsize{11}{14}\selectfont,text=Ink},
   panel/.style={draw=#1!65,fill=#1!5,rounded corners=4pt,
-    minimum width=3.8cm,minimum height=2.7cm,text width=3.1cm,
+    minimum width=3.8cm,minimum height=2.85cm,text width=3.1cm,
     inner sep=8pt,align=left,anchor=north west},
   flow/.style={-{Stealth},draw=Ink,shorten <=3pt,shorten >=3pt}}
 \begin{document}
@@ -24,7 +24,7 @@
 \node[panel=Blue] (parameter) at (0,0) {\textbf{Parameter}\\[6pt]Supplies requested\\values and arrays};
 \node[panel=Teal] (system) at (4.3,0) {\textbf{System}\\[6pt]Binds changes and\\state metadata};
 \node[panel=Gold] (engine) at (8.6,0) {\textbf{Engine}\\[6pt]Advances state\\at requested times};
-\node[panel=Blue] at (0,-3.4) {\textbf{Job}\\[6pt]Launches commands\\locally or on\\a cluster};
+\node[panel=Blue] at (0,-3.4) {\textbf{Job}\\[6pt]Launches\\commands locally\\or on a cluster};
 \node[panel=Teal] at (4.3,-3.4) {\textbf{Process}\\[6pt]Runs analysis and\\reporting tasks};
 \node[panel=Gold] (backend) at (8.6,-3.4) {\textbf{Backend}\\[6pt]Persists results\\and metadata};
 \draw[flow] (parameter.east) -- (system.west);
