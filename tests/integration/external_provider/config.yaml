@@ -34,4 +34,7 @@ parameters:
     value: 0.1
   beta:
     module: 'linear'
-    slope: 0.001
+    slope: 'b0'
+    intercept: 'b1'
+  b0: 0.001
+  b1: 0.0

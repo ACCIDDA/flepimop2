@@ -104,6 +104,7 @@ class FixedParameter(ParameterABC, module="fixed"):
         *,
         axes: AxisCollection | None = None,
         request: ParameterRequest | None = None,
+        params: dict[IdentifierString, ParameterValue] | None = None,  # noqa: ARG002
     ) -> ParameterValue:
         """
         Return the fixed value of the parameter.
@@ -111,6 +112,7 @@ class FixedParameter(ParameterABC, module="fixed"):
         Args:
             axes: Resolved runtime axes available for the current simulation.
             request: Optional system request describing the desired shape.
+            params: Resolved dependency values injected by the `Simulator`.
 
         Returns:
             The fixed parameter value with runtime shape metadata.

@@ -81,6 +81,7 @@ nav:
       - Contributing: development/contributing.md
       - Creating An External Provider Package: development/creating-an-external-provider-package.md
       - Implementing Custom Engines and Systems: development/implementing-custom-engines-and-systems.md
+      - Implementing Custom Parameters: development/implementing-custom-parameters.md
       - Customizing Module Appearances: development/customizing-module-appearances.md
       - Pydantic for Modelers: development/pydantic-for-modelers.md
       - Integration Testing: development/integration-testing.md

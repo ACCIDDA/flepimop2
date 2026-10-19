@@ -160,9 +160,23 @@ class Simulator:
         self,
         name: IdentifierString,
         request: ParameterRequest,
+        *,
+        visiting: frozenset[IdentifierString] | None = None,
     ) -> ParameterValue:
         """
         Build and sample a requested parameter from configuration.
+
+        Resolves any parameters declared by `requested_parameters` on the
+        parameter implementation before calling `sample`, supplying them via
+        the `params` argument.  Circular dependency chains are detected via
+        `visiting` and raised as `ValueError`.
+
+        Args:
+            name: The name of the parameter to sample.
+            request: The parameter request describing the required shape and
+                metadata for sampling.
+            visiting: The set of parameter names currently being visited in the
+                 resolution chain, used to detect circular dependencies.
 
         Returns:
             The sampled parameter value and runtime shape metadata.
@@ -170,6 +184,7 @@ class Simulator:
         Raises:
             KeyError: If the requested parameter is missing from configuration.
             ValueError: If parameter configuration has not been attached.
+            ValueError: If a circular parameter dependency is detected.
         """
         if self.parameter_configs is None:
             msg = "parameter_configs must be set before resolving parameters."
@@ -177,8 +192,27 @@ class Simulator:
         if name not in self.parameter_configs:
             msg = f"Required parameter '{name}' was requested but not configured."
             raise KeyError(msg)
+
+        visiting = visiting or frozenset()
+        if name in visiting:
+            cycle = " -> ".join([*sorted(visiting), name])
+            msg = f"Circular parameter dependency detected: {cycle}."
+            raise ValueError(msg)
+
         parameter = build_parameter(self.parameter_configs[name])
-        return parameter.sample(axes=self.axes, request=request)
+        dep_requests = parameter.requested_parameters(self.axes)
+
+        visiting |= {name}
+        dep_params: dict[IdentifierString, ParameterValue] = {
+            dep_name: self._sample_parameter(dep_name, dep_request, visiting=visiting)
+            for dep_name, dep_request in dep_requests.items()
+        }
+
+        return parameter.sample(
+            axes=self.axes,
+            request=request,
+            params=dep_params or None,
+        )
 
     def resolve_inputs(
         self,
