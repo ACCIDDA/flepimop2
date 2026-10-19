@@ -18,8 +18,6 @@
 from collections.abc import Mapping
 from typing import Any
 
-import numpy as np
-
 from flepimop2.engine.abc import EngineProtocol
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.typing import (
@@ -48,7 +46,7 @@ class _FakeArray:
 
 
 def _fake_step(
-    time: np.float64,
+    time: float,
     state: Array,
     **kwargs: Any,
 ) -> Array:
@@ -67,7 +65,7 @@ def _fake_runner(
 ) -> Array:
     """Return a non-NumPy result through the engine callable contract."""
     del times, initial_state, params, model_state, kwargs
-    return stepper(np.float64(0.0), _FakeArray())
+    return stepper(0.0, _FakeArray())
 
 
 _FAKE_SYSTEM: SystemProtocol = _fake_step
@@ -79,6 +77,6 @@ def test_callable_protocols_accept_non_numpy_array() -> None:
     fake = _FakeArray()
 
     assert isinstance(fake, Array)
-    assert _FAKE_SYSTEM(np.float64(0.0), fake) is fake
+    assert _FAKE_SYSTEM(0.0, fake) is fake
     result = _FAKE_ENGINE(_FAKE_SYSTEM, fake, {}, {})
     assert isinstance(result, _FakeArray)

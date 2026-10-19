@@ -90,7 +90,7 @@ class _TorchParameter(ParameterABC, module="test_array_backend_torch"):
 
 
 def _step(
-    time: np.float64,
+    time: float,
     state: Array,
     **params: ParameterValue,
 ) -> Array:
@@ -131,7 +131,7 @@ def _evolve(
         The initial and evolved states in their original namespace.
     """
     x0 = initial_state["x"].value
-    x1 = stepper(np.float64(1.0), x0, **params)
+    x1 = stepper(1.0, x0, **params)
     xp: Any = array_namespace(x0)
     return cast("Array", xp.stack((x0, x1)))
 
