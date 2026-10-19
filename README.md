@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/1072205034.svg)](https://zenodo.org/badge/latestdoi/1072205034)
 
-`flepimop2` is a Python package and command-line tool for running dynamic system simulations. It works with configuration files to define and execute analysis pipelines - separating the mathematical model (system), numerical solver (engine), and output format (backend) - so that workflows are reproducible, version-controllable, and easy to share. Because it is also a library, you can write custom analyses that integrate seamlessly with the pipeline, and advanced users can develop shareable modules that plug directly into it.
+`flepimop2` is a Python package and command-line tool for running dynamical system simulations from configuration files. Separate providers define the mathematical model (system), numerical solver (engine), and result storage (backend). Other interfaces cover parameters, processing steps, and job execution. Projects can use the library directly or add providers for their own models and analyses.
 
 To learn more and try out the tool, see the [documentation](https://accidda.github.io/flepimop2/latest/).
 
