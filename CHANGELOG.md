@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add an illustrated provider-role table and editable TikZ schematic to the
+  external-provider tutorial, with source/export checks in documentation builds.
 - Added static array-backend advertisement for engines and parameters, a single
   producer-to-engine conversion seam, and continuously exercised NumPy/JAX
   cross-backend simulation tests. See [#275](https://github.com/ACCIDDA/flepimop2/issues/275).

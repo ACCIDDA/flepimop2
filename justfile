@@ -94,6 +94,7 @@ reference:
 # Build the documentation using `mkdocs`
 [group('docs')]
 docs: reference
+    uv run python docs/assets/provider-roles/build.py --check
     uv run mkdocs build --verbose --strict
 
 # Serve the documentation locally using `mkdocs`
