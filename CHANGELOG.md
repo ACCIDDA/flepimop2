@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0] - 2026-10-19
 
 ### Added
 
@@ -14,28 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Process steps can declare upstream steps with `depends`, and `flepimop2 process` now runs a step's dependencies first, in dependency order. Unknown references, self-dependencies, and cycles are rejected before anything executes. A step may report its target as already present via `ProcessABC.is_satisfied()`, which makes a re-run a no-op; `-f`/`--force` runs the requested step anyway, and repeating it (`-ff`) forces that step's dependencies too. See [#323](https://github.com/ACCIDDA/flepimop2/issues/323).
 - Added `flepimop2 check` and `flepimop2.check.check_configuration`, which validate a whole configuration without running it: each simulate target is built, every requested parameter is checked for configuration and requested shape, and each process step's validation hook runs. All issues are reported together as `ValidationIssue`s. See [#25](https://github.com/ACCIDDA/flepimop2/issues/25).
 
-### Changed
-
-- ...
-
-### Deprecated
-
-- ...
-
-### Removed
-
-- ...
-
 ### Fixed
+
+- Include the documentation quickstart fixture in clean-wheel validation, so
+  the template drift check also executes against installed artifacts (#346).
 
 - Preserved declared argument boundaries for shell processes and made dry runs render shell-safe commands without executing child processes. See [#334](https://github.com/ACCIDDA/flepimop2/issues/334).
 - Updated the package validation tooling to accept Core Metadata 2.5 distributions. See [#336](https://github.com/ACCIDDA/flepimop2/issues/336).
 - Wrapper engines and systems whose `script` is also importable as a package module now use that module instead of executing a second, unregistered copy. Two copies had separate module-level state, so settings or caches changed through the package import never reached the running wrapper. Standalone scripts load as before. See [#339](https://github.com/ACCIDDA/flepimop2/issues/339).
-
-
-### Security
-
-- ...
 
 ## [0.3.0] - 2026-06-11
 

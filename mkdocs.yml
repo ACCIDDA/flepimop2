@@ -91,6 +91,7 @@ nav:
           - Abcs: reference/api/abcs.md
           - Axis: reference/api/axis.md
           - Backend: reference/api/backend.md
+          - Check: reference/api/check.md
           - Cli: reference/api/cli.md
           - Configuration: reference/api/configuration.md
           - Engine: reference/api/engine.md
@@ -99,6 +100,7 @@ nav:
           - Meta: reference/api/meta.md
           - Module: reference/api/module.md
           - Parameter: reference/api/parameter.md
+          - Pattern: reference/api/pattern.md
           - Process: reference/api/process.md
           - Scenario: reference/api/scenario.md
           - Simulator: reference/api/simulator.md
