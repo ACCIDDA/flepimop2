@@ -39,7 +39,7 @@ par = pytest.mark.parametrize("test_system", [system])
 def test_set_valid_static_parameters(test_system: SystemABC) -> None:
     """Confirm no errors when setting all valid parameters."""
     offset = ParameterValue(np.array(5.0), ResolvedShape())
-    time = np.float64(1.0)
+    time = 1.0
     initial_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
     newproto = test_system.bind(offset=offset)
     np.testing.assert_array_equal(

@@ -46,7 +46,7 @@ def stepper(
 def test_wrapper_system(stepper: SystemProtocol, state_change: StateChangeEnum) -> None:
     """Test `AdapterSystem` uses a `stepper` function directly."""
     system = wrap(stepper, state_change)
-    time = np.float64(1.0)
+    time = 1.0
     offset = ParameterValue(np.array(1.0), ResolvedShape())
     init_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
     result = system.step(time, init_state, offset=offset)
