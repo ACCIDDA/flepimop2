@@ -19,10 +19,7 @@ __all__ = []
 
 from pathlib import Path
 
-import numpy as np
-
 from flepimop2._utils._click import _resolve_config_target
-from flepimop2.axis import ResolvedShape
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.meta import RunMeta
@@ -36,8 +33,9 @@ def _scenario_value(
     value: object,
     template: ParameterValue | None = None,
 ) -> ParameterValue:
-    shape = template.shape if template is not None else ResolvedShape()
-    return ParameterValue(np.asarray(value, dtype=np.float64), shape)
+    if template is not None:
+        return template.construct(value)
+    return ParameterValue.from_scalar(value)
 
 
 class SimulateCommand(CliCommand):
