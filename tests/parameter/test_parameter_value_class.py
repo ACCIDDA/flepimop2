@@ -86,3 +86,48 @@ def test_parameter_value_rejects_object_dtype() -> None:
             value=arr,
             shape=ResolvedShape(axis_names=("x",), sizes=(3,)),
         )
+
+
+def test_parameter_value_construct_broadcasts_and_preserves_shape() -> None:
+    """Construct should create a new ParameterValue with matching backend and shape."""
+    template = ParameterValue(
+        value=np.array([1.0, 2.0, 3.0]),
+        shape=ResolvedShape(axis_names=("age",), sizes=(3,)),
+    )
+    from_scalar = template.construct(4.5)
+    assert isinstance(from_scalar.value, np.ndarray)
+    assert from_scalar.shape == template.shape
+    np.testing.assert_array_equal(from_scalar.value, [4.5, 4.5, 4.5])
+
+    from_seq = template.construct([10.0, 20.0, 30.0])
+    assert isinstance(from_seq.value, np.ndarray)
+    np.testing.assert_array_equal(from_seq.value, [10.0, 20.0, 30.0])
+
+    with pytest.raises(ValueError, match="does not match template shape"):
+        template.construct([1.0, 2.0])
+
+
+def test_parameter_value_construct_preserves_jax_backend() -> None:
+    """Construct on a JAX-backed template should produce a JAX array."""
+    jax = pytest.importorskip("jax", reason="JAX is optional for these tests.")
+    template = ParameterValue(
+        value=jax.numpy.array([1.0, 2.0]),
+        shape=ResolvedShape(axis_names=("group",), sizes=(2,)),
+    )
+    new_pv = template.construct(7.0)
+    assert isinstance(new_pv.value, jax.Array)
+    assert new_pv.shape == template.shape
+    np.testing.assert_array_equal(np.asarray(new_pv.value), [7.0, 7.0])
+
+
+def test_parameter_value_from_scalar() -> None:
+    """From_scalar should produce a scalar ParameterValue."""
+    pv = ParameterValue.from_scalar(3.5)
+    assert pv.shape == ResolvedShape()
+    assert pv.item() == pytest.approx(3.5)
+
+    jax = pytest.importorskip("jax", reason="JAX is optional for these tests.")
+    jax_pv = ParameterValue.from_scalar(2.5, target_type=jax.Array)
+    assert isinstance(jax_pv.value, jax.Array)
+    assert jax_pv.shape == ResolvedShape()
+    assert jax_pv.item() == pytest.approx(2.5)

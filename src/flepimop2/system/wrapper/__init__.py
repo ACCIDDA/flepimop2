@@ -22,7 +22,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Self, cast
 
-import numpy as np
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -32,9 +31,9 @@ from pydantic import (
     model_validator,
 )
 
-from flepimop2._utils._array import register_array_backend
+from flepimop2._utils._array import namespace_from_type, register_array_backend
 from flepimop2._utils._checked_partial import _checked_partial
-from flepimop2._utils._inspect import _is_ndarray_annotation, _unwrap_annotation
+from flepimop2._utils._inspect import _is_array_annotation, _unwrap_annotation
 from flepimop2._utils._module import _as_dict as _as_dict
 from flepimop2._utils._module import _load_module, _validate_function
 from flepimop2.axis import AxisCollection
@@ -268,14 +267,20 @@ def _binding_annotation(annotation: object) -> object:
 
         _validate_scalar.__name__ = f"coercible_{annotation.__name__}"
         return _validate_scalar
-    if _is_ndarray_annotation(annotation):
+    if _is_array_annotation(annotation):
 
         def _validate_array(value: object) -> object:
-            if isinstance(value, ParameterValue):
+            if isinstance(value, ParameterValue | Array):
                 return value
-            return np.asarray(value, dtype=np.float64)
+            xp = namespace_from_type(None)
+            dtype = getattr(xp, "float64", None)
+            return (
+                xp.asarray(value, dtype=dtype)
+                if dtype is not None
+                else xp.asarray(value)
+            )
 
-        _validate_array.__name__ = "coercible_ndarray"
+        _validate_array.__name__ = "coercible_array"
         return _validate_array
     return Any
 
@@ -314,7 +319,7 @@ def _coerce_parameter_value(
             )
             raise TypeError(msg)
         return annotation(scalar)
-    if _is_ndarray_annotation(annotation):
+    if _is_array_annotation(annotation):
         return value.value
     return value
 

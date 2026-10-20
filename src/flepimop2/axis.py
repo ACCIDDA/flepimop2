@@ -17,12 +17,12 @@
 
 __all__ = ["Axis", "AxisCollection", "ResolvedAxisConfig", "ResolvedShape"]
 
+import math
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from itertools import pairwise
 from typing import Literal, TypeVar, overload
 
-import numpy as np
 from pydantic import TypeAdapter
 
 from flepimop2.configuration._axes import (
@@ -164,8 +164,8 @@ class Axis:
             The bin-edge coordinates with length `size + 1`.
 
         Notes:
-            Linear axes use `np.linspace(lower, upper, size + 1)`. Log axes use
-            `np.geomspace(lower, upper, size + 1)`.
+            Linear axes partition intervals evenly. Log axes use geometric
+            progression across the domain.
 
         Examples:
             >>> from flepimop2.axis import Axis
@@ -181,10 +181,10 @@ class Axis:
         """
         lo, hi = self._continuous_domain()
         if self.spacing == "linear":
-            edges = np.linspace(lo, hi, self.size + 1, dtype=np.float64)
-        else:
-            edges = np.geomspace(lo, hi, self.size + 1, dtype=np.float64)
-        return tuple(edges.tolist())
+            step = (hi - lo) / self.size
+            return tuple(lo + i * step for i in range(self.size + 1))
+        ratio = (hi / lo) ** (1.0 / self.size)
+        return tuple(lo * (ratio**i) for i in range(self.size + 1))
 
     def bins(self) -> tuple[tuple[float, float], ...]:
         """
@@ -246,18 +246,15 @@ class Axis:
             ...     ).points()
             ... )
             (5.623413251903491e-09,
-             1.7782794100389227e-07,
+             1.778279410038923e-07,
              5.623413251903491e-06,
              0.0001778279410038923)
         """
-        lo, hi = self._continuous_domain()
+        self._continuous_domain()
+        edges = self.bin_edges()
         if self.spacing == "linear":
-            edges = np.linspace(lo, hi, self.size + 1, dtype=np.float64)
-            points = 0.5 * (edges[:-1] + edges[1:])
-        else:
-            edges = np.geomspace(lo, hi, self.size + 1, dtype=np.float64)
-            points = np.sqrt(edges[:-1] * edges[1:])
-        return tuple(points.tolist())
+            return tuple(0.5 * (a + b) for a, b in pairwise(edges))
+        return tuple(math.sqrt(a * b) for a, b in pairwise(edges))
 
     @classmethod
     def from_model(
