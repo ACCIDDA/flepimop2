@@ -28,7 +28,6 @@ from abc import abstractmethod
 from collections.abc import Callable
 from typing import Any
 
-import numpy as np
 from pydantic import PrivateAttr
 
 from flepimop2._utils._checked_partial import _checked_partial, _consolidate_args
@@ -118,7 +117,7 @@ class SystemABC(ModuleBase, module_namespace="system"):
         msg = "Concrete implementations must implement _bind_impl."
         raise NotImplementedError(msg)
 
-    def step(self, time: np.float64, state: Array, **params: ParameterValue) -> Array:
+    def step(self, time: float, state: Array, **params: ParameterValue) -> Array:
         """
         Perform a single step of the system's dynamics.
 
