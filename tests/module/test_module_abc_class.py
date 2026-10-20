@@ -24,7 +24,7 @@ from pydantic import ValidationError
 from flepimop2.backend.abc import BackendABC
 from flepimop2.module import ModuleBase
 from flepimop2.process.abc import ProcessABC
-from flepimop2.typing import Array, Float64NDArray, PatchConflictMode
+from flepimop2.typing import Array, PatchConflictMode
 
 
 def test_missing_module_attribute_raises() -> None:
@@ -65,7 +65,7 @@ def test_module_shortcut_sets_fully_qualified_module_for_backend_subclass() -> N
     class MyBackend(BackendABC, module="test_backend"):
         def _save(self, data: Array, run_meta: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Float64NDArray:
+        def _read(self, _run_meta: object) -> Array:
             return np.array([], dtype=np.float64)
 
     mod = MyBackend()
@@ -112,7 +112,7 @@ def test_module_shortcut_sets_literal_module_field() -> None:
 
         def _save(self, data: object, run_meta: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Float64NDArray:
+        def _read(self, _run_meta: object) -> Array:
             return np.array([], dtype=np.float64)
 
     expected = "flepimop2.backend.test_backend"
@@ -132,7 +132,7 @@ def test_module_shortcut_allows_instantiation_without_module_argument() -> None:
 
         def _save(self, data: object, run_meta: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Float64NDArray:
+        def _read(self, _run_meta: object) -> Array:
             return np.array([], dtype=np.float64)
 
     assert MyBackend(root=".").module == "flepimop2.backend.test_backend"
