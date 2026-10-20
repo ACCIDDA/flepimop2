@@ -43,7 +43,7 @@ WRAPPER_SCRIPT_WITH_EXTRAS: Final = (
 def test_wrapper_system(config: dict[str, Any]) -> None:
     """Test `WrapperSystem` loads a script and uses its `stepper` function."""
     system = build(config)
-    time = np.float64(1.0)
+    time = 1.0
     offset = ParameterValue(np.array(1.0), ResolvedShape())
     init_state = np.array([1.0, 2.0, 3.0], dtype=np.float64)
     result = system.step(time, init_state, offset=offset)
@@ -108,7 +108,7 @@ def test_wrapper_system_loads_requested_parameters_and_model_state_from_config()
         labels=("S", "I", "R"),
     )
     result = system.step(
-        np.float64(1.0),
+        1.0,
         np.array([1.0, 2.0], dtype=np.float64),
         beta=ParameterValue(np.array(0.5), ResolvedShape()),
         gamma=ParameterValue(

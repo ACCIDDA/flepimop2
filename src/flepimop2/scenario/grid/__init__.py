@@ -15,14 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Grid scenario implementation."""
 
-__all__ = ["Float64NDArray", "GridScenario"]
+__all__ = ["GridScenario"]
 
 import itertools
 from collections.abc import Iterable
 from typing import Any, NamedTuple, cast
 
 from flepimop2.scenario.abc import ScenarioABC
-from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.typing import IdentifierString
 
 
 class GridScenario(ScenarioABC, module="grid"):

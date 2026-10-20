@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Abstract base class for scenarios."""
 
-__all__ = ["Float64NDArray", "ScenarioABC", "build"]
+__all__ = ["ScenarioABC", "build"]
 
 from abc import abstractmethod
 from collections.abc import Iterable
@@ -23,7 +23,7 @@ from typing import Any, NamedTuple
 
 from flepimop2._utils._module import _build
 from flepimop2.module import ModuleBase
-from flepimop2.typing import Float64NDArray, IdentifierString
+from flepimop2.typing import IdentifierString
 
 
 class ScenarioABC(ModuleBase, module_namespace="scenario"):
