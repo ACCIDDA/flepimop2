@@ -32,7 +32,7 @@ class PatternABC(ModuleBase, module_namespace="pattern"):
 
     A pattern materializes a starting project at a destination directory. The
     bundled `pattern.copy` scaffolds from a template; other patterns can, for
-    example, clone and activate an existing project (see #251). New project
+    example, clone and activate an existing project. New project
     sources plug in by implementing `_scaffold`, so the CLI and any callers stay
     agnostic to where the project comes from.
     """
