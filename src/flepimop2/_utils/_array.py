@@ -20,6 +20,7 @@ __all__ = [
     "array_namespace",
     "coerce_to",
     "coerce_to_host",
+    "namespace_from_type",
     "register_array_backend",
 ]
 
@@ -248,3 +249,25 @@ def coerce_to_host(value: Any) -> Float64NDArray:  # noqa: ANN401
     if hasattr(value, "__array__"):
         return np.asarray(value, dtype=np.float64)
     return np.asarray(value, dtype=np.float64)
+
+
+def namespace_from_type(target_type: type[Array] | None) -> Any:  # noqa: ANN401
+    """Return the Array-API namespace module for a target array type.
+
+    Args:
+        target_type: Advisory array class (e.g. `numpy.ndarray`, `jax.Array`),
+            or None.
+
+    Returns:
+        The Array-API namespace module, defaulting to `numpy` if target_type is
+        None or unconstrained.
+    """
+    if target_type is None or target_type is Array:
+        return np
+    module_root = getattr(target_type, "__module__", "").split(".")[0].lower()
+    if module_root in {"", "builtins", "typing", "flepimop2"}:
+        return np
+    try:
+        return _target_namespace(module_root)
+    except (ValueError, RuntimeError):
+        return np

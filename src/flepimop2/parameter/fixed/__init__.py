@@ -20,8 +20,7 @@ __all__ = ["FixedParameter"]
 
 from typing import Any, ClassVar, Self
 
-import numpy as np
-
+from flepimop2._utils._array import namespace_from_type
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.parameter.abc import ParameterABC, ParameterRequest, ParameterValue
 from flepimop2.typing import ArrayBackend, IdentifierString
@@ -123,7 +122,16 @@ class FixedParameter(ParameterABC, module="fixed"):
             ValueError: If the configured value cannot satisfy the resolved shape.
         """
         axes = axes or AxisCollection()
-        value = np.asarray(self.value, dtype=np.float64)
+        xp: Any = namespace_from_type(
+            request.target_type if request is not None else None
+        )
+        raw_val = float(self.value) if isinstance(self.value, int) else self.value
+        dtype = getattr(xp, "float64", None)
+        value = (
+            xp.asarray(raw_val, dtype=dtype)
+            if dtype is not None
+            else xp.asarray(raw_val)
+        )
 
         configured_shape = axes.resolve_shape(self.shape) if self.shape else None
         requested_shape = (
@@ -164,7 +172,7 @@ class FixedParameter(ParameterABC, module="fixed"):
         if value.ndim == 0 and (
             configured_shape is not None or (request is not None and request.broadcast)
         ):
-            broadcast = np.broadcast_to(value, target_shape.sizes).astype(np.float64)
+            broadcast = xp.broadcast_to(value, target_shape.sizes)
             return ParameterValue(value=broadcast, shape=target_shape)
 
         msg = (

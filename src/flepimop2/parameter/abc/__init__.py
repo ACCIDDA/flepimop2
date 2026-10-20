@@ -24,10 +24,10 @@ __all__ = [
 ]
 
 from abc import abstractmethod
-from dataclasses import dataclass
-from typing import Any, ClassVar
+from dataclasses import dataclass, replace
+from typing import Any, ClassVar, Self
 
-from flepimop2._utils._array import array_namespace
+from flepimop2._utils._array import array_namespace, namespace_from_type
 from flepimop2._utils._module import _build
 from flepimop2.axis import AxisCollection, ResolvedShape
 from flepimop2.module import ModuleBase
@@ -45,6 +45,8 @@ class ParameterRequest:
         broadcast: Whether a scalar parameter may be broadcast to the requested
             shape.
         optional: Whether the system can omit this parameter and rely on defaults.
+        target_type: Optional advisory type (e.g. array class or backend type)
+            requested by the consumer for this parameter.
 
     Notes:
         Systems typically create `ParameterRequest` objects in
@@ -53,21 +55,27 @@ class ParameterRequest:
         materialize their values.
 
     Examples:
-        >>> from pprint import pp
         >>> from flepimop2.parameter.abc import ParameterRequest
         >>> request = ParameterRequest(
         ...     name="gamma",
         ...     axes=("age",),
         ...     broadcast=True,
         ... )
-        >>> pp(request)
-        ParameterRequest(name='gamma', axes=('age',), broadcast=True, optional=False)
+        >>> request.name
+        'gamma'
+        >>> request.axes
+        ('age',)
+        >>> request.broadcast
+        True
+        >>> request.target_type is None
+        True
     """
 
     name: IdentifierString
     axes: tuple[IdentifierString, ...] = ()
     broadcast: bool = False
     optional: bool = False
+    target_type: type[Array] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -290,6 +298,75 @@ class ParameterValue:
             3.14
         """
         return float(self.value.item())
+
+    def construct(self, value: object) -> Self:
+        """
+        Construct a new ParameterValue with the same backend, dtype, and shape.
+
+        Args:
+            value: A new array, scalar, or sequence to materialize into this
+                parameter's array backend and shape.
+
+        Returns:
+            A new `ParameterValue` with the updated value and matching shape.
+
+        Raises:
+            ValueError: If `value` cannot be converted or broadcast to match this
+                parameter's resolved shape.
+
+        Examples:
+            >>> import numpy as np
+            >>> from flepimop2.axis import ResolvedShape
+            >>> from flepimop2.parameter.abc import ParameterValue
+            >>> template = ParameterValue(
+            ...     value=np.array([1.0, 2.0]),
+            ...     shape=ResolvedShape(axis_names=("age",), sizes=(2,)),
+            ... )
+            >>> template.construct([3.0, 4.0]).value
+            array([3., 4.])
+            >>> template.construct(5.0).value
+            array([5., 5.])
+        """
+        xp: Any = array_namespace(self.value)
+        arr = xp.asarray(value, dtype=self.value.dtype)
+        if arr.shape != self.shape.sizes:
+            if arr.shape == ():
+                arr = xp.broadcast_to(arr, self.shape.sizes)
+            else:
+                msg = (
+                    f"Constructed value shape {arr.shape} does not match "
+                    f"template shape {self.shape.sizes}."
+                )
+                raise ValueError(msg)
+        return replace(self, value=arr)
+
+    @classmethod
+    def from_scalar(
+        cls,
+        value: object,
+        *,
+        target_type: type[Array] | None = None,
+    ) -> Self:
+        """
+        Construct a scalar ParameterValue from a scalar or numeric value.
+
+        Args:
+            value: Numeric scalar value.
+            target_type: Optional advisory target array type.
+
+        Returns:
+            A scalar `ParameterValue`.
+
+        Examples:
+            >>> from flepimop2.parameter.abc import ParameterValue
+            >>> pv = ParameterValue.from_scalar(3.14)
+            >>> pv.item()
+            3.14
+        """
+        xp: Any = namespace_from_type(target_type)
+        dtype = getattr(xp, "float64", None)
+        arr = xp.asarray(value, dtype=dtype) if dtype is not None else xp.asarray(value)
+        return cls(value=arr, shape=ResolvedShape())
 
 
 class ParameterABC(ModuleBase, module_namespace="parameter"):

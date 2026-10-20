@@ -18,6 +18,7 @@
 import subprocess  # noqa: S404
 import sys
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 import pytest
@@ -26,6 +27,7 @@ from flepimop2._utils._array import (
     array_backend,
     coerce_to,
     coerce_to_host,
+    namespace_from_type,
     register_array_backend,
 )
 from flepimop2.typing import Array, ArrayBackend
@@ -118,3 +120,11 @@ print(int("jax" in sys.modules), int("torch" in sys.modules))
         text=True,
     )
     assert completed.stdout.strip() == "0 0"
+
+
+def test_namespace_from_type_default_and_types() -> None:
+    """namespace_from_type returns appropriate array-api namespace modules."""
+    assert namespace_from_type(None) is np
+    assert namespace_from_type(Array) is np
+    assert namespace_from_type(np.ndarray) is np
+    assert namespace_from_type(jax.Array) is jnp

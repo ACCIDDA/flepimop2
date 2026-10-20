@@ -166,3 +166,35 @@ def test_configuration_model_safe_dump_uses_bare_scalar_for_simple_fixed() -> No
     dumped = configuration.safe_dump()
 
     assert safe_load(dumped) == {"parameters": {"beta": 0.3}}
+
+
+def test_fixed_parameter_samples_requested_numpy_target_type() -> None:
+    """Fixed parameter should produce a NumPy array when target_type is np.ndarray."""
+    request = ParameterRequest(name="beta", target_type=np.ndarray)
+    sample = FixedParameter(value=0.5).sample(request=request)
+    assert isinstance(sample.value, np.ndarray)
+    assert sample.item() == pytest.approx(0.5)
+
+
+def test_fixed_parameter_samples_requested_jax_target_type() -> None:
+    """Fixed parameter should produce a JAX array when target_type is jax.Array."""
+    jax = pytest.importorskip("jax")
+    request = ParameterRequest(name="beta", target_type=jax.Array)
+    sample = FixedParameter(value=0.5).sample(request=request)
+    assert isinstance(sample.value, jax.Array)
+    assert sample.item() == pytest.approx(0.5)
+
+
+def test_fixed_parameter_broadcasts_with_requested_jax_target_type() -> None:
+    """Fixed parameter should broadcast to a JAX array when requested."""
+    jax = pytest.importorskip("jax")
+    axes = AxisCollection.from_config({
+        "age": {"kind": "categorical", "labels": ["0-17", "18-64", "65+"]}
+    })
+    request = ParameterRequest(
+        name="gamma", axes=("age",), broadcast=True, target_type=jax.Array
+    )
+    sample = FixedParameter(value=0.2).sample(axes=axes, request=request)
+    assert isinstance(sample.value, jax.Array)
+    assert sample.shape.sizes == (3,)
+    assert sample.value.shape == (3,)

@@ -17,7 +17,7 @@
 
 from typing import Annotated, get_args, get_origin
 
-import numpy as np
+from flepimop2.typing import Array
 
 
 def _unwrap_annotation(annotation: object) -> object:
@@ -50,6 +50,7 @@ def _is_ndarray_annotation(annotation: object) -> bool:
         `False` otherwise.
 
     Examples:
+        >>> import numpy as np
         >>> from typing import Annotated
         >>> _is_ndarray_annotation(np.ndarray)
         True
@@ -70,4 +71,51 @@ def _is_ndarray_annotation(annotation: object) -> bool:
         False
     """
     annotation = _unwrap_annotation(annotation)
-    return annotation is np.ndarray or get_origin(annotation) is np.ndarray
+    candidate = get_origin(annotation) or annotation
+    if (
+        getattr(candidate, "__name__", "") == "ndarray"
+        and getattr(candidate, "__module__", "") == "numpy"
+    ):
+        return True
+    if isinstance(candidate, type):
+        return any(
+            getattr(b, "__name__", "") == "ndarray"
+            and getattr(b, "__module__", "") == "numpy"
+            for b in candidate.__mro__
+        )
+    return False
+
+
+def _is_array_annotation(annotation: object) -> bool:
+    """
+    Return whether an annotation refers to an Array or ndarray payload.
+
+    Returns:
+        `True` if the annotation refers to `Array`, a concrete `np.ndarray`,
+        or an array-protocol compatible payload, `False` otherwise.
+
+    Examples:
+        >>> import numpy as np
+        >>> from flepimop2.typing import Array, Float64NDArray
+        >>> _is_array_annotation(Array)
+        True
+        >>> _is_array_annotation(np.ndarray)
+        True
+        >>> _is_array_annotation(Float64NDArray)
+        True
+        >>> _is_array_annotation(float)
+        False
+    """
+    annotation = _unwrap_annotation(annotation)
+    if annotation is Array:
+        return True
+    if _is_ndarray_annotation(annotation):
+        return True
+    origin = get_origin(annotation)
+    candidate = origin if origin is not None else annotation
+    if isinstance(candidate, type):
+        module = getattr(candidate, "__module__", "").split(".")[0].lower()
+        if module in {"jax", "torch"}:
+            return True
+        return hasattr(candidate, "shape") and hasattr(candidate, "dtype")
+    return False
