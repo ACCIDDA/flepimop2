@@ -31,8 +31,8 @@ from flepimop2.exceptions import ValidationIssue
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.system.abc import SystemABC, SystemProtocol
 from flepimop2.typing import (
+    Array,
     ArrayBackend,
-    Float64NDArray,
     IdentifierString,
     StateChangeEnum,
 )
@@ -40,12 +40,12 @@ from flepimop2.typing import (
 
 def runner(
     stepper: SystemProtocol,
-    times: Float64NDArray,
+    times: Array,
     initial_state: dict[IdentifierString, ParameterValue],
     params: dict[IdentifierString, ParameterValue],
     model_state: ModelStateSpecification | None = None,
     **kwargs: Any,  # noqa: ARG001
-) -> Float64NDArray:
+) -> Array:
     """
     Simple Euler runner for the SIR model.
 

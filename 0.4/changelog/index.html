@@ -2179,6 +2179,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Bumped development and runtime dependencies in the minor group (including Ruff 0.16 and mypy 2.3), updating Ruff configuration and type annotations for compatibility. See <a href="https://github.com/ACCIDDA/flepimop2/pull/354">#354</a>.</li>
+<li>Generalized system state, system stepper time parameter (to standard
+  <code>float</code>), evaluation-time grid (<code>times</code>), engine result, simulator result,
+  and backend-save/read contracts to backend-neutral protocols. See
+  <a href="https://github.com/ACCIDDA/flepimop2/issues/343">#343</a>.</li>
 </ul>
 <h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2191,8 +2195,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Diagnose combined shell-process executable/script commands during validation and execution while preserving executable paths and PATH entries with spaces. Updated shipped shell-process examples to put script paths in <code>args</code>. See <a href="https://github.com/ACCIDDA/flepimop2/issues/365">#365</a>.</li>
+<li>Diagnose wrapper steppers whose first two positional arguments are not named <code>time</code> and <code>state</code> before those names reach model-parameter lookup. See <a href="https://github.com/ACCIDDA/flepimop2/issues/366">#366</a>.</li>
 <li>
-<p>Diagnose wrapper steppers whose first two positional arguments are not named <code>time</code> and <code>state</code> before those names reach model-parameter lookup. See <a href="https://github.com/ACCIDDA/flepimop2/issues/366">#366</a>.</p>
+<p>Preserve existing NumPy axis-grid calculations and typed NumPy stepper adapters while generalizing array contracts; resolve concrete JAX implementation classes to the public JAX namespace. See <a href="https://github.com/ACCIDDA/flepimop2/issues/343">#343</a>.</p>
 </li>
 <li>
 <p>Preserved declared argument boundaries for shell processes and made dry runs render shell-safe commands without executing child processes. See <a href="https://github.com/ACCIDDA/flepimop2/issues/334">#334</a>.</p>
