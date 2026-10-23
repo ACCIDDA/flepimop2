@@ -2,6 +2,8 @@
 
 This guide shows how to use `flepimop2 job` to dispatch a `simulate` or `process` command to a configured job backend instead of executing it locally. The core idea is simple: rather than running the command directly, you describe *where* to run it in the `jobs` section of your configuration file, then call `flepimop2 job <subcommand>` in place of the subcommand alone.
 
+When you're ready to move a working local simulation to UNC Longleaf, follow the [Laptop-to-Slurm guide](slurm.md). It covers transferring the project, setting up the cluster environment, submitting and monitoring a Slurm job, and retrieving its results.
+
 This guide uses the built-in `shell` job module throughout. The `shell` module is intended for **local testing and debugging only** - it simply spawns a subprocess on the same machine. For real-world workloads you should use a job module suited to your computing environment (for example, one that submits to a Slurm cluster or an HPC queue). The `shell` module is a useful starting point because it requires no external infrastructure: you can confirm that the job plumbing works end-to-end before connecting it to a remote backend.
 
 ## 1. Start from the Example Bundle

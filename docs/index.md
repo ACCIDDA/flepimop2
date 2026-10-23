@@ -155,3 +155,5 @@ This runs the post-processing steps defined for the `demo` target, producing a p
 flepimop2 simulate --target hires configs/config.yaml
 flepimop2 process --target hires configs/config.yaml
 ```
+
+When your local simulation is ready to run on UNC Longleaf, continue with the [From a Laptop to Slurm guide](guides/slurm.md).
