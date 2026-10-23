@@ -1,10 +1,10 @@
 # Welcome to `flepimop2`
 
-The next generation of the flexible epidemic modeling pipeline.
+Run simulation and analysis campaigns from configuration files.
 
 ## What is `flepimop2`?
 
-`flepimop2` is a Python package and command-line tool for running dynamic system simulations. It works with configuration files to define and execute analysis pipelines. Because it is also a library, you can write custom analyses that read and write data in a way that works seamlessly with the rest of the pipeline, and advanced users can develop shareable modules that plug directly into it.
+`flepimop2` is a Python package and command-line tool for running dynamical system simulations from configuration files. Projects can use the library directly or add providers for their own models and analyses.
 
 At the core of flepimop2 is a modular design that separates three concerns:
 
@@ -12,7 +12,7 @@ At the core of flepimop2 is a modular design that separates three concerns:
 - **Engine**: the numerical solver that runs the model forward in time
 - **Backend**: the output format for saving results
 
-Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline - model, solver, parameters, time grid, and post-processing - lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.
+A YAML configuration selects the model, solver, parameters, time grid, and processing steps. Recording configuration, code, inputs, and dependency versions supports reproduction of a run. A configuration file alone does not capture all of those inputs.
 
 ## Installation
 `flepimop2` is published on [PyPI](https://pypi.org/project/flepimop2/) and can be installed with `pip`:
