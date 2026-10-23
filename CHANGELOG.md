@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Replace issue and pull-request breadcrumbs in guides and API docstrings with
+  current behavior, named interfaces and explicit limitations.
+
 ### Added
 
 - Added static array-backend advertisement for engines and parameters, a single

@@ -193,7 +193,7 @@ def _load_module(path: PathLike[str], mod_name: str) -> ModuleType:
     package on ``sys.path``), that module is imported and returned instead of
     executing a second, unregistered copy. Two copies would hold separate
     module-level state, so settings or caches changed through the package
-    import would never reach the loaded copy (see #339). Standalone scripts
+    import would never reach the loaded copy. Standalone scripts
     are loaded fresh under ``mod_name`` as before.
 
     Args:
