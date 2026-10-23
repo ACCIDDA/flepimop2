@@ -2202,6 +2202,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>
 <p>Preserved declared argument boundaries for shell processes and made dry runs render shell-safe commands without executing child processes. See <a href="https://github.com/ACCIDDA/flepimop2/issues/334">#334</a>.</p>
 </li>
+<li>Kept the template-versus-documentation quickstart drift check active in
+  clean-wheel validation by copying its documentation fixture into the
+  isolated test environment. See <a href="https://github.com/ACCIDDA/flepimop2/issues/346">#346</a>.</li>
 <li>Updated the package validation tooling to accept Core Metadata 2.5 distributions. See <a href="https://github.com/ACCIDDA/flepimop2/issues/336">#336</a>.</li>
 <li>Wrapper engines and systems whose <code>script</code> is also importable as a package module now use that module instead of executing a second, unregistered copy. Two copies had separate module-level state, so settings or caches changed through the package import never reached the running wrapper. Standalone scripts load as before. See <a href="https://github.com/ACCIDDA/flepimop2/issues/339">#339</a>.</li>
 </ul>
