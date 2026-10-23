@@ -265,6 +265,8 @@ def namespace_from_type(target_type: type[Array] | None) -> Any:  # noqa: ANN401
     if target_type is None or target_type is Array:
         return np
     module_root = getattr(target_type, "__module__", "").split(".")[0].lower()
+    if module_root == "jaxlib":
+        module_root = "jax"
     if module_root in {"", "builtins", "typing", "flepimop2"}:
         return np
     try:

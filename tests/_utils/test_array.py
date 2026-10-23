@@ -128,3 +128,8 @@ def test_namespace_from_type_default_and_types() -> None:
     assert namespace_from_type(Array) is np
     assert namespace_from_type(np.ndarray) is np
     assert namespace_from_type(jax.Array) is jnp
+
+
+def test_namespace_from_concrete_jax_array_type() -> None:
+    """Concrete device-array implementation types resolve to the public namespace."""
+    assert namespace_from_type(type(jnp.asarray(0.5))) is jnp
