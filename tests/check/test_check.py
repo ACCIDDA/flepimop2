@@ -20,11 +20,12 @@ from typing import Any
 
 import pytest
 
-from flepimop2.check import check_configuration
+from flepimop2.check import _SECTION_BUILDERS, check_configuration
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.engine.wrapper import WrapperEngine
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.process.abc import ProcessABC
+from flepimop2.process.shell import ShellProcess
 from flepimop2.system.abc import SystemABC
 
 ENGINE_SCRIPT = (
@@ -297,3 +298,133 @@ def test_contract_check_module_validate_hook(
     assert binary_issue.ctx is not None
     assert binary_issue.ctx.get("process") == "verify_step"
     assert binary_issue.ctx.get("binary") == "custom_bin"
+
+
+def _scenario_process_config() -> dict[str, Any]:
+    """Build a shared process whose command comes from each scenario tuple.
+
+    Returns:
+        The scenario and process configuration.
+    """
+    return {
+        "scenarios": {
+            "first": {
+                "module": "grid",
+                "processes": ["shared"],
+                "parameters": {"cmd": ["echo", "printf"]},
+            },
+            "second": {
+                "module": "grid",
+                "processes": ["shared"],
+                "parameters": {"cmd": ["true"]},
+            },
+        },
+        "process": {"shared": {"module": "shell", "command": "{cmd}"}},
+    }
+
+
+@pytest.mark.parametrize(
+    ("processes", "kind"),
+    [
+        (["missing"], "unknown_process"),
+        ("shared", "malformed_processes"),
+        (["shared", "shared"], "duplicate_process"),
+    ],
+)
+def test_scenario_process_references_are_checked(processes: object, kind: str) -> None:
+    """The checker validates scenario-owned references just like the runner."""
+    config = _scenario_process_config()
+    config["scenarios"]["first"]["processes"] = processes
+
+    assert kind in {issue.kind for issue in check_configuration(config)}
+
+
+def test_scenario_process_duplicates_are_checked() -> None:
+    """Colliding runs are reported before any process is executed."""
+    config = _scenario_process_config()
+    config["scenarios"]["second"]["parameters"]["cmd"] = ["echo"]
+
+    assert "duplicate_process_run" in {
+        issue.kind for issue in check_configuration(config)
+    }
+
+
+def test_expanded_process_configuration_is_checked() -> None:
+    """A valid template can still produce an invalid module configuration."""
+    config = _scenario_process_config()
+    config["scenarios"]["first"]["parameters"]["cmd"] = [""]
+
+    issues = check_configuration(config)
+
+    assert len(issues) == 1
+    assert issues[0].kind == "process_build"
+    assert issues[0].ctx is not None
+    assert issues[0].ctx["process"] == "shared"
+
+
+def test_each_expanded_process_is_validated_without_execution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Shared process validation sees expanded values and never runs commands."""
+    commands: list[str] = []
+
+    def validate(self: ShellProcess) -> list[ValidationIssue]:
+        commands.append(self.command)
+        return []
+
+    def execute(self: ShellProcess, *, dry_run: bool) -> None:  # noqa: ARG001
+        pytest.fail("Configuration checking must not execute processes")
+
+    monkeypatch.setattr(ShellProcess, "validate_module", validate)
+    monkeypatch.setattr(ShellProcess, "_process", execute)
+
+    assert check_configuration(_scenario_process_config()) == []
+    assert commands == ["echo", "printf", "true"]
+
+
+def test_process_templates_are_expanded_before_typed_validation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A numeric module field accepts substituted values, not raw placeholders."""
+    counts: list[int] = []
+
+    class CountingProcess(ProcessABC, module="counting"):
+        n: int
+
+        def validate_module(self) -> list[ValidationIssue]:
+            counts.append(self.n)
+            return []
+
+        def _process(self, *, dry_run: bool) -> None:  # noqa: ARG002
+            pytest.fail("Configuration checking must not execute processes")
+
+    monkeypatch.setitem(
+        _SECTION_BUILDERS, "process", ("process", CountingProcess.model_validate)
+    )
+    config = {
+        "scenarios": {
+            "sweep": {
+                "module": "grid",
+                "processes": ["count"],
+                "parameters": {"n": [1, 2]},
+            }
+        },
+        "process": {"count": {"module": "flepimop2.process.counting", "n": "{n}"}},
+    }
+
+    assert check_configuration(config) == []
+    assert counts == [1, 2]
+
+
+def test_process_expansion_errors_do_not_hide_unrelated_module_errors() -> None:
+    """The checker keeps collecting issues after a process cannot expand."""
+    config = _scenario_process_config()
+    config["scenarios"]["second"]["parameters"]["cmd"] = ["echo"]
+    config["engines"] = {"bad": {"module": "wrapper"}}
+
+    issues = check_configuration(config)
+
+    assert {"duplicate_process_run", "engine_build"} <= {issue.kind for issue in issues}
+    duplicate = next(issue for issue in issues if issue.kind == "duplicate_process_run")
+    assert duplicate.ctx is not None
+    assert duplicate.ctx["target"] == "shared"
