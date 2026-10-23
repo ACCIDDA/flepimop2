@@ -15,6 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for `Axis` runtime behavior."""
 
+import math
+
 import pytest
 
 from flepimop2.axis import Axis
@@ -88,3 +90,14 @@ def test_categorical_axis_rejects_continuous_helpers() -> None:
 
     with pytest.raises(TypeError):
         axis.points()
+
+
+def test_log_axis_preserves_finite_extreme_domain() -> None:
+    """Finite logarithmic grids need not form the unrepresentable endpoint ratio."""
+    edges = Axis(
+        "x", "continuous", 4, domain=(1e-300, 1e300), spacing="log"
+    ).bin_edges()
+    assert all(math.isfinite(edge) for edge in edges)
+    assert edges[0] == pytest.approx(1e-300, rel=0, abs=0)
+    assert edges[-1] == pytest.approx(1e300, rel=0, abs=0)
+    assert edges == pytest.approx((1e-300, 1e-150, 1.0, 1e150, 1e300), rel=1e-12, abs=0)

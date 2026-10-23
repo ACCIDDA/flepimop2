@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Diagnose combined shell-process executable/script commands during validation and execution while preserving executable paths and PATH entries with spaces. Updated shipped shell-process examples to put script paths in `args`. See [#365](https://github.com/ACCIDDA/flepimop2/issues/365).
 - Diagnose wrapper steppers whose first two positional arguments are not named `time` and `state` before those names reach model-parameter lookup. See [#366](https://github.com/ACCIDDA/flepimop2/issues/366).
+- Preserve existing NumPy axis-grid calculations and typed NumPy stepper adapters while generalizing array contracts; resolve concrete JAX implementation classes to the public JAX namespace. See [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
 
 - Preserved declared argument boundaries for shell processes and made dry runs render shell-safe commands without executing child processes. See [#334](https://github.com/ACCIDDA/flepimop2/issues/334).
 - Updated the package validation tooling to accept Core Metadata 2.5 distributions. See [#336](https://github.com/ACCIDDA/flepimop2/issues/336).

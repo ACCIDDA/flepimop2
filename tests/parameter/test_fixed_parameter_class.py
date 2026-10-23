@@ -198,3 +198,14 @@ def test_fixed_parameter_broadcasts_with_requested_jax_target_type() -> None:
     assert isinstance(sample.value, jax.Array)
     assert sample.shape.sizes == (3,)
     assert sample.value.shape == (3,)
+
+
+def test_fixed_parameter_samples_concrete_jax_target_type() -> None:
+    """A requested class obtained from an existing JAX array remains device-native."""
+    jax = pytest.importorskip("jax")
+    target_type = type(jax.numpy.asarray(0.5))
+    sample = FixedParameter(value=0.5).sample(
+        request=ParameterRequest(name="x", target_type=target_type)
+    )
+    assert isinstance(sample.value, target_type)
+    assert sample.item() == pytest.approx(0.5)
