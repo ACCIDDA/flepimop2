@@ -2208,6 +2208,7 @@
 </li>
 </ol>
 <h3 id="wrapped-script-hooks-wrapperengine-and-wrappersystem">Wrapped Script Hooks (<code>WrapperEngine</code> and <code>WrapperSystem</code>)<a class="headerlink" href="#wrapped-script-hooks-wrapperengine-and-wrappersystem" title="Permanent link">&para;</a></h3>
+<p>A <code>WrapperSystem</code> script must define <code>stepper(time, state, ...)</code>, with those exact first two argument names accepting positional values. Remaining argument names describe model parameters; naming the runtime inputs <code>t</code> and <code>y</code> would incorrectly request model parameters with those names. Wrapper construction and <code>flepimop2 check</code> report this signature error before parameter lookup. Positional-only <code>time</code> and <code>state</code> are also supported.</p>
 <p>User scripts wrapped by <code>WrapperEngine</code> or <code>WrapperSystem</code> can declare custom backend attributes directly in their script file:</p>
 <ul>
 <li><code>ARRAY_BACKEND = "jax"</code>: Tells <code>WrapperEngine</code> to expect JAX inputs.</li>
