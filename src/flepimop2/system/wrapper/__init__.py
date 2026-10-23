@@ -327,8 +327,30 @@ def _adapt_wrapper_stepper(stepper: Callable[..., Any]) -> Callable[..., Any]:
         A callable with the wrapped stepper's signature that unwraps
         `ParameterValue` arguments into scalars or arrays as requested by the
         wrapped stepper's annotations.
+
+    Raises:
+        ValueError: If the first two arguments are not positional `time` and
+            `state` arguments.
     """
     raw_signature = inspect.signature(stepper)
+    runtime_parameters = list(raw_signature.parameters.values())[:2]
+    if [parameter.name for parameter in runtime_parameters] != ["time", "state"] or any(
+        parameter.kind
+        not in {
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        }
+        for parameter in runtime_parameters
+    ):
+        received = (
+            ", ".join(parameter.name for parameter in runtime_parameters) or "none"
+        )
+        msg = (
+            "Wrapper stepper's first two arguments must be named `time` and "
+            f"`state` and accept positional values (got {received}). "
+            "Other argument names are treated as model parameters."
+        )
+        raise ValueError(msg)
     adapted_parameters = []
     for name, parameter in raw_signature.parameters.items():
         if name in {"time", "state"} or parameter.kind in {

@@ -211,3 +211,20 @@ def test_check_reports_combined_shell_command(tmp_path: Path) -> None:
     assert "single executable" in result.output
     assert "args" in result.output
     assert "plot" in result.output
+
+
+def test_check_reports_wrapper_runtime_signature(tmp_path: Path) -> None:
+    """The CLI explains runtime input names before checking model parameters."""
+    script = tmp_path / "bad_stepper.py"
+    script.write_text("def stepper(t, y, beta):\n    return y\n")
+    raw = _config(tmp_path)
+    raw["systems"]["demo"]["script"] = str(script)
+    config = tmp_path / "bad-stepper.yaml"
+    config.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    result = CliRunner().invoke(cli, ["check", str(config)], catch_exceptions=False)
+    assert result.exit_code == ExitCode.CONFIGURATION
+    assert "first two arguments must be named" in result.output
+    assert "`time`" in result.output
+    assert "`state`" in result.output
+    assert "got t, y" in result.output
+    assert "Required parameter 't'" not in result.output
