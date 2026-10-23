@@ -183,7 +183,7 @@ The range syntax is particularly convenient for high-resolution runs where listi
 
 ## Post-Processing
 
-Post-processing steps are defined in the `process` block and are executed by `flepimop2 process`. Each named entry under `process` specifies a module type and the arguments needed to run it. Like simulation targets, process targets can be run selectively with `--target`. These post-processing steps will often require accompanying scripts; ensure these scripts have been saved in the file paths specified in the `command` argument.
+Post-processing steps are defined in the `process` block and are executed by `flepimop2 process`. Each named entry under `process` specifies a module type and the arguments needed to run it. Like simulation targets, process targets can be run selectively with `--target`. These post-processing steps will often require accompanying scripts; put each script path in `args` and ensure the script exists.
 
 ### Shell Processes
 
@@ -193,13 +193,14 @@ The `shell` module runs an arbitrary command-line program. This is the standard 
 process:
   plot_demo:
     module: shell
-    command: python postprocessing/SIR_plot_op_engine.py
+    command: python
     args:
+      - postprocessing/SIR_plot_op_engine.py
       - configs/config.yml
       - model_output/SIR_plot_op_engine.png
 ```
 
-The `command` field is the executable, and `args` is a list of positional arguments passed to it. The working directory is the project root.
+The `command` field names one executable; put the script path and each subsequent argument in `args`. Existing executable paths may contain spaces and need no embedded shell quotes. Arguments remain separate list elements, including paths with spaces. The working directory is the project root.
 
 R scripts work the same way:
 
@@ -207,13 +208,14 @@ R scripts work the same way:
 process:
   r_plot:
     module: shell
-    command: Rscript postprocessing/SIR_plot.R
+    command: Rscript
     args:
+      - postprocessing/SIR_plot.R
       - configs/config.yml
       - model_output/SIR_plot.png
 ```
 
-Any shell command is valid here - the module imposes no restrictions on what runs. Exit codes are checked; a non-zero exit will raise an error and halt the pipeline.
+The program runs directly without a shell. Shell operators such as pipes and redirection are not interpreted. `flepimop2 check` and process execution report a combined executable-and-script value in `command` with guidance to use `args`. Exit codes are checked; a non-zero exit raises an error and halts the pipeline.
 
 ### Jupyter Notebook Rendering (ipynbrender)
 
@@ -237,14 +239,16 @@ Multiple named process targets can coexist in a single config:
 process:
   r_plot:
     module: shell
-    command: Rscript postprocessing/SIR_plot.R
+    command: Rscript
     args:
+      - postprocessing/SIR_plot.R
       - configs/config.yml
       - model_output/SIR_plot.png
   python_plot:
     module: shell
-    command: python postprocessing/SIR_plot_op_engine.py
+    command: python
     args:
+      - postprocessing/SIR_plot_op_engine.py
       - configs/config.yml
       - model_output/SIR_plot_py.png
   notebook:
