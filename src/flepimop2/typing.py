@@ -58,6 +58,7 @@ from typing import (
     Self,
     TypeVar,
     cast,
+    overload,
     runtime_checkable,
 )
 
@@ -306,9 +307,20 @@ _P = ParamSpec("_P")
 _ArrayT = TypeVar("_ArrayT", bound=Array)
 
 _SystemCallable = Callable[Concatenate[float, _ArrayT, _P], _ArrayT]
+_LegacySystemCallable = Callable[
+    Concatenate[np.float64, Float64NDArray, _P], Float64NDArray
+]
 
 
-def as_system_protocol(func: _SystemCallable[_ArrayT, _P]) -> SystemProtocol:
+@overload
+def as_system_protocol(func: _LegacySystemCallable[_P]) -> SystemProtocol: ...
+
+
+@overload
+def as_system_protocol(func: _SystemCallable[_ArrayT, _P]) -> SystemProtocol: ...
+
+
+def as_system_protocol(func: Callable[..., Array]) -> SystemProtocol:
     """
     Decorator to mark a function as a SystemProtocol.
 

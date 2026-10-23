@@ -18,12 +18,16 @@
 from collections.abc import Mapping
 from typing import Any
 
+import numpy as np
+
 from flepimop2.engine.abc import EngineProtocol
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
 from flepimop2.typing import (
     Array,
+    Float64NDArray,
     IdentifierString,
     SystemProtocol,
+    as_system_protocol,
 )
 
 
@@ -80,3 +84,20 @@ def test_callable_protocols_accept_non_numpy_array() -> None:
     assert _FAKE_SYSTEM(0.0, fake) is fake
     result = _FAKE_ENGINE(_FAKE_SYSTEM, fake, {}, {})
     assert isinstance(result, _FakeArray)
+
+
+@as_system_protocol
+def _legacy_numpy_step(time: np.float64, state: Float64NDArray) -> Float64NDArray:
+    """Retain an existing NumPy provider's time and state annotations.
+
+    Returns:
+        The original state without copying.
+    """
+    del time
+    return state
+
+
+def test_adapter_accepts_legacy_numpy_stepper() -> None:
+    """The compatibility decorator retains state identity and old annotations."""
+    state = np.array([1.0])
+    assert _legacy_numpy_step(0.0, state) is state
