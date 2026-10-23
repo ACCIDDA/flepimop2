@@ -131,3 +131,13 @@ def test_parameter_value_from_scalar() -> None:
     assert isinstance(jax_pv.value, jax.Array)
     assert jax_pv.shape == ResolvedShape()
     assert jax_pv.item() == pytest.approx(2.5)
+
+
+def test_parameter_value_from_scalar_concrete_jax_type() -> None:
+    """Scalar construction honors the concrete type of an existing JAX array."""
+    jax = pytest.importorskip("jax")
+    target_type = type(jax.numpy.asarray(0.5))
+    value = ParameterValue.from_scalar(0.5, target_type=target_type)
+    assert isinstance(value.value, target_type)
+    assert value.shape == ResolvedShape()
+    assert value.item() == pytest.approx(0.5)
