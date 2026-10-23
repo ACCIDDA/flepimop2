@@ -140,3 +140,45 @@ def test_wrapper_system_registers_custom_coercer(tmp_path: Path) -> None:
     test_input = np.asarray([2.0, 4.0])
     coerced = coerce_to(test_input, "system_custom_backend")
     np.testing.assert_array_equal(coerced, np.asarray([6.0, 12.0]))
+
+
+@pytest.mark.parametrize(
+    "signature",
+    [
+        "(t, y, beta)",
+        "(time, y)",
+        "(state, time)",
+        "(time)",
+        "()",
+        "(*args, **kwargs)",
+        "(time, *, state)",
+    ],
+)
+def test_wrapper_rejects_invalid_runtime_argument_names(
+    tmp_path: Path, signature: str
+) -> None:
+    """Invalid runtime signatures fail before model parameter lookup."""
+    script = tmp_path / "invalid_signature.py"
+    script.write_text(f"def stepper{signature}:\n    return None\n")
+    with pytest.raises(
+        ValueError, match=r"first two arguments must be named.*time.*state"
+    ):
+        build({"module": "wrapper", "script": script, "state_change": "flow"})
+
+
+@pytest.mark.parametrize("positional_only", [False, True])
+def test_wrapper_accepts_positional_runtime_arguments(
+    tmp_path: Path, *, positional_only: bool
+) -> None:
+    """Named and positional-only runtime inputs retain default model parameters."""
+    signature = (
+        "(time, state, /, offset=2.0)"
+        if positional_only
+        else "(time, state, offset=2.0)"
+    )
+    script = tmp_path / "valid_signature.py"
+    script.write_text(f"def stepper{signature}:\n    return state + offset\n")
+    system = build({"module": "wrapper", "script": script, "state_change": "flow"})
+    assert set(system.requested_parameters(AxisCollection())) == {"offset"}
+    result = system.step(np.float64(0), np.array([1.0, 3.0]))
+    np.testing.assert_array_equal(result, [3.0, 5.0])

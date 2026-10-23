@@ -99,6 +99,8 @@ Third-party packages and plugins can register custom array backends (such as CuP
 
 ### Wrapped Script Hooks (`WrapperEngine` and `WrapperSystem`)
 
+A `WrapperSystem` script must define `stepper(time, state, ...)`, with those exact first two argument names accepting positional values. Remaining argument names describe model parameters; naming the runtime inputs `t` and `y` would incorrectly request model parameters with those names. Wrapper construction and `flepimop2 check` report this signature error before parameter lookup. Positional-only `time` and `state` are also supported.
+
 User scripts wrapped by `WrapperEngine` or `WrapperSystem` can declare custom backend attributes directly in their script file:
 
 - `ARRAY_BACKEND = "jax"`: Tells `WrapperEngine` to expect JAX inputs.
