@@ -37,15 +37,17 @@ backend:
 process:
   plot_demo:
     module: shell
-    command: python postprocessing/SIR_plot_op_engine.py
+    command: python
     args:
+      - postprocessing/SIR_plot_op_engine.py
       - configs/config.yml
       - model_output/SIR_plot_op_engine.png
 
   r_plot:
     module: shell
-    command: Rscript postprocessing/SIR_plot.R
+    command: Rscript
     args:
+      - postprocessing/SIR_plot.R
       - configs/config.yml
       - model_output/SIR_plot.png
 
