@@ -196,3 +196,18 @@ def test_check_command_exit_codes(tmp_path: Path) -> None:
 
     assert ok.exit_code == ExitCode.OKAY
     assert failed.exit_code == ExitCode.CONFIGURATION
+
+
+def test_check_reports_combined_shell_command(tmp_path: Path) -> None:
+    """Preflight locates the bad process without trying to execute it."""
+    raw = _config(tmp_path)
+    raw["process"] = {
+        "plot": {"module": "shell", "command": "Rscript postprocessing/plot.R"}
+    }
+    config = tmp_path / "bad-command.yaml"
+    config.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    result = CliRunner().invoke(cli, ["check", str(config)], catch_exceptions=False)
+    assert result.exit_code == ExitCode.CONFIGURATION
+    assert "single executable" in result.output
+    assert "args" in result.output
+    assert "plot" in result.output

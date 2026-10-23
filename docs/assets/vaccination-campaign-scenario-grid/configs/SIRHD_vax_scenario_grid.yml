@@ -111,16 +111,18 @@ backend:
 process:
   scenario_heatmap_3x3_plot_latest_batch:
     module: shell
-    command: python postprocessing/scenario_heatmap_3x3.py
+    command: python
     args:
+      - postprocessing/scenario_heatmap_3x3.py
       - configs/SIRHD_vax_scenario_grid.yml
       - model_output/plots/SIRHD_vax_scenario_heatmap_3x3.png
       - --burden-only
 
   scenario_heatmap_3x3_run_batch_and_plot:
     module: shell
-    command: python postprocessing/scenario_heatmap_3x3.py
+    command: python
     args:
+      - postprocessing/scenario_heatmap_3x3.py
       - configs/SIRHD_vax_scenario_grid.yml
       - model_output/plots/SIRHD_vax_scenario_heatmap_3x3.png
       - --run
@@ -128,15 +130,17 @@ process:
 
   scenario_spaghetti_incidence:
     module: shell
-    command: python postprocessing/scenario_spaghetti_incidence.py
+    command: python
     args:
+      - postprocessing/scenario_spaghetti_incidence.py
       - configs/SIRHD_vax_scenario_grid.yml
       - model_output/plots/SIRHD_vax_spaghetti_incidence.png
 
   scenario_peak_bed_summary:
     module: shell
-    command: python postprocessing/scenario_peak_bed_summary.py
+    command: python
     args:
+      - postprocessing/scenario_peak_bed_summary.py
       - configs/SIRHD_vax_scenario_grid.yml
       - model_output/plots/SIRHD_vax_peak_bed_summary.png
 

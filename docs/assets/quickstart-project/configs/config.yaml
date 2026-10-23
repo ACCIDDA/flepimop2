@@ -21,14 +21,16 @@ backend:
 process:
   demo:
     module: shell
-    command: Rscript postprocessing/SIR_plot.R
+    command: Rscript
     args:
+      - postprocessing/SIR_plot.R
       - configs/config.yaml
       - model_output/SIR_plot.png
   hires:
     module: shell
-    command: Rscript postprocessing/SIR_plot.R
+    command: Rscript
     args:
+      - postprocessing/SIR_plot.R
       - configs/config.yaml
       - model_output/SIR_plot_hires.png
 parameter:

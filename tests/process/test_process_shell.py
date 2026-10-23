@@ -18,10 +18,12 @@
 import shlex
 import sys
 from pathlib import Path
+from subprocess import CompletedProcess  # noqa: S404
 from typing import Any
 
 import pytest
 
+from flepimop2.exceptions import Flepimop2ValidationError
 from flepimop2.process.abc import build as build_process
 
 
@@ -89,3 +91,58 @@ def test_shell_process_dry_run_prints_without_executing(
 
     assert not output.exists()
     assert capsys.readouterr().out.strip() == shlex.join([sys.executable, *args])
+
+
+@pytest.mark.parametrize(
+    "command", ["Rscript postprocessing/plot.R", "python\tplot.py"]
+)
+@pytest.mark.parametrize("dry_run", [False, True])
+def test_shell_process_rejects_multiword_command(
+    command: str, *, dry_run: bool
+) -> None:
+    """Validation and execution explain where script arguments belong."""
+    process = build_process({"module": "shell", "command": command})
+    issues = process.validate_module()
+    assert len(issues) == 1
+    assert issues[0].kind == "invalid_command"
+    assert "single executable" in issues[0].msg
+    assert "args" in issues[0].msg
+    with pytest.raises(Flepimop2ValidationError, match="single executable"):
+        process.execute(dry_run=dry_run)
+
+
+@pytest.mark.parametrize("use_path", [False, True])
+def test_shell_process_allows_executable_names_with_spaces(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, use_path: bool
+) -> None:
+    """Existing executable paths and PATH entries remain one argv element."""
+    executable = tmp_path / "helper tool.exe"
+    executable.write_bytes(b"")
+    executable.chmod(0o755)
+    monkeypatch.setenv("PATH", str(tmp_path))
+    command = str(executable) if use_path else executable.name
+    calls: list[list[str]] = []
+
+    def run_command(cmd: list[str], *, check: bool) -> CompletedProcess[bytes]:
+        assert check is False
+        calls.append(cmd)
+        return CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr("flepimop2.process.shell.run", run_command)
+    process = build_process({
+        "module": "shell",
+        "command": command,
+        "args": ["script with spaces.py"],
+    })
+    assert process.validate_module() == []
+    process.execute()
+    assert calls == [[command, "script with spaces.py"]]
+
+
+def test_shell_process_validates_at_execution_time(tmp_path: Path) -> None:
+    """An upstream process may create the executable after config loading."""
+    executable = tmp_path / "generated tool.exe"
+    process = build_process({"module": "shell", "command": str(executable)})
+    assert process.validate_module()
+    executable.write_bytes(b"")
+    assert process.validate_module() == []
