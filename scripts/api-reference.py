@@ -21,7 +21,7 @@
 
 from pathlib import Path
 
-from ruamel.yaml import YAML  # type: ignore[import-not-found]
+from ruamel.yaml import YAML
 
 
 def get_module_name(file_path: Path, src_root: Path) -> str:

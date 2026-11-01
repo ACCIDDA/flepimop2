@@ -124,6 +124,13 @@ class ProcessCommand(CliCommand):
             }
             step_kwargs["target"] = step
             step_kwargs["no_deps"] = True
+            step_kwargs["force"] = int(
+                _should_force(
+                    self.bound_kwargs.get("force", 0),
+                    step,
+                    requested_target,
+                ),
+            )
             step_command = type(self)(**step_kwargs)
 
             plan[step] = {
