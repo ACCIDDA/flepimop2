@@ -231,15 +231,30 @@ process:
         assert command[:2] == ["flepimop2", "process"]
         assert command[command.index("--target") + 1] == step
         assert "--no-deps" in command
-        assert "-ff" in command
+        assert "-f" in command
         assert "-vv" in command
+        assert "-ff" not in command
         assert "--dry-run" not in command
 
 
-def test_process_command_build_plan_uses_implicit_target(
+@pytest.mark.parametrize(
+    ("force", "target", "forced_steps"),
+    [
+        (0, "transform", []),
+        (1, "transform", ["transform"]),
+        (2, "transform", ["fetch", "transform"]),
+        (0, None, []),
+        (1, None, ["transform"]),
+        (2, None, ["fetch", "transform"]),
+    ],
+)
+def test_process_command_build_plan_scopes_force_to_planned_steps(
     tmp_path: Path,
+    force: int,
+    target: str | None,
+    forced_steps: list[str],
 ) -> None:
-    """An omitted target plans the first configured process and its upstream."""
+    """Force counts are scoped to each planned no-deps command."""
     config = tmp_path / "config.yaml"
     config.write_text(
         """
@@ -253,12 +268,21 @@ process:
         encoding="utf-8",
     )
 
-    plan = ProcessCommand(config=config, dry_run=False).build_plan()
+    plan = ProcessCommand(
+        config=config,
+        target=target,
+        dry_run=False,
+        force=force,
+    ).build_plan()
 
     assert list(plan) == ["fetch", "transform"]
     assert plan["transform"]["depends"] == ["fetch"]
-    command = plan["transform"]["command"]
-    assert command[command.index("--target") + 1] == "transform"
+    for step, planned in plan.items():
+        command = planned["command"]
+        assert command[command.index("--target") + 1] == step
+        assert [arg for arg in command if arg.startswith("-f")] == (
+            ["-f"] if step in forced_steps else []
+        )
 
 
 # --- the no-op contract -------------------------------------------------------
