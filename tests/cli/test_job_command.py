@@ -23,9 +23,188 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-from flepimop2.cli._job_command import job_group
+from flepimop2.cli._job_command import (
+    _dispatch_to_job,
+    _validate_plan_result,
+    job_group,
+)
+from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.job.abc import JobDryRun, JobHandle
+
+
+def test_validate_plan_result_returns_job_handles() -> None:
+    """A valid plan result is narrowed to string keys and JobHandle values."""
+    handle = JobHandle(job_id="1", backend="test")
+
+    assert _validate_plan_result({"step1": handle}) == {"step1": handle}
+
+
+def test_validate_plan_result_rejects_non_string_step_name() -> None:
+    """Plan results must identify steps by name."""
+    with pytest.raises(TypeError, match="non-string process-step name"):
+        _validate_plan_result({1: JobHandle(job_id="1", backend="test")})
+
+
+def test_validate_plan_result_rejects_invalid_handle() -> None:
+    """Plan results must contain JobHandle values."""
+    with pytest.raises(TypeError, match="invalid handle for step 'step1'"):
+        _validate_plan_result({"step1": "1"})
+
+
+def test_process_dispatches_plan_to_capable_backend(
+    tmp_path: Path,
+) -> None:
+    """A plan-capable backend receives the built process plan."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    plan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        }
+    }
+    mock_job = MagicMock()
+    mock_job.supports_plan = True
+    mock_job.submit_plan.return_value = {"step1": JobHandle(job_id="1", backend="test")}
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch.object(command, "build_plan", return_value=plan) as build_plan,
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(SystemExit) as excinfo:
+            _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+    assert excinfo.value.code == 0
+    build_plan.assert_called_once_with()
+    mock_job.submit_plan.assert_called_once_with(plan, dry_run=False)
+    mock_job.submit.assert_not_called()
+
+
+def test_process_dispatch_resolves_configured_job_backend(
+    tmp_path: Path,
+) -> None:
+    """The selected job target is loaded from the configuration module."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """
+jobs:
+  local:
+    module: shell
+process:
+  step1:
+    module: shell
+""".lstrip(),
+        encoding="utf-8",
+    )
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    mock_job = MagicMock()
+    mock_job.supports_plan = True
+    mock_job.submit_plan.return_value = JobDryRun(command="planned")
+
+    with (
+        patch(
+            "flepimop2.cli._job_command.build_job",
+            return_value=mock_job,
+        ) as build_job,
+        patch.object(
+            command,
+            "build_plan",
+            return_value={
+                "step1": {
+                    "command": ["flepimop2", "process", "--target", "step1"],
+                    "depends": [],
+                }
+            },
+        ),
+        pytest.raises(SystemExit) as excinfo,
+    ):
+        _dispatch_to_job(
+            command,
+            {"job_target": "local", "no_cache": False},
+        )
+
+    assert excinfo.value.code == 0
+    selected_backend = build_job.call_args.args[0]
+    assert selected_backend.module == "shell"
+    mock_job.submit_plan.assert_called_once_with(
+        mock_job.submit_plan.call_args.args[0],
+        dry_run=False,
+    )
+
+
+def test_process_plan_dispatch_forwards_dry_run_without_caching(
+    tmp_path: Path,
+    save_job_mock: MagicMock,
+) -> None:
+    """Plan dry runs reach the backend and do not cache a skipped submission."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=True)
+    plan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        }
+    }
+    mock_job = MagicMock()
+    mock_job.supports_plan = True
+    mock_job.submit_plan.return_value = JobDryRun(command="planned")
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch.object(command, "build_plan", return_value=plan),
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(SystemExit) as excinfo:
+            _dispatch_to_job(
+                command,
+                {"job_target": "local", "no_cache": False},
+            )
+
+    assert excinfo.value.code == 0
+    mock_job.submit_plan.assert_called_once_with(plan, dry_run=True)
+    save_job_mock.assert_not_called()
+
+
+def test_process_dispatches_command_to_submit_only_backend(
+    tmp_path: Path,
+) -> None:
+    """A submit-only backend keeps using the ordinary submit path."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    mock_job = MagicMock()
+    mock_job.supports_plan = False
+    mock_job.submit.return_value = JobHandle(job_id="1", backend="test")
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(SystemExit) as excinfo:
+            _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+    assert excinfo.value.code == 0
+    mock_job.submit.assert_called_once_with(command, dry_run=False)
+    mock_job.submit_plan.assert_not_called()
 
 
 @pytest.fixture(autouse=True)
