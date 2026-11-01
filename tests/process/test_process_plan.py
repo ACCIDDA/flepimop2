@@ -15,13 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tests for process dependency declaration, planning, and the no-op contract."""
 
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from flepimop2._utils._click import _click_param_for_option, _render_param
 from flepimop2.cli._options import get_option
-from flepimop2.cli._process_command import _should_force
+from flepimop2.cli._process_command import ProcessCommand, _should_force
 from flepimop2.exceptions import Flepimop2ValidationError
 from flepimop2.process.abc import ProcessABC, resolve_plan
 
@@ -195,6 +196,69 @@ def test_resolve_plan_rejects_an_unknown_target() -> None:
     """Planning for a step that does not exist is a KeyError, not a bad plan."""
     with pytest.raises(KeyError):
         resolve_plan({"fetch": _step()}, target="nope")
+
+
+def test_process_command_build_plan_preserves_process_options(
+    tmp_path: Path,
+) -> None:
+    """Plan commands preserve process options but omit outer dry-run."""
+    config = tmp_path / "config.yaml"
+    config.write_text(
+        """
+process:
+  transform:
+    module: shell
+    depends: [fetch]
+  fetch:
+    module: shell
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    plan = ProcessCommand(
+        config=config,
+        target="transform",
+        dry_run=True,
+        force=2,
+        verbosity=2,
+    ).build_plan()
+
+    assert list(plan) == ["fetch", "transform"]
+    assert plan["fetch"]["depends"] == []
+    assert plan["transform"]["depends"] == ["fetch"]
+    for step, planned in plan.items():
+        command = planned["command"]
+        assert command[:2] == ["flepimop2", "process"]
+        assert command[command.index("--target") + 1] == step
+        assert "--no-deps" in command
+        assert "-ff" in command
+        assert "-vv" in command
+        assert "--dry-run" not in command
+
+
+def test_process_command_build_plan_uses_implicit_target(
+    tmp_path: Path,
+) -> None:
+    """An omitted target plans the first configured process and its upstream."""
+    config = tmp_path / "config.yaml"
+    config.write_text(
+        """
+process:
+  transform:
+    module: shell
+    depends: [fetch]
+  fetch:
+    module: shell
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    plan = ProcessCommand(config=config, dry_run=False).build_plan()
+
+    assert list(plan) == ["fetch", "transform"]
+    assert plan["transform"]["depends"] == ["fetch"]
+    command = plan["transform"]["command"]
+    assert command[command.index("--target") + 1] == "transform"
 
 
 # --- the no-op contract -------------------------------------------------------
