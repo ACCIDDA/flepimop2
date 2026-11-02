@@ -246,6 +246,16 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
         ),
         None,
     ),
+    "no_deps": (
+        click.option(
+            "--no-deps",
+            "-nd",
+            is_flag=True,
+            default=False,
+            help="Execute only the selected process step, without its dependencies.",
+        ),
+        None,
+    ),
     "output": (
         click.option(
             "-o",
