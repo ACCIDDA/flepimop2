@@ -44,18 +44,26 @@ def job_group() -> None:
 
 def _validate_plan_result(
     result: Mapping[Any, Any],
+    plan: Mapping[str, Any] | None,
 ) -> dict[str, JobHandle]:
     """Validate and narrow a dependency-aware submission result.
 
     Args:
         result: The raw mapping returned by a plan-capable backend.
+        plan: The process plan that was submitted, if this was a plan
+            submission.
 
     Returns:
         A mapping with validated process-step names and job handles.
 
     Raises:
-        TypeError: If a step name or handle has an invalid type.
+        TypeError: If the result has invalid types or does not contain
+            exactly the planned process steps.
     """
+    if plan is None:
+        msg = "A mapping submission result requires a process plan."
+        raise TypeError(msg)
+
     validated: dict[str, JobHandle] = {}
     for step_name, handle in result.items():
         if not isinstance(step_name, str):
@@ -71,6 +79,24 @@ def _validate_plan_result(
             )
             raise TypeError(msg)
         validated[step_name] = handle
+
+    expected_steps = set(plan.keys())
+    returned_steps = set(validated)
+    missing_steps = expected_steps - returned_steps
+    unexpected_steps = returned_steps - expected_steps
+    if missing_steps or unexpected_steps:
+        details: list[str] = []
+        if missing_steps:
+            details.append(f"missing steps: {sorted(missing_steps)!r}")
+        if unexpected_steps:
+            details.append(f"unexpected steps: {sorted(unexpected_steps)!r}")
+        msg = (
+            "Plan submission returned an incomplete step mapping ("
+            + "; ".join(details)
+            + ")."
+        )
+        raise TypeError(msg)
+
     return validated
 
 
@@ -103,6 +129,7 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if no_cache:
         logger.debug("Skipping job cache (--no-cache).")
 
+    plan: Mapping[str, Any] | None = None
     result: JobHandle | JobDryRun | dict[str, JobHandle]
     if isinstance(inner, ProcessCommand) and job.supports_plan:
         plan = inner.build_plan()
@@ -115,7 +142,7 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
         logger.info("Dry run, would have submitted: %s", result)
 
     elif isinstance(result, dict):
-        handles = _validate_plan_result(result)
+        handles = _validate_plan_result(result, plan)
         for step_name, handle in handles.items():
             logger.info("Job submitted (%s): %s", step_name, handle)
 
