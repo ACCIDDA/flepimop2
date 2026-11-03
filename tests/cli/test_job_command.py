@@ -36,20 +36,53 @@ from flepimop2.job.abc import JobDryRun, JobHandle
 def test_validate_plan_result_returns_job_handles() -> None:
     """A valid plan result is narrowed to string keys and JobHandle values."""
     handle = JobHandle(job_id="1", backend="test")
+    plan: dict[str, object] = {"step1": {}}
 
-    assert _validate_plan_result({"step1": handle}) == {"step1": handle}
+    assert _validate_plan_result({"step1": handle}, plan) == {"step1": handle}
 
 
 def test_validate_plan_result_rejects_non_string_step_name() -> None:
     """Plan results must identify steps by name."""
     with pytest.raises(TypeError, match="non-string process-step name"):
-        _validate_plan_result({1: JobHandle(job_id="1", backend="test")})
+        _validate_plan_result(
+            {1: JobHandle(job_id="1", backend="test")},
+            {"step1": {}},
+        )
 
 
 def test_validate_plan_result_rejects_invalid_handle() -> None:
     """Plan results must contain JobHandle values."""
     with pytest.raises(TypeError, match="invalid handle for step 'step1'"):
-        _validate_plan_result({"step1": "1"})
+        _validate_plan_result({"step1": "1"}, {"step1": {}})
+
+
+@pytest.mark.parametrize(
+    ("result", "plan", "message"),
+    [
+        ({}, {"step1": {}, "step2": {}}, "missing steps"),
+        (
+            {"step1": JobHandle(job_id="1", backend="test")},
+            {"step1": {}, "step2": {}},
+            "missing steps",
+        ),
+        (
+            {
+                "step1": JobHandle(job_id="1", backend="test"),
+                "step2": JobHandle(job_id="2", backend="test"),
+            },
+            {"step1": {}},
+            "unexpected steps",
+        ),
+    ],
+)
+def test_validate_plan_result_rejects_incomplete_step_mapping(
+    result: dict[object, object],
+    plan: dict[str, object],
+    message: str,
+) -> None:
+    """Plan results must contain exactly the submitted process steps."""
+    with pytest.raises(TypeError, match=message):
+        _validate_plan_result(result, plan)
 
 
 def test_process_dispatches_plan_to_capable_backend(
