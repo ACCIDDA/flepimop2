@@ -290,5 +290,5 @@ class Simulator:
         )
         meta = meta or RunMeta()
         save_res = coerce_to_host(res)
-        self.backend.save(save_res, meta)
+        self.backend.save(save_res, meta, model_state=model_state, axes=self.axes)
         return res
