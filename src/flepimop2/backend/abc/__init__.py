@@ -73,9 +73,8 @@ class BackendABC(ModuleBase, module_namespace="backend"):
                 ordering of `data`'s state entries (names, shared axes,
                 human-readable labels). Forwarded to `_save()` only when the
                 concrete backend's implementation declares it, so backends
-                that write labelled output (e.g. a CSV header row, a NetCDF
-                variable name) can use it without requiring every backend to
-                accept it.
+                that write labelled output (e.g. a NetCDF variable name) can
+                use it without requiring every backend to accept it.
             axes: Optional resolved runtime axes for the active simulation,
                 giving sizes/labels for the axis names referenced by
                 `model_state`. Forwarded under the same rule as `model_state`.
