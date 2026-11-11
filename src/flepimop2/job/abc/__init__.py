@@ -27,13 +27,14 @@ __all__ = [
 from abc import abstractmethod
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, Field
 
 from flepimop2._utils._module import _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
+from flepimop2.process._plan import ProcessPlan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
@@ -134,7 +135,17 @@ class JobDryRun(BaseModel):
 
 
 class JobABC(ModuleBase, module_namespace="job"):
-    """Abstract base class for flepimop2 job runners."""
+    """Abstract base class for flepimop2 job runners.
+
+    Backends support ordinary command submission through :meth:`submit`.
+    Backends that can submit dependency-aware process plans should set
+    ``supports_plan`` to ``True`` and implement :meth:`_submit_plan`.
+    Submit-only backends leave ``supports_plan`` as ``False`` and only need to
+    implement :meth:`_submit`.
+    """
+
+    # Plan submission is optional so existing submit-only backends remain valid.
+    supports_plan: ClassVar[bool] = False
 
     def submit(
         self, command: "CliCommand", *, dry_run: bool = False
@@ -208,6 +219,45 @@ class JobABC(ModuleBase, module_namespace="job"):
             list if valid.
         """
         return []
+
+    def submit_plan(
+        self,
+        plan: ProcessPlan,
+        *,
+        dry_run: bool = False,
+    ) -> dict[str, JobHandle] | JobDryRun:
+        """Submit a dependency-aware process plan.
+
+        This entry point is available on every backend for a stable interface,
+        but only backends advertising ``supports_plan = True`` should be
+        dispatched here. Submit-only backends retain the existing
+        :meth:`submit` path.
+
+        Args:
+            plan: Process steps and their dependency names.
+            dry_run: If ``True``, prepare the submission without submitting it.
+
+        Returns:
+            Handles keyed by process-step name, or a description of the
+            submission that was skipped for a dry run.
+
+        Raises:
+            Flepimop2ValidationError: If backend validation fails.
+        """
+        if issues := self.validate_module():
+            raise Flepimop2ValidationError(issues)
+
+        return self._submit_plan(plan, dry_run=dry_run)
+
+    def _submit_plan(
+        self,
+        plan: ProcessPlan,
+        *,
+        dry_run: bool = False,
+    ) -> dict[str, JobHandle] | JobDryRun:
+        """Implement dependency-aware plan submission for a capable backend."""
+        msg = f"Job backend '{self.module}' does not support dependency-aware plans."
+        raise NotImplementedError(msg)
 
     def status(self, handle: JobHandle) -> JobStatusResult:
         """Query the status of a previously submitted job.
