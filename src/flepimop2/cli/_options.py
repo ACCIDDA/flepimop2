@@ -252,6 +252,7 @@ COMMON_OPTIONS: Final[dict[str, CommonOptionEntry]] = {
             "-nd",
             is_flag=True,
             default=False,
+            hidden=True,
             help="Execute only the selected process step, without its dependencies.",
         ),
         None,
