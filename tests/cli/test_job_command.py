@@ -213,6 +213,47 @@ def test_process_plan_dispatch_forwards_dry_run_without_caching(
     save_job_mock.assert_not_called()
 
 
+def test_process_plan_dispatch_caches_each_step_handle(
+    tmp_path: Path,
+    save_job_mock: MagicMock,
+) -> None:
+    """A multi-step plan submission persists every returned handle to cache."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    handle1 = JobHandle(job_id="101", backend="test")
+    handle2 = JobHandle(job_id="102", backend="test")
+    plan = {
+        "step1": {"command": ["flepimop2", "process"], "depends": []},
+        "step2": {"command": ["flepimop2", "process"], "depends": ["step1"]},
+    }
+    mock_job = MagicMock()
+    mock_job.supports_plan = True
+    mock_job.model_dump.return_value = {"module": "test"}
+    mock_job.submit_plan.return_value = {"step1": handle1, "step2": handle2}
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch.object(command, "build_plan", return_value=plan),
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(SystemExit) as excinfo:
+            _dispatch_to_job(
+                command,
+                {"job_target": "local", "no_cache": False},
+            )
+
+    assert excinfo.value.code == 0
+    assert save_job_mock.call_count == 2
+    save_job_mock.assert_any_call(handle1, {"module": "test"})
+    save_job_mock.assert_any_call(handle2, {"module": "test"})
+
+
 def test_process_dispatches_command_to_submit_only_backend(
     tmp_path: Path,
 ) -> None:
