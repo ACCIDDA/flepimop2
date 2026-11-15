@@ -36,6 +36,7 @@ from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.configuration import ConfigurationModel
 from flepimop2.job.abc import JobDryRun, JobHandle
 from flepimop2.job.abc import build as build_job
+from flepimop2.process.abc import ProcessPlan
 
 
 @click.group(name="job")
@@ -44,8 +45,8 @@ def job_group() -> None:
 
 
 def _validate_plan_result(
-    result: Mapping[Any, Any],
-    plan: Mapping[str, Any] | None,
+    result: Mapping[object, object],
+    plan: Mapping[str, object],
 ) -> dict[str, JobHandle]:
     """Validate and narrow a dependency-aware submission result.
 
@@ -103,7 +104,7 @@ def _validate_plan_result(
 
 def _handle_plan_result(
     result: object,
-    plan: Mapping[str, Any],
+    plan: ProcessPlan,
     *,
     job_dump: dict[str, Any],
     logger: logging.Logger,
