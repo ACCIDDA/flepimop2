@@ -1822,16 +1822,16 @@
 
 
 <h1 id="welcome-to-flepimop2">Welcome to <code>flepimop2</code><a class="headerlink" href="#welcome-to-flepimop2" title="Permanent link">&para;</a></h1>
-<p>The next generation of the flexible epidemic modeling pipeline.</p>
+<p>Run simulation and analysis campaigns from configuration files.</p>
 <h2 id="what-is-flepimop2">What is <code>flepimop2</code>?<a class="headerlink" href="#what-is-flepimop2" title="Permanent link">&para;</a></h2>
-<p><code>flepimop2</code> is a Python package and command-line tool for running dynamic system simulations. It works with configuration files to define and execute analysis pipelines. Because it is also a library, you can write custom analyses that read and write data in a way that works seamlessly with the rest of the pipeline, and advanced users can develop shareable modules that plug directly into it.</p>
+<p><code>flepimop2</code> is a Python package and command-line tool for running dynamical system simulations from configuration files. Projects can use the library directly or add providers for their own models and analyses.</p>
 <p>At the core of flepimop2 is a modular design that separates three concerns:</p>
 <ul>
 <li><strong>System</strong>: the mathematical model describing how the dynamical system evolves (e.g., disease spreads with a compartmental SIR model)</li>
 <li><strong>Engine</strong>: the numerical solver that runs the model forward in time</li>
 <li><strong>Backend</strong>: the output format for saving results</li>
 </ul>
-<p>Each of these is defined independently and referenced in a single YAML configuration file. Because the full pipeline - model, solver, parameters, time grid, and post-processing - lives in one file, workflows are reproducible, version-controllable, and easy to share with collaborators.</p>
+<p>A YAML configuration selects the model, solver, parameters, time grid, and processing steps. Recording configuration, code, inputs, and dependency versions supports reproduction of a run. A configuration file alone does not capture all of those inputs.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p><code>flepimop2</code> is published on <a href="https://pypi.org/project/flepimop2/">PyPI</a> and can be installed with <code>pip</code>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>flepimop2
