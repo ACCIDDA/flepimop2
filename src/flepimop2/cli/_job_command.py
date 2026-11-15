@@ -45,8 +45,8 @@ def job_group() -> None:
 
 
 def _validate_plan_result(
-    result: Mapping[object, object],
-    plan: Mapping[str, object],
+    result: Mapping[Any, Any],
+    plan: Mapping[str, Any] | None,
 ) -> dict[str, JobHandle]:
     """Validate and narrow a dependency-aware submission result.
 
