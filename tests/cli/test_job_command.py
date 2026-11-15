@@ -138,6 +138,12 @@ process:
         encoding="utf-8",
     )
     command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    expected_plan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        }
+    }
     mock_job = MagicMock()
     mock_job.supports_plan = True
     mock_job.submit_plan.return_value = JobDryRun(command="planned")
@@ -150,12 +156,7 @@ process:
         patch.object(
             command,
             "build_plan",
-            return_value={
-                "step1": {
-                    "command": ["flepimop2", "process", "--target", "step1"],
-                    "depends": [],
-                }
-            },
+            return_value=expected_plan,
         ),
         pytest.raises(SystemExit) as excinfo,
     ):
@@ -168,7 +169,7 @@ process:
     selected_backend = build_job.call_args.args[0]
     assert selected_backend.module == "shell"
     mock_job.submit_plan.assert_called_once_with(
-        mock_job.submit_plan.call_args.args[0],
+        expected_plan,
         dry_run=False,
     )
 
