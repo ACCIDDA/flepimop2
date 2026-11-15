@@ -15,7 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Abstract base class for flepimop2 processing steps."""
 
-__all__ = ["ProcessABC", "build", "resolve_plan"]
+__all__ = [
+    "PlannedStep",
+    "ProcessABC",
+    "ProcessPlan",
+    "build",
+    "resolve_plan",
+]
 
 from abc import abstractmethod
 from typing import Any
@@ -25,6 +31,7 @@ from pydantic import Field
 from flepimop2._utils._module import _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
+from flepimop2.process._plan import PlannedStep, ProcessPlan
 from flepimop2.typing import override
 
 

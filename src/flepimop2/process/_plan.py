@@ -15,12 +15,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Scheduler-independent process plan types."""
 
+__all__ = ["PlannedStep", "ProcessPlan"]
+
 from typing import TypedDict
 
 
 class PlannedStep(TypedDict):
+    """Specification of a single planned process step for job execution.
+
+    Attributes:
+        command: Command-line tokens for executing the individual step.
+        depends: Names of sibling process steps this step directly depends on.
+    """
+
     command: list[str]
     depends: list[str]
 
 
 ProcessPlan = dict[str, PlannedStep]
+"""A dependency-aware plan mapping process-step names to planned execution steps."""
