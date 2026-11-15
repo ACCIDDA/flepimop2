@@ -21,6 +21,7 @@ __all__ = [
     "JobHandle",
     "JobStatus",
     "JobStatusResult",
+    "ProcessPlan",
     "build",
 ]
 
@@ -34,7 +35,7 @@ from pydantic import BaseModel, Field
 from flepimop2._utils._module import _build
 from flepimop2.exceptions import Flepimop2ValidationError, ValidationIssue
 from flepimop2.module import ModuleBase
-from flepimop2.process._plan import ProcessPlan
+from flepimop2.process.abc import ProcessPlan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:

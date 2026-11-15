@@ -22,8 +22,11 @@ from pathlib import Path
 from flepimop2._utils._click import _resolve_config_target
 from flepimop2.cli._cli_command import CliCommand
 from flepimop2.configuration import ConfigurationModel
-from flepimop2.process._plan import ProcessPlan
-from flepimop2.process.abc import _declared_depends, resolve_plan
+from flepimop2.process.abc import (
+    ProcessPlan,
+    _declared_depends,
+    resolve_plan,
+)
 from flepimop2.process.abc import build as build_process
 from flepimop2.typing import ExitCode
 
