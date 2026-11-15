@@ -114,7 +114,9 @@ class ProcessCommand(CliCommand):
         )
 
         # Validate dependencies and obtain a topological ordering.
-        ordered_steps = resolve_plan(processconfig, requested_target)
+        resolved_steps = resolve_plan(processconfig, requested_target)
+        no_deps = bool(self.bound_kwargs.get("no_deps", False))
+        ordered_steps = [requested_target] if no_deps else resolved_steps
 
         plan: ProcessPlan = {}
 
@@ -142,7 +144,7 @@ class ProcessCommand(CliCommand):
                     step_command.command_name(),
                     *step_command.to_argv(),
                 ],
-                "depends": _declared_depends(entry),
+                "depends": [] if no_deps else _declared_depends(entry),
             }
 
         return plan
