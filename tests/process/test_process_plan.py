@@ -17,6 +17,7 @@
 
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -314,6 +315,59 @@ process:
     command = plan["transform"]["command"]
     assert command[command.index("--target") + 1] == "transform"
     assert "--no-deps" in command
+
+
+def test_process_command_run_with_no_deps_skips_dependencies(
+    tmp_path: Path,
+) -> None:
+    """When no_deps=True, ProcessCommand.run executes only the targeted step."""
+    config = tmp_path / "config.yaml"
+    config.write_text(
+        """
+process:
+  fetch:
+    module: shell
+    command: fetch
+  transform:
+    module: shell
+    command: transform
+    depends: [fetch]
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    executed_steps: list[str] = []
+
+    def make_mock_instance(entry: object) -> MagicMock:
+        mock_instance = MagicMock()
+        mock_instance.execute.side_effect = lambda **_: executed_steps.append(
+            getattr(entry, "command", "")
+        )
+        return mock_instance
+
+    with patch(
+        "flepimop2.cli._process_command.build_process", side_effect=make_mock_instance
+    ):
+        cmd_no_deps = ProcessCommand(
+            config=config,
+            target="transform",
+            dry_run=False,
+            no_deps=True,
+        )
+        cmd_no_deps.run(config=config, dry_run=False, target="transform", no_deps=True)
+        assert executed_steps == ["transform"]
+
+        executed_steps.clear()
+        cmd_with_deps = ProcessCommand(
+            config=config,
+            target="transform",
+            dry_run=False,
+            no_deps=False,
+        )
+        cmd_with_deps.run(
+            config=config, dry_run=False, target="transform", no_deps=False
+        )
+        assert executed_steps == ["fetch", "transform"]
 
 
 # --- the no-op contract -------------------------------------------------------
