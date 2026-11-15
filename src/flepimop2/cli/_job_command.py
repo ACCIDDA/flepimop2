@@ -17,6 +17,7 @@
 
 __all__ = ["job_group"]
 
+import logging
 import sys
 from collections.abc import Mapping
 from typing import Any
@@ -91,13 +92,61 @@ def _validate_plan_result(
         if unexpected_steps:
             details.append(f"unexpected steps: {sorted(unexpected_steps)!r}")
         msg = (
-            "Plan submission returned an incomplete step mapping ("
+            "Plan submission returned an invalid step mapping ("
             + "; ".join(details)
             + ")."
         )
         raise TypeError(msg)
 
     return validated
+
+
+def _handle_plan_result(
+    result: object,
+    plan: Mapping[str, Any],
+    *,
+    job_dump: dict[str, Any],
+    logger: logging.Logger,
+    no_cache: bool,
+) -> None:
+    if isinstance(result, JobDryRun):
+        logger.info("Dry run, would have submitted: %s", result)
+        return
+    if isinstance(result, Mapping):
+        handles = _validate_plan_result(result, plan)
+        for step_name, handle in handles.items():
+            logger.info("Job submitted (%s): %s", step_name, handle)
+            if not no_cache:
+                cached_job = _cache.save_job(handle, job_dump)
+                logger.debug("Job cached to: %s", cached_job.key)
+        return
+    msg = (
+        f"Plan submission must return JobDryRun or a mapping of "
+        f"step names to JobHandle, got {type(result).__name__}."
+    )
+    raise TypeError(msg)
+
+
+def _handle_standard_result(
+    result: object,
+    *,
+    job_dump: dict[str, Any],
+    logger: logging.Logger,
+    no_cache: bool,
+) -> None:
+    if isinstance(result, JobDryRun):
+        logger.info("Dry run, would have submitted: %s", result)
+    elif isinstance(result, JobHandle):
+        logger.info("Job submitted: %s", result)
+        if not no_cache:
+            cached_job = _cache.save_job(result, job_dump)
+            logger.debug("Job cached to: %s", cached_job.key)
+    else:
+        msg = (
+            f"Job submission must return JobHandle or JobDryRun, "
+            f"got {type(result).__name__}."
+        )
+        raise TypeError(msg)
 
 
 def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
@@ -129,34 +178,24 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if no_cache:
         logger.debug("Skipping job cache (--no-cache).")
 
-    plan: Mapping[str, Any] | None = None
-    result: JobHandle | JobDryRun | dict[str, JobHandle]
     if isinstance(inner, ProcessCommand) and job.supports_plan:
         plan = inner.build_plan()
-        result = job.submit_plan(plan, dry_run=dry_run)
+        plan_result = job.submit_plan(plan, dry_run=dry_run)
+        _handle_plan_result(
+            plan_result,
+            plan,
+            job_dump=job.model_dump(),
+            logger=logger,
+            no_cache=no_cache,
+        )
     else:
-        result = job.submit(inner, dry_run=dry_run)
-
-    # Handle submission results
-    if isinstance(result, JobDryRun):
-        logger.info("Dry run, would have submitted: %s", result)
-
-    elif isinstance(result, dict):
-        handles = _validate_plan_result(result, plan)
-        for step_name, handle in handles.items():
-            logger.info("Job submitted (%s): %s", step_name, handle)
-
-            if not no_cache:
-                cached_job = _cache.save_job(handle, job.model_dump())
-                logger.debug("Job cached to: %s", cached_job.key)
-
-    else:
-        # Standard submission returns a single JobHandle
-        logger.info("Job submitted: %s", result)
-
-        if not no_cache:
-            cached_job = _cache.save_job(result, job.model_dump())
-            logger.debug("Job cached to: %s", cached_job.key)
+        standard_result = job.submit(inner, dry_run=dry_run)
+        _handle_standard_result(
+            standard_result,
+            job_dump=job.model_dump(),
+            logger=logger,
+            no_cache=no_cache,
+        )
 
     sys.exit(0)
 
