@@ -240,6 +240,59 @@ def test_process_dispatches_command_to_submit_only_backend(
     mock_job.submit_plan.assert_not_called()
 
 
+def test_process_dispatch_rejects_invalid_plan_result_type(
+    tmp_path: Path,
+) -> None:
+    """Plan dispatch rejects non-mapping, non-dryrun submission returns."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    mock_job = MagicMock()
+    mock_job.supports_plan = True
+    mock_job.submit_plan.return_value = JobHandle(job_id="1", backend="test")
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch.object(command, "build_plan", return_value={"step1": {}}),
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(
+            TypeError, match="Plan submission must return JobDryRun or a mapping"
+        ):
+            _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+
+def test_standard_dispatch_rejects_invalid_result_type(
+    tmp_path: Path,
+) -> None:
+    """Standard dispatch rejects non-JobHandle, non-dryrun submission returns."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+    mock_job = MagicMock()
+    mock_job.supports_plan = False
+    mock_job.submit.return_value = {"step1": "invalid"}
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(
+            TypeError, match="Job submission must return JobHandle or JobDryRun"
+        ):
+            _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+
 @pytest.fixture(autouse=True)
 def save_job_mock() -> Iterator[MagicMock]:
     """Stub out job-handle caching so dispatch tests don't touch the real cache.
