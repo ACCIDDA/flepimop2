@@ -39,6 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `float`), evaluation-time grid (`times`), engine result, simulator result,
   and backend-save/read contracts to backend-neutral protocols. See
   [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
+- `BackendABC.save()` now accepts optional `model_state` and `axes` keyword
+  arguments and forwards them to `_save()` only when the concrete backend's
+  implementation declares them (detected via signature introspection), so
+  backends that write labelled output can use the simulator's model-state
+  naming and resolved axes while existing backends with a plain
+  `(data, run_meta)` `_save()` continue to work unchanged. `Simulator.run`
+  passes this context through.
 
 ### Deprecated
 
