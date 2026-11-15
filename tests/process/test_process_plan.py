@@ -285,6 +285,37 @@ process:
         )
 
 
+def test_process_command_build_plan_respects_no_deps(
+    tmp_path: Path,
+) -> None:
+    """With no_deps=True, build_plan plans only the target without dependencies."""
+    config = tmp_path / "config.yaml"
+    config.write_text(
+        """
+process:
+  transform:
+    module: shell
+    depends: [fetch]
+  fetch:
+    module: shell
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    plan = ProcessCommand(
+        config=config,
+        target="transform",
+        dry_run=False,
+        no_deps=True,
+    ).build_plan()
+
+    assert list(plan) == ["transform"]
+    assert plan["transform"]["depends"] == []
+    command = plan["transform"]["command"]
+    assert command[command.index("--target") + 1] == "transform"
+    assert "--no-deps" in command
+
+
 # --- the no-op contract -------------------------------------------------------
 
 
