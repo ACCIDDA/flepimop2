@@ -34,7 +34,7 @@ from flepimop2.cli._process_command import ProcessCommand
 from flepimop2.cli._register_command import register_command
 from flepimop2.cli._simulate_command import SimulateCommand
 from flepimop2.configuration import ConfigurationModel
-from flepimop2.job.abc import JobDryRun, JobHandle
+from flepimop2.job.abc import PARALLEL, JobDryRun, JobHandle
 from flepimop2.job.abc import build as build_job
 from flepimop2.process.abc import ProcessPlan
 
@@ -179,7 +179,14 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if no_cache:
         logger.debug("Skipping job cache (--no-cache).")
 
-    if isinstance(inner, ProcessCommand) and job.supports_plan:
+    if isinstance(inner, ProcessCommand) and job.execution == PARALLEL:
+        if not job.supports_plan:
+            msg = (
+                f"Job backend '{job.module}' does not support "
+                "parallel process execution."
+            )
+            raise click.ClickException(msg)
+
         plan = inner.build_plan()
         plan_result = job.submit_plan(plan, dry_run=dry_run)
         _handle_plan_result(
