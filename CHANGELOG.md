@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add an illustrated provider-role table and editable TikZ schematic to the
+  external-provider tutorial, with source/export checks in documentation builds.
 - Added static array-backend advertisement for engines and parameters, a single
   producer-to-engine conversion seam, and continuously exercised NumPy/JAX
   cross-backend simulation tests. See [#275](https://github.com/ACCIDDA/flepimop2/issues/275).
@@ -29,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bumped development and runtime dependencies in the minor group (including array-api-compat 1.16, pydantic 2.14, mkdocs-material 9.8, pandas 3.1, pytest 9.2, and Ruff 0.17), updating mkdocstrings compatibility and type annotations. See [#377](https://github.com/ACCIDDA/flepimop2/pull/377).
 - Simplified the README and documentation introduction to describe provider roles
   and the records needed to reproduce a campaign. See [#362](https://github.com/ACCIDDA/flepimop2/pull/362).
 - Bumped development and runtime dependencies in the minor group (including Ruff 0.16 and mypy 2.3), updating Ruff configuration and type annotations for compatibility. See [#354](https://github.com/ACCIDDA/flepimop2/pull/354).

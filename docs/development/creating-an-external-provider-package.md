@@ -22,6 +22,40 @@ An external provider package allows users to extend `flepimop2` with custom impl
 
 External provider packages leverage Python's namespace package mechanism to seamlessly integrate with `flepimop2`'s module resolution system.
 
+### Choose the provider's responsibility
+
+![Parameter values feed a bound system and numerical engine, which produces results for a backend. Job and process providers have separate command-launch and analysis roles.](../assets/provider-roles/figure.svg)
+
+| Module category | Owns | Example |
+| --- | --- | --- |
+| `parameter` | Requested values and their declared shapes | Fixed values or a project's parameter source |
+| `system` | Model changes and state/axis metadata | `flepimop2-op_system` |
+| `engine` | Numerical time advancement and solver choices | `flepimop2-op_engine` |
+| `backend` | Result persistence and loading | The NPZ provider developed below |
+| `process` | Configured analysis/reporting tasks | Notebook rendering from `flepimop2-ipynbrender` |
+| `job` | Launching a configured command | A local launcher or `flepimop2-slurm` |
+| `scenario` | Named variants of a configured simulation | The bundled `grid` provider |
+| `pattern` | Project scaffolding from templates or archives | The bundled `copy` provider on merged main (added after 0.3.0) |
+
+The schematic highlights execution and data flow. Scenario and pattern
+providers supply campaign variants and project scaffolds. Project code and
+configuration determine when values are requested, which
+commands run, and how analysis consumes persisted results. Numerical and
+statistical adequacy remain the responsibility of the selected methods and
+scientific application.
+
+[Vector PDF](../assets/provider-roles/figure.pdf). The editable TikZ source is
+`docs/assets/provider-roles/figure.tex`. To regenerate, install TeX Live with
+TikZ, standalone and Latin Modern plus Poppler, then run:
+
+```bash
+python docs/assets/provider-roles/build.py
+```
+
+`python docs/assets/provider-roles/build.py --check` verifies the committed
+source/export fingerprints without TeX. The documentation build includes this
+check.
+
 ## Brief Overview of Namespace Packages
 
 `flepimop2` uses [PEP 420 implicit namespace packages](https://peps.python.org/pep-0420/) to allow external packages to contribute modules that can be referenced directly in configuration files. This means:

@@ -31,7 +31,7 @@ from importlib.metadata import entry_points
 from typing import Any, Final
 
 import numpy as np
-from array_api_compat import (  # type: ignore[import-untyped]
+from array_api_compat import (
     array_namespace as _array_namespace,
 )
 
