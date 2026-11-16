@@ -75,7 +75,14 @@ class ShellJob(JobABC, module="shell"):
 
     @model_validator(mode="after")
     def _validate_parallel_detach(self) -> Self:
-        """Require blocking execution for parallel shell jobs."""
+        """Require blocking execution for parallel shell jobs.
+
+        Returns:
+            The validated ShellJob instance.
+
+        Raises:
+            ValueError: If parallel execution explicitly enables detachment.
+        """
         if self.execution == "parallel":
             if "detach" not in self.model_fields_set:
                 self.detach = False
