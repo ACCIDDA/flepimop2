@@ -25,9 +25,9 @@ import subprocess  # noqa: S404
 from contextlib import suppress
 from pathlib import Path
 from time import monotonic, sleep
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self
 
-from pydantic import Field, PrivateAttr
+from pydantic import Field, PrivateAttr, model_validator
 
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.job.abc import (
@@ -72,6 +72,17 @@ class ShellJob(JobABC, module="shell"):
     detach: bool = True
 
     _exe: str | None = PrivateAttr(default=None)
+
+    @model_validator(mode="after")
+    def _validate_parallel_detach(self) -> Self:
+        """Require blocking execution for parallel shell jobs."""
+        if self.execution == "parallel":
+            if "detach" not in self.model_fields_set:
+                self.detach = False
+            elif self.detach:
+                msg = "Parallel ShellJob execution requires detach=False."
+                raise ValueError(msg)
+        return self
 
     @override
     def _submit_validate(self) -> list[ValidationIssue]:
