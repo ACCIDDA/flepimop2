@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Integration test for external provider functionality."""
 
+import csv
 import re
 from pathlib import Path
 
@@ -73,11 +74,19 @@ def test_external_provider(
     assert result.returncode == 0
     model_output = list((tmp_path / "model_output").iterdir())
     assert len(model_output) == 1
-    csv = model_output[0]
-    assert re.match(r"^simulate_\d{8}_\d{6}\.csv$", csv.name)
-    assert csv.stat().st_size > 0
-    data = np.loadtxt(csv, delimiter=",")
-    assert data.shape == (101, 10)
-    np.testing.assert_allclose(data[0, 1:4], np.array([999.0, 899.0, 799.0]))
-    np.testing.assert_allclose(data[0, 4:7], np.array([1.0, 1.0, 1.0]))
-    np.testing.assert_allclose(data[0, 7:10], np.array([0.0, 0.0, 0.0]))
+    output_file = model_output[0]
+    assert re.match(r"^simulate_\d{8}_\d{6}\.csv$", output_file.name)
+    assert output_file.stat().st_size > 0
+    with output_file.open(encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    assert reader.fieldnames == ["time", "state", "age", "value"]
+    assert len(rows) == 101 * 9
+    t0_rows = [r for r in rows if r["time"] == "0.0"]
+    assert len(t0_rows) == 9
+    s_vals = [float(r["value"]) for r in t0_rows if r["state"] == "S"]
+    np.testing.assert_allclose(s_vals, np.array([999.0, 899.0, 799.0]))
+    i_vals = [float(r["value"]) for r in t0_rows if r["state"] == "I"]
+    np.testing.assert_allclose(i_vals, np.array([1.0, 1.0, 1.0]))
+    r_vals = [float(r["value"]) for r in t0_rows if r["state"] == "R"]
+    np.testing.assert_allclose(r_vals, np.array([0.0, 0.0, 0.0]))
