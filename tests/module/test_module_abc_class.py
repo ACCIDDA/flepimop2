@@ -63,9 +63,10 @@ def test_module_shortcut_sets_fully_qualified_module_for_backend_subclass() -> N
     """The class-definition shortcut should resolve namespaced backends."""
 
     class MyBackend(BackendABC, module="test_backend"):
-        def _save(self, data: Array, run_meta: object) -> None: ...
+        def _save(self, *args: object, **kwargs: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Array:
+        def _read(self, *args: object, **kwargs: object) -> Array:
+            del args, kwargs
             return np.array([], dtype=np.float64)
 
     mod = MyBackend()
@@ -110,9 +111,10 @@ def test_module_shortcut_sets_literal_module_field() -> None:
     class MyBackend(BackendABC, module="test_backend"):
         root: str = "."
 
-        def _save(self, data: object, run_meta: object) -> None: ...
+        def _save(self, *args: object, **kwargs: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Array:
+        def _read(self, *args: object, **kwargs: object) -> Array:
+            del args, kwargs
             return np.array([], dtype=np.float64)
 
     expected = "flepimop2.backend.test_backend"
@@ -130,9 +132,10 @@ def test_module_shortcut_allows_instantiation_without_module_argument() -> None:
     class MyBackend(BackendABC, module="test_backend"):
         root: str = "."
 
-        def _save(self, data: object, run_meta: object) -> None: ...
+        def _save(self, *args: object, **kwargs: object) -> None: ...
 
-        def _read(self, _run_meta: object) -> Array:
+        def _read(self, *args: object, **kwargs: object) -> Array:
+            del args, kwargs
             return np.array([], dtype=np.float64)
 
     assert MyBackend(root=".").module == "flepimop2.backend.test_backend"

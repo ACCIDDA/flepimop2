@@ -39,13 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `float`), evaluation-time grid (`times`), engine result, simulator result,
   and backend-save/read contracts to backend-neutral protocols. See
   [#343](https://github.com/ACCIDDA/flepimop2/issues/343).
-- `BackendABC.save()` and `BackendABC.read()` now accept optional `model_state`,
-  `axes`, and `filters` keyword arguments and forward them to `_save()` and
-  `_read()` only when concrete backends declare them (detected via signature
-  introspection). `CsvBackend` uses this context to save and read self-describing,
-  tidy long-format CSV datasets with dimension coordinate metadata (`_TaggedArray`)
-  and selective row filtering. `Simulator.run` passes this context through.
-  See [#378](https://github.com/ACCIDDA/flepimop2/pull/378).
+- `BackendABC`'s contract now explicitly includes `model_state` and `axes` in
+  `_save()`, and `model_state`, `axes`, and `filters` in `_read()`, with
+  `BackendABC.save()` and `BackendABC.read()` forwarding them directly without
+  runtime signature reflection. `CsvBackend` uses this context to save and read
+  self-describing, tidy long-format CSV datasets with dimension coordinate metadata
+  (`_TaggedArray`) and selective row filtering. `Simulator.run` passes this context
+  through. See [#378](https://github.com/ACCIDDA/flepimop2/pull/378).
 
 ### Deprecated
 
