@@ -18,7 +18,6 @@
 __all__ = ["BackendABC", "build"]
 
 from abc import abstractmethod
-from collections.abc import Mapping
 from typing import Any
 
 from flepimop2._utils._module import _build
@@ -61,27 +60,21 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         *,
         model_state: ModelStateSpecification | None = None,
         axes: AxisCollection | None = None,
-        filters: Mapping[str, Any] | None = None,
     ) -> Array:
         """
         Read an array from storage.
 
         Args:
             run_meta: Metadata about the current run.
-            model_state: Optional model state specification.
-            axes: Optional resolved runtime axes.
-            filters: Optional mapping of column or dimension names to values
-                to filter the loaded data by.
+            model_state: Optional model state specification. When provided,
+                filters the loaded data to only the specified states.
+            axes: Optional resolved runtime axes. When provided, filters the
+                loaded data to only the specified axis coordinates.
 
         Returns:
             The array read from storage.
         """
-        return self._read(
-            run_meta,
-            model_state=model_state,
-            axes=axes,
-            filters=filters,
-        )
+        return self._read(run_meta, model_state=model_state, axes=axes)
 
     @abstractmethod
     def _save(
@@ -111,17 +104,14 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         *,
         model_state: ModelStateSpecification | None = None,
         axes: AxisCollection | None = None,
-        filters: Mapping[str, Any] | None = None,
     ) -> Array:
         """
         Backend-specific implementation for reading data.
 
         Args:
             run_meta: Metadata about the current run.
-            model_state: Optional model state specification.
-            axes: Optional resolved runtime axes.
-            filters: Optional mapping of column or dimension names to values
-                to filter the loaded data by.
+            model_state: Optional model state specification for filtering states.
+            axes: Optional resolved runtime axes for filtering coordinates.
 
         Returns:
             The array read from storage.

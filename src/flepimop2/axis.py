@@ -287,6 +287,55 @@ class Axis:
             values=model.values,
         )
 
+    def select(self, labels: Sequence[str]) -> "Axis":
+        """
+        Return a new categorical Axis subsetted to the given labels.
+
+        Args:
+            labels: Ordered coordinate labels to retain.
+
+        Returns:
+            A new Axis with the selected labels.
+
+        Raises:
+            ValueError: If the axis is not categorical, or if any requested
+                label is not present on this axis.
+
+        Examples:
+            >>> from flepimop2.axis import Axis
+            >>> axis = Axis(
+            ...     name="age",
+            ...     kind="categorical",
+            ...     size=3,
+            ...     labels=("child", "adult", "senior"),
+            ... )
+            >>> sub = axis.select(["adult", "senior"])
+            >>> sub.labels
+            ('adult', 'senior')
+            >>> sub.size
+            2
+        """
+        if self.kind != "categorical" or self.labels is None:
+            msg = f"Cannot select labels on non-categorical axis {self.name!r}."
+            raise ValueError(msg)
+        req_labels = tuple(labels)
+        existing = set(self.labels)
+        missing = [lbl for lbl in req_labels if lbl not in existing]
+        if missing:
+            msg = f"Unknown labels for axis {self.name!r}: {missing}."
+            raise ValueError(msg)
+        values = None
+        if self.values is not None:
+            label_to_val = dict(zip(self.labels, self.values, strict=False))
+            values = tuple(label_to_val[lbl] for lbl in req_labels)
+        return Axis(
+            name=self.name,
+            kind="categorical",
+            size=len(req_labels),
+            labels=req_labels,
+            values=values,
+        )
+
 
 class AxisCollection(Mapping[IdentifierString, Axis]):
     """
@@ -412,3 +461,75 @@ class AxisCollection(Mapping[IdentifierString, Axis]):
         if missing:
             msg = f"Unknown axis names requested: {missing}."
             raise KeyError(msg)
+
+    def select(self, **subsets: Sequence[str] | str) -> "AxisCollection":
+        """
+        Return a new AxisCollection subsetting the specified axes to coordinate labels.
+
+        Args:
+            **subsets: Mapping of axis names to coordinate label sequences
+                or a single label.
+
+        Returns:
+            A new AxisCollection containing the subsetted axes.
+
+        Raises:
+            KeyError: If an axis name is not present in this collection.
+
+        Examples:
+            >>> from flepimop2.axis import AxisCollection
+            >>> axes = AxisCollection.from_config({
+            ...     "age": {
+            ...         "kind": "categorical",
+            ...         "labels": ["child", "adult", "senior"],
+            ...     },
+            ...     "region": {"kind": "categorical", "labels": ["north", "south"]},
+            ... })
+            >>> sub = axes.select(age=["adult", "senior"])
+            >>> sub["age"].labels
+            ('adult', 'senior')
+        """
+        new_axes: dict[IdentifierString, Axis] = dict(self._axes)
+        for name, val in subsets.items():
+            axis_name = IdentifierString(name)
+            if axis_name not in self._axes:
+                msg = f"Unknown axis {name!r}."
+                raise KeyError(msg)
+            labels = (val,) if isinstance(val, str) else tuple(val)
+            new_axes[axis_name] = self._axes[axis_name].select(labels)
+        return AxisCollection(new_axes)
+
+    @classmethod
+    def filter(cls, **subsets: Sequence[str] | str) -> "AxisCollection":
+        """
+        Construct an AxisCollection from keyword coordinate filters.
+
+        Convenience factory for creating categorical coordinate filters to pass
+        to `BackendABC.read()`.
+
+        Args:
+            **subsets: Mapping of axis names to coordinate label sequences
+                or a single label.
+
+        Returns:
+            An AxisCollection with categorical axes matching coordinate filters.
+
+        Examples:
+            >>> from flepimop2.axis import AxisCollection
+            >>> axes = AxisCollection.filter(age=["young"], region="US")
+            >>> axes["age"].labels
+            ('young',)
+            >>> axes["region"].labels
+            ('US',)
+        """
+        axes: dict[IdentifierString, Axis] = {}
+        for name, val in subsets.items():
+            labels = (val,) if isinstance(val, str) else tuple(val)
+            axis_name = IdentifierString(name)
+            axes[axis_name] = Axis(
+                name=axis_name,
+                kind="categorical",
+                size=len(labels),
+                labels=labels,
+            )
+        return cls(axes)
