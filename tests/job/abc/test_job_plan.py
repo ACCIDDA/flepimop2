@@ -96,6 +96,42 @@ class _DummyPlanCapableJob(JobABC, module="dummy_plan_capable"):
         raise NotImplementedError
 
 
+class _DummyStepCapableJob(JobABC, module="dummy_step_capable"):
+    """Backend using the default template method and implementing _submit_step."""
+
+    supports_plan: ClassVar[bool] = True
+
+    def _submit(
+        self,
+        command: "CliCommand",  # noqa: ARG002
+        *,
+        dry_run: bool = False,  # noqa: ARG002
+    ) -> JobHandle | JobDryRun:
+        return JobHandle(job_id="1", backend=self.module)
+
+    def _submit_step(
+        self,
+        step_name: str,
+        command: list[str],  # noqa: ARG002
+        depends_on: list[JobHandle],
+        *,
+        dry_run: bool = False,
+    ) -> JobHandle | JobDryRun:
+        if dry_run:
+            return JobDryRun(command=f"run-{step_name}")
+        dep_str = ",".join(h.job_id for h in depends_on)
+        return JobHandle(
+            job_id=f"{step_name}(deps:{dep_str})",
+            backend=self.module,
+        )
+
+    def _status(
+        self,
+        handle: JobHandle,
+    ) -> JobStatusResult:
+        raise NotImplementedError
+
+
 def test_submit_plan_default_raises_not_implemented() -> None:
     """Submit-only backend raises NotImplementedError on submit_plan."""
     job = _DummySubmitOnlyJob()
@@ -127,3 +163,46 @@ def test_submit_plan_delegates_to_implementation() -> None:
     assert isinstance(live_result, dict)
     assert "step1" in live_result
     assert live_result["step1"].job_id == "step1"
+
+
+def test_submit_plan_default_delegates_to_submit_step_with_dependency_handles() -> None:
+    """Default submit_plan template resolves dependencies and calls _submit_step."""
+    job = _DummyStepCapableJob()
+    plan: ProcessPlan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        },
+        "step2": {
+            "command": ["flepimop2", "process", "--target", "step2"],
+            "depends": ["step1"],
+        },
+    }
+
+    live_result = job.submit_plan(plan, dry_run=False)
+    assert isinstance(live_result, dict)
+    assert len(live_result) == 2
+    assert live_result["step1"].job_id == "step1(deps:)"
+    assert live_result["step2"].job_id == "step2(deps:step1(deps:))"
+
+
+def test_submit_plan_default_handles_dry_run() -> None:
+    """Default submit_plan aggregates dry run outputs from _submit_step."""
+    job = _DummyStepCapableJob()
+    plan: ProcessPlan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        },
+        "step2": {
+            "command": ["flepimop2", "process", "--target", "step2"],
+            "depends": ["step1"],
+        },
+    }
+
+    dry_result = job.submit_plan(plan, dry_run=True)
+    assert isinstance(dry_result, JobDryRun)
+    assert "run-step1" in dry_result.command
+    assert "run-step2" in dry_result.command
+    assert "step1" in dry_result.details["step_0"]
+    assert "step2" in dry_result.details["step_1"]
