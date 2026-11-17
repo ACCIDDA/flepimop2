@@ -15,9 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Unit tests for the `BackendABC` save and read contract."""
 
-from collections.abc import Mapping
-from typing import Any
-
 import numpy as np
 
 from flepimop2.axis import AxisCollection
@@ -51,9 +48,8 @@ def test_backend_save_forwards_context() -> None:
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
-            filters: Mapping[str, Any] | None = None,
         ) -> Float64NDArray:
-            del run_meta, model_state, axes, filters
+            del run_meta, model_state, axes
             return np.array([])
 
     backend = _ContextBackend()
@@ -94,9 +90,8 @@ def test_backend_save_forwards_none_defaults() -> None:
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
-            filters: Mapping[str, Any] | None = None,
         ) -> Float64NDArray:
-            del run_meta, model_state, axes, filters
+            del run_meta, model_state, axes
             return np.array([])
 
     backend = _ContextBackend()
@@ -112,7 +107,7 @@ def test_backend_save_forwards_none_defaults() -> None:
 
 
 def test_backend_read_forwards_context() -> None:
-    """`read()` forwards run_meta, model_state, axes, and filters to `_read()`."""
+    """`read()` forwards run_meta, model_state, and axes to `_read()`."""
     received: dict[str, object] = {}
 
     class _ContextReadBackend(BackendABC, module="flepimop2.test.context_read"):
@@ -132,30 +127,26 @@ def test_backend_read_forwards_context() -> None:
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
-            filters: Mapping[str, Any] | None = None,
         ) -> Float64NDArray:
             received["run_meta"] = run_meta
             received["model_state"] = model_state
             received["axes"] = axes
-            received["filters"] = filters
             return np.array([])
 
     backend = _ContextReadBackend()
     run_meta = RunMeta()
     model_state = ModelStateSpecification(parameter_names=("s0",))
     axes = AxisCollection()
-    filters = {"state": "s0"}
 
-    backend.read(run_meta, model_state=model_state, axes=axes, filters=filters)
+    backend.read(run_meta, model_state=model_state, axes=axes)
 
     assert received["run_meta"] is run_meta
     assert received["model_state"] is model_state
     assert received["axes"] is axes
-    assert received["filters"] == filters
 
 
 def test_backend_read_forwards_none_defaults() -> None:
-    """`read()` forwards None for model_state, axes, and filters when omitted."""
+    """`read()` forwards None for model_state and axes when omitted."""
     received: dict[str, object] = {}
 
     class _ContextReadBackend(
@@ -177,12 +168,10 @@ def test_backend_read_forwards_none_defaults() -> None:
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
-            filters: Mapping[str, Any] | None = None,
         ) -> Float64NDArray:
             received["run_meta"] = run_meta
             received["model_state"] = model_state
             received["axes"] = axes
-            received["filters"] = filters
             return np.array([])
 
     backend = _ContextReadBackend()
@@ -193,4 +182,3 @@ def test_backend_read_forwards_none_defaults() -> None:
     assert received["run_meta"] is run_meta
     assert received["model_state"] is None
     assert received["axes"] is None
-    assert received["filters"] is None

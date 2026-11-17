@@ -24,6 +24,7 @@ __all__ = [
 ]
 
 from abc import abstractmethod
+from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from typing import Any, ClassVar, Self
 
@@ -181,6 +182,97 @@ class ModelStateSpecification:
             )
             for name in self.parameter_names
         }
+
+    def select(self, *names: str) -> "ModelStateSpecification":
+        """
+        Return a new ModelStateSpecification subsetted to specified names or labels.
+
+        Args:
+            *names: Parameter names or human-readable labels to retain.
+
+        Returns:
+            A new ModelStateSpecification containing only the selected state entries.
+
+        Raises:
+            ValueError: If any requested name is not present in this specification.
+
+        Examples:
+            >>> from flepimop2.parameter.abc import ModelStateSpecification
+            >>> spec = ModelStateSpecification(
+            ...     parameter_names=("s0", "i0", "r0"),
+            ...     labels=("S", "I", "R"),
+            ... )
+            >>> sub = spec.select("i0", "r0")
+            >>> sub.parameter_names
+            ('i0', 'r0')
+            >>> sub.labels
+            ('I', 'R')
+            >>> sub2 = spec.select("S", "I")
+            >>> sub2.parameter_names
+            ('s0', 'i0')
+            >>> sub2.labels
+            ('S', 'I')
+        """
+        if not names:
+            return self
+
+        name_to_param: dict[str, IdentifierString] = {}
+        for idx, param in enumerate(self.parameter_names):
+            name_to_param[param] = param
+            if self.labels and idx < len(self.labels):
+                name_to_param[self.labels[idx]] = param
+
+        selected_params: list[IdentifierString] = []
+        selected_labels: list[str] = []
+        for n in names:
+            if n not in name_to_param:
+                msg = f"Unknown model state parameter or label {n!r}."
+                raise ValueError(msg)
+            param = name_to_param[n]
+            if param not in selected_params:
+                selected_params.append(param)
+                if self.labels is not None:
+                    orig_idx = self.parameter_names.index(param)
+                    selected_labels.append(self.labels[orig_idx])
+
+        return ModelStateSpecification(
+            parameter_names=tuple(selected_params),
+            axes=self.axes,
+            broadcast=self.broadcast,
+            labels=tuple(selected_labels) if self.labels is not None else None,
+        )
+
+    @classmethod
+    def filter(
+        cls,
+        *names: str,
+        labels: Sequence[str] | None = None,
+        axes: Sequence[str] = (),
+    ) -> "ModelStateSpecification":
+        """
+        Construct a ModelStateSpecification from parameter names or labels.
+
+        Convenience factory for creating state filters to pass to `BackendABC.read()`.
+
+        Args:
+            *names: Parameter names to include.
+            labels: Optional human-readable labels matching `names`.
+            axes: Optional named axes shared by the state entries.
+
+        Returns:
+            A ModelStateSpecification containing the requested state entries.
+
+        Examples:
+            >>> from flepimop2.parameter.abc import ModelStateSpecification
+            >>> spec = ModelStateSpecification.filter("s0", "i0")
+            >>> spec.parameter_names
+            ('s0', 'i0')
+        """
+        return cls(
+            parameter_names=tuple(IdentifierString(n) for n in names),
+            axes=tuple(IdentifierString(a) for a in axes),
+            labels=tuple(labels) if labels is not None else None,
+        )
 
 
 @dataclass(frozen=True, slots=True)

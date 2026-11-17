@@ -201,3 +201,47 @@ def test_axis_collection_rejects_unknown_axis_names(
     """AxisCollection should raise when asked to resolve unknown axes."""
     with pytest.raises(KeyError, match="Unknown axis names requested"):
         axes.resolve_shape(axis_names)
+
+
+def test_axis_select() -> None:
+    """Axis.select() returns a subsetted categorical Axis."""
+    axis = Axis(
+        name="age",
+        kind="categorical",
+        size=3,
+        labels=("child", "adult", "senior"),
+        values=(1, 2, 3),
+    )
+    sub = axis.select(["senior", "adult"])
+    assert sub.name == "age"
+    assert sub.kind == "categorical"
+    assert sub.size == 2
+    assert sub.labels == ("senior", "adult")
+    assert sub.values == (3, 2)
+
+    with pytest.raises(ValueError, match="Unknown labels for axis 'age'"):
+        axis.select(["baby"])
+
+    cont = Axis(name="time", kind="continuous", size=4, domain=(0.0, 4.0))
+    with pytest.raises(ValueError, match="non-categorical"):
+        cont.select(["0.0"])
+
+
+def test_axis_collection_select_and_filter() -> None:
+    """AxisCollection.select() and .filter() create coordinate-subsetted collections."""
+    axes = AxisCollection.from_config({
+        "age": {"kind": "categorical", "labels": ["child", "adult", "senior"]},
+        "region": {"kind": "categorical", "labels": ["north", "south"]},
+    })
+
+    sub = axes.select(age=["adult"], region="south")
+    assert sub["age"].labels == ("adult",)
+    assert sub["region"].labels == ("south",)
+
+    with pytest.raises(KeyError, match="Unknown axis 'unknown'"):
+        axes.select(unknown=["a"])
+
+    filtered = AxisCollection.filter(age=["young"], group="control")
+    assert filtered["age"].labels == ("young",)
+    assert filtered["group"].labels == ("control",)
+    assert len(filtered) == 2
