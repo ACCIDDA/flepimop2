@@ -19,6 +19,7 @@ __all__ = ["BackendABC", "build"]
 
 import inspect
 from abc import abstractmethod
+from collections.abc import Callable
 from typing import Any
 
 from flepimop2._utils._module import _build
@@ -29,7 +30,7 @@ from flepimop2.parameter.abc import ModelStateSpecification
 from flepimop2.typing import Array
 
 
-def _accepts_kwarg(func: Any, name: str) -> bool:  # noqa: ANN401
+def _accepts_kwarg(func: Callable[..., object], name: str) -> bool:
     """
     Report whether a callable's signature would accept a given keyword argument.
 
@@ -43,11 +44,19 @@ def _accepts_kwarg(func: Any, name: str) -> bool:  # noqa: ANN401
         name: The keyword argument name to check for.
 
     Returns:
-        `True` if `func` declares a parameter named `name`, or accepts
-        arbitrary keyword arguments, `False` otherwise.
+        `True` if `func` declares a parameter named `name` that can be
+        passed by keyword, or accepts arbitrary keyword arguments (`**kwargs`),
+        `False` otherwise.
     """
-    parameters = inspect.signature(func).parameters
-    if name in parameters:
+    try:
+        parameters = inspect.signature(func).parameters
+    except (ValueError, TypeError):
+        return False
+    param = parameters.get(name)
+    if param is not None and param.kind in {
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        inspect.Parameter.KEYWORD_ONLY,
+    }:
         return True
     return any(p.kind is inspect.Parameter.VAR_KEYWORD for p in parameters.values())
 
