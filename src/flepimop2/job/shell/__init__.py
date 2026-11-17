@@ -44,7 +44,7 @@ from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
     from types import FrameType
 
     from flepimop2.cli import CliCommand
@@ -436,7 +436,7 @@ class ShellJob(JobABC, module="shell"):
 
 
 @contextmanager
-def _defer_cancellation() -> "Iterator[None]":
+def _defer_cancellation() -> "Generator[None]":
     """Defer SIGINT/SIGTERM until a newly spawned worker is tracked.
 
     Use handlers rather than signal masks so workers do not inherit blocked
