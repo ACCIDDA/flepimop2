@@ -19,6 +19,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import numpy as np
+import pytest
 
 from flepimop2.engine.abc import EngineProtocol
 from flepimop2.parameter.abc import ModelStateSpecification, ParameterValue
@@ -27,6 +28,7 @@ from flepimop2.typing import (
     Float64NDArray,
     IdentifierString,
     SystemProtocol,
+    _TaggedArray,
     as_system_protocol,
 )
 
@@ -101,3 +103,25 @@ def test_adapter_accepts_legacy_numpy_stepper() -> None:
     """The compatibility decorator retains state identity and old annotations."""
     state = np.array([1.0])
     assert _legacy_numpy_step(0.0, state) is state
+
+
+def test_tagged_array_satisfies_array_protocol() -> None:
+    """_TaggedArray exposes dims and coords while satisfying Array protocol."""
+    base = np.array([[1.0, 2.0], [3.0, 4.0]])
+    tagged = _TaggedArray(
+        base,
+        dims=("time", "state"),
+        coords={"state": ("s0", "i0")},
+    )
+
+    assert isinstance(tagged, Array)
+    assert tagged.dims == ("time", "state")
+    assert tagged.coords["state"] == ("s0", "i0")
+    assert tagged.shape == (2, 2)
+    assert tagged.dtype == np.float64
+    assert tagged[0, 0].item() == pytest.approx(1.0)
+
+    sliced = tagged[1:]
+    assert isinstance(sliced, _TaggedArray)
+    assert sliced.dims == ("time", "state")
+    assert sliced.coords["state"] == ("s0", "i0")
