@@ -2216,6 +2216,16 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <code>float</code>), evaluation-time grid (<code>times</code>), engine result, simulator result,
   and backend-save/read contracts to backend-neutral protocols. See
   <a href="https://github.com/ACCIDDA/flepimop2/issues/343">#343</a>.</li>
+<li><code>BackendABC</code>'s contract now explicitly includes <code>model_state</code> and <code>axes</code> in
+  both <code>_save()</code> and <code>_read()</code>, with <code>BackendABC.save()</code> and <code>BackendABC.read()</code>
+  forwarding them directly without runtime signature reflection. In <code>read()</code>,
+  <code>model_state</code> and <code>axes</code> act as the first-class state and coordinate projection
+  filter (eliminating separate untyped <code>filters</code>). Added <code>.select()</code> and <code>.filter()</code>
+  helpers to <code>Axis</code>, <code>AxisCollection</code>, and <code>ModelStateSpecification</code> for concise
+  coordinate subsetting. <code>CsvBackend</code> uses this context to save and read self-describing,
+  tidy long-format CSV datasets with dimension coordinate metadata (<code>_TaggedArray</code>)
+  and selective state/axis filtering. <code>Simulator.run</code> passes save context through.
+  See <a href="https://github.com/ACCIDDA/flepimop2/pull/378">#378</a>.</li>
 </ul>
 <h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
 <ul>
