@@ -237,10 +237,24 @@ class _TorchEngine(EngineABC, module="test_array_backend_torch"):
 class _NoopBackend(BackendABC, module="test_array_backend_noop"):
     """Persistence sink for orchestration tests."""
 
-    def _save(self, data: Array, run_meta: RunMeta) -> None:
+    def _save(
+        self,
+        data: Array,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+    ) -> None:
         """Accept the result without changing it."""
 
-    def _read(self, run_meta: RunMeta) -> Array:
+    def _read(
+        self,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+        filters: Mapping[str, Any] | None = None,
+    ) -> Array:
         """Reading is outside this test's scope."""
         msg = "The no-op test backend does not store results."
         raise NotImplementedError(msg)

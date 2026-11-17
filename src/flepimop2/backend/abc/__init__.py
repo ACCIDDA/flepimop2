@@ -17,9 +17,8 @@
 
 __all__ = ["BackendABC", "build"]
 
-import inspect
 from abc import abstractmethod
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from typing import Any
 
 from flepimop2._utils._module import _build
@@ -28,37 +27,6 @@ from flepimop2.meta import RunMeta
 from flepimop2.module import ModuleBase
 from flepimop2.parameter.abc import ModelStateSpecification
 from flepimop2.typing import Array
-
-
-def _accepts_kwarg(func: Callable[..., object], name: str) -> bool:
-    """
-    Report whether a callable's signature would accept a given keyword argument.
-
-    Used so `BackendABC.save()` can forward optional context (`model_state`,
-    `axes`) only to `_save()` implementations that actually declare it,
-    keeping older or third-party backends -- which only accept `(data,
-    run_meta)` -- working unmodified.
-
-    Args:
-        func: The callable to inspect.
-        name: The keyword argument name to check for.
-
-    Returns:
-        `True` if `func` declares a parameter named `name` that can be
-        passed by keyword, or accepts arbitrary keyword arguments (`**kwargs`),
-        `False` otherwise.
-    """
-    try:
-        parameters = inspect.signature(func).parameters
-    except (ValueError, TypeError):
-        return False
-    param = parameters.get(name)
-    if param is not None and param.kind in {
-        inspect.Parameter.POSITIONAL_OR_KEYWORD,
-        inspect.Parameter.KEYWORD_ONLY,
-    }:
-        return True
-    return any(p.kind is inspect.Parameter.VAR_KEYWORD for p in parameters.values())
 
 
 class BackendABC(ModuleBase, module_namespace="backend"):
@@ -80,20 +48,12 @@ class BackendABC(ModuleBase, module_namespace="backend"):
             run_meta: Metadata about the current run.
             model_state: Optional specification describing the semantic
                 ordering of `data`'s state entries (names, shared axes,
-                human-readable labels). Forwarded to `_save()` only when the
-                concrete backend's implementation declares it, so backends
-                that write labelled output (e.g. a NetCDF variable name) can
-                use it without requiring every backend to accept it.
+                human-readable labels).
             axes: Optional resolved runtime axes for the active simulation,
                 giving sizes/labels for the axis names referenced by
-                `model_state`. Forwarded under the same rule as `model_state`.
+                `model_state`.
         """
-        call_kwargs: dict[str, Any] = {}
-        if model_state is not None and _accepts_kwarg(self._save, "model_state"):
-            call_kwargs["model_state"] = model_state
-        if axes is not None and _accepts_kwarg(self._save, "axes"):
-            call_kwargs["axes"] = axes
-        return self._save(data, run_meta, **call_kwargs)
+        return self._save(data, run_meta, model_state=model_state, axes=axes)
 
     def read(
         self,
@@ -116,37 +76,55 @@ class BackendABC(ModuleBase, module_namespace="backend"):
         Returns:
             The array read from storage.
         """
-        call_kwargs: dict[str, Any] = {}
-        if model_state is not None and _accepts_kwarg(self._read, "model_state"):
-            call_kwargs["model_state"] = model_state
-        if axes is not None and _accepts_kwarg(self._read, "axes"):
-            call_kwargs["axes"] = axes
-        if filters is not None and _accepts_kwarg(self._read, "filters"):
-            call_kwargs["filters"] = filters
-        return self._read(run_meta, **call_kwargs)
+        return self._read(
+            run_meta,
+            model_state=model_state,
+            axes=axes,
+            filters=filters,
+        )
 
     @abstractmethod
-    def _save(self, data: Array, run_meta: RunMeta) -> None:
-        """Backend-specific implementation for saving data.
+    def _save(
+        self,
+        data: Array,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+    ) -> None:
+        """
+        Backend-specific implementation for saving data.
 
-        Implementations that want the optional `model_state`/`axes` context
-        `save()` can supply should widen this signature to accept them (e.g.
-        `def _save(self, data, run_meta, **kwargs)`, or explicit `*,
-        model_state=None, axes=None` keyword-only parameters); `save()`
-        detects this via introspection and forwards accordingly.
-        Implementations that don't need them keep this exact signature.
+        Args:
+            data: The array to save.
+            run_meta: Metadata about the current run.
+            model_state: Optional specification describing the semantic
+                ordering of `data`'s state entries.
+            axes: Optional resolved runtime axes for the active simulation.
         """
         ...
 
     @abstractmethod
-    def _read(self, run_meta: RunMeta) -> Array:
-        """Backend-specific implementation for reading data.
+    def _read(
+        self,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+        filters: Mapping[str, Any] | None = None,
+    ) -> Array:
+        """
+        Backend-specific implementation for reading data.
 
-        Implementations that support optional context (`model_state`, `axes`,
-        or `filters`) can widen this signature (e.g. `*, model_state=None,
-        axes=None, filters=None`, or `**kwargs`); `read()` detects this via
-        introspection and forwards accordingly. Implementations that don't need
-        them keep this exact signature.
+        Args:
+            run_meta: Metadata about the current run.
+            model_state: Optional model state specification.
+            axes: Optional resolved runtime axes.
+            filters: Optional mapping of column or dimension names to values
+                to filter the loaded data by.
+
+        Returns:
+            The array read from storage.
         """
         ...
 

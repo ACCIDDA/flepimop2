@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Unit tests for the `BackendABC` save-context forwarding."""
+"""Unit tests for the `BackendABC` save and read contract."""
 
 from collections.abc import Mapping
 from typing import Any
@@ -24,201 +24,173 @@ from flepimop2.axis import AxisCollection
 from flepimop2.backend.abc import BackendABC
 from flepimop2.meta import RunMeta
 from flepimop2.parameter.abc import ModelStateSpecification
-from flepimop2.typing import Float64NDArray
+from flepimop2.typing import Array, Float64NDArray
 
 
-def test_backend_save_does_not_forward_context_to_unaware_backend() -> None:
-    """A `_save` without model_state/axes params never receives them."""
-    received: dict[str, object] = {}
-
-    class _LegacyBackend(BackendABC, module="flepimop2.test.legacy_backend"):
-        def _save(self, data: object, run_meta: RunMeta) -> None:  # noqa: ARG002
-            received["called"] = True
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    backend = _LegacyBackend()
-    model_state = ModelStateSpecification(parameter_names=("s0",))
-    axes = AxisCollection()
-    backend.save(np.array([[1.0]]), RunMeta(), model_state=model_state, axes=axes)
-
-    assert received == {"called": True}
-
-
-def test_backend_save_forwards_context_to_explicit_params_backend() -> None:
-    """A `_save` declaring model_state and axes receives them."""
+def test_backend_save_forwards_context() -> None:
+    """`save()` forwards data, run_meta, model_state, and axes to `_save()`."""
     received: dict[str, object] = {}
 
     class _ContextBackend(BackendABC, module="flepimop2.test.context_backend"):
         def _save(
             self,
-            data: object,  # noqa: ARG002
-            run_meta: RunMeta,  # noqa: ARG002
+            data: Array,
+            run_meta: RunMeta,
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
         ) -> None:
+            received["data"] = data
+            received["run_meta"] = run_meta
             received["model_state"] = model_state
             received["axes"] = axes
 
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    backend = _ContextBackend()
-    model_state = ModelStateSpecification(parameter_names=("s0",))
-    axes = AxisCollection()
-    backend.save(np.array([[1.0]]), RunMeta(), model_state=model_state, axes=axes)
-
-    assert received["model_state"] is model_state
-    assert received["axes"] is axes
-
-
-def test_backend_save_forwards_context_to_var_keyword_backend() -> None:
-    """A `_save` declaring `**kwargs` receives model_state and axes."""
-    received: dict[str, object] = {}
-
-    class _KwargsBackend(BackendABC, module="flepimop2.test.kwargs_backend"):
-        def _save(
-            self,
-            data: object,  # noqa: ARG002
-            run_meta: RunMeta,  # noqa: ARG002
-            **kwargs: Any,
-        ) -> None:
-            received.update(kwargs)
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    backend = _KwargsBackend()
-    model_state = ModelStateSpecification(parameter_names=("s0",))
-    axes = AxisCollection()
-    backend.save(np.array([[1.0]]), RunMeta(), model_state=model_state, axes=axes)
-
-    assert received == {"model_state": model_state, "axes": axes}
-
-
-def test_backend_save_filters_context_independently() -> None:
-    """A `_save` accepting only one context argument does not receive the other."""
-    received_state: dict[str, object] = {}
-    received_axes: dict[str, object] = {}
-
-    class _OnlyStateBackend(BackendABC, module="flepimop2.test.only_state_backend"):
-        def _save(
-            self,
-            data: object,  # noqa: ARG002
-            run_meta: RunMeta,  # noqa: ARG002
-            *,
-            model_state: ModelStateSpecification | None = None,
-        ) -> None:
-            received_state["model_state"] = model_state
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    class _OnlyAxesBackend(BackendABC, module="flepimop2.test.only_axes_backend"):
-        def _save(
-            self,
-            data: object,  # noqa: ARG002
-            run_meta: RunMeta,  # noqa: ARG002
-            *,
-            axes: AxisCollection | None = None,
-        ) -> None:
-            received_axes["axes"] = axes
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    model_state = ModelStateSpecification(parameter_names=("s0",))
-    axes = AxisCollection()
-
-    _OnlyStateBackend().save(
-        np.array([[1.0]]), RunMeta(), model_state=model_state, axes=axes
-    )
-    assert received_state == {"model_state": model_state}
-
-    _OnlyAxesBackend().save(
-        np.array([[1.0]]), RunMeta(), model_state=model_state, axes=axes
-    )
-    assert received_axes == {"axes": axes}
-
-
-def test_backend_save_does_not_forward_to_positional_only_backend() -> None:
-    """A `_save` with positional-only params does not receive keyword context."""
-    received: dict[str, object] = {}
-
-    class _PositionalOnlyBackend(BackendABC, module="flepimop2.test.posonly_backend"):
-        def _save(
-            self,
-            data: object,  # noqa: ARG002
-            run_meta: RunMeta,  # noqa: ARG002
-            axes: object = None,  # noqa: ARG002
-            /,
-        ) -> None:
-            received["called"] = True
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            return np.array([])
-
-    backend = _PositionalOnlyBackend()
-    backend.save(
-        np.array([[1.0]]),
-        RunMeta(),
-        model_state=ModelStateSpecification(parameter_names=("s0",)),
-        axes=AxisCollection(),
-    )
-    assert received == {"called": True}
-
-
-def test_backend_read_does_not_forward_context_to_unaware_backend() -> None:
-    """A `_read` without context params never receives them."""
-    received: dict[str, object] = {}
-
-    class _LegacyReadBackend(BackendABC, module="flepimop2.test.legacy_read"):
-        def _save(self, data: object, run_meta: RunMeta) -> None:
-            pass
-
-        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
-            received["called"] = True
-            return np.array([])
-
-    backend = _LegacyReadBackend()
-    backend.read(
-        RunMeta(),
-        model_state=ModelStateSpecification(parameter_names=("s0",)),
-        axes=AxisCollection(),
-        filters={"state": "s0"},
-    )
-    assert received == {"called": True}
-
-
-def test_backend_read_forwards_context_to_aware_backend() -> None:
-    """A `_read` declaring context receives model_state, axes, and filters."""
-    received: dict[str, object] = {}
-
-    class _ContextReadBackend(BackendABC, module="flepimop2.test.context_read"):
-        def _save(self, data: object, run_meta: RunMeta) -> None:
-            pass
-
         def _read(
             self,
-            run_meta: RunMeta,  # noqa: ARG002
+            run_meta: RunMeta,
             *,
             model_state: ModelStateSpecification | None = None,
             axes: AxisCollection | None = None,
             filters: Mapping[str, Any] | None = None,
         ) -> Float64NDArray:
+            del run_meta, model_state, axes, filters
+            return np.array([])
+
+    backend = _ContextBackend()
+    data = np.array([[1.0]])
+    run_meta = RunMeta()
+    model_state = ModelStateSpecification(parameter_names=("s0",))
+    axes = AxisCollection()
+
+    backend.save(data, run_meta, model_state=model_state, axes=axes)
+
+    assert received["data"] is data
+    assert received["run_meta"] is run_meta
+    assert received["model_state"] is model_state
+    assert received["axes"] is axes
+
+
+def test_backend_save_forwards_none_defaults() -> None:
+    """`save()` forwards None for model_state and axes when omitted."""
+    received: dict[str, object] = {}
+
+    class _ContextBackend(BackendABC, module="flepimop2.test.defaults_save_backend"):
+        def _save(
+            self,
+            data: Array,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+        ) -> None:
+            received["data"] = data
+            received["run_meta"] = run_meta
+            received["model_state"] = model_state
+            received["axes"] = axes
+
+        def _read(
+            self,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+            filters: Mapping[str, Any] | None = None,
+        ) -> Float64NDArray:
+            del run_meta, model_state, axes, filters
+            return np.array([])
+
+    backend = _ContextBackend()
+    data = np.array([[2.0]])
+    run_meta = RunMeta()
+
+    backend.save(data, run_meta)
+
+    assert received["data"] is data
+    assert received["run_meta"] is run_meta
+    assert received["model_state"] is None
+    assert received["axes"] is None
+
+
+def test_backend_read_forwards_context() -> None:
+    """`read()` forwards run_meta, model_state, axes, and filters to `_read()`."""
+    received: dict[str, object] = {}
+
+    class _ContextReadBackend(BackendABC, module="flepimop2.test.context_read"):
+        def _save(
+            self,
+            data: Array,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+        ) -> None:
+            del data, run_meta, model_state, axes
+
+        def _read(
+            self,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+            filters: Mapping[str, Any] | None = None,
+        ) -> Float64NDArray:
+            received["run_meta"] = run_meta
             received["model_state"] = model_state
             received["axes"] = axes
             received["filters"] = filters
             return np.array([])
 
     backend = _ContextReadBackend()
+    run_meta = RunMeta()
     model_state = ModelStateSpecification(parameter_names=("s0",))
     axes = AxisCollection()
-    filt = {"state": "s0"}
-    backend.read(RunMeta(), model_state=model_state, axes=axes, filters=filt)
+    filters = {"state": "s0"}
 
+    backend.read(run_meta, model_state=model_state, axes=axes, filters=filters)
+
+    assert received["run_meta"] is run_meta
     assert received["model_state"] is model_state
     assert received["axes"] is axes
-    assert received["filters"] == filt
+    assert received["filters"] == filters
+
+
+def test_backend_read_forwards_none_defaults() -> None:
+    """`read()` forwards None for model_state, axes, and filters when omitted."""
+    received: dict[str, object] = {}
+
+    class _ContextReadBackend(
+        BackendABC, module="flepimop2.test.defaults_read_backend"
+    ):
+        def _save(
+            self,
+            data: Array,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+        ) -> None:
+            del data, run_meta, model_state, axes
+
+        def _read(
+            self,
+            run_meta: RunMeta,
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+            filters: Mapping[str, Any] | None = None,
+        ) -> Float64NDArray:
+            received["run_meta"] = run_meta
+            received["model_state"] = model_state
+            received["axes"] = axes
+            received["filters"] = filters
+            return np.array([])
+
+    backend = _ContextReadBackend()
+    run_meta = RunMeta()
+
+    backend.read(run_meta)
+
+    assert received["run_meta"] is run_meta
+    assert received["model_state"] is None
+    assert received["axes"] is None
+    assert received["filters"] is None
