@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Unit tests for the `BackendABC` save-context forwarding."""
 
+from collections.abc import Mapping
 from typing import Any
 
 import numpy as np
@@ -167,3 +168,57 @@ def test_backend_save_does_not_forward_to_positional_only_backend() -> None:
         axes=AxisCollection(),
     )
     assert received == {"called": True}
+
+
+def test_backend_read_does_not_forward_context_to_unaware_backend() -> None:
+    """A `_read` without context params never receives them."""
+    received: dict[str, object] = {}
+
+    class _LegacyReadBackend(BackendABC, module="flepimop2.test.legacy_read"):
+        def _save(self, data: object, run_meta: RunMeta) -> None:
+            pass
+
+        def _read(self, run_meta: RunMeta) -> Float64NDArray:  # noqa: ARG002
+            received["called"] = True
+            return np.array([])
+
+    backend = _LegacyReadBackend()
+    backend.read(
+        RunMeta(),
+        model_state=ModelStateSpecification(parameter_names=("s0",)),
+        axes=AxisCollection(),
+        filters={"state": "s0"},
+    )
+    assert received == {"called": True}
+
+
+def test_backend_read_forwards_context_to_aware_backend() -> None:
+    """A `_read` declaring context receives model_state, axes, and filters."""
+    received: dict[str, object] = {}
+
+    class _ContextReadBackend(BackendABC, module="flepimop2.test.context_read"):
+        def _save(self, data: object, run_meta: RunMeta) -> None:
+            pass
+
+        def _read(
+            self,
+            run_meta: RunMeta,  # noqa: ARG002
+            *,
+            model_state: ModelStateSpecification | None = None,
+            axes: AxisCollection | None = None,
+            filters: Mapping[str, Any] | None = None,
+        ) -> Float64NDArray:
+            received["model_state"] = model_state
+            received["axes"] = axes
+            received["filters"] = filters
+            return np.array([])
+
+    backend = _ContextReadBackend()
+    model_state = ModelStateSpecification(parameter_names=("s0",))
+    axes = AxisCollection()
+    filt = {"state": "s0"}
+    backend.read(RunMeta(), model_state=model_state, axes=axes, filters=filt)
+
+    assert received["model_state"] is model_state
+    assert received["axes"] is axes
+    assert received["filters"] == filt
