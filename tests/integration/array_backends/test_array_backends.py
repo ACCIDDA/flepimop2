@@ -253,7 +253,6 @@ class _NoopBackend(BackendABC, module="test_array_backend_noop"):
         *,
         model_state: ModelStateSpecification | None = None,
         axes: AxisCollection | None = None,
-        filters: Mapping[str, Any] | None = None,
     ) -> Array:
         """Reading is outside this test's scope."""
         msg = "The no-op test backend does not store results."

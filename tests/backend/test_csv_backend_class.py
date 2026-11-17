@@ -122,7 +122,7 @@ def test_csv_backend_save_with_leading_time_column(tmp_path: Path) -> None:
 
 
 def test_csv_backend_read_with_filtering(tmp_path: Path) -> None:
-    """Reading with filter selects only matching rows and reconstructs grid."""
+    """Reading with state and axis selectors selects matching rows and coordinates."""
     backend = CsvBackend(root=tmp_path)
     run_meta = RunMeta(name="filter_test")
     data = np.array([[100.0, 50.0, 1.0, 2.0], [90.0, 45.0, 2.0, 3.0]])
@@ -133,20 +133,33 @@ def test_csv_backend_read_with_filtering(tmp_path: Path) -> None:
 
     backend.save(data, run_meta, model_state=model_state, axes=axes)
 
-    # Filter to only state "i0"
-    filtered_state = backend.read(run_meta, filters={"state": "i0"})
+    # Filter to only state "i0" via model_state.select()
+    filtered_state = backend.read(run_meta, model_state=model_state.select("i0"))
     assert isinstance(filtered_state, _TaggedArray)
     assert filtered_state.dims == ("time", "state", "age")
     assert filtered_state.coords["state"] == ("i0",)
     assert filtered_state.shape == (2, 1, 2)
     assert_array_equal(filtered_state[:, 0, :], np.array([[1.0, 2.0], [2.0, 3.0]]))
 
-    # Filter to only age "young"
-    filtered_age = backend.read(run_meta, filters={"age": "young"})
+    # Filter to only age "young" via axes.select()
+    filtered_age = backend.read(run_meta, axes=axes.select(age=["young"]))
     assert isinstance(filtered_age, _TaggedArray)
     assert filtered_age.coords["age"] == ("young",)
     assert filtered_age.shape == (2, 2, 1)
     assert_array_equal(filtered_age[:, :, 0], np.array([[100.0, 1.0], [90.0, 2.0]]))
+
+    # Filter with ModelStateSpecification.filter and AxisCollection.filter
+    filtered_both = backend.read(
+        run_meta,
+        model_state=ModelStateSpecification.filter("i0"),
+        axes=AxisCollection.filter(age=["young"]),
+    )
+    assert isinstance(filtered_both, _TaggedArray)
+    assert filtered_both.dims == ("time", "state", "age")
+    assert filtered_both.coords["state"] == ("i0",)
+    assert filtered_both.coords["age"] == ("young",)
+    assert filtered_both.shape == (2, 1, 1)
+    assert_array_equal(filtered_both[:, 0, 0], np.array([1.0, 2.0]))
 
 
 def test_csv_backend_fallback_on_unaligned_shape(tmp_path: Path) -> None:

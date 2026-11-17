@@ -130,10 +130,39 @@ def _write_long_csv(  # noqa: PLR0913
                     val_idx += 1
 
 
+def _build_predicates(
+    model_state: ModelStateSpecification | None,
+    axes: AxisCollection | None,
+) -> dict[str, set[str]]:
+    """
+    Build row filtering predicates from model state and axes specifications.
+
+    Args:
+        model_state: Optional model state specification.
+        axes: Optional resolved runtime axes.
+
+    Returns:
+        Mapping of column names to sets of allowed string values.
+    """
+    predicates: dict[str, set[str]] = {}
+    if model_state is not None:
+        allowed = set(model_state.parameter_names)
+        if model_state.labels is not None:
+            allowed.update(model_state.labels)
+        predicates["state"] = allowed
+
+    if axes is not None:
+        for axis_name, axis in axes.items():
+            if axis.labels is not None:
+                predicates[str(axis_name)] = set(axis.labels)
+
+    return predicates
+
+
 def _filter_long_rows(
     header: Sequence[str],
     rows: Sequence[Sequence[str]],
-    filters: Mapping[str, Any],
+    predicates: Mapping[str, set[str]],
 ) -> list[Sequence[str]]:
     """
     Filter long CSV rows against allowed column values.
@@ -141,27 +170,23 @@ def _filter_long_rows(
     Args:
         header: The CSV column header names.
         rows: The raw CSV rows.
-        filters: Mapping of column names to allowed values.
+        predicates: Mapping of column names to allowed string values.
 
     Returns:
         The filtered sequence of CSV rows.
     """
-    norm_filter: dict[str, set[str]] = {}
-    for k, v in filters.items():
-        if isinstance(v, (list, tuple, set)):
-            norm_filter[k] = {str(item) for item in v}
-        else:
-            norm_filter[k] = {str(v)}
-
-    filtered: list[Sequence[str]] = []
-    for r in rows:
-        row_dict = dict(zip(header, r, strict=False))
-        if all(
-            col not in row_dict or row_dict[col] in allowed
-            for col, allowed in norm_filter.items()
-        ):
-            filtered.append(r)
-    return filtered
+    col_indices = {
+        header.index(col): allowed
+        for col, allowed in predicates.items()
+        if col in header
+    }
+    if not col_indices:
+        return list(rows)
+    return [
+        r
+        for r in rows
+        if all(r[idx] in allowed for idx, allowed in col_indices.items())
+    ]
 
 
 def _parse_long_tensor(
@@ -308,23 +333,22 @@ class CsvBackend(BackendABC, module="csv"):
         self,
         run_meta: RunMeta,
         *,
-        model_state: ModelStateSpecification | None = None,  # noqa: ARG002
-        axes: AxisCollection | None = None,  # noqa: ARG002
-        filters: Mapping[str, Any] | None = None,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
     ) -> Array:
         """
         Read an array from a CSV file.
 
         If the file was saved in long format, parses the dimensions and
-        returns an internal `_TaggedArray` annotated with `.dims` and `.coords`. If a
-        `filters` mapping is provided, only matching rows are included.
-        If the file was saved as a raw numeric CSV, returns a NumPy ndarray.
+        returns an internal `_TaggedArray` annotated with `.dims` and `.coords`.
+        If `model_state` or `axes` is provided, only matching states and axis
+        coordinates are included. If the file was saved as a raw numeric CSV,
+        returns a NumPy ndarray.
 
         Args:
             run_meta: Metadata about the current run.
-            model_state: Optional model state specification.
-            axes: Optional resolved runtime axes.
-            filters: Optional mapping of column names to allowed values to filter by.
+            model_state: Optional model state specification to filter states.
+            axes: Optional resolved runtime axes to filter coordinates.
 
         Returns:
             The read (and optionally filtered) array.
@@ -354,8 +378,9 @@ class CsvBackend(BackendABC, module="csv"):
             rows: Sequence[Sequence[str]] = list(reader)
 
         dim_names = tuple(header[:-1])
-        if filters:
-            rows = _filter_long_rows(header, rows, filters)
+        predicates = _build_predicates(model_state, axes)
+        if predicates:
+            rows = _filter_long_rows(header, rows, predicates)
 
         if not rows:
             return _TaggedArray(np.array([], dtype=np.float64), dims=dim_names)

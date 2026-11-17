@@ -155,9 +155,7 @@ Now we'll implement the `NpzBackend` class in `src/flepimop2/backend/npz/__init_
 """NPZ backend for flepimop2."""
 
 import os
-from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 from pydantic import Field, field_validator
@@ -243,7 +241,6 @@ class NpzBackend(BackendABC, module="npz"):
         *,
         model_state: ModelStateSpecification | None = None,
         axes: AxisCollection | None = None,
-        filters: Mapping[str, Any] | None = None,
     ) -> Float64NDArray:
         """
         Read a numpy array from an NPZ file.
@@ -252,12 +249,11 @@ class NpzBackend(BackendABC, module="npz"):
             run_meta: Metadata about the current run.
             model_state: Optional model state specification.
             axes: Optional resolved runtime axes.
-            filters: Optional mapping of column/dimension names to filter values.
 
         Returns:
             The numpy array read from the NPZ file.
         """
-        del model_state, axes, filters
+        del model_state, axes
         file_path = self._get_file_path(run_meta)
         with np.load(file_path) as npz_file:
             return npz_file["data"]
