@@ -44,7 +44,7 @@ __all__ = [
     "override",
 ]
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
 from enum import IntEnum, StrEnum
 from keyword import iskeyword
 from typing import (
@@ -117,6 +117,55 @@ class Array(Protocol):
 
     def item(self) -> Any:  # noqa: ANN401
         """Return a 0-d array as a Python scalar."""
+
+
+class _TaggedArray(np.ndarray[Any, Any]):
+    """
+    NumPy array annotated with named dimension tags and coordinate metadata.
+
+    Implements the `Array` protocol while exposing dimension names (`.dims`)
+    and coordinate labels (`.coords`) from structured storage backends.
+
+    Attributes:
+        dims: Tuple of dimension names corresponding to array axes.
+        coords: Mapping from dimension name to its coordinate label strings.
+
+    Examples:
+        >>> import numpy as np
+        >>> from flepimop2.typing import _TaggedArray
+        >>> arr = _TaggedArray(
+        ...     np.ones((2, 3)),
+        ...     dims=("time", "state"),
+        ...     coords={"state": ("S", "I", "R")},
+        ... )
+        >>> arr.dims
+        ('time', 'state')
+        >>> arr.coords["state"]
+        ('S', 'I', 'R')
+    """
+
+    dims: tuple[str, ...]
+    coords: dict[str, tuple[str, ...]]
+
+    def __new__(
+        cls,
+        input_array: npt.ArrayLike,
+        *,
+        dims: Sequence[str] = (),
+        coords: Mapping[str, Sequence[str]] | None = None,
+    ) -> Self:
+        """Create a new _TaggedArray instance."""
+        obj = np.asarray(input_array).view(cls)
+        obj.dims = tuple(dims)
+        obj.coords = {k: tuple(v) for k, v in (coords or {}).items()}
+        return obj
+
+    def __array_finalize__(self, obj: object) -> None:  # noqa: PLW3201
+        """Finalize _TaggedArray attributes after slice or view operations."""
+        if obj is None:
+            return
+        self.dims = getattr(obj, "dims", ())
+        self.coords = getattr(obj, "coords", {})
 
 
 class ExitCode(IntEnum):
