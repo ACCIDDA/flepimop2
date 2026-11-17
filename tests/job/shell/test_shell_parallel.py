@@ -19,7 +19,9 @@ import os
 import signal
 import subprocess  # noqa: S404
 import sys
+from contextlib import suppress
 from pathlib import Path
+from time import monotonic, sleep
 from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock, call, patch
@@ -485,3 +487,120 @@ output.write_text('finished')
     assert done_a.is_file()
     assert done_b.is_file()
     assert done_c.is_file()
+
+
+@pytest.mark.parametrize("error", [None, RuntimeError, KeyboardInterrupt, SystemExit])
+def test_parallel_restores_sigterm_handler(error: type[BaseException] | None) -> None:
+    """Restore the caller's handler after completion or any exception."""
+    job = _parallel_job()
+    proc = MagicMock(pid=701)
+    proc.poll.return_value = 0
+    if error is not None:
+        proc.poll.side_effect = error
+    previous = signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    try:
+        with (
+            patch("flepimop2.job.shell.subprocess.Popen", return_value=proc),
+            patch("flepimop2.job.shell._stop_process_groups"),
+        ):
+            if error is None:
+                job.submit_plan(_plan())
+            else:
+                with pytest.raises(error):
+                    job.submit_plan(_plan())
+        assert signal.getsignal(signal.SIGTERM) == signal.SIG_IGN
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def test_parallel_sigterm_cleans_up_real_process_group(tmp_path: Path) -> None:
+    """A real SIGTERM stops workers and descendants and restores the handler."""
+    child = tmp_path / "child.py"
+    child.write_text("""
+import os
+import signal
+import sys
+import time
+from pathlib import Path
+
+def terminate(signum, frame):
+    Path('child.stopped').touch()
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, terminate)
+Path('child.pid').write_text(str(os.getpid()))
+time.sleep(30)
+Path('unexpected.output').touch()
+""")
+    worker = tmp_path / "worker.py"
+    worker.write_text("""
+import os
+import signal
+import subprocess
+import sys
+from pathlib import Path
+
+child = subprocess.Popen([sys.executable, 'child.py'])
+def terminate(signum, frame):
+    child.wait(timeout=5)
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, terminate)
+Path('worker.pid').write_text(str(os.getpid()))
+child.wait()
+""")
+    scheduler = tmp_path / "scheduler.py"
+    scheduler.write_text("""
+import signal
+import sys
+from pathlib import Path
+from flepimop2.job.shell import ShellJob
+
+job = ShellJob(execution='parallel', max_workers=1)
+job._exe = sys.executable
+previous = signal.getsignal(signal.SIGTERM)
+try:
+    job.submit_plan({
+        'worker': {'command': ['flepimop2', 'worker.py'], 'depends': []},
+        'downstream': {
+            'command': ['flepimop2', '-c', "open('downstream.output', 'w').close()"],
+            'depends': ['worker'],
+        },
+    })
+finally:
+    assert signal.getsignal(signal.SIGTERM) == previous
+    Path('handler.restored').touch()
+""")
+    with subprocess.Popen(  # noqa: S603
+        [sys.executable, str(scheduler)],
+        cwd=tmp_path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ) as proc:
+        try:
+            deadline = monotonic() + 10
+            while not all(
+                (tmp_path / name).exists() for name in ("worker.pid", "child.pid")
+            ):
+                assert proc.poll() is None, proc.communicate()
+                assert monotonic() < deadline, "Workers did not start"
+                sleep(0.01)
+            worker_pid = int((tmp_path / "worker.pid").read_text())
+            proc.send_signal(signal.SIGTERM)
+            stdout, stderr = proc.communicate(timeout=10)
+            assert proc.returncode == 128 + signal.SIGTERM, (stdout, stderr)
+            assert (tmp_path / "child.stopped").exists()
+            assert (tmp_path / "handler.restored").exists()
+            assert not (tmp_path / "unexpected.output").exists()
+            assert not (tmp_path / "downstream.output").exists()
+            with pytest.raises(ProcessLookupError):
+                os.killpg(worker_pid, 0)
+        finally:
+            # Also clean up if the regression leaves detached workers behind.
+            worker_pid_file = tmp_path / "worker.pid"
+            if worker_pid_file.exists():
+                with suppress(ProcessLookupError):
+                    os.killpg(int(worker_pid_file.read_text()), signal.SIGKILL)
+            if proc.poll() is None:
+                proc.kill()
+            proc.wait(timeout=5)

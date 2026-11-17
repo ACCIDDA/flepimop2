@@ -24,6 +24,7 @@ import signal
 import subprocess  # noqa: S404
 from contextlib import suppress
 from pathlib import Path
+from threading import current_thread, main_thread
 from time import monotonic, sleep
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self
 
@@ -43,6 +44,8 @@ from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
+    from types import FrameType
+
     from flepimop2.cli import CliCommand
 
 
@@ -216,12 +219,20 @@ class ShellJob(JobABC, module="shell"):
         running: dict[str, subprocess.Popen[bytes]] = {}
         completed: dict[str, JobHandle] = {}
 
+        # Python signal handlers can only be installed by the main thread.
+        handle_sigterm = current_thread() is main_thread()
+        if handle_sigterm:
+            previous_sigterm = signal.signal(signal.SIGTERM, _exit_on_sigterm)
+
         try:
             while pending or running:
                 self._advance_plan(plan, pending, running, completed)
         except BaseException:
             _stop_process_groups(running)
             raise
+        finally:
+            if handle_sigterm:
+                signal.signal(signal.SIGTERM, previous_sigterm)
 
         return {step: completed[step] for step in ordered_steps}
 
@@ -420,6 +431,16 @@ class ShellJob(JobABC, module="shell"):
             status=status,
             detail=detail,
         )
+
+
+def _exit_on_sigterm(signum: int, _frame: "FrameType | None") -> None:
+    """Unwind plan execution while allowing process-group cleanup to finish.
+
+    Raises:
+        SystemExit: With the conventional exit status for signal cancellation.
+    """
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    raise SystemExit(128 + signum)
 
 
 def _stop_process_groups(
