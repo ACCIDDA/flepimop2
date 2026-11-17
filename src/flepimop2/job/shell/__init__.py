@@ -22,7 +22,7 @@ import shlex
 import shutil
 import signal
 import subprocess  # noqa: S404
-from contextlib import suppress
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from threading import current_thread, main_thread
 from time import monotonic, sleep
@@ -44,6 +44,7 @@ from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import FrameType
 
     from flepimop2.cli import CliCommand
@@ -345,14 +346,15 @@ class ShellJob(JobABC, module="shell"):
             if not all(dep in completed for dep in plan[step]["depends"]):
                 continue
 
-            proc = subprocess.Popen(  # noqa: S603
-                argv,
-                cwd=self.cwd,
-                env=self.env,
-                start_new_session=True,
-            )
-
-            running[step] = proc
+            # A signal must not unwind Popen before we can track its child.
+            with _defer_cancellation():
+                proc = subprocess.Popen(  # noqa: S603
+                    argv,
+                    cwd=self.cwd,
+                    env=self.env,
+                    start_new_session=True,
+                )
+                running[step] = proc
             del pending[step]
             launched = True
 
@@ -431,6 +433,35 @@ class ShellJob(JobABC, module="shell"):
             status=status,
             detail=detail,
         )
+
+
+@contextmanager
+def _defer_cancellation() -> "Iterator[None]":
+    """Defer SIGINT/SIGTERM until a newly spawned worker is tracked.
+
+    Use handlers rather than signal masks so workers do not inherit blocked
+    cancellation signals. Only the main thread can install Python handlers.
+
+    Yields:
+        Control while cancellation handlers only record incoming signals.
+    """
+    received: list[int] = []
+
+    def defer(signum: int, _frame: "FrameType | None") -> None:
+        """Record cancellation without interrupting process creation."""
+        received.append(signum)
+
+    previous = {}
+    try:
+        if current_thread() is main_thread():
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                previous[sig] = signal.signal(sig, defer)
+        yield
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+        if received:
+            signal.raise_signal(received[0])
 
 
 def _exit_on_sigterm(signum: int, _frame: "FrameType | None") -> None:

@@ -604,3 +604,96 @@ finally:
             if proc.poll() is None:
                 proc.kill()
             proc.wait(timeout=5)
+
+
+@pytest.mark.parametrize("signum", [signal.SIGTERM, signal.SIGINT])
+@pytest.mark.parametrize("launch_point", ["execute_child", "popen"])
+def test_parallel_launch_cancellation_tracks_real_worker(
+    tmp_path: Path, signum: int, launch_point: str
+) -> None:
+    """Cancellation inside Popen or before registration cannot orphan a worker."""
+    scheduler = tmp_path / "scheduler.py"
+    scheduler.write_text("""
+import os
+import signal
+import subprocess
+import sys
+from pathlib import Path
+from unittest.mock import patch
+from flepimop2.job.shell import ShellJob
+
+signum = int(sys.argv[1])
+launch_point = sys.argv[2]
+previous = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM)}
+original_popen = subprocess.Popen
+original_execute_child = subprocess.Popen._execute_child
+
+def cancel(proc):
+    Path('worker.pid').write_text(str(proc.pid))
+    os.kill(os.getpid(), signum)
+    # Cancellation must still be deferred inside Popen's constructor.
+    Path('launch.continued').touch()
+
+def execute_child(self, *args, **kwargs):
+    original_execute_child(self, *args, **kwargs)
+    cancel(self)
+
+def popen(*args, **kwargs):
+    proc = original_popen(*args, **kwargs)
+    cancel(proc)
+    return proc
+
+job = ShellJob(execution='parallel')
+job._exe = sys.executable
+if launch_point == 'execute_child':
+    patched = patch.object(original_popen, '_execute_child', execute_child)
+else:
+    patched = patch('flepimop2.job.shell.subprocess.Popen', popen)
+with patched:
+    try:
+        job.submit_plan({
+            'worker': {
+                'command': ['flepimop2', '-c', 'import time; time.sleep(30)'],
+                'depends': [],
+            },
+            'downstream': {
+                'command': [
+                    'flepimop2', '-c', "open('downstream.output', 'w').close()"
+                ],
+                'depends': ['worker'],
+            },
+        })
+    except BaseException as exc:
+        if signum == signal.SIGTERM:
+            assert isinstance(exc, SystemExit), repr(exc)
+            assert exc.code == 128 + signum
+        else:
+            assert isinstance(exc, KeyboardInterrupt), repr(exc)
+    else:
+        raise AssertionError('Cancellation was lost')
+assert all(signal.getsignal(sig) == handler for sig, handler in previous.items())
+Path('handler.restored').touch()
+""")
+    with subprocess.Popen(  # noqa: S603
+        [sys.executable, str(scheduler), str(signum), launch_point],
+        cwd=tmp_path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ) as proc:
+        try:
+            stdout, stderr = proc.communicate(timeout=10)
+            assert proc.returncode == 0, (stdout, stderr)
+            assert (tmp_path / "launch.continued").exists()
+            assert (tmp_path / "handler.restored").exists()
+            assert not (tmp_path / "downstream.output").exists()
+            worker_pid = int((tmp_path / "worker.pid").read_text())
+            with pytest.raises(ProcessLookupError):
+                os.killpg(worker_pid, 0)
+        finally:
+            worker_pid_file = tmp_path / "worker.pid"
+            if worker_pid_file.exists():
+                with suppress(ProcessLookupError):
+                    os.killpg(int(worker_pid_file.read_text()), signal.SIGKILL)
+            if proc.poll() is None:
+                proc.kill()
+            proc.wait(timeout=5)
