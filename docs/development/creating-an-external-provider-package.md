@@ -155,13 +155,17 @@ Now we'll implement the `NpzBackend` class in `src/flepimop2/backend/npz/__init_
 """NPZ backend for flepimop2."""
 
 import os
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from pydantic import Field, field_validator
 
+from flepimop2.axis import AxisCollection
 from flepimop2.backend.abc import BackendABC
 from flepimop2.meta import RunMeta
+from flepimop2.parameter.abc import ModelStateSpecification
 from flepimop2.typing import Array, Float64NDArray
 
 
@@ -206,14 +210,24 @@ class NpzBackend(BackendABC, module="npz"):
         filename = f"{name_part}{run_meta.action}_{timestamp_str}.npz"
         return self.root / filename
 
-    def _save(self, data: Array, run_meta: RunMeta) -> None:
+    def _save(
+        self,
+        data: Array,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+    ) -> None:
         """
         Save an array to an NPZ file.
 
         Args:
             data: The array to save.
             run_meta: Metadata about the current run.
+            model_state: Optional model state specification.
+            axes: Optional resolved runtime axes.
         """
+        del model_state, axes
         file_path = self._get_file_path(run_meta)
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -223,16 +237,27 @@ class NpzBackend(BackendABC, module="npz"):
         else:
             np.savez(file_path, data=serialized)
 
-    def _read(self, run_meta: RunMeta) -> Float64NDArray:
+    def _read(
+        self,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+        filters: Mapping[str, Any] | None = None,
+    ) -> Float64NDArray:
         """
         Read a numpy array from an NPZ file.
 
         Args:
             run_meta: Metadata about the current run.
+            model_state: Optional model state specification.
+            axes: Optional resolved runtime axes.
+            filters: Optional mapping of column/dimension names to filter values.
 
         Returns:
             The numpy array read from the NPZ file.
         """
+        del model_state, axes, filters
         file_path = self._get_file_path(run_meta)
         with np.load(file_path) as npz_file:
             return npz_file["data"]
