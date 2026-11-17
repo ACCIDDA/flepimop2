@@ -19,7 +19,7 @@ __all__ = ["BackendABC", "build"]
 
 import inspect
 from abc import abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from flepimop2._utils._module import _build
@@ -95,17 +95,35 @@ class BackendABC(ModuleBase, module_namespace="backend"):
             call_kwargs["axes"] = axes
         return self._save(data, run_meta, **call_kwargs)
 
-    def read(self, run_meta: RunMeta) -> Array:
+    def read(
+        self,
+        run_meta: RunMeta,
+        *,
+        model_state: ModelStateSpecification | None = None,
+        axes: AxisCollection | None = None,
+        filters: Mapping[str, Any] | None = None,
+    ) -> Array:
         """
         Read an array from storage.
 
         Args:
             run_meta: Metadata about the current run.
+            model_state: Optional model state specification.
+            axes: Optional resolved runtime axes.
+            filters: Optional mapping of column or dimension names to values
+                to filter the loaded data by.
 
         Returns:
             The array read from storage.
         """
-        return self._read(run_meta)
+        call_kwargs: dict[str, Any] = {}
+        if model_state is not None and _accepts_kwarg(self._read, "model_state"):
+            call_kwargs["model_state"] = model_state
+        if axes is not None and _accepts_kwarg(self._read, "axes"):
+            call_kwargs["axes"] = axes
+        if filters is not None and _accepts_kwarg(self._read, "filters"):
+            call_kwargs["filters"] = filters
+        return self._read(run_meta, **call_kwargs)
 
     @abstractmethod
     def _save(self, data: Array, run_meta: RunMeta) -> None:
@@ -122,7 +140,14 @@ class BackendABC(ModuleBase, module_namespace="backend"):
 
     @abstractmethod
     def _read(self, run_meta: RunMeta) -> Array:
-        """Backend-specific implementation for reading data."""
+        """Backend-specific implementation for reading data.
+
+        Implementations that support optional context (`model_state`, `axes`,
+        or `filters`) can widen this signature (e.g. `*, model_state=None,
+        axes=None, filters=None`, or `**kwargs`); `read()` detects this via
+        introspection and forwards accordingly. Implementations that don't need
+        them keep this exact signature.
+        """
         ...
 
 
