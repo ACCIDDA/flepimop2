@@ -179,8 +179,8 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if no_cache:
         logger.debug("Skipping job cache (--no-cache).")
 
-    if isinstance(inner, ProcessCommand):
-        if job.execution == PARALLEL and not job.supports_plan:
+    if isinstance(inner, ProcessCommand) and job.execution == PARALLEL:
+        if not job.supports_plan:
             msg = (
                 f"Job backend '{job.module}' does not support "
                 "parallel process execution."
@@ -188,30 +188,25 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
             raise click.ClickException(msg)
 
         is_detached = bool(getattr(job, "detach", False))
-        should_submit_plan = job.supports_plan and (
-            not is_detached or job.supports_detached_plan
-        )
-
-        if should_submit_plan:
-            plan = inner.build_plan()
-            plan_result = job.submit_plan(plan, dry_run=dry_run)
-            _handle_plan_result(
-                plan_result,
-                plan,
+        if is_detached and not job.supports_detached_plan:
+            logger.debug(
+                "Job backend '%s' does not support detached plans; "
+                "falling back to monolithic submission.",
+                job.module,
+            )
+            standard_result = job.submit(inner, dry_run=dry_run)
+            _handle_standard_result(
+                standard_result,
                 job_dump=job.model_dump(),
                 logger=logger,
                 no_cache=no_cache,
             )
         else:
-            if is_detached and job.supports_plan and not job.supports_detached_plan:
-                logger.debug(
-                    "Job backend '%s' does not support detached plans; "
-                    "falling back to monolithic submission.",
-                    job.module,
-                )
-            standard_result = job.submit(inner, dry_run=dry_run)
-            _handle_standard_result(
-                standard_result,
+            plan = inner.build_plan()
+            plan_result = job.submit_plan(plan, dry_run=dry_run)
+            _handle_plan_result(
+                plan_result,
+                plan,
                 job_dump=job.model_dump(),
                 logger=logger,
                 no_cache=no_cache,
