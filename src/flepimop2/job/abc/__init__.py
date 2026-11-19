@@ -283,6 +283,11 @@ class JobABC(ModuleBase, module_namespace="job"):
         support step-level scheduling without needing to implement full DAG
         traversal.
 
+        During dry runs (``dry_run=True``), ``depends_on`` contains symbolic
+        `JobHandle`s (with ``job_id=f"dry-run-{prereq_name}"`` and
+        ``metadata={"dry_run": True}``) so that implementations can render
+        dependency flags or validate prerequisite ordering.
+
         Args:
             step_name: The name of the process step.
             command: The command-line argv for executing this step.
@@ -320,13 +325,32 @@ class JobABC(ModuleBase, module_namespace="job"):
         Returns:
             Handles keyed by process-step name, or a `JobDryRun` describing the
             skipped submission.
+
+        Raises:
+            ValueError: If a step depends on an unknown process step or if steps
+                are not topologically ordered.
         """
         handles: dict[str, JobHandle] = {}
         dry_runs: dict[str, JobDryRun] = {}
 
         for step_name, step_spec in plan.items():
             depends_names = step_spec.get("depends", [])
-            dep_handles = [handles[dep] for dep in depends_names if dep in handles]
+            for dep in depends_names:
+                if dep not in handles:
+                    if dep not in plan:
+                        msg = (
+                            f"Step '{step_name}' depends on unknown "
+                            f"process step '{dep}'."
+                        )
+                    else:
+                        msg = (
+                            f"Step '{step_name}' depends on '{dep}', but "
+                            f"'{dep}' has not been submitted yet. Plan "
+                            "steps must be topologically ordered."
+                        )
+                    raise ValueError(msg)
+
+            dep_handles = [handles[dep] for dep in depends_names]
 
             step_res = self._submit_step(
                 step_name,
@@ -336,6 +360,13 @@ class JobABC(ModuleBase, module_namespace="job"):
             )
             if isinstance(step_res, JobDryRun):
                 dry_runs[step_name] = step_res
+                # Retain a symbolic handle during dry runs so subsequent dependent
+                # steps still receive their prerequisite handles.
+                handles[step_name] = JobHandle(
+                    job_id=f"dry-run-{step_name}",
+                    backend=self.module,
+                    metadata={"dry_run": True},
+                )
             else:
                 handles[step_name] = step_res
 
