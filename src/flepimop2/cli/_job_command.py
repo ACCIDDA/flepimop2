@@ -187,15 +187,30 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
             )
             raise click.ClickException(msg)
 
-        plan = inner.build_plan()
-        plan_result = job.submit_plan(plan, dry_run=dry_run)
-        _handle_plan_result(
-            plan_result,
-            plan,
-            job_dump=job.model_dump(),
-            logger=logger,
-            no_cache=no_cache,
-        )
+        is_detached = bool(getattr(job, "detach", False))
+        if is_detached and not job.supports_detached_plan:
+            logger.debug(
+                "Job backend '%s' does not support detached plans; "
+                "falling back to monolithic submission.",
+                job.module,
+            )
+            standard_result = job.submit(inner, dry_run=dry_run)
+            _handle_standard_result(
+                standard_result,
+                job_dump=job.model_dump(),
+                logger=logger,
+                no_cache=no_cache,
+            )
+        else:
+            plan = inner.build_plan()
+            plan_result = job.submit_plan(plan, dry_run=dry_run)
+            _handle_plan_result(
+                plan_result,
+                plan,
+                job_dump=job.model_dump(),
+                logger=logger,
+                no_cache=no_cache,
+            )
     else:
         standard_result = job.submit(inner, dry_run=dry_run)
         _handle_standard_result(

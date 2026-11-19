@@ -16,8 +16,11 @@
 """Abstract base class for flepimop2 job runners."""
 
 __all__ = [
+    "PARALLEL",
+    "SERIAL",
     "JobABC",
     "JobDryRun",
+    "JobExecutionMode",
     "JobHandle",
     "JobStatus",
     "JobStatusResult",
@@ -41,8 +44,9 @@ from flepimop2.typing import override
 if TYPE_CHECKING:
     from flepimop2.cli import CliCommand
 
-SERIAL: Literal["serial"] = "serial"
-PARALLEL: Literal["parallel"] = "parallel"
+JobExecutionMode = Literal["serial", "parallel"]
+SERIAL: JobExecutionMode = "serial"
+PARALLEL: JobExecutionMode = "parallel"
 
 
 class JobHandle(BaseModel):
@@ -143,20 +147,24 @@ class JobABC(ModuleBase, module_namespace="job"):
 
     Backends support ordinary command submission through :meth:`submit`.
     Backends that support dependency-aware process plans should set
-    ``supports_plan`` to ``True`` and implement :meth:`_submit_plan`.
+    ``supports_plan`` to ``True`` and either implement :meth:`_submit_step`
+    or override :meth:`_submit_plan`.
 
-    The ``execution`` field controls how process commands are submitted:
-    ``serial`` (default) submits the complete process command as a single
-    job, while ``parallel`` submits individual process steps using
-    :meth:`submit_plan`.
+    Backends that support asynchronous/detached submission of dependency-aware
+    plans (e.g. cluster schedulers that support native job dependencies) should
+    also set ``supports_detached_plan`` to ``True``. When detached execution
+    is requested on a backend without detached plan support, the CLI
+    automatically falls back to monolithic submission.
 
-    Parallel process execution requires ``supports_plan = True``.
+    The ``execution`` field controls the execution strategy: ``serial``
+    (default) or ``parallel``.
     """
 
     # Plan submission is optional so existing submit-only backends remain valid.
     # Default execution is serial.
     supports_plan: ClassVar[bool] = False
-    execution: Literal["serial", "parallel"] = SERIAL
+    supports_detached_plan: ClassVar[bool] = False
+    execution: JobExecutionMode = SERIAL
 
     def submit(
         self, command: "CliCommand", *, dry_run: bool = False
@@ -260,15 +268,122 @@ class JobABC(ModuleBase, module_namespace="job"):
 
         return self._submit_plan(plan, dry_run=dry_run)
 
+    def _submit_step(
+        self,
+        step_name: str,
+        command: list[str],
+        depends_on: list[JobHandle],
+        *,
+        dry_run: bool = False,
+    ) -> JobHandle | JobDryRun:
+        """Backend-specific single step submission implementation.
+
+        Called by the default :meth:`_submit_plan` implementation for each
+        step in dependency order. Subclasses can override this method to
+        support step-level scheduling without needing to implement full DAG
+        traversal.
+
+        During dry runs (``dry_run=True``), ``depends_on`` contains symbolic
+        `JobHandle`s (with ``job_id=f"dry-run-{prereq_name}"`` and
+        ``metadata={"dry_run": True}``) so that implementations can render
+        dependency flags or validate prerequisite ordering.
+
+        Args:
+            step_name: The name of the process step.
+            command: The command-line argv for executing this step.
+            depends_on: Handles of prerequisite steps this step depends on.
+            dry_run: If ``True``, prepare the step without submitting it.
+
+        Raises:
+            NotImplementedError: If not implemented by the backend subclass.
+        """
+        msg = (
+            f"Job backend '{self.module}' does not support dependency-aware plans: "
+            "neither _submit_plan nor _submit_step is implemented."
+        )
+        raise NotImplementedError(msg)
+
     def _submit_plan(
         self,
         plan: ProcessPlan,
         *,
         dry_run: bool = False,
     ) -> dict[str, JobHandle] | JobDryRun:
-        """Implement dependency-aware plan submission for a capable backend."""
-        msg = f"Job backend '{self.module}' does not support dependency-aware plans."
-        raise NotImplementedError(msg)
+        """Implement dependency-aware plan submission.
+
+        The default implementation iterates through `plan` in order, resolves
+        the `JobHandle` of each prerequisite step, and delegates to
+        :meth:`_submit_step`.
+
+        Subclasses with native DAG or bulk submission APIs (e.g. workflow engines
+        or orchestrators) can override this method directly.
+
+        Args:
+            plan: Process steps and their dependency names.
+            dry_run: If ``True``, prepare the submission without submitting it.
+
+        Returns:
+            Handles keyed by process-step name, or a `JobDryRun` describing the
+            skipped submission.
+
+        Raises:
+            ValueError: If a step depends on an unknown process step or if steps
+                are not topologically ordered.
+        """
+        handles: dict[str, JobHandle] = {}
+        dry_runs: dict[str, JobDryRun] = {}
+
+        for step_name, step_spec in plan.items():
+            depends_names = step_spec.get("depends", [])
+            for dep in depends_names:
+                if dep not in handles:
+                    if dep not in plan:
+                        msg = (
+                            f"Step '{step_name}' depends on unknown "
+                            f"process step '{dep}'."
+                        )
+                    else:
+                        msg = (
+                            f"Step '{step_name}' depends on '{dep}', but "
+                            f"'{dep}' has not been submitted yet. Plan "
+                            "steps must be topologically ordered."
+                        )
+                    raise ValueError(msg)
+
+            dep_handles = [handles[dep] for dep in depends_names]
+
+            step_res = self._submit_step(
+                step_name,
+                step_spec["command"],
+                dep_handles,
+                dry_run=dry_run,
+            )
+            if isinstance(step_res, JobDryRun):
+                dry_runs[step_name] = step_res
+                # Retain a symbolic handle during dry runs so subsequent dependent
+                # steps still receive their prerequisite handles.
+                handles[step_name] = JobHandle(
+                    job_id=f"dry-run-{step_name}",
+                    backend=self.module,
+                    metadata={"dry_run": True},
+                )
+            else:
+                handles[step_name] = step_res
+
+        if dry_run:
+            details = {
+                f"step_{idx}": f"{name} (depends: {step_spec.get('depends', [])})"
+                for idx, (name, step_spec) in enumerate(plan.items())
+            }
+            commands = [
+                f"# Step: {name}\n{dr.command}" for name, dr in dry_runs.items()
+            ]
+            return JobDryRun(
+                command="\n\n".join(commands),
+                details=details,
+            )
+
+        return handles
 
     def status(self, handle: JobHandle) -> JobStatusResult:
         """Query the status of a previously submitted job.
