@@ -248,6 +248,38 @@ def test_process_dispatches_command_to_submit_only_backend(
     mock_job.submit_plan.assert_not_called()
 
 
+def test_process_serial_uses_submit_even_when_backend_supports_plans(
+    tmp_path: Path,
+) -> None:
+    """Serial mode preserves single-command submission for plan-capable backends."""
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=False)
+
+    mock_job = MagicMock()
+    mock_job.execution = SERIAL
+    mock_job.supports_plan = True
+    mock_job.submit.return_value = JobHandle(job_id="1", backend="test")
+
+    with (
+        patch("flepimop2.cli._job_command.ConfigurationModel.from_yaml") as mock_load,
+        patch(
+            "flepimop2.cli._job_command._get_config_target",
+            return_value={"module": "test"},
+        ),
+        patch("flepimop2.cli._job_command.build_job", return_value=mock_job),
+        patch.object(command, "build_plan") as build_plan,
+    ):
+        mock_load.return_value.jobs = {"local": {"module": "test"}}
+        with pytest.raises(SystemExit) as excinfo:
+            _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+    assert excinfo.value.code == 0
+    mock_job.submit.assert_called_once_with(command, dry_run=False)
+    mock_job.submit_plan.assert_not_called()
+    build_plan.assert_not_called()
+
+
 def test_process_detached_falls_back_to_monolithic_submission(
     tmp_path: Path,
 ) -> None:
@@ -257,7 +289,7 @@ def test_process_detached_falls_back_to_monolithic_submission(
     command = ProcessCommand(config=config_path, target="step1", dry_run=False)
 
     mock_job = MagicMock()
-    mock_job.execution = SERIAL
+    mock_job.execution = PARALLEL
     mock_job.supports_plan = True
     mock_job.supports_detached_plan = False
     mock_job.detach = True
@@ -291,7 +323,7 @@ def test_process_plan_submission_when_detached_plans_supported(
     command = ProcessCommand(config=config_path, target="step1", dry_run=False)
 
     mock_job = MagicMock()
-    mock_job.execution = SERIAL
+    mock_job.execution = PARALLEL
     mock_job.supports_plan = True
     mock_job.supports_detached_plan = True
     mock_job.detach = True
@@ -324,7 +356,7 @@ def test_process_plan_submission_when_not_detached(
     command = ProcessCommand(config=config_path, target="step1", dry_run=False)
 
     mock_job = MagicMock()
-    mock_job.execution = SERIAL
+    mock_job.execution = PARALLEL
     mock_job.supports_plan = True
     mock_job.supports_detached_plan = False
     mock_job.detach = False
