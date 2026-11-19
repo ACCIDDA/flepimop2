@@ -117,9 +117,9 @@ class _DummyStepCapableJob(JobABC, module="dummy_step_capable"):
         *,
         dry_run: bool = False,
     ) -> JobHandle | JobDryRun:
-        if dry_run:
-            return JobDryRun(command=f"run-{step_name}")
         dep_str = ",".join(h.job_id for h in depends_on)
+        if dry_run:
+            return JobDryRun(command=f"run-{step_name}(deps:{dep_str})")
         return JobHandle(
             job_id=f"{step_name}(deps:{dep_str})",
             backend=self.module,
@@ -187,7 +187,7 @@ def test_submit_plan_default_delegates_to_submit_step_with_dependency_handles() 
 
 
 def test_submit_plan_default_handles_dry_run() -> None:
-    """Default submit_plan aggregates dry run outputs from _submit_step."""
+    """Default submit_plan aggregates dry run outputs and forwards dry-run handles."""
     job = _DummyStepCapableJob()
     plan: ProcessPlan = {
         "step1": {
@@ -202,7 +202,39 @@ def test_submit_plan_default_handles_dry_run() -> None:
 
     dry_result = job.submit_plan(plan, dry_run=True)
     assert isinstance(dry_result, JobDryRun)
-    assert "run-step1" in dry_result.command
-    assert "run-step2" in dry_result.command
+    assert "run-step1(deps:)" in dry_result.command
+    assert "run-step2(deps:dry-run-step1)" in dry_result.command
     assert "step1" in dry_result.details["step_0"]
     assert "step2" in dry_result.details["step_1"]
+
+
+def test_submit_plan_rejects_unknown_dependency() -> None:
+    """Plan submission rejects steps depending on missing process steps."""
+    job = _DummyStepCapableJob()
+    plan: ProcessPlan = {
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": ["nonexistent"],
+        },
+    }
+
+    with pytest.raises(ValueError, match="unknown process step 'nonexistent'"):
+        job.submit_plan(plan)
+
+
+def test_submit_plan_rejects_out_of_order_dependency() -> None:
+    """Plan submission rejects steps listing dependencies out of order."""
+    job = _DummyStepCapableJob()
+    plan: ProcessPlan = {
+        "step2": {
+            "command": ["flepimop2", "process", "--target", "step2"],
+            "depends": ["step1"],
+        },
+        "step1": {
+            "command": ["flepimop2", "process", "--target", "step1"],
+            "depends": [],
+        },
+    }
+
+    with pytest.raises(ValueError, match="topologically ordered"):
+        job.submit_plan(plan)
