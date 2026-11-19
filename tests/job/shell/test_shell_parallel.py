@@ -31,7 +31,8 @@ from pydantic import ValidationError
 
 from flepimop2.exceptions import Flepimop2ValidationError
 from flepimop2.job.abc import JobDryRun, JobHandle
-from flepimop2.job.shell import ShellJob, _stop_process_groups
+from flepimop2.job.shell import ShellJob
+from flepimop2.job.shell._runner import _ShellPlanRunner, _stop_process_groups
 from flepimop2.process._plan import ProcessPlan
 
 pytestmark = pytest.mark.skipif(
@@ -117,7 +118,7 @@ def test_parallel_rejects_detach_mutated_after_validation() -> None:
     job = _parallel_job()
     job.detach = True
     with (
-        patch("flepimop2.job.shell.subprocess.Popen") as popen,
+        patch("flepimop2.job.shell._runner.subprocess.Popen") as popen,
         pytest.raises(ValueError, match="requires detach=False"),
     ):
         job.submit_plan(_plan())
@@ -140,7 +141,7 @@ def test_parallel_dry_run_lists_commands_without_starting_processes(
     """Dry run reports all steps in dependency order and spawns nothing."""
     job = _parallel_job(max_workers=2, cwd=tmp_path)
     with (
-        patch("flepimop2.job.shell.subprocess.Popen") as popen,
+        patch("flepimop2.job.shell._runner.subprocess.Popen") as popen,
         patch("flepimop2.job.shell.subprocess.run") as run,
     ):
         result = job.submit_plan(_plan(), dry_run=True)
@@ -163,7 +164,7 @@ def test_parallel_dry_run_lists_commands_without_starting_processes(
 def test_parallel_empty_plan_returns_empty_handles() -> None:
     """An empty plan requires no subprocesses."""
     job = _parallel_job()
-    with patch("flepimop2.job.shell.subprocess.Popen") as popen:
+    with patch("flepimop2.job.shell._runner.subprocess.Popen") as popen:
         assert job.submit_plan({}) == {}
     popen.assert_not_called()
 
@@ -186,7 +187,7 @@ def test_parallel_invalid_dependencies_do_not_launch(
     """Reject an invalid dependency graph before starting any work."""
     job = _parallel_job()
     with (
-        patch("flepimop2.job.shell.subprocess.Popen") as popen,
+        patch("flepimop2.job.shell._runner.subprocess.Popen") as popen,
         pytest.raises(Flepimop2ValidationError),
     ):
         job.submit_plan(invalid_plan)
@@ -202,7 +203,7 @@ def test_parallel_invalid_step_commands_do_not_launch(command: list[str]) -> Non
     job = _parallel_job()
     plan: ProcessPlan = {"a": {"command": command, "depends": []}}
     with (
-        patch("flepimop2.job.shell.subprocess.Popen") as popen,
+        patch("flepimop2.job.shell._runner.subprocess.Popen") as popen,
         pytest.raises(ValueError, match="Invalid flepimop2 command"),
     ):
         job.submit_plan(plan)
@@ -214,7 +215,7 @@ def test_parallel_missing_executable_fails_before_launch() -> None:
     job = ShellJob(execution="parallel")
     with (
         patch("flepimop2.job.shell.shutil.which", return_value=None),
-        patch("flepimop2.job.shell.subprocess.Popen") as popen,
+        patch("flepimop2.job.shell._runner.subprocess.Popen") as popen,
         pytest.raises(Flepimop2ValidationError),
     ):
         job.submit_plan(_plan())
@@ -235,12 +236,14 @@ def test_parallel_launches_ready_steps_with_cwd_env_and_new_session(
     """Only initially ready branches launch, with configured Popen options."""
     job = _parallel_job(max_workers=2, cwd=tmp_path, env={"FLAG": "1"})
     pending = {step: [_EXE, *spec["command"][1:]] for step, spec in _plan().items()}
-    running: dict[str, Any] = {}
-    with patch("flepimop2.job.shell.subprocess.Popen") as popen:
-        launched = job._launch_ready(_plan(), pending, running, {})
+    runner = _ShellPlanRunner(
+        _plan(), pending, max_workers=job.max_workers, cwd=job.cwd, env=job.env
+    )
+    with patch("flepimop2.job.shell._runner.subprocess.Popen") as popen:
+        launched = runner._launch_ready()
     assert launched is True
-    assert set(running) == {"a", "b"}
-    assert set(pending) == {"c"}
+    assert set(runner._running) == {"a", "b"}
+    assert set(runner._pending) == {"c"}
     assert popen.call_count == 2
     for expected in ("a", "b"):
         args, kwargs = popen.call_args_list[["a", "b"].index(expected)]
@@ -277,8 +280,8 @@ def test_parallel_waits_for_all_dependencies_and_returns_handles() -> None:
         return {"a": proc_a, "b": proc_b, "c": proc_c}[step]
 
     with (
-        patch("flepimop2.job.shell.subprocess.Popen", side_effect=spawn),
-        patch("flepimop2.job.shell.sleep") as sleep,
+        patch("flepimop2.job.shell._runner.subprocess.Popen", side_effect=spawn),
+        patch("flepimop2.job.shell._runner.sleep") as sleep,
     ):
         result = job.submit_plan(_plan())
     assert launched == ["a", "b", "c"]
@@ -329,7 +332,7 @@ def test_parallel_max_workers_caps_concurrent_subprocesses() -> None:
         proc.poll.side_effect = poll
         return proc
 
-    with patch("flepimop2.job.shell.subprocess.Popen", side_effect=spawn):
+    with patch("flepimop2.job.shell._runner.subprocess.Popen", side_effect=spawn):
         handles = job.submit_plan(plan)
     assert isinstance(handles, dict)
     assert len(handles) == 5
@@ -347,9 +350,10 @@ def test_parallel_failure_prevents_downstream_and_cleans_up() -> None:
     sibling.poll.return_value = None
     with (
         patch(
-            "flepimop2.job.shell.subprocess.Popen", side_effect=[failed, sibling]
+            "flepimop2.job.shell._runner.subprocess.Popen",
+            side_effect=[failed, sibling],
         ) as popen,
-        patch("flepimop2.job.shell._stop_process_groups") as stop,
+        patch("flepimop2.job.shell._runner._stop_process_groups") as stop,
         pytest.raises(RuntimeError, match="'a' failed with exit code 7"),
     ):
         job.submit_plan(_plan())
@@ -364,10 +368,10 @@ def test_parallel_spawn_error_cleans_up_already_started_processes() -> None:
     started = MagicMock(pid=401)
     with (
         patch(
-            "flepimop2.job.shell.subprocess.Popen",
+            "flepimop2.job.shell._runner.subprocess.Popen",
             side_effect=[started, OSError("spawn failed")],
         ),
-        patch("flepimop2.job.shell._stop_process_groups") as stop,
+        patch("flepimop2.job.shell._runner._stop_process_groups") as stop,
         pytest.raises(OSError, match="spawn failed"),
     ):
         job.submit_plan(_plan())
@@ -381,8 +385,8 @@ def test_parallel_interrupt_cleans_up_active_processes() -> None:
     proc = MagicMock(pid=501)
     proc.poll.side_effect = KeyboardInterrupt
     with (
-        patch("flepimop2.job.shell.subprocess.Popen", return_value=proc),
-        patch("flepimop2.job.shell._stop_process_groups") as stop,
+        patch("flepimop2.job.shell._runner.subprocess.Popen", return_value=proc),
+        patch("flepimop2.job.shell._runner._stop_process_groups") as stop,
         pytest.raises(KeyboardInterrupt),
     ):
         job.submit_plan(_plan())
@@ -395,7 +399,7 @@ def test_stop_process_groups_sends_signals_and_reaps() -> None:
     proc = MagicMock(pid=601)
     proc.wait.side_effect = [subprocess.TimeoutExpired("test", 3), 0]
     running: dict[str, Any] = {"a": proc}
-    with patch("flepimop2.job.shell.os.killpg") as killpg:
+    with patch("flepimop2.job.shell._runner.os.killpg") as killpg:
         _stop_process_groups(running)
     assert killpg.call_args_list == [
         call(601, signal.SIGTERM),
@@ -409,7 +413,7 @@ def test_stop_process_groups_ignores_already_gone_groups() -> None:
     """A process group disappearing before signaling is not fatal."""
     proc = MagicMock(pid=602)
     running: dict[str, Any] = {"a": proc}
-    with patch("flepimop2.job.shell.os.killpg", side_effect=ProcessLookupError):
+    with patch("flepimop2.job.shell._runner.os.killpg", side_effect=ProcessLookupError):
         _stop_process_groups(running)
     assert proc.wait.call_count == 2
 
@@ -500,8 +504,8 @@ def test_parallel_restores_sigterm_handler(error: type[BaseException] | None) ->
     previous = signal.signal(signal.SIGTERM, signal.SIG_IGN)
     try:
         with (
-            patch("flepimop2.job.shell.subprocess.Popen", return_value=proc),
-            patch("flepimop2.job.shell._stop_process_groups"),
+            patch("flepimop2.job.shell._runner.subprocess.Popen", return_value=proc),
+            patch("flepimop2.job.shell._runner._stop_process_groups"),
         ):
             if error is None:
                 job.submit_plan(_plan())
@@ -648,7 +652,7 @@ job._exe = sys.executable
 if launch_point == 'execute_child':
     patched = patch.object(original_popen, '_execute_child', execute_child)
 else:
-    patched = patch('flepimop2.job.shell.subprocess.Popen', popen)
+    patched = patch('flepimop2.job.shell._runner.subprocess.Popen', popen)
 with patched:
     try:
         job.submit_plan({

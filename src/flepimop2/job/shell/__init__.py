@@ -20,12 +20,8 @@ __all__ = ["ShellJob"]
 import os
 import shlex
 import shutil
-import signal
 import subprocess  # noqa: S404
-from contextlib import contextmanager, suppress
 from pathlib import Path
-from threading import current_thread, main_thread
-from time import monotonic, sleep
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self
 
 from pydantic import Field, PrivateAttr, model_validator
@@ -39,14 +35,12 @@ from flepimop2.job.abc import (
     JobStatus,
     JobStatusResult,
 )
+from flepimop2.job.shell._runner import _ShellPlanRunner
 from flepimop2.process._plan import ProcessPlan
 from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
-    from types import FrameType
-
     from flepimop2.cli import CliCommand
 
 
@@ -56,6 +50,8 @@ class ShellJob(JobABC, module="shell"):
     Attributes:
         module: The fully-qualified module name, resolved from `module="shell"` to
             `"flepimop2.job.shell"`.
+        execution: Serial command execution or dependency-aware parallel plans.
+        max_workers: Maximum concurrent workers when executing a plan.
         cwd: Optional working directory for the subprocess.
         env: Optional environment variables for the subprocess. If `None`,
             the current process environment is inherited.
@@ -64,11 +60,8 @@ class ShellJob(JobABC, module="shell"):
             until the subprocess exits (useful for tests).
     """
 
-    # shell jobs support plans if parallel is configured in yaml
     supports_plan: ClassVar[bool] = True
-    # default execution is serial
     execution: Literal["serial", "parallel"] = SERIAL
-    # default max workers is 4
     max_workers: int = Field(default=4, ge=1)
 
     cwd: Path | None = None
@@ -202,40 +195,31 @@ class ShellJob(JobABC, module="shell"):
         commands = self._prepare_plan_commands(plan, ordered_steps)
 
         if dry_run:
-            details = {
-                "mode": "parallel",
-                "max_workers": str(self.max_workers),
-            }
-            if self.cwd is not None:
-                details["cwd"] = str(self.cwd)
+            return self._describe_plan(commands)
 
-            return JobDryRun(
-                command="\n".join(
-                    f"{step}: {shlex.join(commands[step])}" for step in ordered_steps
-                ),
-                details=details,
-            )
+        return _ShellPlanRunner(
+            plan,
+            commands,
+            max_workers=self.max_workers,
+            cwd=self.cwd,
+            env=self.env,
+        ).run()
 
-        pending = commands.copy()
-        running: dict[str, subprocess.Popen[bytes]] = {}
-        completed: dict[str, JobHandle] = {}
+    def _describe_plan(self, commands: dict[str, list[str]]) -> JobDryRun:
+        """Describe a prepared plan without launching workers.
 
-        # Python signal handlers can only be installed by the main thread.
-        handle_sigterm = current_thread() is main_thread()
-        if handle_sigterm:
-            previous_sigterm = signal.signal(signal.SIGTERM, _exit_on_sigterm)
-
-        try:
-            while pending or running:
-                self._advance_plan(plan, pending, running, completed)
-        except BaseException:
-            _stop_process_groups(running)
-            raise
-        finally:
-            if handle_sigterm:
-                signal.signal(signal.SIGTERM, previous_sigterm)
-
-        return {step: completed[step] for step in ordered_steps}
+        Returns:
+            Commands and execution options for the skipped submission.
+        """
+        details = {"mode": "parallel", "max_workers": str(self.max_workers)}
+        if self.cwd is not None:
+            details["cwd"] = str(self.cwd)
+        return JobDryRun(
+            command="\n".join(
+                f"{step}: {shlex.join(argv)}" for step, argv in commands.items()
+            ),
+            details=details,
+        )
 
     def _prepare_plan_commands(
         self,
@@ -274,120 +258,6 @@ class ShellJob(JobABC, module="shell"):
             commands[step] = [self._exe, *argv[1:]]
 
         return commands
-
-    @staticmethod
-    def _collect_completed(
-        running: dict[str, subprocess.Popen[bytes]],
-        completed: dict[str, JobHandle],
-    ) -> bool:
-        """Collect completed subprocesses and detect execution failures.
-
-        Args:
-            running: Currently running subprocesses keyed by step name.
-            completed: Successfully completed job handles.
-
-        Returns:
-            True if at least one subprocess completed, otherwise False.
-
-        Raises:
-            RuntimeError: If a subprocess exits with a nonzero return code.
-        """
-        progressed = False
-
-        for step, proc in list(running.items()):
-            returncode = proc.poll()
-
-            if returncode is None:
-                continue
-
-            if returncode != 0:
-                msg = f"Process step '{step}' failed with exit code {returncode}."
-                raise RuntimeError(msg)
-
-            completed[step] = JobHandle(
-                job_id=str(proc.pid),
-                backend="shell",
-                metadata={
-                    "mode": "blocking",
-                    "returncode": returncode,
-                    "step": step,
-                },
-            )
-
-            del running[step]
-            progressed = True
-
-        return progressed
-
-    def _launch_ready(
-        self,
-        plan: ProcessPlan,
-        pending: dict[str, list[str]],
-        running: dict[str, subprocess.Popen[bytes]],
-        completed: dict[str, JobHandle],
-    ) -> bool:
-        """Launch process steps whose dependencies have completed.
-
-        Args:
-            plan: Process steps and their dependencies.
-            pending: Commands waiting to execute.
-            running: Currently running subprocesses.
-            completed: Successfully completed job handles.
-
-        Returns:
-            True if at least one subprocess was launched, otherwise False.
-        """
-        launched = False
-
-        for step, argv in list(pending.items()):
-            if len(running) >= self.max_workers:
-                break
-
-            if not all(dep in completed for dep in plan[step]["depends"]):
-                continue
-
-            # A signal must not unwind Popen before we can track its child.
-            with _defer_cancellation():
-                proc = subprocess.Popen(  # noqa: S603
-                    argv,
-                    cwd=self.cwd,
-                    env=self.env,
-                    start_new_session=True,
-                )
-                running[step] = proc
-            del pending[step]
-            launched = True
-
-        return launched
-
-    def _advance_plan(
-        self,
-        plan: ProcessPlan,
-        pending: dict[str, list[str]],
-        running: dict[str, subprocess.Popen[bytes]],
-        completed: dict[str, JobHandle],
-    ) -> None:
-        """Advance execution by collecting results and launching ready steps.
-
-        Args:
-            plan: Process steps and their dependencies.
-            pending: Commands waiting to execute.
-            running: Currently running subprocesses.
-            completed: Successfully completed job handles.
-
-        Raises:
-            RuntimeError: If remaining process steps cannot progress.
-        """
-        progressed = self._collect_completed(running, completed)
-
-        progressed = self._launch_ready(plan, pending, running, completed) or progressed
-
-        if pending and not running:
-            msg = f"Process plan cannot progress. Remaining steps: {sorted(pending)}"
-            raise RuntimeError(msg)
-
-        if running and not progressed:
-            sleep(0.05)
 
     def _status(self, handle: JobHandle) -> JobStatusResult:  # noqa: PLR6301
         """Report the status of a previously submitted shell job.
@@ -433,63 +303,3 @@ class ShellJob(JobABC, module="shell"):
             status=status,
             detail=detail,
         )
-
-
-@contextmanager
-def _defer_cancellation() -> "Generator[None]":
-    """Defer SIGINT/SIGTERM until a newly spawned worker is tracked.
-
-    Use handlers rather than signal masks so workers do not inherit blocked
-    cancellation signals. Only the main thread can install Python handlers.
-
-    Yields:
-        Control while cancellation handlers only record incoming signals.
-    """
-    received: list[int] = []
-
-    def defer(signum: int, _frame: "FrameType | None") -> None:
-        """Record cancellation without interrupting process creation."""
-        received.append(signum)
-
-    previous = {}
-    try:
-        if current_thread() is main_thread():
-            for sig in (signal.SIGINT, signal.SIGTERM):
-                previous[sig] = signal.signal(sig, defer)
-        yield
-    finally:
-        for sig, handler in previous.items():
-            signal.signal(sig, handler)
-        if received:
-            signal.raise_signal(received[0])
-
-
-def _exit_on_sigterm(signum: int, _frame: "FrameType | None") -> None:
-    """Unwind plan execution while allowing process-group cleanup to finish.
-
-    Raises:
-        SystemExit: With the conventional exit status for signal cancellation.
-    """
-    signal.signal(signal.SIGTERM, signal.SIG_IGN)
-    raise SystemExit(128 + signum)
-
-
-def _stop_process_groups(
-    running: dict[str, subprocess.Popen[bytes]],
-) -> None:
-    """Terminate and reap running subprocesses with bounded waits."""
-    processes = list(running.values())
-
-    for sig, timeout in (
-        (signal.SIGTERM, 3.0),
-        (signal.SIGKILL, 1.0),
-    ):
-        for proc in processes:
-            with suppress(ProcessLookupError):
-                os.killpg(proc.pid, sig)
-
-        deadline = monotonic() + timeout
-
-        for proc in processes:
-            with suppress(subprocess.TimeoutExpired):
-                proc.wait(timeout=max(0.0, deadline - monotonic()))

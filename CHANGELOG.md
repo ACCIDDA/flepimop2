@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added opt-in parallel process execution to `ShellJob` with `execution: parallel`, implementing the local subprocess execution requested in [#375](https://github.com/ACCIDDA/flepimop2/issues/375) while preserving the default serial submission path. Independent steps run concurrently with dependency ordering, a configurable `max_workers` limit (default: 4), failure handling, and worker cleanup on cancellation. Parallel execution requires POSIX and blocking mode (`detach: false`, selected automatically when omitted).
 - Add an illustrated provider-role table and editable TikZ schematic to the
   external-provider tutorial, with source/export checks in documentation builds.
 - Added static array-backend advertisement for engines and parameters, a single
