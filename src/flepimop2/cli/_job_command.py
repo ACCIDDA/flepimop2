@@ -20,6 +20,7 @@ __all__ = ["job_group"]
 import logging
 import sys
 from collections.abc import Mapping
+from time import perf_counter
 from typing import Any
 
 import click
@@ -179,21 +180,41 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
     if no_cache:
         logger.debug("Skipping job cache (--no-cache).")
 
-    if isinstance(inner, ProcessCommand) and job.execution == PARALLEL:
-        if not job.supports_plan:
-            msg = (
-                f"Job backend '{job.module}' does not support "
-                "parallel process execution."
-            )
-            raise click.ClickException(msg)
+    start_time = perf_counter()
+    try:
+        if isinstance(inner, ProcessCommand) and job.execution == PARALLEL:
+            if not job.supports_plan:
+                msg = (
+                    f"Job backend '{job.module}' does not support "
+                    "parallel process execution."
+                )
+                raise click.ClickException(msg)
 
-        is_detached = bool(getattr(job, "detach", False))
-        if is_detached and not job.supports_detached_plan:
-            logger.debug(
-                "Job backend '%s' does not support detached plans; "
-                "falling back to monolithic submission.",
-                job.module,
-            )
+            is_detached = bool(getattr(job, "detach", False))
+            if is_detached and not job.supports_detached_plan:
+                logger.debug(
+                    "Job backend '%s' does not support detached plans; "
+                    "falling back to monolithic submission.",
+                    job.module,
+                )
+                standard_result = job.submit(inner, dry_run=dry_run)
+                _handle_standard_result(
+                    standard_result,
+                    job_dump=job.model_dump(),
+                    logger=logger,
+                    no_cache=no_cache,
+                )
+            else:
+                plan = inner.build_plan()
+                plan_result = job.submit_plan(plan, dry_run=dry_run)
+                _handle_plan_result(
+                    plan_result,
+                    plan,
+                    job_dump=job.model_dump(),
+                    logger=logger,
+                    no_cache=no_cache,
+                )
+        else:
             standard_result = job.submit(inner, dry_run=dry_run)
             _handle_standard_result(
                 standard_result,
@@ -201,24 +222,9 @@ def _dispatch_to_job(inner: CliCommand, job_kwargs: dict[str, Any]) -> None:
                 logger=logger,
                 no_cache=no_cache,
             )
-        else:
-            plan = inner.build_plan()
-            plan_result = job.submit_plan(plan, dry_run=dry_run)
-            _handle_plan_result(
-                plan_result,
-                plan,
-                job_dump=job.model_dump(),
-                logger=logger,
-                no_cache=no_cache,
-            )
-    else:
-        standard_result = job.submit(inner, dry_run=dry_run)
-        _handle_standard_result(
-            standard_result,
-            job_dump=job.model_dump(),
-            logger=logger,
-            no_cache=no_cache,
-        )
+    finally:
+        elapsed_time = perf_counter() - start_time
+        click.echo(f"\nTotal dispatch time: {elapsed_time:.2f}s")
 
     sys.exit(0)
 

@@ -296,6 +296,70 @@ def test_parallel_waits_for_all_dependencies_and_returns_handles() -> None:
     assert sleep.call_count >= 1
 
 
+def test_parallel_logs_step_events_and_elapsed_time(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Report every step's start and end against one shared execution clock."""
+    processes = [MagicMock(pid=pid) for pid in (101, 102, 103)]
+    for proc in processes:
+        proc.poll.return_value = 0
+    with (
+        patch("flepimop2.job.shell._runner.subprocess.Popen", side_effect=processes),
+        patch("flepimop2.job.shell._runner.monotonic", side_effect=range(100, 108)),
+    ):
+        _parallel_job(max_workers=2).submit_plan(_plan())
+
+    captured = capsys.readouterr()
+    assert captured.out.splitlines() == [
+        "Starting 3 parallel process steps (max_workers=2)",
+        "[1.00s] START a (PID=101)",
+        "[2.00s] START b (PID=102)",
+        "[3.00s] END a (PID=101, exit=0)",
+        "[4.00s] END b (PID=102, exit=0)",
+        "[5.00s] START c (PID=103)",
+        "[6.00s] END c (PID=103, exit=0)",
+        "Total parallel execution time: 7.00s",
+    ]
+    assert not captured.err
+
+
+@pytest.mark.parametrize("error", [None, KeyboardInterrupt])
+def test_parallel_reports_time_and_failure_events_on_error(
+    capsys: pytest.CaptureFixture[str], error: type[BaseException] | None
+) -> None:
+    """Failures and interrupts retain the elapsed summary and worker cleanup."""
+    proc = MagicMock(pid=101)
+    proc.poll.return_value = 7
+    proc.poll.side_effect = error
+    with (
+        patch("flepimop2.job.shell._runner.subprocess.Popen", return_value=proc),
+        patch("flepimop2.job.shell._runner._stop_process_groups") as stop,
+        patch("flepimop2.job.shell._runner.monotonic", side_effect=range(100, 104)),
+        pytest.raises(error or RuntimeError),
+    ):
+        _parallel_job(max_workers=1).submit_plan(_plan())
+
+    stop.assert_called_once()
+    captured = capsys.readouterr()
+    assert "[1.00s] START a (PID=101)" in captured.out
+    if error is None:
+        assert captured.err == "[2.00s] END a (PID=101, exit=7)\n"
+        assert "Total parallel execution time: 3.00s" in captured.out
+    else:
+        assert not captured.err
+        assert "Total parallel execution time: 2.00s" in captured.out
+
+
+def test_parallel_dry_run_does_not_report_execution_events(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A dry run prepares commands without claiming any steps executed."""
+    _parallel_job().submit_plan(_plan(), dry_run=True)
+    captured = capsys.readouterr()
+    assert not captured.out
+    assert not captured.err
+
+
 def test_parallel_max_workers_caps_concurrent_subprocesses() -> None:
     """Scheduler never starts more subprocesses than configured workers."""
     job = _parallel_job(max_workers=2)

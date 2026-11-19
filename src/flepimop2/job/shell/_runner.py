@@ -23,6 +23,8 @@ from threading import current_thread, main_thread
 from time import monotonic, sleep
 from typing import TYPE_CHECKING
 
+import click
+
 from flepimop2.job.abc import JobHandle
 from flepimop2.process._plan import ProcessPlan
 
@@ -57,6 +59,7 @@ class _ShellPlanRunner:
         self._max_workers = max_workers
         self._cwd = cwd
         self._env = env
+        self._start_time = 0.0
 
     def run(self) -> dict[str, JobHandle]:
         """Execute ready steps until every worker has completed successfully.
@@ -67,7 +70,12 @@ class _ShellPlanRunner:
         Raises:
             RuntimeError: If a step fails or remaining steps cannot progress.
         """
-        with _manage_process_groups(self._running):
+        self._start_time = monotonic()
+        click.echo(
+            f"Starting {len(self._pending)} parallel process steps "
+            f"(max_workers={self._max_workers})"
+        )
+        with self._report_execution_time(), _manage_process_groups(self._running):
             while self._pending or self._running:
                 progressed = self._collect_completed()
                 progressed = self._launch_ready() or progressed
@@ -84,6 +92,20 @@ class _ShellPlanRunner:
 
         return {step: self._completed[step] for step in self._step_order}
 
+    @contextmanager
+    def _report_execution_time(self) -> "Generator[None]":
+        """Report elapsed execution time on success, failure, or cancellation.
+
+        Yields:
+            Control while the plan executes.
+        """
+        try:
+            yield
+        finally:
+            click.echo(
+                f"Total parallel execution time: {monotonic() - self._start_time:.2f}s"
+            )
+
     def _collect_completed(self) -> bool:
         """Record successful workers and fail before launching downstream steps.
 
@@ -98,6 +120,11 @@ class _ShellPlanRunner:
             returncode = proc.poll()
             if returncode is None:
                 continue
+            click.echo(
+                f"[{monotonic() - self._start_time:.2f}s] "
+                f"END {step} (PID={proc.pid}, exit={returncode})",
+                err=returncode != 0,
+            )
             if returncode != 0:
                 msg = f"Process step '{step}' failed with exit code {returncode}."
                 raise RuntimeError(msg)
@@ -130,12 +157,16 @@ class _ShellPlanRunner:
 
             # Track each child before cancellation can unwind its launch.
             with _defer_cancellation():
-                self._running[step] = subprocess.Popen(  # noqa: S603
+                proc = subprocess.Popen(  # noqa: S603
                     argv,
                     cwd=self._cwd,
                     env=self._env,
                     start_new_session=True,
                 )
+                self._running[step] = proc
+            click.echo(
+                f"[{monotonic() - self._start_time:.2f}s] START {step} (PID={proc.pid})"
+            )
             del self._pending[step]
             launched = True
         return launched
