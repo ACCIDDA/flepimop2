@@ -22,18 +22,22 @@ import shlex
 import shutil
 import subprocess  # noqa: S404
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self
 
-from pydantic import PrivateAttr
+from pydantic import Field, PrivateAttr, model_validator
 
 from flepimop2.exceptions import ValidationIssue
 from flepimop2.job.abc import (
+    SERIAL,
     JobABC,
     JobDryRun,
     JobHandle,
     JobStatus,
     JobStatusResult,
 )
+from flepimop2.job.shell._runner import _ShellPlanRunner
+from flepimop2.process._plan import ProcessPlan
+from flepimop2.process.abc import resolve_plan
 from flepimop2.typing import override
 
 if TYPE_CHECKING:
@@ -46,6 +50,8 @@ class ShellJob(JobABC, module="shell"):
     Attributes:
         module: The fully-qualified module name, resolved from `module="shell"` to
             `"flepimop2.job.shell"`.
+        execution: Serial command execution or dependency-aware parallel plans.
+        max_workers: Maximum concurrent workers when executing a plan.
         cwd: Optional working directory for the subprocess.
         env: Optional environment variables for the subprocess. If `None`,
             the current process environment is inherited.
@@ -54,11 +60,33 @@ class ShellJob(JobABC, module="shell"):
             until the subprocess exits (useful for tests).
     """
 
+    supports_plan: ClassVar[bool] = True
+    execution: Literal["serial", "parallel"] = SERIAL
+    max_workers: int = Field(default=4, ge=1)
+
     cwd: Path | None = None
     env: dict[str, str] | None = None
     detach: bool = True
 
     _exe: str | None = PrivateAttr(default=None)
+
+    @model_validator(mode="after")
+    def _validate_parallel_detach(self) -> Self:
+        """Require blocking execution for parallel shell jobs.
+
+        Returns:
+            The validated ShellJob instance.
+
+        Raises:
+            ValueError: If parallel execution explicitly enables detachment.
+        """
+        if self.execution == "parallel":
+            if "detach" not in self.model_fields_set:
+                self.detach = False
+            elif self.detach:
+                msg = "Parallel ShellJob execution requires detach=False."
+                raise ValueError(msg)
+        return self
 
     @override
     def _submit_validate(self) -> list[ValidationIssue]:
@@ -127,6 +155,109 @@ class ShellJob(JobABC, module="shell"):
             job_id = str(result.returncode)
             metadata = {"mode": "blocking", "returncode": result.returncode}
         return JobHandle(job_id=job_id, backend="shell", metadata=metadata)
+
+    @override
+    def _submit_plan(
+        self,
+        plan: ProcessPlan,
+        *,
+        dry_run: bool = False,
+    ) -> dict[str, JobHandle] | JobDryRun:
+        """Execute independent process steps concurrently.
+
+        Validate the dependency graph before execution. Run eligible
+        steps concurrently, respecting dependencies and max_workers.
+
+        Parallel execution is blocking so that dependencies and process
+        failures can be monitored.
+
+        Args:
+            plan: Process steps with commands and dependencies.
+            dry_run: If True, describe execution without launching processes.
+
+        Returns:
+            Completed job handles keyed by step, or a dry-run description.
+
+        Raises:
+            ValueError: If detached parallel execution is requested.
+            NotImplementedError: If the platform does not support POSIX processes.
+        """
+        if self.detach:
+            msg = "Parallel ShellJob execution requires detach=False."
+            raise ValueError(msg)
+
+        if os.name != "posix":
+            msg = "Parallel ShellJob execution requires a POSIX system."
+            raise NotImplementedError(msg)
+
+        # Validate dependencies before launching any processes.
+        ordered_steps = resolve_plan(plan)
+        commands = self._prepare_plan_commands(plan, ordered_steps)
+
+        if dry_run:
+            return self._describe_plan(commands)
+
+        return _ShellPlanRunner(
+            plan,
+            commands,
+            max_workers=self.max_workers,
+            cwd=self.cwd,
+            env=self.env,
+        ).run()
+
+    def _describe_plan(self, commands: dict[str, list[str]]) -> JobDryRun:
+        """Describe a prepared plan without launching workers.
+
+        Returns:
+            Commands and execution options for the skipped submission.
+        """
+        details = {"mode": "parallel", "max_workers": str(self.max_workers)}
+        if self.cwd is not None:
+            details["cwd"] = str(self.cwd)
+        return JobDryRun(
+            command="\n".join(
+                f"{step}: {shlex.join(argv)}" for step, argv in commands.items()
+            ),
+            details=details,
+        )
+
+    def _prepare_plan_commands(
+        self,
+        plan: ProcessPlan,
+        ordered_steps: list[str],
+    ) -> dict[str, list[str]]:
+        """Resolve and validate commands before execution.
+
+        Args:
+            plan: Process steps containing commands and dependencies.
+            ordered_steps: Process step names in dependency order.
+
+        Returns:
+            Commands keyed by process step name.
+
+        Raises:
+            FileNotFoundError: If the flepimop2 executable is not found.
+            ValueError: If a planned command is invalid.
+        """
+        if self._exe is None:
+            self._exe = shutil.which("flepimop2")
+
+        if self._exe is None:
+            msg = "Could not locate the 'flepimop2' executable on PATH."
+            raise FileNotFoundError(msg)
+
+        commands: dict[str, list[str]] = {}
+
+        for step in ordered_steps:
+            argv = plan[step]["command"]
+
+            if len(argv) < 2 or argv[0] != "flepimop2":
+                msg = f"Invalid flepimop2 command for step '{step}'."
+                raise ValueError(msg)
+
+            commands[step] = [self._exe, *argv[1:]]
+
+        return commands
 
     def _status(self, handle: JobHandle) -> JobStatusResult:  # noqa: PLR6301
         """Report the status of a previously submitted shell job.

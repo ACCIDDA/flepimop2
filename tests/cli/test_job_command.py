@@ -131,6 +131,62 @@ def test_process_dispatches_plan_to_capable_backend(
     mock_job.submit.assert_not_called()
 
 
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        (SERIAL, False, False, False),
+        (SERIAL, False, True, False),
+        (PARALLEL, False, False, False),
+        (PARALLEL, False, False, True),
+        (PARALLEL, True, False, False),
+    ],
+)
+def test_dispatch_reports_elapsed_time(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    scenario: tuple[str, bool, bool, bool],
+) -> None:
+    """Time submissions, including dry runs, errors, and detached fallback."""
+    execution, detach, dry_run, fails = scenario
+    config_path = tmp_path / "config.yaml"
+    _make_minimal_config(config_path)
+    command = ProcessCommand(config=config_path, target="step1", dry_run=dry_run)
+    plan = {"step1": {"command": ["flepimop2", "process"], "depends": []}}
+    job = MagicMock()
+    job.execution = execution
+    job.detach = detach
+    job.supports_plan = True
+    job.supports_detached_plan = False
+    handle = JobHandle(job_id="1", backend="test")
+    job.submit.return_value = JobDryRun(command="example") if dry_run else handle
+    job.submit_plan.return_value = {"step1": handle}
+    if fails:
+        job.submit_plan.side_effect = RuntimeError("submission failed")
+
+    with (
+        patch("flepimop2.cli._job_command.build_job", return_value=job),
+        patch.object(command, "build_plan", return_value=plan) as build_plan,
+        patch("flepimop2.cli._job_command.perf_counter", side_effect=[10.0, 12.5]),
+        pytest.raises(RuntimeError if fails else SystemExit) as excinfo,
+    ):
+        _dispatch_to_job(command, {"job_target": "local", "no_cache": True})
+
+    assert "Total dispatch time: 2.50s" in capsys.readouterr().out
+    if execution == PARALLEL and not detach:
+        build_plan.assert_called_once_with()
+        job.submit_plan.assert_called_once_with(plan, dry_run=dry_run)
+        job.submit.assert_not_called()
+    else:
+        build_plan.assert_not_called()
+        job.submit.assert_called_once_with(command, dry_run=dry_run)
+        job.submit_plan.assert_not_called()
+    if fails:
+        assert str(excinfo.value) == "submission failed"
+    else:
+        assert isinstance(excinfo.value, SystemExit)
+        assert excinfo.value.code == 0
+
+
 def test_process_dispatch_resolves_configured_job_backend(
     tmp_path: Path,
 ) -> None:
