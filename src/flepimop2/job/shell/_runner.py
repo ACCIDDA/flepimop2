@@ -189,7 +189,8 @@ def _manage_process_groups(
     try:
         yield
     except BaseException:
-        _stop_process_groups(running)
+        with _defer_cancellation():
+            _stop_process_groups(running)
         raise
     finally:
         if handle_sigterm:
